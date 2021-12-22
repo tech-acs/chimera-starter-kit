@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Faq;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+
+class FaqController extends Controller
+{
+    public function __invoke(Request $request)
+    {
+        try {
+            $records = Faq::orderBy('rank')->get();
+        } catch (QueryException $exception) {
+            return view('faq.index', ['records' => collect([])]);
+        }
+        return view('faq.index', compact('records'));
+    }
+}

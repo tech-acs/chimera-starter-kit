@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateAreaRestrictionsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('area_restrictions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->string('connection');
+            $table->string('region_code')->nullable();
+            $table->string('region_name')->nullable();
+            $table->string('district_code')->nullable();
+            $table->string('district_name')->nullable();
+            $table->string('sa_code')->nullable();
+            $table->string('sa_name')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('area_restrictions');
+    }
+}

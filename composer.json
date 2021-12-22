@@ -1,24 +1,27 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "uneca/census-dashboard-starter-kit",
+    "description": "Census (CSPro) dashboard starter kit",
     "keywords": [
-        ":vendor_name",
-        "laravel",
-        ":package_slug"
+        "uneca",
+        "census",
+        "census-dashboard-starter-kit"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/tech-acs/census-dashboard-starter-kit",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "UNECA",
+            "email": "tamerat@un.org",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.0",
         "spatie/laravel-package-tools": "^1.9.2",
-        "illuminate/contracts": "^8.73"
+        "illuminate/contracts": "^8.73",
+        "laravel/jetstream": "^2.4",
+        "lasserafn/php-initial-avatar-generator": "^4.2",
+        "spatie/laravel-permission": "^4.0"
     },
     "require-dev": {
         "nunomaduro/collision": "^5.10",
@@ -34,13 +37,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Uneca\\Chimera\\": "src",
+            "Uneca\\Chimera\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Uneca\\Chimera\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -54,10 +57,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Uneca\\Chimera\\ChimeraServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "Chimera": "Uneca\\Chimera\\Facades"
             }
         }
     },
