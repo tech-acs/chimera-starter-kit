@@ -3,15 +3,18 @@
 namespace App\Providers;
 
 use App\Services\ConnectionLoader;
+use App\Services\PageBuilder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class ChimeraServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      *
      * @return void
      */
@@ -21,12 +24,16 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      *
      * @return void
      */
     public function boot()
     {
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Super Admin') ? true : null;
+        });
+
         (new ConnectionLoader())();
 
         Blade::if('connectible', function ($value) {
@@ -48,5 +55,8 @@ class AppServiceProvider extends ServiceProvider
                     return $item;
                 });
         });
+
+        $pages = PageBuilder::pages();
+        View::share('pages', $pages);
     }
 }

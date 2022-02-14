@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Str;
 
 class Chimera extends Command
 {
@@ -95,6 +96,49 @@ class Chimera extends Command
         }
     }
 
+    protected function installRouteMiddlewareAfter($after, $name)
+    {
+        $httpKernel = file_get_contents(app_path('Http/Kernel.php'));
+        $routeMiddleware = Str::before(Str::after($httpKernel, '$routeMiddleware = ['), '];');
+
+        if (! Str::contains($routeMiddleware, $name)) {
+            $modifiedRouteMiddleware = str_replace(
+                $after.',',
+                $after.','.PHP_EOL.'        '.$name.',',
+                $routeMiddleware,
+            );
+
+            file_put_contents(app_path('Http/Kernel.php'), str_replace(
+                $routeMiddleware,
+                $modifiedRouteMiddleware,
+                $httpKernel
+            ));
+        }
+    }
+
+    protected function registerInServiceProvider($serviceProvider, $contentToAppend)
+    {
+        $provider = file_get_contents(app_path("Providers/$serviceProvider.php"));
+        $bootMethodContents = Str::before(Str::after($provider, 'function boot()'), '}');
+
+        file_put_contents(app_path("Providers/$serviceProvider.php"), str_replace(
+            $bootMethodContents,
+            $bootMethodContents . PHP_EOL . '    ' . $contentToAppend . PHP_EOL,
+            $provider
+        ));
+    }
+
+    protected function installServiceProviderAfter($after, $name)
+    {
+        if (! Str::contains($appConfig = file_get_contents(config_path('app.php')), 'App\\Providers\\'.$name.'::class')) {
+            file_put_contents(config_path('app.php'), str_replace(
+                'App\\Providers\\'.$after.'::class,',
+                'App\\Providers\\'.$after.'::class,'.PHP_EOL.'        App\\Providers\\'.$name.'::class,',
+                $appConfig
+            ));
+        }
+    }
+
     protected function requireComposerPackages($packages)
     {
         $composer = $this->option('composer');
@@ -122,6 +166,8 @@ class Chimera extends Command
 
     public function handle(): int
     {
+        
+        //$this->requireComposerPackages('laravel/jetstream:^2.6');
         $this->installJetstream();
         $this->comment('Installed jetstream');
 
@@ -129,14 +175,14 @@ class Chimera extends Command
         $this->callSilent('vendor:publish', ['--tag' => 'chimera-migrations', '--force' => true]);
         $this->comment('Published chimera config and migrations');
 
-        $packages = [
-            'spatie/laravel-permission:^4.0',
-            'spatie/simple-excel:^1.13',
-            'lasserafn/php-initial-avatar-generator:^4.2'
-        ];
-        $this->requireComposerPackages($packages);
+        $this->requireComposerPackages(['spatie/laravel-permission:^5.5', 'spatie/simple-excel:^1.15']);
+        //$this->call('vendor:publish', ['--provider' => 'Spatie\Permission\PermissionServiceProvider', '--force' => true]);
 
-        $this->callSilent('vendor:publish', ['--provider' => 'Spatie\Permission\PermissionServiceProvider', '--force' => true]);
+        (new Process(['php', 'artisan', 'vendor:publish', '--provider=Spatie\Permission\PermissionServiceProvider', '--force'], base_path()))
+                ->setTimeout(null)
+                ->run(function ($type, $output) {
+                    $this->output->write($output);
+                });
 
         // blade-component-classes -> app/View/Components
         $this->copyFilesInDir(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
@@ -178,8 +224,8 @@ class Chimera extends Command
         $this->comment('Copied resources');
 
         // langs
-        File::copyDirectory(__DIR__ . '/../../deploy/resources/lang', resource_path('views'));
-        $this->comment('Copied views');
+        File::copyDirectory(__DIR__ . '/../../deploy/resources/lang', resource_path('lang'));
+        $this->comment('Copied langs');
 
         // Images
         $this->copyFilesInDir(__DIR__ . '/../../deploy/public/images', public_path('images'), '*.*');
@@ -199,19 +245,27 @@ class Chimera extends Command
         $this->comment('Updated package.json with required packages');
 
         copy(__DIR__.'/../../deploy/routes/web.php', base_path('routes/web.php'));
-        $this->comment('Copied route file (web.php)');
-
-        // This one should be done by modifying the file, not copying it over
-        // ... applies for AppServiceProvider and AuthServiceProvider
-        copy(__DIR__.'/../../deploy/providers/AppServiceProvider.php', app_path('Providers/AppServiceProvider.php'));
+        $this->comment('Copied route file (web.php)'); 
+        
 
         // Add 'log_page_views' => \App\Http\Middleware\LogPageView::class, and Language... to Kernel.php
+        $this->installMiddlewareAfter('SubstituteBindings::class', '\App\Http\Middleware\Language::class');
+        $this->installRouteMiddlewareAfter('EnsureEmailIsVerified::class', "'log_page_views' => \App\Http\Middleware\LogPageView::class");
+
+        // Service Providers...
+        copy(__DIR__.'/../../deploy/providers/ChimeraServiceProvider.php', app_path('Providers/ChimeraServiceProvider.php'));
+        $this->installServiceProviderAfter('JetstreamServiceProvider', 'ChimeraServiceProvider'); 
+
+        // Enable profile photo (jetstream)
+        $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
 
         // Exception handler (for token mismatch and invalid invitation exceptions)
+
         
 
         $this->comment('All done');
 
         return self::SUCCESS;
     }
+
 }

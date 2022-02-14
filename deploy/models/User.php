@@ -41,7 +41,7 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    public function defaultProfilePhotoUrl()
+    /*public function defaultProfilePhotoUrl()
     {
         $avatar = new InitialAvatar();
         return $avatar->name($this->name)
@@ -50,7 +50,7 @@ class User extends Authenticatable
             ->color('#7F9CF5')
             ->generate()
             ->encode('data-url');
-    }
+    }*/
 
     public function usageStats()
     {

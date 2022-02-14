@@ -19,14 +19,12 @@
         "php": "^8.0",
         "spatie/laravel-package-tools": "^1.9.2",
         "illuminate/contracts": "^9.0",
-        "laravel/jetstream": "^2.4",
-        "lasserafn/php-initial-avatar-generator": "^4.2",
-        "spatie/laravel-permission": "^5.5"
+        "laravel/jetstream": "^2.6"
     },
     "require-dev": {
-        "nunomaduro/collision": "^5.10",
-        "nunomaduro/larastan": "^1.0",
-        "orchestra/testbench": "^6.22",
+        "nunomaduro/collision": "^6.0",
+        "nunomaduro/larastan": "^2.0",
+        "orchestra/testbench": "^7.0",
         "pestphp/pest": "^1.21",
         "pestphp/pest-plugin-laravel": "^1.1",
         "phpstan/extension-installer": "^1.1",
@@ -57,7 +55,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Uneca\\Chimera\\ChimeraServiceProvider"
+                "Uneca\\Chimera\\ChimeraStarterKitServiceProvider"
             ],
             "aliases": {
                 "Chimera": "Uneca\\Chimera\\Facades"
