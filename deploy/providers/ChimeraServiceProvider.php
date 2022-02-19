@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Exceptions\Handler;
 use App\Services\ConnectionLoader;
 use App\Services\PageBuilder;
 use Illuminate\Support\Collection;

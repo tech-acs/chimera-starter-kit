@@ -11,7 +11,7 @@ class RoleController extends Controller
     public function index()
     {
         $records = Role::all();
-        return view('roles.index', compact('records'));
+        return view('role.index', compact('records'));
     }
 
     public function store(Request $request)
@@ -26,7 +26,7 @@ class RoleController extends Controller
                 ->withInput();
         }
         Role::create(['name' => $request->get('name'), 'guard_name' => 'web']);
-        return redirect()->route('roles.index');
+        return redirect()->route('role.index');
     }
 
     public function edit(Role $role)
@@ -35,7 +35,7 @@ class RoleController extends Controller
             abort(403, 'Unauthorized action');
         }
         $pages = config('chimera.pages');
-        return view('roles.manage', compact('role', 'pages'));
+        return view('role.manage', compact('role', 'pages'));
     }
 
     public function destroy(Role $role)
@@ -49,6 +49,6 @@ class RoleController extends Controller
             $role->delete();
             $message = 'The role has been deleted';
         }
-        return redirect()->route('roles.index')->withMessage($message);
+        return redirect()->route('role.index')->withMessage($message);
     }
 }

@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ConnectionRequest extends FormRequest
+class QuestionnaireRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,9 @@ class ConnectionRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:database_connections,name',
+            'name' => ['required', Rule::unique('questionnaires', 'name')->ignore($this->questionnaire)],
+            'title' => 'required',
+
             'host' => 'required',
             'port' => 'required',
             'database' => 'required',

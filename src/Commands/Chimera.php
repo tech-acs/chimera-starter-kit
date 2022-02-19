@@ -116,18 +116,6 @@ class Chimera extends Command
         }
     }
 
-    protected function registerInServiceProvider($serviceProvider, $contentToAppend)
-    {
-        $provider = file_get_contents(app_path("Providers/$serviceProvider.php"));
-        $bootMethodContents = Str::before(Str::after($provider, 'function boot()'), '}');
-
-        file_put_contents(app_path("Providers/$serviceProvider.php"), str_replace(
-            $bootMethodContents,
-            $bootMethodContents . PHP_EOL . '    ' . $contentToAppend . PHP_EOL,
-            $provider
-        ));
-    }
-
     protected function installServiceProviderAfter($after, $name)
     {
         if (! Str::contains($appConfig = file_get_contents(config_path('app.php')), 'App\\Providers\\'.$name.'::class')) {
@@ -137,6 +125,36 @@ class Chimera extends Command
                 $appConfig
             ));
         }
+    }
+
+    protected function registerExceptionHandler($contentToAppend)
+    {
+        $handler = file_get_contents(app_path("Exceptions/Handler.php"));
+        $bootMethodContents = Str::before(Str::after($handler, 'function register()'), '}' . PHP_EOL);
+
+        file_put_contents(app_path("Exceptions/Handler.php"), str_replace(
+            $bootMethodContents,
+            $bootMethodContents . PHP_EOL . '    ' . $contentToAppend . PHP_EOL,
+            $handler
+        ));
+    }
+
+    protected function exceptionHandlingCallbacks()
+    {
+        return <<<'EOF'
+	$this->renderable(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e) {
+			return response()->view('error.link-invalid', [], 403);
+		});
+
+		$this->renderable(function (Throwable $e) {
+			if ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {
+				app('redirect')->setIntendedUrl(url()->previous());
+				return redirect()->route('login')
+					->withInput(request()->except('_token'))
+					->withErrors('Security token has expired. Please sign-in again.');
+			}
+		});
+EOF;
     }
 
     protected function requireComposerPackages($packages)
@@ -166,7 +184,6 @@ class Chimera extends Command
 
     public function handle(): int
     {
-        
         //$this->requireComposerPackages('laravel/jetstream:^2.6');
         $this->installJetstream();
         $this->comment('Installed jetstream');
@@ -221,6 +238,7 @@ class Chimera extends Command
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/fonts', resource_path('fonts'), '*.*');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
+        $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'), '*.*');
         $this->comment('Copied resources');
 
         // langs
@@ -245,7 +263,7 @@ class Chimera extends Command
         $this->comment('Updated package.json with required packages');
 
         copy(__DIR__.'/../../deploy/routes/web.php', base_path('routes/web.php'));
-        $this->comment('Copied route file (web.php)'); 
+        $this->comment('Copied route file (web.php)');
         
 
         // Add 'log_page_views' => \App\Http\Middleware\LogPageView::class, and Language... to Kernel.php
@@ -260,7 +278,7 @@ class Chimera extends Command
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
 
         // Exception handler (for token mismatch and invalid invitation exceptions)
-
+        $this->registerExceptionHandler($this->exceptionHandlingCallbacks());
         
 
         $this->comment('All done');

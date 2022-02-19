@@ -15,12 +15,14 @@ class CreateIndicatorsTable extends Migration
     {
         Schema::create('indicators', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->unique();
+            $table->string('name')->unique();
             $table->string('slug');
-            $table->string('description');
-            $table->string('connection');
-            $table->string('type');
-            $table->foreignId('page_id')->constrained();
+            $table->string('title')->nullable();
+            $table->string('description')->nullable();
+            $table->string('questionnaire')->nullable();
+            $table->boolean('published')->default(false);
+            $table->string('type')->nullable();
+            $table->foreignId('page_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

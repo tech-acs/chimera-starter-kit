@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAreaRestrictionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -17,12 +17,8 @@ class CreateAreaRestrictionsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->string('connection');
-            $table->string('region_code')->nullable();
-            $table->string('region_name')->nullable();
-            $table->string('district_code')->nullable();
-            $table->string('district_name')->nullable();
-            $table->string('sa_code')->nullable();
-            $table->string('sa_name')->nullable();
+            $table->string('code', 50)->index();
+            $table->string('name', 100);
             $table->timestamps();
         });
     }
@@ -36,4 +32,4 @@ class CreateAreaRestrictionsTable extends Migration
     {
         Schema::dropIfExists('area_restrictions');
     }
-}
+};

@@ -12,6 +12,9 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
+                        {{__('Home')}}
+                    </x-jet-nav-link>
                 {{--@foreach((config('chimera.pages') ?? []) as $route => $page)--}}
                 @foreach($pages as $route => $page)
                     @can($page['slug'])
@@ -48,16 +51,17 @@
                             <x-slot name="content">
                                 <div class="w-48">
                                     <div class="block px-4 py-2 text-xs text-gray-400">Access Control</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('users.index') }}">Users</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('roles.index') }}">Roles</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('user.index') }}">Users</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('role.index') }}">Roles</x-jet-dropdown-link>
+                                    <div class="border-t border-gray-100"></div>
+                                    <x-jet-dropdown-link href="{{route('questionnaire.index')}}">Questionnaires</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <div class="block px-4 py-2 text-xs text-gray-400">Manage Indicators</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('help') }}">Pages</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('help') }}">Indicators</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('page.index') }}">Pages</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">Indicators</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">Usage Stats</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('manage.faq.index')}}">Manage FAQs</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link href="{{route('connection.index')}}">Databases</x-jet-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-jet-dropdown>
@@ -187,7 +191,9 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-
+            <x-jet-responsive-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
+                {{ __('Home') }}
+            </x-jet-responsive-nav-link>
             @foreach((config('chimera.pages') ?? []) as $route => $page)
                 @can($page['permission_name'])
                     <x-jet-responsive-nav-link href="{{ route($route) }}" :active="request()->is($route, $route . '/*')">
@@ -200,20 +206,26 @@
             </x-jet-responsive-nav-link>
             @can('Super User')
                 <div class="border-t border-gray-200"></div>
-                <x-jet-responsive-nav-link href="{{ route('users.index') }}" :active="request()->routeIs('users.*')">
+                <x-jet-responsive-nav-link href="{{ route('user.index') }}" :active="request()->routeIs('user.*')">
                     {{ __('Users') }}
                 </x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('roles.index') }}" :active="request()->routeIs('roles.*')">
+                <x-jet-responsive-nav-link href="{{ route('role.index') }}" :active="request()->routeIs('role.*')">
                     {{ __('Roles') }}
+                </x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('questionnaire.index') }}" :active="request()->routeIs('questionnaire.*')">
+                    {{ __('Questionnaires') }}
+                </x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('page.index') }}" :active="request()->routeIs('page.*')">
+                    {{ __('Pages') }}
+                </x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('indicator.index') }}" :active="request()->routeIs('indicator.*')">
+                    {{ __('Indicators') }}
                 </x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('usage_stats') }}" :active="request()->routeIs('usage_stats')">
                     {{ __('Usage Stats') }}
                 </x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('manage.faq.index') }}" :active="request()->routeIs('manage.faq.*')">
                     {{ __('Manage FAQs') }}
-                </x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('connection.index') }}" :active="request()->routeIs('connection.*')">
-                    {{ __('Databases') }}
                 </x-jet-responsive-nav-link>
             @endcan
         </div>

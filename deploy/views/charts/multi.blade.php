@@ -10,17 +10,17 @@
     @endconnectible
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 sm:p-6 sm:pt-0 pb-6 bg-gray-100 grid-flow-row">
+        @forelse($indicators as $indicator)
 
-        @forelse($indicators as $chart => $metadata)
-            @connectible($metadata['connection'])
-                @can($metadata['permission_name'])
+            @connectible($indicator->connection)
+                @can($indicator->permission_name)
                     <x-chart-card
-                            page="{{$page}}"
-                            chart="{{$chart}}"
-                            title="{{$metadata['title']}}"
-                            description="{{$metadata['description']}}"
+                            page="{{ $page }}"
+                            chart="{{ $indicator->component }}"
+                            title="{{ $indicator->title }}"
+                            description="{{ $indicator->description }}"
                     >
-                        @livewire($chart, ['connection' => $metadata['connection'], 'graphDiv' => $chart])
+                        @livewire($indicator->component, ['connection' => $indicator->connection, 'graphDiv' => $indicator->component])
                     </x-chart-card>
                 @endcan
             @else

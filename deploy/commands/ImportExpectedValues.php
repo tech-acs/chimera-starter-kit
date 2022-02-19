@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Services\Area;
+use App\Services\Traits\InteractiveCommand;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelReader;
 
@@ -24,6 +24,8 @@ class ImportExpectedValues extends Command
     protected string $table = 'expected_values';
     protected ?string $connection = null;
 
+    use InteractiveCommand;
+
     public function __construct()
     {
         parent::__construct();
@@ -36,28 +38,6 @@ class ImportExpectedValues extends Command
             $this->newLine();
             exit;
         }
-    }
-
-    protected function askValid($question, $field, $rules)
-    {
-        $value = $field == 'password' ? $this->secret($question) : $this->ask($question);
-        if($message = $this->validateInput($rules, $field, $value)) {
-            $this->error($message);
-            return $this->askValid($question, $field, $rules);
-        }
-        return $value;
-    }
-
-    protected function validateInput($rules, $fieldName, $value)
-    {
-        $validator = Validator::make([
-            $fieldName => $value
-        ], [
-            $fieldName => $rules
-        ]);
-        return $validator->fails()
-            ? $validator->errors()->first($fieldName)
-            : null;
     }
 
     private function nextLevelUp($currentLevel)

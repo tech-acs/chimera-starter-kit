@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Database connections
+            Questionnaires with their breakout databases
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            All your breakout database connections should be configured here
+            Creating a new questionnaire with breakout database connection
         </p>
     </x-slot>
 
@@ -28,10 +28,9 @@
             </div>
         @endif
 
-        <form action="{{route('connection.update', $connection->id)}}" method="POST">
+        <form action="{{route('questionnaire.store')}}" method="POST">
             @csrf
-            @method('PATCH')
-            @include('connection.form')
+            @include('questionnaire.form')
         </form>
 
     </div>

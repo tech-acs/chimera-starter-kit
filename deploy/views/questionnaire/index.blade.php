@@ -2,16 +2,16 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Database connections
+            Questionnaires with their breakout databases
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            All your breakout database connections should be configured here
+            All your questionnaires and their breakout database connections should be configured here
         </p>
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="text-right">
-            <a href="{{route('connection.create')}}"><x-jet-button>{{ __('Create new') }}</x-jet-button></a>
+            <a href="{{route('questionnaire.create')}}"><x-jet-button>{{ __('Create new') }}</x-jet-button></a>
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
@@ -57,60 +57,51 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
+                                    Questionnaire
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Host
+                                    Breakout Database
                                 </th>
-                                {{--<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Port
-                                </th>--}}
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Database
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Username
-                                </th>
-                                {{--<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Password
-                                </th>--}}
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($records as $record)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{$record->name}}
-                                    @if ($record->active)
-                                        <svg class="w-4 h-4 inline text-green-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 3.636a1 1 0 010 1.414 7 7 0 000 9.9 1 1 0 11-1.414 1.414 9 9 0 010-12.728 1 1 0 011.414 0zm9.9 0a1 1 0 011.414 0 9 9 0 010 12.728 1 1 0 11-1.414-1.414 7 7 0 000-9.9 1 1 0 010-1.414zM7.879 6.464a1 1 0 010 1.414 3 3 0 000 4.243 1 1 0 11-1.415 1.414 5 5 0 010-7.07 1 1 0 011.415 0zm4.242 0a1 1 0 011.415 0 5 5 0 010 7.072 1 1 0 01-1.415-1.415 3 3 0 000-4.242 1 1 0 010-1.415zM10 9a1 1 0 011 1v.01a1 1 0 11-2 0V10a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                                    @else
-                                        <svg class="w-4 h-4 inline text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M3.707 2.293a1 1 0 00-1.414 1.414l6.921 6.922c.05.062.105.118.168.167l6.91 6.911a1 1 0 001.415-1.414l-.675-.675a9.001 9.001 0 00-.668-11.982A1 1 0 1014.95 5.05a7.002 7.002 0 01.657 9.143l-1.435-1.435a5.002 5.002 0 00-.636-6.294A1 1 0 0012.12 7.88c.924.923 1.12 2.3.587 3.415l-1.992-1.992a.922.922 0 00-.018-.018l-6.99-6.991zM3.238 8.187a1 1 0 00-1.933-.516c-.8 3-.025 6.336 2.331 8.693a1 1 0 001.414-1.415 6.997 6.997 0 01-1.812-6.762zM7.4 11.5a1 1 0 10-1.73 1c.214.371.48.72.795 1.035a1 1 0 001.414-1.414c-.191-.191-.35-.4-.478-.622z"></path></svg>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-y-1">
+                                    <div class="text-sm text-gray-500 font-medium">Dictionary name: <span class="text-gray-900">{{$record->name}}</span></div>
+                                    @if($record->start_date && $record->end_date)
+                                        <div class="text-sm text-blue-700">{{$record->start_date->toFormattedDateString()}} - {{$record->end_date->toFormattedDateString()}}</div>
                                     @endif
+                                    <div class="text-sm text-gray-500">
+                                        Show on home page:
+                                        <span class="font-semibold">
+                                            @if($record->show_on_home_page) Yes @else No @endif
+                                        </span>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-                                    {{$record->host}}
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center space-y-1">
+                                    <div class="text-sm text-gray-900">
+                                        Host: {{$record->host}}
+                                        @if ($record->connection_active)
+                                            <svg class="w-4 h-4 inline text-green-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 3.636a1 1 0 010 1.414 7 7 0 000 9.9 1 1 0 11-1.414 1.414 9 9 0 010-12.728 1 1 0 011.414 0zm9.9 0a1 1 0 011.414 0 9 9 0 010 12.728 1 1 0 11-1.414-1.414 7 7 0 000-9.9 1 1 0 010-1.414zM7.879 6.464a1 1 0 010 1.414 3 3 0 000 4.243 1 1 0 11-1.415 1.414 5 5 0 010-7.07 1 1 0 011.415 0zm4.242 0a1 1 0 011.415 0 5 5 0 010 7.072 1 1 0 01-1.415-1.415 3 3 0 000-4.242 1 1 0 010-1.415zM10 9a1 1 0 011 1v.01a1 1 0 11-2 0V10a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                                        @else
+                                            <svg class="w-4 h-4 inline text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M3.707 2.293a1 1 0 00-1.414 1.414l6.921 6.922c.05.062.105.118.168.167l6.91 6.911a1 1 0 001.415-1.414l-.675-.675a9.001 9.001 0 00-.668-11.982A1 1 0 1014.95 5.05a7.002 7.002 0 01.657 9.143l-1.435-1.435a5.002 5.002 0 00-.636-6.294A1 1 0 0012.12 7.88c.924.923 1.12 2.3.587 3.415l-1.992-1.992a.922.922 0 00-.018-.018l-6.99-6.991zM3.238 8.187a1 1 0 00-1.933-.516c-.8 3-.025 6.336 2.331 8.693a1 1 0 001.414-1.415 6.997 6.997 0 01-1.812-6.762zM7.4 11.5a1 1 0 10-1.73 1c.214.371.48.72.795 1.035a1 1 0 001.414-1.414c-.191-.191-.35-.4-.478-.622z"></path></svg>
+                                        @endif
+                                    </div>
+                                    <div class="text-sm text-gray-500">Database: {{$record->database}}</div>
+                                    <div class="text-sm text-gray-500">Username: {{$record->username}}</div>
                                 </td>
-                                {{--<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->port}}
-                                </td>--}}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->database}}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->username}}
-                                </td>
-                                {{--<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->password}}
-                                </td>--}}
+
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    @if($record->active)
+                                    @if($record->connection_active)
                                         <a href="{{route('connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Test</a>
                                         <span class="text-gray-400 px-1">|</span>
                                     @endif
-                                    <a href="{{route('connection.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <a href="{{route('questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                     <span class="text-gray-400 px-1">|</span>
-                                    <form action="{{route('connection.destroy', $record->id)}}" method="post" class="inline">
+                                    <form action="{{route('questionnaire.destroy', $record->id)}}" method="post" class="inline">
                                         @method('delete')
                                         @csrf
                                         <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">Delete</a>

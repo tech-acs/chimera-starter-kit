@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\DatabaseConnection;
+use App\Models\Questionnaire;
 use Exception;
 use PDO;
 
@@ -11,7 +11,7 @@ class ConnectionLoader
     public function __invoke() : void
     {
         try {
-            $connections = DatabaseConnection::active()->get();
+            $connections = Questionnaire::active()->get();
         } catch (Exception $exception) {
             $connections = collect([]);
         }

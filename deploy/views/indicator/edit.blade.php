@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Database connections
+            Indicators
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            All your breakout database connections should be configured here
+            You are editing an existing indicator
         </p>
     </x-slot>
 
@@ -28,9 +28,10 @@
             </div>
         @endif
 
-        <form action="{{route('connection.store')}}" method="POST">
+        <form action="{{route('indicator.update', $indicator->id)}}" method="POST">
             @csrf
-            @include('connection.form')
+            @method('PATCH')
+            @include('indicator.form')
         </form>
 
     </div>

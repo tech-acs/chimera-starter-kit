@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class DatabaseConnection extends Model
+class Questionnaire extends Model
 {
     use HasFactory;
-
     protected $guarded = ['id'];
+    protected $dates = ['start_date', 'end_date'];
 
     public function scopeActive($query)
     {
-        return $query->where('active', true);
+        return $query->where('connection_active', true);
     }
 
     private function testCanConnect()

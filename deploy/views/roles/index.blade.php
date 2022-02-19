@@ -11,7 +11,7 @@
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <form action="{{route('roles.store')}}" method="POST">
+        <form action="{{route('role.store')}}" method="POST">
             @csrf
             <div class="shadow sm:rounded-md sm:overflow-hidden">
                 <div class="px-4 py-2 sm:px-6 bg-gray-50 border-b border-gray-200">
@@ -88,9 +88,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if ($record->name !== 'Super Admin')
-                                    <a href="{{route('roles.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <a href="{{route('role.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                     <span class="text-gray-400 px-1">|</span>
-                                    <form action="{{route('roles.destroy', $record->id)}}" method="post" class="inline">
+                                    <form action="{{route('role.destroy', $record->id)}}" method="post" class="inline">
                                         @method('delete')
                                         @csrf
                                         <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">Delete</a>
