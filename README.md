@@ -1,51 +1,49 @@
 # Census (CSPro) dashboard starter kit
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/uneca/census-dashboard-starter-kit.svg?style=flat-square)](https://packagist.org/packages/uneca/census-dashboard-starter-kit)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/uneca/census-dashboard-starter-kit/run-tests?label=tests)](https://github.com/uneca/census-dashboard-starter-kit/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/uneca/census-dashboard-starter-kit/Check%20&%20fix%20styling?label=code%20style)](https://github.com/uneca/census-dashboard-starter-kit/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/uneca/census-dashboard-starter-kit.svg?style=flat-square)](https://packagist.org/packages/uneca/census-dashboard-starter-kit)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Census dashboard starter kit is a CSPro questionnaire dashboard application scaffolding for Laravel. It provides the perfect starting point for your dashboard and includes various features.
+
+It is built on top of Laravel Jetstream starter kit.
 
 ## Installation
 
-You can install the package via composer:
+Once you have created a fresh laravel project, you can install the package via composer:
 
 ```bash
 composer require uneca/census-dashboard-starter-kit
 ```
 
-You can publish and run the migrations with:
+Then install the kit using:
 
 ```bash
-php artisan vendor:publish --tag="census-dashboard-starter-kit_without_prefix-migrations"
+php artisan chimera:install
+```
+
+Then edit your .env file so as to add your postgres database (you also need to add the postgis extension to it) details etc.
+
+Then run the migrations
+
+```bash
 php artisan migrate
 ```
 
-You can publish the config file with:
+After installing the kit, you should install and build your NPM dependencies:
 ```bash
-php artisan vendor:publish --tag="census-dashboard-starter-kit_without_prefix-config"
+npm install
+npm run dev
 ```
 
-Optionally, you can publish the views using
-
+Finally you can run the adminify command to create a super admin user with which you can access your new dashboard
 ```bash
-php artisan vendor:publish --tag="example-views"
+php artisan adminify
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
 
 ## Usage
 
-```php
-$census-dashboard-starter-kit = new Uneca\CensusDashboardStarterKit();
-echo $census-dashboard-starter-kit->echoPhrase('Hello, Uneca!');
-```
+Coming soon...
 
 ## Testing
 
