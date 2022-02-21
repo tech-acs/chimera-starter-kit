@@ -30,7 +30,7 @@ class Questionnaire extends Model
     private function hasNecessaryTables()
     {
         try {
-            $tables = array_map('reset', DB::connection($this->name)->select('SHOW TABLES'));
+            $tables = array_map(function ($table) { return reset($table); }, DB::connection($this->name)->select('SHOW TABLES'));
             if (count(array_intersect($tables, ['cases', 'cspro_jobs', 'level-1'])) === 3) {
                 return ['passes' => true, 'message' => ''];
             } else {

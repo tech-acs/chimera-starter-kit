@@ -35,7 +35,7 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
         Route::prefix('manage')->name('manage.')->group(function () {
             Route::resource('faq', FaqManagementController::class)->except(['show']);
         });
-        Route::get('connection/{connection}/test', [ConnectionController::class, 'test'])->name('connection.test');
+        Route::get('connection/{questionnaire}/test', [ConnectionController::class, 'test'])->name('connection.test');
         Route::resource('connection', ConnectionController::class);
         Route::get('setting', SettingController::class)->name('setting');
     });
