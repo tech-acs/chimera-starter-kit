@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DatabaseConnection;
 use App\Models\Questionnaire;
 
 class ConnectionTestController extends Controller

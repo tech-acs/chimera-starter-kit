@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PageRequest;
-use App\Models\DatabaseConnection;
+use App\Models\Questionnaire;
 use App\Models\Page;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class PageController extends Controller
 
     public function create()
     {
-        $connections = DatabaseConnection::pluck('name', 'id');
+        $connections = Questionnaire::pluck('title', 'id');
         return view('page.create', compact('connections'));
     }
 
@@ -30,7 +30,7 @@ class PageController extends Controller
 
     public function edit(Page $page)
     {
-        $connections = DatabaseConnection::pluck('name', 'id');
+        $connections = Questionnaire::pluck('name', 'id');
         return view('page.edit', compact('page', 'connections'));
     }
 
