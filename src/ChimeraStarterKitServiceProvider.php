@@ -20,6 +20,7 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_areas_table',
             'create_expected_values_table',
             'create_pages_table',
+            'create_questionnaires_table',
             'create_indicators_table',
         ];
         $package
