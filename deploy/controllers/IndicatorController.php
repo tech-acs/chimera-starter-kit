@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IndicatorRequest;
-use App\Models\DatabaseConnection;
+use App\Models\Questionnaire;
 use App\Models\Indicator;
 use App\Models\Page;
 
@@ -17,7 +17,7 @@ class IndicatorController extends Controller
 
     public function edit(Indicator $indicator)
     {
-        $connections = DatabaseConnection::pluck('name', 'id');
+        $connections = Questionnaire::pluck('title', 'id');
         $pages = Page::pluck('title', 'id');
         return view('indicator.edit', compact('indicator', 'connections', 'pages'));
     }
