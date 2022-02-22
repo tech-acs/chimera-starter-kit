@@ -76,7 +76,7 @@ class MakeIndicator extends GeneratorCommand
         $this->files->put($path, $this->buildClass($name));
         $this->info('Indicator created successfully.');
 
-        dump($className, $path);
+        //dump($className, $path);
         return 0;
     }
 }

@@ -17,27 +17,25 @@ class PageController extends Controller
 
     public function create()
     {
-        $connections = Questionnaire::pluck('title', 'id');
-        return view('page.create', compact('connections'));
+        $questionnaires = Questionnaire::pluck('title', 'id');
+        return view('page.create', compact('questionnaires'));
     }
 
     public function store(PageRequest $request)
     {
-        //$request = $request->merge(['slug' => Str::of($request->get('title'))->slug('-')]);
-        Page::create($request->only(['title',  'description', 'connection']));
+        Page::create($request->only(['title',  'description', 'questionnaire']));
         return redirect()->route('page.index')->withMessage('Page created');
     }
 
     public function edit(Page $page)
     {
-        $connections = Questionnaire::pluck('name', 'id');
-        return view('page.edit', compact('page', 'connections'));
+        $questionnaires = Questionnaire::pluck('name', 'id');
+        return view('page.edit', compact('page', 'questionnaires'));
     }
 
     public function update(Page $page, Request $request)
     {
-        //$request = $request->merge(['slug' => Str::of($request->get('title'))->slug('-')]);
-        $page->update($request->only(['title', 'description', 'connection']));
+        $page->update($request->only(['title', 'description', 'questionnaire']));
         return redirect()->route('page.index')->withMessage('Page updated');
     }
 

@@ -25,8 +25,8 @@ class PageRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => ['required', Rule::unique('users')->ignore($page)],
-            'connection' => 'required'
+            'title' => ['required', Rule::unique('pages')->ignore($this->page)],
+            'questionnaire' => 'required'
         ];
     }
 }
