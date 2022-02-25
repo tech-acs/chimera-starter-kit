@@ -5,7 +5,7 @@
             Indicators
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            Manage grouping of indicators into pages, here
+            Manage indicators and their grouping into pages, here
         </p>
     </x-slot>
 
@@ -52,6 +52,9 @@
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+
+                        <x-delete-confirmation prompt="[ This action will delete the component file and also the database entry for the indicator ]" />
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                             <tr>

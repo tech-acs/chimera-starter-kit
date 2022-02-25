@@ -12,7 +12,7 @@ use Spatie\SimpleExcel\SimpleExcelReader;
 
 class ImportExpectedValues extends Command
 {
-    protected $signature = 'import:expected-values 
+    protected $signature = 'chimera:import-expected-values 
                             {file : CSV or XSLX file that contains the expected values} 
                             {--truncate : Whether the expected values table should be truncated before importing the indicator values} 
                             {--zero-pad-codes : Whether to zero pad codes, padding length will be requested for the code column}

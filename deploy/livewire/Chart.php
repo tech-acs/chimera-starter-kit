@@ -4,8 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Services\Caching;
 use App\Services\Traits\Cachable;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 abstract class Chart extends Component

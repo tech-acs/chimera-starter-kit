@@ -51,7 +51,10 @@
         <div class="mt-2 flex flex-col">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
+
+                        <x-delete-confirmation />
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                             <tr>
@@ -61,11 +64,14 @@
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Slug
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{--<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Questionnaire
-                                </th>
+                                </th>--}}
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Indicators
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Published
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
@@ -79,20 +85,19 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{$record->slug}}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                {{--<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{$record->questionnaire}}
-                                </td>
+                                </td>--}}
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{$record->indicators_count}}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                    <x-yes-no value="{{$record->published}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{route('page.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                     <span class="text-gray-400 px-1">|</span>
-                                    <form action="{{route('page.destroy', $record->id)}}" method="post" class="inline">
-                                        @method('delete')
-                                        @csrf
-                                        <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">Delete</a>
-                                    </form>
+                                    <a href="{{ route('page.destroy', $record->id) }}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600">Delete</a>
                                 </td>
                             </tr>
                         @empty

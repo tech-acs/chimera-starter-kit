@@ -14,12 +14,12 @@
         <div class="grid grid-cols-1 gap-6 pl-3 md:pl-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <x-jet-label for="name" value="{{ __('Dictionary name') }}" />
+                    <x-jet-label for="name" value="{{ __('Dictionary name') }} *" />
                     <x-jet-input id="name" name="name" type="text" class="mt-1 block w-full" value="{{old('name', $questionnaire->name ?? null)}}" />
                     <x-jet-input-error for="name" class="mt-2" />
                 </div>
                 <div>
-                    <x-jet-label for="title" value="{{ __('Display title') }}" />
+                    <x-jet-label for="title" value="{{ __('Display title') }} *" />
                     <x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $questionnaire->title ?? null)}}" />
                     <x-jet-input-error for="title" class="mt-2" />
                 </div>
@@ -58,28 +58,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pl-3 md:pl-6">
             <div class="grid grid-cols-2 gap-6">
                 <div>
-                    <x-jet-label for="host" value="{{ __('Host') }}" />
+                    <x-jet-label for="host" value="{{ __('Host') }} *" />
                     <x-jet-input id="host" name="host" type="text" class="mt-1 block w-full" value="{{old('host', $questionnaire->host ?? null)}}" />
                     <x-jet-input-error for="host" class="mt-2" />
                 </div>
                 <div>
-                    <x-jet-label for="port" value="{{ __('Port') }}" />
+                    <x-jet-label for="port" value="{{ __('Port') }} *" />
                     <x-jet-input id="port" name="port" type="text" class="mt-1 block w-full" value="{{old('port', $questionnaire->port ?? null)}}" />
                     <x-jet-input-error for="port" class="mt-2" />
                 </div>
             </div>
             <div class="">
-                <x-jet-label for="database" value="{{ __('Database') }}" />
+                <x-jet-label for="database" value="{{ __('Database') }} *" />
                 <x-jet-input id="database" name="database" type="text" class="mt-1 block w-full" value="{{old('database', $questionnaire->database ?? null)}}" />
                 <x-jet-input-error for="database" class="mt-2" />
             </div>
             <div class="">
-                <x-jet-label for="username" value="{{ __('Username') }}" />
+                <x-jet-label for="username" value="{{ __('Username') }} *" />
                 <x-jet-input id="username" name="username" type="text" class="mt-1 block w-full" value="{{old('username', $questionnaire->username ?? null)}}" />
                 <x-jet-input-error for="username" class="mt-2" />
             </div>
             <div class="">
-                <x-jet-label for="password" value="{{ __('Password') }}" />
+                <x-jet-label for="password" value="{{ __('Password') }} *" />
                 <x-jet-input id="password" name="password" type="password" class="mt-1 block w-full" value="{{old('password', $questionnaire->password ?? null)}}" />
                 <x-jet-input-error for="password" class="mt-2" />
             </div>

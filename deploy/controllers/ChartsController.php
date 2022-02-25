@@ -41,14 +41,13 @@ class ChartsController extends Controller
             return redirect('faq');
         }
 
-        //$indicators = config("chimera.pages.{$page}.indicators");
-        $page = Page::where('slug', $pageSlug)->first();
+        $page = Page::with('indicators')->where('slug', $pageSlug)->first();
         $indicators = $page?->indicators?->all();
         if ($pageSlug === 'home') {
             $view = 'home';
             $preview = null;
             $indicators = collect($indicators)->mapToGroups(function($i, $key) {
-                return [$i['connection'] => array_merge(['indicator' => $key], $i)];
+                return [$i['questionnaire'] => array_merge(['indicator' => $key], $i)];
             });
         } else {
             $view = 'multi';
@@ -58,7 +57,7 @@ class ChartsController extends Controller
         return view("charts.$view")->with([
             'page' => $pageSlug,
             'indicators' => $indicators,
-            'connection' => $page?->connection, //config("chimera.pages.{$page}.connection"),
+            //6'questionnaire' => $page?->questionnaire, //config("chimera.pages.{$page}.connection"),
             'preview' => $preview
         ]);
     }

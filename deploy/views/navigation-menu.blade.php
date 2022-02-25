@@ -15,11 +15,10 @@
                     <x-jet-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
                         {{__('Home')}}
                     </x-jet-nav-link>
-                {{--@foreach((config('chimera.pages') ?? []) as $route => $page)--}}
                 @foreach($pages as $route => $page)
-                    @can($page['slug'])
+                    @can($page->slug)
                         <x-jet-nav-link href="{{ route($route) }}" :active="request()->is($route, $route . '/*')">
-                            {{$page['title']}}
+                            {{$page->title}}
                         </x-jet-nav-link>
                     @endcan
                 @endforeach
@@ -61,7 +60,7 @@
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">Indicators</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">Usage Stats</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link href="{{route('manage.faq.index')}}">Manage FAQs</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('manage.faq.index')}}">FAQs</x-jet-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-jet-dropdown>
@@ -194,10 +193,10 @@
             <x-jet-responsive-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
                 {{ __('Home') }}
             </x-jet-responsive-nav-link>
-            @foreach((config('chimera.pages') ?? []) as $route => $page)
-                @can($page['permission_name'])
+            @foreach($pages as $route => $page)
+                @can($page->slug)
                     <x-jet-responsive-nav-link href="{{ route($route) }}" :active="request()->is($route, $route . '/*')">
-                        {{$page['title']}}
+                        {{$page->title}}
                     </x-jet-responsive-nav-link>
                 @endcan
             @endforeach
@@ -225,7 +224,7 @@
                     {{ __('Usage Stats') }}
                 </x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('manage.faq.index') }}" :active="request()->routeIs('manage.faq.*')">
-                    {{ __('Manage FAQs') }}
+                    {{ __('FAQs') }}
                 </x-jet-responsive-nav-link>
             @endcan
         </div>

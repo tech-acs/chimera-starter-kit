@@ -3,11 +3,8 @@
 namespace App\Http\Livewire;
 
 use App\Services\Area;
-use App\Services\AreaListFactory;
-use App\Services\Caching;
 use App\Services\Traits\ChecksumSafetyTrait;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class AreaFilter extends Component
@@ -24,7 +21,7 @@ class AreaFilter extends Component
         $areaRepository = new Area($this->connection);
         $levels = $areaRepository->levels();
         $levels->pop(); // We do not have a select for the last level (EA). So, drop it!
-        $sessionFilter = session()->get($this->connection, []);
+        $sessionFilter = session()->get("area-filter{$this->connection}", []);
         $this->areas = collect([]);
         $parentLevel = null;
         foreach ($levels as $levelName => $level) {
@@ -63,20 +60,15 @@ class AreaFilter extends Component
         $selectionNames = $selections->mapWithKeys(fn ($code, $type) => [$type.'Name' => $this->areas[$type][$code]])->all();
         $selectionCodes = $selections->map(fn ($code) => $this->removeChecksumSafety($code))->all();
         $filter = [...$selectionNames, ...$selectionCodes];
-        session()->put($this->connection, $filter);
+        session()->put("area-filter{$this->connection}", $filter);
         $this->emit('updateChart', $filter);
     }
 
     public function clear()
     {
-        session()->forget($this->connection);
+        session()->forget("area-filter{$this->connection}");
         $this->mount();
         $this->emit('updateChart', []);
-    }
-
-    public function render()
-    {
-        return view('livewire.area-filter');
     }
 
     private function nextKey($currentKey)
@@ -93,15 +85,8 @@ class AreaFilter extends Component
         return array_slice($keys->all(), $currentKeyIndex + 1);
     }
 
-    public function getAreaListWithCaching($connection, $areaType, $parentArea)
+    public function render()
     {
-        if (config('chimera.cache.enabled')) {
-            $key = Caching::makeAreaListCacheKey($connection, $areaType, $parentArea);
-            return Cache::tags([$connection, 'area-list'])
-                ->rememberForever($key, function () use ($connection, $areaType, $parentArea) {
-                    return AreaListFactory::make($this->connection)->getAreaList($this->connection, $areaType, $this->removeChecksumSafety($parentArea));
-                });
-        }
-        return AreaListFactory::make($this->connection)->getAreaList($this->connection, $areaType, $this->removeChecksumSafety($parentArea));
+        return view('livewire.area-filter');
     }
 }

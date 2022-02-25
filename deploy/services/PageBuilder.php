@@ -9,10 +9,11 @@ class PageBuilder
     public static function pages()
     {
         try {
-            $pages = Page::select('title', 'slug', 'description', 'connection')
+            $pages = Page::select('title', 'slug', 'description')
+                ->published()
                 ->get()
                 ->keyBy('slug')
-                ->map(fn($model) => $model->toArray())
+                ->map(fn($model) => $model)
                 ->all();
         } catch (\Exception $exception) {
             $pages = [];

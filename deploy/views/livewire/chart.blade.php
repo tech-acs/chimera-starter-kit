@@ -1,6 +1,6 @@
 @once
     @push('scripts')
-        <script src="{{ asset('js/plotly-basic.js', env('SECURE', false))}}"></script>
+        <script src="{{ asset('js/plotly-basic.js', config('chimera.secure'))}}"></script>
     @endpush
 @endonce
 

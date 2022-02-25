@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Services\DataSource;
 use App\Services\IndicatorFactory;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -12,7 +11,7 @@ class Exporter extends Component
 {
     protected $listeners = ['updateChart' => 'update'];
 
-    public $page;
+    //public $page;
     public $chart;
     public $filter = [];
 
@@ -23,9 +22,9 @@ class Exporter extends Component
 
     public function export()
     {
-        $connection = config("chimera.pages.{$this->page}.connection");
+        //$connection = config("chimera.pages.{$this->page}.connection");
         //$data = DataSource::getCollection($this->chart)($connection, $this->filter);
-        $indicatorInstance = IndicatorFactory::make($connection, $this->chart);
+        $indicatorInstance = IndicatorFactory::make($this->chart);
         $data = $indicatorInstance->getData($this->filter);
 
         $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->chart) . '.csv';

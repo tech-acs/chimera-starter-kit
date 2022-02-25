@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Manage;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\PageRequest;
-use App\Models\Questionnaire;
 use App\Models\Page;
 use Illuminate\Http\Request;
 
@@ -11,31 +11,29 @@ class PageController extends Controller
 {
     public function index()
     {
-        $records = Page::withCount('indicators')->orderBy('title')->get();
+        $records = Page::withCount('indicators')->get();
         return view('page.index', compact('records'));
     }
 
     public function create()
     {
-        $questionnaires = Questionnaire::pluck('title', 'id');
-        return view('page.create', compact('questionnaires'));
+        return view('page.create');
     }
 
     public function store(PageRequest $request)
     {
-        Page::create($request->only(['title',  'description', 'questionnaire']));
+        Page::create($request->only(['title',  'description', 'published']));
         return redirect()->route('page.index')->withMessage('Page created');
     }
 
     public function edit(Page $page)
     {
-        $questionnaires = Questionnaire::pluck('name', 'id');
-        return view('page.edit', compact('page', 'questionnaires'));
+        return view('page.edit', compact('page'));
     }
 
     public function update(Page $page, Request $request)
     {
-        $page->update($request->only(['title', 'description', 'questionnaire']));
+        $page->update($request->only(['title', 'description', 'published']));
         return redirect()->route('page.index')->withMessage('Page updated');
     }
 

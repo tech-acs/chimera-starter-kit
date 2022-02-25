@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Spatie\Translatable\HasTranslations;
 
 class Questionnaire extends Model
 {
     use HasFactory;
+    use HasTranslations;
+
     protected $guarded = ['id'];
     protected $dates = ['start_date', 'end_date'];
+    public $translatable = ['title'];
 
     public function scopeActive($query)
     {
@@ -30,7 +34,7 @@ class Questionnaire extends Model
     private function hasNecessaryTables()
     {
         try {
-            $tables = array_map(function ($table) { return reset($table); }, DB::connection($this->name)->select('SHOW TABLES'));
+            $tables = array_map('reset', DB::connection($this->name)->select('SHOW TABLES'));
             if (count(array_intersect($tables, ['cases', 'cspro_jobs', 'level-1'])) === 3) {
                 return ['passes' => true, 'message' => ''];
             } else {
@@ -45,7 +49,7 @@ class Questionnaire extends Model
     {
         $result = collect([]);
         $result->add($this->testCanConnect());
-        $result->add($this->hasNecessaryTables());
+        //$result->add($this->hasNecessaryTables());
         return $result;
     }
 }

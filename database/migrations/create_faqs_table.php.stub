@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('faqs', function (Blueprint $table) {
             $table->id();
-            $table->text('question');
-            $table->longText('answer');
+            $table->json('question');
+            $table->json('answer');
             $table->integer('rank')->nullable();
             $table->timestamps();
         });

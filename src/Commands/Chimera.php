@@ -192,8 +192,11 @@ EOF;
         $this->callSilent('vendor:publish', ['--tag' => 'chimera-migrations', '--force' => true]);
         $this->comment('Published chimera config and migrations');
 
-        $this->requireComposerPackages(['spatie/laravel-permission:^5.5', 'spatie/simple-excel:^1.15']);
-        //$this->call('vendor:publish', ['--provider' => 'Spatie\Permission\PermissionServiceProvider', '--force' => true]);
+        $this->requireComposerPackages([
+            'spatie/laravel-permission:^5.5', 
+            'spatie/simple-excel:^1.15',
+            'spatie/laravel-translatable:^5.2'
+        ]);
 
         (new Process(['php', 'artisan', 'vendor:publish', '--provider=Spatie\Permission\PermissionServiceProvider', '--force'], base_path()))
                 ->setTimeout(null)

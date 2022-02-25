@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Manage;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\IndicatorRequest;
-use App\Models\Questionnaire;
 use App\Models\Indicator;
 use App\Models\Page;
 
@@ -17,14 +17,13 @@ class IndicatorController extends Controller
 
     public function edit(Indicator $indicator)
     {
-        $connections = Questionnaire::pluck('title', 'id');
         $pages = Page::pluck('title', 'id');
-        return view('indicator.edit', compact('indicator', 'connections', 'pages'));
+        return view('indicator.edit', compact('indicator', 'pages'));
     }
 
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
-        $indicator->update($request->only(['title', 'description', 'connection', 'published', 'page_id']));
+        $indicator->update($request->only(['title', 'description', 'published', 'page_id']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

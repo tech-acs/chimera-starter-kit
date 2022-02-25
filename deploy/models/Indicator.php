@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Translatable\HasTranslations;
 
 class Indicator extends Model
 {
     use HasFactory;
+    use HasTranslations;
 
     protected $guarded = ['id'];
+    public $translatable = ['title', 'description', 'help'];
 
     public function page()
     {
@@ -28,7 +31,7 @@ class Indicator extends Model
     protected function component(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->attributes['connection'] . '.' . str()->kebab($this->name),
+            get: fn () => $this->slug,
         );
     }
 
@@ -36,7 +39,16 @@ class Indicator extends Model
     {
         static::creating(function ($page) {
             $className = Str::of($page->name)->afterLast('/')->kebab();
-            $page->slug = Str::of($page->name)->beforeLast('/')->append('.', $className);
+            if (Str::contains($page->name, '/')) {
+                $path = Str::of($page->name)
+                    ->beforeLast('/')
+                    ->explode('/')
+                    ->map(fn ($x) => Str::of($x)->kebab())
+                    ->join('.');
+                $page->slug = $path . '.' . $className;
+            } else {
+                $page->slug = (string)$className;
+            }
         });
     }
 }

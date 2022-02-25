@@ -25,8 +25,8 @@ class IndicatorRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => ['required', Rule::unique('indicators')->ignore($this->indicator)],
-            'connection' => 'required'
+            'title' => 'required',
+            'description' => 'required',
         ];
     }
 }

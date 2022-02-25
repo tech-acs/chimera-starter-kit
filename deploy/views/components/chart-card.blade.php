@@ -1,11 +1,12 @@
+@props(['indicator' => null])
 <div class="bg-white shadow overflow-hidden sm:rounded-lg" x-data="{ show_help: false }">
     <div class="flex justify-between px-4 py-5 sm:px-6">
         <div class="w-full overflow-hidden">
             <h3 class="text-lg leading-6 font-medium text-gray-900">
-                {{$title}}
+                {{ $indicator?->title }}
             </h3>
             <p class="mt-1 max-w-2xl truncate text-sm text-gray-500">
-                {{$description}}
+                {{$indicator?->description}}
             </p>
         </div>
         <div class="flex">
@@ -23,7 +24,7 @@
                 </div>
             @endif
 
-            <livewire:exporter :page="$page" :chart="$chart" />
+            <livewire:exporter :chart="$indicator->component" />
 
             <div class="self-center ml-2">
                 <a @click="show_help = !show_help" title="Help" type="button" class="cursor-pointer inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-indigo-400 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

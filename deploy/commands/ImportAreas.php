@@ -11,7 +11,7 @@ use Spatie\SimpleExcel\SimpleExcelReader;
 
 class ImportAreas extends Command
 {
-    protected $signature = 'import:areas 
+    protected $signature = 'chimera:import-areas 
                             {file : CSV or XSLX file that contains the names and codes of the areas} 
                             {--truncate : Whether the table should be truncated before importing the areas} 
                             {--zero-pad-codes : Whether to zero pad codes, padding length will be requested for each code column}

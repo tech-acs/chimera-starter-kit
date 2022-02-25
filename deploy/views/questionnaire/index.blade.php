@@ -69,7 +69,7 @@
                         @forelse($records as $record)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 space-y-1">
-                                    <div class="text-sm text-gray-500 font-medium">Dictionary name: <span class="text-gray-900">{{$record->name}}</span></div>
+                                    <div class="text-sm text-gray-900 font-medium">{{$record->name}} ({{$record->title}})</div>
                                     @if($record->start_date && $record->end_date)
                                         <div class="text-sm text-blue-700">{{$record->start_date->toFormattedDateString()}} - {{$record->end_date->toFormattedDateString()}}</div>
                                     @endif
@@ -96,7 +96,7 @@
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if($record->connection_active)
-                                        <a href="{{route('connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Test</a>
+                                        <a href="{{route('questionnaire.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Test</a>
                                         <span class="text-gray-400 px-1">|</span>
                                     @endif
                                     <a href="{{route('questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>

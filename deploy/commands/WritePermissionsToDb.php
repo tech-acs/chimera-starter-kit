@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 
 class WritePermissionsToDb extends Command
 {
-    protected $signature = 'permissions-to-db';
+    protected $signature = 'chimera:permissions-to-db';
 
     protected $description = 'Write all the permissions (charts) configured in the chimera config file to the DB (permissions table)';
 

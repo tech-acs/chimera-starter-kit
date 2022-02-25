@@ -5,11 +5,6 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Filter the data based on geographic area
                 </h3>
-                <div class="hidden">
-                    <a href="{{route('sql.create')}}" title="Run SQL" class="cursor-pointer bg-indigo-50 block px-1 rounded-md hover:bg-indigo-200">
-                        <svg class="w-6 h-6 text-indigo-700" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </a>
-                </div>
             </div>
 
             @if (! $areas->isEmpty())
@@ -38,7 +33,7 @@
                 </div>
             </div>
             @else
-                <div class="text-red-700 pt-2">No areas found for this connection. Please use the <b>import:area</b> command to import your area list.</div>
+                <div class="text-red-700 pt-2">No areas found. Please use the <b>import:area</b> command to import your area list.</div>
             @endif
         </div>
     </div>

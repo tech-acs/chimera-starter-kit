@@ -7,9 +7,9 @@ use Illuminate\Support\Str;
 
 class ShpToDb extends Command
 {
-    protected $signature = 'shp-to-db';
+    protected $signature = 'chimera:shp-to-db';
 
-    protected $description = 'Load all shapefiles in shapefiles into the database (maps table)';
+    protected $description = 'Load all shapefiles into the database (maps table)';
 
     public function __construct()
     {

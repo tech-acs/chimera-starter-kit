@@ -1,0 +1,49 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Http\Livewire\Chart;
+use App\Services\Interfaces\BarChart;
+
+class {{ class }} extends Chart implements BarChart
+{
+    protected $listeners = ['updateChart' => 'update'];
+
+    public function getCollection(array $filter)
+    {
+        // TODO: Implement getCollection() method.
+        /*return collect(range('J', 'Z'))
+            ->zip(range(10, 180, 10))
+            ->map(fn ($pair) => (object)['eas' => $pair[0], 'households' => $pair[1]]);*/
+    }
+
+    protected function setData(array $filter = [])
+    {
+        // TODO: Implement setData() method.
+        /*$result = $this->getData($filter);
+        $this->setNoData($result);
+        $trace = array_merge(
+            $this::ValueTraceTemplate,
+            [
+                'x' => $result->pluck('eas')->all(),
+                'y' => $result->pluck('households')->all(),
+                'text' => $result->pluck('households')->all(),
+                'name' => 'Households',
+            ]
+        );
+        $this->data = json_encode([$trace]);*/
+    }
+
+    protected function setLayout(array $filter = [])
+    {
+        parent::setLayout($filter);
+        /*if ($this->noData) {
+            $layout = $this->getEmptyLayoutArray();
+        } else {
+            $layout = $this->getLayoutArray();
+            $layout['xaxis']['title']['text'] = 'EAs';
+            $layout['yaxis']['title']['text'] = "Households";
+        }
+        $this->layout = json_encode($layout);*/
+    }
+}
