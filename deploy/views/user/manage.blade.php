@@ -2,11 +2,11 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            User management
+            {{ __('User management') }}
         </h3>
         <p class="mt-2 max-w-4xl text-sm text-gray-500">
-            You can use the features on this page to manage your users. Users are assigned roles and
-            the roles dictate which charts and features of the dashboard they will have access to.
+            {{ __('You can use the features on this page to manage your users. Users are assigned roles and
+            the roles dictate which charts and features of the dashboard they will have access to.') }}
         </p>
     </x-slot>
 
@@ -35,7 +35,7 @@
                             <dl class="grid grid-cols-1 gap-x-4 gap-y-8">
                                 <div class="sm:col-span-1">
                                     <dt class="text-sm font-medium text-gray-500">
-                                        Title
+                                        {{ __('Title') }}
                                     </dt>
                                     <dd class="mt-1 text-sm text-gray-900">
                                         {{$user->title}}
@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="sm:col-span-1">
                                     <dt class="text-sm font-medium text-gray-500">
-                                        Organization
+                                        {{ __('Organization') }}
                                     </dt>
                                     <dd class="mt-1 text-sm text-gray-900">
                                         {{$user->organization}}
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="sm:col-span-1">
                                     <dt class="text-sm font-medium text-gray-500">
-                                        Registered on
+                                        {{ __('Registered on') }}
                                     </dt>
                                     <dd class="mt-1 text-sm text-gray-900">
                                         {{$user->created_at->toDayDateTimeString()}}
@@ -64,7 +64,7 @@
                         <fieldset>
                             <div>
                                 <legend class="text-base font-medium text-gray-900">Role</legend>
-                                <p class="text-sm text-gray-500">You can assign one of the following configured roles to the user</p>
+                                <p class="text-sm text-gray-500">{{ __('You can assign one of the following configured roles to the user') }}</p>
                             </div>
                             <div class="mt-4 space-y-4">
                                 <div class="bg-white rounded-md -space-y-px">
@@ -84,19 +84,19 @@
                                         </div>
                                     </label>
                                 @empty
-                                    There are no roles that have been setup
+                                    {{ __('There are no roles that have been setup') }}
                                 @endforelse
                                 </div>
                             </div>
                             <div class="mt-6">
                                 <div class="mb-2">
-                                    <span class="text-base font-medium text-gray-900">Area restriction (listing)</span>
+                                    <span class="text-base font-medium text-gray-900">{{ __('Area restriction (listing)') }}</span>
                                 </div>
                                 <livewire:area-restriction-manager connection="listing" :user="$user" />
                             </div>
                             <div class="mt-6">
                                 <div class="mb-2">
-                                    <span class="text-base font-medium text-gray-900">Area restriction (enumeration)</span>
+                                    <span class="text-base font-medium text-gray-900">{{ __('Area restriction (enumeration)') }}</span>
                                 </div>
                                 <livewire:area-restriction-manager connection="enumeration" :user="$user" />
                             </div>

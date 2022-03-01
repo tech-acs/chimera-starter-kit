@@ -7,7 +7,7 @@
                 <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-start">
-                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500"> Questionnaire Details </span>
+                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Questionnaire Details ') }}</span>
             </div>
         </div>
 
@@ -39,8 +39,8 @@
                 <div class="">
                     <x-jet-label for="show_on_home_page" value="{{ __('Show on home page') }}" />
                     <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>Yes</option>
-                        <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>No</option>
+                        <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
+                        <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
                     </select>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                 <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-start">
-                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500"> Breakout Database </span>
+                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500"> {{ __('Breakout Database') }} </span>
             </div>
         </div>
 
@@ -86,8 +86,8 @@
             <div class="">
                 <x-jet-label for="active" value="{{ __('Active') }}" />
                 <select name="connection_active" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="1" @selected(old('connection_active', $questionnaire->connection_active ?? false) == true)>Yes</option>
-                    <option value="0" @selected(old('connection_active', $questionnaire->connection_active ?? false) == false)>No</option>
+                    <option value="1" @selected(old('connection_active', $questionnaire->connection_active ?? false) == true)>{{ __('Yes') }}</option>
+                    <option value="0" @selected(old('connection_active', $questionnaire->connection_active ?? false) == false)>{{ __('No') }}</option>
                 </select>
             </div>
         </div>

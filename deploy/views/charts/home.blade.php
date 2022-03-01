@@ -5,7 +5,7 @@
         @forelse($indicators as $connection => $subIndicators)
             @livewire('home.summary', ['connection' => $connection, 'subIndicators' => $subIndicators->all()])
         @empty
-            There are no indicators to display
+            {{ __('There are no indicators to display') }}
         @endforelse
 
     </div>

@@ -1,7 +1,7 @@
 <div class="shadow sm:rounded-md sm:overflow-hidden">
     <div class="px-4 py-2 sm:px-6 bg-gray-50 border-b border-gray-200">
         <span class="text-xs text-gray-500 uppercase">
-            Create a new FAQ
+            {{ __('Create a new FAQ') }}
         </span>
     </div>
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">

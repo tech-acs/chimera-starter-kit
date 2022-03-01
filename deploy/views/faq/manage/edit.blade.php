@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Frequently Asked Questions (FAQs)
+        {{ __('Frequently Asked Questions') }} ({{ __('FAQs') }})
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            You can manage (add new, edit, re-order and remove) the questions that appear on the FAQs page from here.
+            {{ __('You can manage (add new, edit, re-order and remove) the questions that appear on the FAQs page from here.') }}
         </p>
     </x-slot>
 

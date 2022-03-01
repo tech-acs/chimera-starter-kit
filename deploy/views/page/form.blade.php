@@ -28,7 +28,7 @@
                         <span aria-hidden="true" :class="enabled ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
                     </button>
                     <span class="ml-3">
-                        <span class="text-sm text-gray-900">Published</span>
+                        <span class="text-sm text-gray-900">{{ __('Published') }}</span>
                     </span>
                 </div>
 

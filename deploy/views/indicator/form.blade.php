@@ -1,7 +1,7 @@
 <div class="shadow sm:rounded-md sm:overflow-hidden">
     {{--<div class="px-4 py-2 sm:px-6 bg-gray-50 border-b border-gray-200">
         <span class="text-xs text-gray-500 uppercase">
-            Create a new database connection
+            {{ __('Create a new database connection') }}
         </span>
     </div>--}}
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
@@ -39,7 +39,7 @@
                 <x-jet-label for="page" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($indicator->published ?? false) }">
                     <span class="" id="annual-billing-label">
-                        <span class="text-sm text-gray-500">Draft</span>
+                        <span class="text-sm text-gray-500">{{ __('Draft') }}</span>
                     </span>
                     <input type="hidden" name="published" :value="enabled">
                     <button
@@ -54,7 +54,7 @@
                         <span aria-hidden="true" :class="enabled ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
                     </button>
                     <span class="ml-3" id="annual-billing-label">
-                        <span class="text-sm text-gray-900">Published</span>
+                        <span class="text-sm text-gray-900">{{ __('Published') }}</span>
                     </span>
                 </div>
 

@@ -1,8 +1,8 @@
 @if($permissionsUpdateRequired)
     <x-simple-card class="col-span-3">
-        <div class="text-xl mb-2">The permissions list is out-of-date and need to be updated!</div>
-        <p class="leading-10">This is probably because a new indicator was added and the "permissions-to-db" command hasn't subsequently been run.</p>
-        <p class="leading-10">Please run the command and then refresh this page.</p>
+        <div class="text-xl mb-2">{{ __('The permissions list is out-of-date and need to be updated!') }}</div>
+        <p class="leading-10">{{ __('This is probably because a new indicator was added and the "permissions-to-db" command hasn't subsequently been run.') }}</p>
+        <p class="leading-10">{{ __('Please run the command and then refresh this page.') }}</p>
         <div class="pt-2 "><code class="border border-gray-200 text-sm py-2 px-1 font-semibold">php artisan permissions-to-db</code></div>
     </x-simple-card>
 @else

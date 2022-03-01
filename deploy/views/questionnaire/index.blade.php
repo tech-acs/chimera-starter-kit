@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Questionnaires with their breakout databases
+            {{ __('Questionnaires with their breakout databases') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            All your questionnaires and their breakout database connections should be configured here
+            {{ __('All your questionnaires and their breakout database connections should be configured here') }}
         </p>
     </x-slot>
 
@@ -57,10 +57,10 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Questionnaire
+                                    {{ __('Questionnaire') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Breakout Database
+                                    {{ __('Breakout Database') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
@@ -74,9 +74,9 @@
                                         <div class="text-sm text-blue-700">{{$record->start_date->toFormattedDateString()}} - {{$record->end_date->toFormattedDateString()}}</div>
                                     @endif
                                     <div class="text-sm text-gray-500">
-                                        Show on home page:
+                                        {{ __('Show on home page') }}:
                                         <span class="font-semibold">
-                                            @if($record->show_on_home_page) Yes @else No @endif
+                                            @if($record->show_on_home_page) {{ __('Yes') }} @else {{ __('No') }} @endif
                                         </span>
                                     </div>
                                 </td>
@@ -90,28 +90,28 @@
                                             <svg class="w-4 h-4 inline text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M3.707 2.293a1 1 0 00-1.414 1.414l6.921 6.922c.05.062.105.118.168.167l6.91 6.911a1 1 0 001.415-1.414l-.675-.675a9.001 9.001 0 00-.668-11.982A1 1 0 1014.95 5.05a7.002 7.002 0 01.657 9.143l-1.435-1.435a5.002 5.002 0 00-.636-6.294A1 1 0 0012.12 7.88c.924.923 1.12 2.3.587 3.415l-1.992-1.992a.922.922 0 00-.018-.018l-6.99-6.991zM3.238 8.187a1 1 0 00-1.933-.516c-.8 3-.025 6.336 2.331 8.693a1 1 0 001.414-1.415 6.997 6.997 0 01-1.812-6.762zM7.4 11.5a1 1 0 10-1.73 1c.214.371.48.72.795 1.035a1 1 0 001.414-1.414c-.191-.191-.35-.4-.478-.622z"></path></svg>
                                         @endif
                                     </div>
-                                    <div class="text-sm text-gray-500">Database: {{$record->database}}</div>
-                                    <div class="text-sm text-gray-500">Username: {{$record->username}}</div>
+                                    <div class="text-sm text-gray-500">{{ __('Database') }}: {{$record->database}}</div>
+                                    <div class="text-sm text-gray-500">{{ __('Username') }}: {{$record->username}}</div>
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if($record->connection_active)
-                                        <a href="{{route('questionnaire.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Test</a>
+                                        <a href="{{route('questionnaire.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Test') }}</a>
                                         <span class="text-gray-400 px-1">|</span>
                                     @endif
-                                    <a href="{{route('questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <a href="{{route('questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                     <span class="text-gray-400 px-1">|</span>
                                     <form action="{{route('questionnaire.destroy', $record->id)}}" method="post" class="inline">
                                         @method('delete')
                                         @csrf
-                                        <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">Delete</a>
+                                        <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
-                                    There are no records to display
+                                    {{ __('There are no records to display') }}
                                 </td>
                             </tr>
                         @endforelse
