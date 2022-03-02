@@ -211,7 +211,7 @@ EOF;
         $this->copyFilesInDir(__DIR__ . '/../../deploy/commands', app_path('Console/Commands'));
         $this->comment('Copied commands');
 
-        $this->copyDirectory(__DIR__ . '/../../deploy/controllers', app_path('Http/Controllers'));
+        File::copyDirectory(__DIR__ . '/../../deploy/controllers', app_path('Http/Controllers'));
         $this->comment('Copied controllers');
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/livewire', app_path('Http/Livewire'));
