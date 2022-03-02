@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Indicators
+            {{ __('Indicators') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            Manage indicators and their grouping into pages, here
+            {{ __('Manage indicators and their grouping into pages, here') }}
         </p>
     </x-slot>
 
@@ -59,19 +59,19 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
+                                    {{ __('Name') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Questionnaire
+                                    {{ __('Questionnaire') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Type
+                                    {{ __('Type') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Page
+                                    {{ __('Page') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Published
+                                    {{ __('Published') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
@@ -95,13 +95,13 @@
                                     <x-yes-no value="{{$record->published}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{route('indicator.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <a href="{{route('indicator.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
-                                    There are no records to display
+                                    {{ __('There are no records to display') }}
                                 </td>
                             </tr>
                         @endforelse

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Unauthorized</title>
+    <title>{{ __('Unauthorized') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -30,15 +30,15 @@
                     403
                 </div>
                 <div class="ml-4 text-lg text-gray-500 uppercase tracking-wider">
-                    Unauthorized
+                    {{ __('Unauthorized') }}
                 </div>
             </div>
             <div class="ml-4 mt-6 text-lg text-gray-500">
                 <div class="font-semibold">
-                    The link is invalid
+                    {{ __('The link is invalid') }}
                 </div>
                 <div>
-                    It might have expired, if so, please get a new one from the administrator.
+                    {{ __('It might have expired, if so, please get a new one from the administrator') }}.
                 </div>
             </div>
         </div>

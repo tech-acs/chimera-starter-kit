@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Frequently Asked Questions (FAQs)
+            {{ __('Frequently Asked Questions (FAQs)') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            You can manage (add new, edit, re-order and remove) the questions that appear on the FAQs page from here.
+            {{ __('You can manage (add new, edit, re-order and remove) the questions that appear on the FAQs page from here.') }}
         </p>
     </x-slot>
 
@@ -56,10 +56,10 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Rank
+                                    {{ __('Rank') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Question & Answer
+                                    {{ __('Question & Answer') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
 

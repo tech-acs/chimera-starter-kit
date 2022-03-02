@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Pages
+            {{ __('Pages') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            Creating a new page of indicators
+            {{ __('Creating a new page of indicators') }}
         </p>
     </x-slot>
 

@@ -25,15 +25,15 @@
 
                 <div class="flex items-baseline space-x-4">
                     <x-jet-button wire:click="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
-                        Apply
+                        {{ __('Apply') }}
                     </x-jet-button>
                     <x-jet-danger-button wire:click="clear" wire:loading.attr="disabled" class="">
-                        Clear
+                        {{ __('Clear') }}
                     </x-jet-danger-button>
                 </div>
             </div>
             @else
-                <div class="text-red-700 pt-2">No areas found. Please use the <b>import:area</b> command to import your area list.</div>
+                <div class="text-red-700 pt-2">{{ __('No areas found. Please use the ') }} <b>import:area</b>{{ __('command to import your area list.') }}</div>
             @endif
         </div>
     </div>

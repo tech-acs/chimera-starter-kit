@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Census Dashboard</title>
+    <title>{{ __('Census Dashboard') }}</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -27,15 +27,15 @@
                 <div class="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
                     @auth
                         <a href="{{ url('/home') }}" class="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
-                            Home
+                            {{ __('Home') }}
                         </a>
                     @else
                         <a href="{{route('login')}}" class="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
-                            Sign in
+                            {{ __('Sign in') }}
                         </a>
                         {{--@if (Route::has('register'))
                             <a href="{{ route('register') }}" class="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                                Register
+                                {{ __('Register') }}
                             </a>
                         @endif--}}
                     @endauth
@@ -48,23 +48,23 @@
         <div class="mx-auto max-w-7xl w-full pt-16 pb-20 text-center lg:py-48 lg:text-left">
             <div class="px-4 lg:w-1/2 sm:px-8 xl:pr-16">
                 <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl lg:text-5xl">
-                    <span class="block xl:inline">The power to manage</span>
-                    <span class="block text-indigo-600 xl:inline">your digital census</span>
+                    <span class="block xl:inline">{{ __('The power to manage') }}</span>
+                    <span class="block text-indigo-600 xl:inline">{{ __('your digital census') }}</span>
                 </h1>
                 <p class="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl">
-                    A census dashboard is an information management tool that visually tracks, analyzes and displays
+                {{ __('A census dashboard is an information management tool that visually tracks, analyzes and displays
                     key performance indicators (KPI), metrics and key data points to monitor the progress a
-                    digital census.
+                    digital census.') }}
                 </p>
                 <div class="mt-10 sm:flex sm:justify-center lg:justify-start">
                     <div class="rounded-md shadow">
                         <a href="{{ url('/home') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-                            Get started
+                            {{ __('Get started') }}
                         </a>
                     </div>
                     <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
                         <a href="mailto:ecastats@un.org?subject=Mail from ECA (Ghana) Census Dashboard" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
-                            Contact ECA
+                            {{ __('Contact :agency',['agency'=>'ECA']) }}
                         </a>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
             </div>
             <div class="mt-8 md:mt-0 md:order-1">
                 <p class="text-center text-base text-gray-400">
-                    Created by <a href="https://www.uneca.org/data-and-statistics" target="_blank" class="text-blue-400">ECA</a> | ecastats@un.org
+                    {{ __('Created by') }} <a href="https://www.uneca.org/data-and-statistics" target="_blank" class="text-blue-400">ECA</a> | ecastats@un.org
                 </p>
             </div>
         </div>

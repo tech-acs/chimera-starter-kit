@@ -1,6 +1,6 @@
 <div>
     <div class="flex justify-end py-2">
-        <x-jet-button wire:click="$toggle('showModal')" wire:loading.attr="disabled">Invite New User</x-jet-button>
+        <x-jet-button wire:click="$toggle('showModal')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-jet-button>
     </div>
     <div class="py-2 align-middle inline-block min-w-full">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -8,13 +8,13 @@
                 <thead class="bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
+                        {{ __('Email') }}
                     </th>
                     <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
+                        {{ __('Status') }}
                     </th>
                     <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Role to assign
+                        {{ __('Role to assign') }}
                     </th>
                     <th scope="col" class="relative px-6 py-3"></th>
                 </tr>
@@ -39,19 +39,19 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-400">
                             @if($record->is_expired)
-                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="renew({{$record->id}})">Renew</a>
+                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="renew({{$record->id}})">{{ __('Renew') }}</a>
                             @else
-                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="showLink({{$record->id}})">Show link</a>
+                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="showLink({{$record->id}})">{{ __('Show link') }}</a>
                             @endif
                              |
-                            <a class="text-red-600 hover:text-red-800 cursor-pointer" wire:click.prevent="delete({{$record->id}})">Delete</a>
+                            <a class="text-red-600 hover:text-red-800 cursor-pointer" wire:click.prevent="delete({{$record->id}})">{{ __('Delete') }}</a>
                         </td>
                     </tr>
                 @empty
                     <tr>
                         <td colspan="4" class="px-6 py-4 whitespace-nowrap">
                             <div class="flex justify-center text-sm text-gray-500">
-                                No records to display
+                                {{ __('No records to display') }}
                             </div>
                         </td>
                     </tr>
@@ -63,12 +63,12 @@
 
     <x-jet-dialog-modal wire:model="showModal">
         <x-slot name="title">
-            Invite new user
+            {{ __('Invite new user') }}
         </x-slot>
 
         <x-slot name="content">
-            Using the email address of the user you want to invite, a registration link will be generated which you can then send to the prospective user.
-            The link will expire in 24 hours.
+            {{ __('Using the email address of the user you want to invite, a registration link will be generated which you can then send to the prospective user.') }}
+            {{ __('The link will expire in 24 hours.') }}
             <div class="mt-6">
                 <x-jet-label for="email" value="{{ __('Email address') }}" />
                 <x-jet-input id="email" type="email" class="mt-1 block w-2/3" wire:model.defer="email" />
@@ -77,7 +77,7 @@
             <div class="mt-6">
                 <x-jet-label for="role" value="{{ __('Role to assign') }}" />
                 <select wire:model="role" id="location" name="location" class="mt-1 block w-2/3 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="">Will assign later</option>
+                    <option value="">{{ __('Will assign later') }}</option>
                     @foreach($roles as $r)
                         <option value="{{$r->name}}">{{$r->name}}</option>
                     @endforeach
@@ -92,18 +92,18 @@
             </x-jet-action-message>
 
             <x-jet-secondary-button wire:click="$toggle('showModal')" wire:loading.attr="disabled">
-                Close
+                {{ __('Close') }}
             </x-jet-secondary-button>
 
             <x-jet-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
-                Invite
+                {{ __('Invite') }}
             </x-jet-button>
         </x-slot>
     </x-jet-dialog-modal>
 
     <x-jet-dialog-modal wire:model="showLink">
         <x-slot name="title">
-            User registration link
+            {{ __('User registration link') }}
         </x-slot>
 
         <x-slot name="content">
@@ -133,8 +133,8 @@
                 }
             </script>
             <div class="text-sm text-gray-500 flex-wrap">
-                Here is the user's unique registration link. They can use it to register before it expires.<br>
-                Please copy and send it to them.
+                {{ __('Here is the user\'s unique registration link. They can use it to register before it expires.') }}<br>
+                {{ __('Please copy and send it to them.') }}
             </div>
             <div class="flex items-center mt-4" x-data="{copied: false, initialized: false}">
                 <input type="text" id="invite_link" readonly class="w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md" value="{{$link}}">
@@ -144,7 +144,7 @@
             <svg width="16" height="6" viewBox="0 0 16 6" class="text-gray-900 absolute top-full left-1/2 -mt-px -ml-2">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M15 0H1V1.00366V1.00366V1.00371H1.01672C2.72058 1.0147 4.24225 2.74704 5.42685 4.72928C6.42941 6.40691 9.57154 6.4069 10.5741 4.72926C11.7587 2.74703 13.2803 1.0147 14.9841 1.00371H15V0Z" fill="currentColor"></path>
             </svg>
-            Copied!
+            {{ __('Copied!') }}
           </span>
         </span>
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" class="stroke-current transform group-hover:rotate-[-4deg] transition" :style="copied ? '--tw-rotate:-8deg;' : ''" style="">
@@ -164,7 +164,7 @@
 
         <x-slot name="footer">
             <x-jet-secondary-button wire:click="$toggle('showLink')" wire:loading.attr="disabled">
-                Ok
+                {{ __('Ok') }}
             </x-jet-secondary-button>
         </x-slot>
     </x-jet-dialog-modal>

@@ -2,11 +2,11 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Role management
+            {{ __('Role management') }}
         </h3>
         <p class="mt-2 max-w-4xl text-sm text-gray-500">
-            You can use the features on this page to manage your user roles. Users are assigned roles and
-            the roles dictate which charts and features of the dashboard they will have access to. A user that is assigned a role receives all of the privileges of that role.
+            {{ __('You can use the features on this page to manage your user roles. Users are assigned roles and') }}
+            {{ __('the roles dictate which charts and features of the dashboard they will have access to. A user that is assigned a role receives all of the privileges of that role.') }}
         </p>
     </x-slot>
 
@@ -16,7 +16,7 @@
             <div class="shadow sm:rounded-md sm:overflow-hidden">
                 <div class="px-4 py-2 sm:px-6 bg-gray-50 border-b border-gray-200">
                     <span class="text-xs text-gray-500 uppercase">
-                        Create new role
+                        {{ __('Create new role') }}
                     </span>
                 </div>
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
@@ -60,13 +60,13 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Role
+                                    {{ __('Role') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Permissions
+                                    {{ __('Permissions') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Users
+                                    {{ __('Users') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 </th>
@@ -88,12 +88,12 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if ($record->name !== 'Super Admin')
-                                    <a href="{{route('role.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <a href="{{route('role.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                     <span class="text-gray-400 px-1">|</span>
                                     <form action="{{route('role.destroy', $record->id)}}" method="post" class="inline">
                                         @method('delete')
                                         @csrf
-                                        <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">Delete</a>
+                                        <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                     </form>
                                     @endif
                                 </td>
@@ -101,7 +101,7 @@
                         @empty
                             <tr>
                                 <td colspan="3" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
-                                    There are no records to display
+                                    {{ __('There are no records to display') }}
                                 </td>
                             </tr>
                         @endforelse

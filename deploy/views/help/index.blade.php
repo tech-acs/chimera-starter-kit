@@ -2,10 +2,10 @@
 
     {{--<x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            User management
+            {{ __('User management') }}
         </h3>
-        <p class="mt-2 max-w-4xl text-sm text-gray-500">Users can sign-up by using the register link on the home page.
-            You can then assign users one of the roles you have setup which will then dictate which features they will have access to.</p>
+        <p class="mt-2 max-w-4xl text-sm text-gray-500">{{ __('Users can sign-up by using the register link on the home page.') }}
+            {{ __('You can then assign users one of the roles you have setup which will then dictate which features they will have access to.') }}</p>
     </x-slot>--}}
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

@@ -21,7 +21,7 @@
             </x-chart-card>
         @else
             <x-simple-card>
-                This indicator is not available because the database connection called <b>{{$connection}}</b> is not functioning.
+                {{ __('This indicator is not available because the database connection called ') }}<b>{{$connection}}</b> {{ __('is not functioning.') }}
             </x-simple-card>
         @endconnectible
     </div>

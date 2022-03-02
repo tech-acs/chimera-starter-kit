@@ -19,7 +19,7 @@
             @endconnectible
         @empty
             <x-simple-card class="col-span-3">
-                There are no indicators to display
+                {{ __('There are no indicators to display') }}
             </x-simple-card>
         @endforelse
 

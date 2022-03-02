@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Questionnaires with their breakout databases
+            {{ __('Questionnaires with their breakout databases') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            Creating a new questionnaire with breakout database connection
+            {{ __('Creating a new questionnaire with breakout database connection') }}
         </p>
     </x-slot>
 

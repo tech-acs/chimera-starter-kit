@@ -7,9 +7,9 @@
                 <div class="lg:grid lg:grid-cols-3 lg:gap-8">
                     <div>
                         <h2 class="text-3xl font-extrabold text-gray-900">
-                            Frequently Asked Questions
+                            {{ __('Frequently Asked Questions') }}
                         </h2>
-                        <p class="mt-4 text-lg text-gray-500">Can’t find the answer you’re looking for? Reach out to the administrator or <a href="mailto:ecastats@un.org?subject=Mail from ECA (Ghana) Census Dashboard" class="font-medium text-indigo-600 hover:text-indigo-500">email us</a>.</p>
+                        <p class="mt-4 text-lg text-gray-500">{{ __('Can’t find the answer you’re looking for? Reach out to the administrator or') }} <a href="mailto:ecastats@un.org?subject=Mail from ECA (Ghana) Census Dashboard" class="font-medium text-indigo-600 hover:text-indigo-500">{{ __('email us') }}</a>.</p>
                     </div>
                     <div class="mt-12 lg:mt-0 lg:col-span-2">
                         <dl class="space-y-12">
@@ -24,7 +24,7 @@
                                 </div>
                             @empty
                                 <div class="leading-10 text-lg">
-                                    The dashboard manager hasn't added any frequently asked questions.
+                                    {{ __('The dashboard manager hasn’t added any frequently asked questions.') }}
                                 </div>
                             @endforelse
                         </dl>

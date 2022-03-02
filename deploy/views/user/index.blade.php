@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            User management
+            {{ __('User management') }}
         </h3>
-        <p class="mt-2 max-w-4xl text-sm text-gray-500">Users can sign-up when they receive their unique registration link (invite).
-            You can then assign users one of the roles you have setup which will then dictate which features they will have access to.</p>
+        <p class="mt-2 max-w-4xl text-sm text-gray-500">{{ __('Users can sign-up when they receive their unique registration link (invite).') }}
+            {{ __('You can then assign users one of the roles you have setup which will then dictate which features they will have access to.') }}</p>
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -16,16 +16,16 @@
                         <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
+                                {{ __('Name') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Title
+                                {{ __('Title') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Created
+                                {{ __('Created') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role
+                                {{ __('Role') }}
                             </th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">Edit</span>
@@ -66,13 +66,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if (!$record->hasRole('Super Admin'))
-                                        <a href="{{route('users.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                        <a href="{{route('users.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                         @can('Super User')
                                             <span class="text-gray-400 px-1">|</span>
                                             <form action="{{route('users.destroy', $record->id)}}" method="post" class="inline">
                                                 @method('delete')
                                                 @csrf
-                                                <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">Delete</a>
+                                                <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                             </form>
                                         @endcan
                                     @endif

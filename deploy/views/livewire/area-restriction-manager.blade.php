@@ -2,7 +2,7 @@
     <div class="md:flex items-baseline justify-between p-4">
         <div class="flex items-baseline">
             <select id="region" name="region" wire:change="regionSelected($event.target.value)" class="mt-1 mr-2 block w-full pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                <option value="" @if (empty($selectedRegion)) selected @endif>Allow all regions</option>
+                <option value="" @if (empty($selectedRegion)) selected @endif>{{ __('Allow all regions') }}</option>
                 @foreach($regions as $code => $name)
                     <option value="{{$code}}" @if ($selectedRegion === $code) selected @endif>{{$name}}</option>
                 @endforeach
@@ -26,7 +26,7 @@
         </div>
         <div class="flex items-baseline space-x-4">
             <x-jet-button wire:click.prevent="apply" wire:loading.attr="disabled">
-                Apply
+                {{ __('Apply') }}
             </x-jet-button>
         </div>
     </div>

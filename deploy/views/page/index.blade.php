@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Pages
+            {{ __('Pages') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            Manage pages here
+            {{ __('Manage pages here') }}
         </p>
     </x-slot>
 
@@ -59,19 +59,19 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Title
+                                    {{ __('Title') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Slug
+                                    {{ __('Slug') }}
                                 </th>
                                 {{--<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Questionnaire
+                                    {{ __('Questionnaire') }}
                                 </th>--}}
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Indicators
+                                    {{ __('Indicators') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Published
+                                    {{ __('Published') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
@@ -95,15 +95,15 @@
                                     <x-yes-no value="{{$record->published}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{route('page.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <a href="{{route('page.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                     <span class="text-gray-400 px-1">|</span>
-                                    <a href="{{ route('page.destroy', $record->id) }}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600">Delete</a>
+                                    <a href="{{ route('page.destroy', $record->id) }}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600">{{ __('Delete') }}</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
-                                    There are no records to display
+                                    {{ __('There are no records to display') }}
                                 </td>
                             </tr>
                         @endforelse

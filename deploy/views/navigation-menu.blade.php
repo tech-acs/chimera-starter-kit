@@ -40,7 +40,7 @@
                         <x-jet-dropdown align="right" width="60">
                             <x-slot name="trigger">
                                 <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                                    Manage
+                                    {{ __('Manage') }}
                                     <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                     </svg>
@@ -49,18 +49,18 @@
 
                             <x-slot name="content">
                                 <div class="w-48">
-                                    <div class="block px-4 py-2 text-xs text-gray-400">Access Control</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('user.index') }}">Users</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('role.index') }}">Roles</x-jet-dropdown-link>
+                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Access Control') }}</div>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('user.index') }}">{{ __('Users') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('role.index') }}">{{ __('Roles') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <x-jet-dropdown-link href="{{route('questionnaire.index')}}">Questionnaires</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('questionnaire.index')}}">{{ __('Questionnaires') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <div class="block px-4 py-2 text-xs text-gray-400">Manage Indicators</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('page.index') }}">Pages</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">Indicators</x-jet-dropdown-link>
+                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Manage Indicators') }}</div>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <x-jet-dropdown-link href="{{route('usage_stats')}}">Usage Stats</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link href="{{route('manage.faq.index')}}">FAQs</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-jet-dropdown>

@@ -15,7 +15,7 @@
                 {{ $dates['progress'] }}
             </p>
             <p class="flex items-baseline text-sm font-semibold text-gray-400">
-                Updated: {{ $lastUpdated }}
+                {{ __('Updated:') }} {{ $lastUpdated }}
             </p>
         </div>
     </div>
@@ -23,7 +23,7 @@
     <div class="px-4 sm:px-6 py-4">
         <div>
             <h3 class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider pb-6">
-                Interview stats
+                {{ __('Interview stats') }}
             </h3>
             <x-home.case-stats :stats="$caseStats" />
         </div>
@@ -32,7 +32,7 @@
             <div class="bg-white">
                 <div class="max-w-7xl mx-auto py-6">
                     <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
-                        A few selected indicators
+                        {{ __('A few selected indicators') }}
                     </p>
                     <dl class="rounded-lg bg-white grid grid-cols-4 gap-6">
                         @foreach($selectedIndicators as $name => $value)

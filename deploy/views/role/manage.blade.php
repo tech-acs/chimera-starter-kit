@@ -2,11 +2,11 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Role management
+            {{ __('Role management') }}
         </h3>
         <p class="mt-2 max-w-4xl text-sm text-gray-500">
-            You can use the features on this page to manage your user roles. Users are assigned roles and
-            the roles dictate which charts and features of the dashboard they will have access to.
+            {{ __('You can use the features on this page to manage your user roles. Users are assigned roles and') }}
+            {{ __('the roles dictate which charts and features of the dashboard they will have access to.') }}
         </p>
     </x-slot>
 
