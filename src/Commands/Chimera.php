@@ -284,7 +284,7 @@ EOF;
         $this->registerExceptionHandler($this->exceptionHandlingCallbacks());
         
 
-        $this->comment('All done');
+        $this->info('All done');
 
         return self::SUCCESS;
     }
