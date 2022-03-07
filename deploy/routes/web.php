@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChartsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HelpController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Manage\ConnectionTestController;
 use App\Http\Controllers\Manage\FaqManagementController;
 use App\Http\Controllers\Manage\IndicatorController;
@@ -20,7 +21,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(function () {
 
-    Route::get('home', [ChartsController::class, 'multi'])->name('home');
+    Route::get('home', HomeController::class)->name('home');
 
     foreach (array_keys(PageBuilder::pages() ?? []) as $page) {
         Route::get($page, [ChartsController::class, 'multi'])->name($page);

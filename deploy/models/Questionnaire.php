@@ -16,9 +16,21 @@ class Questionnaire extends Model
     protected $dates = ['start_date', 'end_date'];
     public $translatable = ['title'];
 
+    public function getHomepageStatsAttribute()
+    {
+        return Stat::published()
+            ->whereQuestionnaire($this->name)
+            ->get();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('connection_active', true);
+    }
+
+    public function scopeShowOnHomePage($query)
+    {
+        return $query->where('show_on_home_page', true);
     }
 
     private function testCanConnect()

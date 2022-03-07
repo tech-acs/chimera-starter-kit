@@ -58,6 +58,7 @@
                                     <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Manage Indicators') }}</div>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Homepage stats') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>

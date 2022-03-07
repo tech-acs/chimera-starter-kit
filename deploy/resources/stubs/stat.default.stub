@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\View\Component;
+
+class {{ class }} extends Component
+{
+    public $stat;
+    public $name;
+    public $value;
+    public $color = 'bg-blue-500';
+
+    public function __construct($stat)
+    {
+        $this->stat = $stat;
+        $this->name = $this->stat->title;
+        $this->value = 'NA';
+    }
+
+    public function render()
+    {
+        return view('components.home.stat');
+    }
+}

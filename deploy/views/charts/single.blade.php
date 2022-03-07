@@ -1,27 +1,22 @@
 <x-app-layout>
 
-    @connectible($connection)
-        <livewire:area-filter :connection="$connection" />
-    @else
-        <x-simple-card>
-            The area filter component is not available because the database connection called <b>{{$connection}}</b> is not available.
-        </x-simple-card>
-    @endconnectible
+    <livewire:area-filter />
 
     <div class="grid grid-cols-1 gap-6 sm:p-6 sm:pt-0 pb-6 sm:pb-0 bg-gray-100">
-        @connectible($metadata['connection'])
-            <x-chart-card
-                    page="{{$page}}"
-                    chart="{{$chart}}"
-                    mode="Full Page"
-                    title="{{$metadata['title']}}"
-                    description="{{$metadata['description']}}"
-            >
+        @connectible($indicator->questionnaire)
+            {{--<x-chart-card :indicator="$indicator">
                 @livewire($chart, ['connection' => $metadata['connection'], 'graphDiv' => $chart, 'mode' => 'Full Page'])
-            </x-chart-card>
+            </x-chart-card>--}}
+
+            @can($indicator->permission_name)
+                <x-chart-card :indicator="$indicator">
+                    @livewire($indicator->component, ['connection' => $indicator->questionnaire, 'graphDiv' => $indicator->component])
+                </x-chart-card>
+            @endcan
         @else
             <x-simple-card>
-                {{ __('This indicator is not available because the database connection called ') }}<b>{{$connection}}</b> {{ __('is not functioning.') }}
+                This indicator is not available because the database connection of the questionnaire
+                called <b>{{$questionnaire}}</b> is not functioning properly.
             </x-simple-card>
         @endconnectible
     </div>

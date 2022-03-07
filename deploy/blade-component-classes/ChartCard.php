@@ -23,7 +23,7 @@ class ChartCard extends Component
         $this->title = $title;
         $this->description = $description;*/
         $this->indicator = $indicator;
-        $this->fullPageViewRoute = ''; //route('single', ['page' => $this->indicator->page, 'chart' => '']);
+        $this->fullPageViewRoute = route('single', ['page' => $this->indicator->page, 'chart' => $indicator->slug]);
         $this->mode = $mode;
         $this->help = $help;
     }

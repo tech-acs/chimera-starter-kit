@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Models\Questionnaire;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -43,21 +44,13 @@ class ChartsController extends Controller
 
         $page = Page::with('indicators')->where('slug', $pageSlug)->first();
         $indicators = $page?->indicators?->all();
-        if ($pageSlug === 'home') {
-            $view = 'home';
-            $preview = null;
-            $indicators = collect($indicators)->mapToGroups(function($i, $key) {
-                return [$i['questionnaire'] => array_merge(['indicator' => $key], $i)];
-            });
-        } else {
-            $view = 'multi';
-            $preview = $this->generatePreviewContent($indicators);
-            $indicators = $this->paginate($indicators, $pageSlug, $request->get('page', 1));
-        }
-        return view("charts.$view")->with([
+        $preview = $this->generatePreviewContent($indicators);
+        $indicators = $this->paginate($indicators, $pageSlug, $request->get('page', 1));
+
+        return view("charts.multi")->with([
             'page' => $pageSlug,
             'indicators' => $indicators,
-            //6'questionnaire' => $page?->questionnaire, //config("chimera.pages.{$page}.connection"),
+            //'questionnaire' => $page?->questionnaire, //config("chimera.pages.{$page}.connection"),
             'preview' => $preview
         ]);
     }
@@ -67,17 +60,16 @@ class ChartsController extends Controller
         $page = Page::where('slug', $pageSlug)->first();
         $this->authorize($pageSlug, Auth::user());
         try {
-            $metadata = config("chimera.pages.$page.indicators")[$chart];
-            // Search for $chart among $page->indicators
+            //$metadata = config("chimera.pages.$page.indicators")[$chart];
+            $indicator = null;
         } catch (Exception $exception) {
             abort(404);
             exit;
         }
         return view('charts.single')->with([
             'page' => $pageSlug,
-            'chart' => $chart,
-            'metadata' => $metadata,
-            'connection' => $page->connection, //config("chimera.pages.{$page}.connection"),
+            'indicator' => $indicator,
+            //'connection' => $page->connection, //config("chimera.pages.{$page}.connection"),
         ]);
     }
 }

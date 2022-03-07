@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 class IndicatorFactory
 {
-    public static function make(string $chart)
+    public static function make(string $connection, string $chart)
     {
         $pieces = explode('.', $chart);
         $class = Str::studly(array_pop($pieces));
@@ -14,7 +14,7 @@ class IndicatorFactory
         $classPath = "App\Http\Livewire\\" . implode('\\', $folders) . "\\$class";
         $instance = new $classPath;
         $instance->graphDiv = $chart;
-        //$instance->connection = $connection;
+        $instance->connection = $connection;
         return $instance;
     }
 }

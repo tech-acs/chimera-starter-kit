@@ -3,13 +3,13 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/uneca/census-dashboard-starter-kit.svg?style=flat-square)](https://packagist.org/packages/uneca/census-dashboard-starter-kit)
 [![Total Downloads](https://img.shields.io/packagist/dt/uneca/census-dashboard-starter-kit.svg?style=flat-square)](https://packagist.org/packages/uneca/census-dashboard-starter-kit)
 
-Census dashboard starter kit is a CSPro questionnaire dashboard application scaffolding for Laravel. It provides the perfect starting point for your dashboard and includes various features.
+Census dashboard starter kit is a census/survey dashboard application scaffolding built for the popular PHP Laravel framework. It provides the perfect starting point for your dashboard and includes various features.
 
 It is built on top of Laravel Jetstream starter kit.
 
 ## Installation
 
-Once you have created a fresh laravel project, you can install the package via composer:
+Once you have created a fresh Laravel project, you can install the package via composer:
 
 ```bash
 composer require uneca/census-dashboard-starter-kit
