@@ -205,7 +205,7 @@ EOF;
                 });
 
         // blade-component-classes -> app/View/Components
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
+        File::copyDirectory(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
         $this->comment('Copied blade component classes');
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/commands', app_path('Console/Commands'));

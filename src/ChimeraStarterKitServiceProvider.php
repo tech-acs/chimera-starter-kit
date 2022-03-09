@@ -22,6 +22,7 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_pages_table',
             'create_questionnaires_table',
             'create_indicators_table',
+            'create_stats_table',
         ];
         $package
             ->name('chimera')

@@ -6,7 +6,7 @@
 
             <x-home.summary :questionnaire="$questionnaire">
                 @forelse($questionnaire->homepage_stats as $stat)
-                    <x-dynamic-component component="home.{{$stat->slug}}" :stat="$stat" />
+                    <x-dynamic-component component="home.{{$stat->slug}}" :stat="$stat" :index="$loop->index" />
                 @empty
                     {{ __('There are no stats to display.') }}
                 @endforelse

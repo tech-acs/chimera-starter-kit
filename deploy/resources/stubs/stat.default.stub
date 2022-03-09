@@ -2,6 +2,7 @@
 
 namespace DummyNamespace;
 
+use App\Services\Theme;
 use Illuminate\View\Component;
 
 class {{ class }} extends Component
@@ -9,12 +10,14 @@ class {{ class }} extends Component
     public $stat;
     public $name;
     public $value;
-    public $color = 'bg-blue-500';
+    public $bgColor;
 
-    public function __construct($stat)
+    public function __construct($stat, $index)
     {
         $this->stat = $stat;
         $this->name = $this->stat->title;
+        $this->bgColor = Theme::colors()[$index];
+
         $this->value = 'NA';
     }
 

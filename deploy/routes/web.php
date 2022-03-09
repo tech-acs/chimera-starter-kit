@@ -10,8 +10,10 @@ use App\Http\Controllers\Manage\IndicatorController;
 use App\Http\Controllers\Manage\PageController;
 use App\Http\Controllers\Manage\QuestionnaireController;
 use App\Http\Controllers\Manage\RoleController;
+use App\Http\Controllers\Manage\StatController;
 use App\Http\Controllers\Manage\UsageStatsController;
 use App\Http\Controllers\Manage\UserController;
+use App\Http\Controllers\MapController;
 use App\Services\PageBuilder;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,8 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
     }
     Route::get('{page}/single/{chart}', [ChartsController::class, 'single'])->name('single');
 
+    Route::get('map', MapController::class)->name('map');
+
     Route::get('faq', FaqController::class)->name('faq');
 
     Route::get('help', HelpController::class)->name('help');
@@ -38,6 +42,7 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
 
         Route::resource('page', PageController::class)->except(['show']);
         Route::resource('indicator', IndicatorController::class)->except(['show', 'create', 'store', 'destroy']);
+        Route::resource('stat', StatController::class)->except(['show', 'create', 'store', 'destroy']);
 
         Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
         Route::prefix('manage')->name('manage.')->group(function () {

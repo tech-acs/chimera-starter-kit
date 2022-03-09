@@ -27,12 +27,12 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                    <x-jet-label for="start_date" value="{{ __('Exercise start date') }}" />
+                    <x-jet-label for="start_date" value="{{ __('Exercise start date') }} *" />
                     <x-jet-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($questionnaire ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
                     <x-jet-input-error for="start_date" class="mt-2" />
                 </div>
                 <div class="">
-                    <x-jet-label for="end_date" value="{{ __('Exercise end date') }}" />
+                    <x-jet-label for="end_date" value="{{ __('Exercise end date') }} *" />
                     <x-jet-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($questionnaire ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
                     <x-jet-input-error for="end_date" class="mt-2" />
                 </div>
