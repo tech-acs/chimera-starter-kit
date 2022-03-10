@@ -122,6 +122,9 @@ class Dockerize extends Command
         // copy config files
         $this->copyFilesInDir(__DIR__ . '/../../docker/runtimes/config', base_path('runtimes/config'));
         $this->comment('Copied  configuration files');
+        $this->replacePhpConfig($this->option('no-interaction')?1024:$this->ask("Set Memory Limit for PHP in MB [1024]?",1024));
+        $this->comment('replaced memory limit on runtimes/config/php.ini');
+
         copy(__DIR__ . '/../../docker/runtimes/entrypoint.sh', base_path('runtimes/entrypoint.sh'));
         copy(__DIR__ . '/../../docker/runtimes/Dockerfile', base_path('runtimes/DockerFile'));            
         $this->comment('Copied  Docker files');
@@ -156,6 +159,12 @@ class Dockerize extends Command
         file_put_contents($this->laravel->basePath('.env'), $environment);
     }
 
+    protected function replacePhpConfig(string $memory_limit )
+    {
+        $environment = file_get_contents($this->laravel->basePath('runtimes/config/php.ini'));
+        $environment = str_replace("memory_limit= 1024MB", "memory_limit= {$memory_limit}MB", $environment);
+        file_put_contents($this->laravel->basePath('runtimes/config/php.ini'), $environment);
+    }
 
 
 }
