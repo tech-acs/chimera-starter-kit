@@ -5,7 +5,7 @@ namespace Uneca\Chimera;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Uneca\Chimera\Commands\Chimera;
-use Uneca\Chimera\Commands\Dockerify;
+use Uneca\Chimera\Commands\Dockerize;
 
 class ChimeraStarterKitServiceProvider extends PackageServiceProvider
 {
@@ -31,7 +31,7 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             //->hasTranslations() // Makes translations publishable
             ->hasMigrations($migrations) // Makes migrations publishable only
             //->hasRoute('web')
-            ->hasCommands([Chimera::class,Dockerify::class])
+            ->hasCommands([Chimera::class,Dockerize::class])
         ;
     }
 }

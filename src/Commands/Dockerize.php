@@ -8,14 +8,14 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 
 
-class Dockerify extends Command
+class Dockerize extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'chimera:dockerize
+    protected $signature = 'chimera:dockerize                 
                  {--with= : The services that should be included in the installation}
                  ';
     protected $dirStubs = __DIR__ .'/../../docker/stub/';
@@ -123,15 +123,39 @@ class Dockerify extends Command
         $this->copyFilesInDir(__DIR__ . '/../../docker/runtimes/config', base_path('runtimes/config'));
         $this->comment('Copied  configuration files');
         copy(__DIR__ . '/../../docker/runtimes/entrypoint.sh', base_path('runtimes/entrypoint.sh'));
-        copy(__DIR__ . '/../../docker/runtimes/Dockerfile', base_path('runtimes/DockerFile'));        
+        copy(__DIR__ . '/../../docker/runtimes/Dockerfile', base_path('runtimes/DockerFile'));            
         $this->comment('Copied  Docker files');
+        if($this->option('no-interaction')){
+            $this->replaceEnvVariables($options);
+            $this->comment('replaced .env variables');
 
-        copy(__DIR__ . '/../../docker/.env.docker', base_path('.env.docker'));
-        $this->comment('Copied .env.docker');
-        
+        }
+        elseif($this->choice("Would you like to replace variables on the existing .env file?", ['y' => 'Yes', 'n' => 'No'], 'y') == 'y'){
+                $this->replaceEnvVariables($options);
+                $this->comment('replaced .env variables');
+        }
+            
+
+  
         // write docker-compose
         file_put_contents(base_path('docker-compose.yml'), $dockerComposer);
 
     }
+    protected function replaceEnvVariables(Collection $options)
+    {
+        $environment = file_get_contents($this->laravel->basePath('.env'));
+        if ($options->contains('postgres')) {
+            $environment = preg_replace("/DB_CONNECTION=(.*)/", "DB_CONNECTION=pgsql", $environment);
+            $environment = preg_replace("/DB_HOST=(.*)/", "DB_HOST=chimera.postgres", $environment);
+            $environment = preg_replace("/DB_PORT=(.*)/", "DB_PORT=5432", $environment);
+        }
+        if($options->contains('redis')){
+        $environment = preg_replace("/REDIS_HOST=(.*)/", 'REDIS_HOST=chimera.redis', $environment);
+        }
+
+        file_put_contents($this->laravel->basePath('.env'), $environment);
+    }
+
+
 
 }
