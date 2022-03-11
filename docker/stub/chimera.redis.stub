@@ -1,0 +1,14 @@
+    
+    chimera.redis:
+        image: redis
+        restart: always
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        networks:
+            - chimera
+        environment:
+            REDIS_PASSWORD: '${REDIS_PASSWORD:-secret}'
+        healthcheck:
+            test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+        env_file:
+            - .env.docker

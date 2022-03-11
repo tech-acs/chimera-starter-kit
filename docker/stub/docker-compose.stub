@@ -1,0 +1,22 @@
+version: '3'
+services:  
+    chimera.web:
+        build:
+            context: .
+            dockerfile: ./runtimes/DockerFile
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-80}:80'
+        restart: always
+        networks:
+            - chimera
+        env_file:
+            - .env.docker
+        {{dependencies}}
+{{services}}
+networks:
+    chimera:
+        driver: bridge
+{{volumes}}
+
