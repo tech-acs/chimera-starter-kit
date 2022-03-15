@@ -23,7 +23,7 @@ abstract class Map extends Component
 
     public function getGeoJson(array $filter = [])
     {
-        list($areaType, $parentCodeCondition) = QueryFragmentFactory::make($this->connection)->getMapQueryFragements($filter);
+        //list($areaType, $parentCodeCondition) = QueryFragmentFactory::make($this->connection)->getMapQueryFragements($filter);
         $sql = "
             SELECT json_build_object(
                 'type', 'FeatureCollection',
@@ -45,7 +45,7 @@ abstract class Map extends Component
                 )
             ) AS feature_collection
             FROM maps
-            WHERE area_type = '{$areaType}' AND {$parentCodeCondition}
+            
         ";
 
         try {

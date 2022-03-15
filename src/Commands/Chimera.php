@@ -214,7 +214,7 @@ EOF;
         File::copyDirectory(__DIR__ . '/../../deploy/controllers', app_path('Http/Controllers'));
         $this->comment('Copied controllers');
 
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/livewire', app_path('Http/Livewire'));
+        File::copyDirectory(__DIR__ . '/../../deploy/livewire', app_path('Http/Livewire'));
         $this->comment('Copied livewire components');
 
         // middleware -> app_path('Http/Middleware')
