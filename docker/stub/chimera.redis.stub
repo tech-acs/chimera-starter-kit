@@ -11,4 +11,4 @@
         healthcheck:
             test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
         env_file:
-            - .env.docker
+            - .env

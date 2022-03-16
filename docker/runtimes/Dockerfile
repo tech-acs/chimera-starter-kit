@@ -52,10 +52,10 @@ RUN ln -s /usr/bin/php8 /usr/bin/php
 
 
 #Configure nginx php-fpm and supervisor
-COPY runtimes/docker/nginx.conf /etc/nginx/nginx.conf
-COPY runtimes/docker/php-fpm.conf /etc/php8/php-fpm.d/acs.conf
-COPY runtimes/docker/php.ini /etc/php8/conf.d/acs.ini
-COPY runtimes/docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY runtimes/config/nginx.conf /etc/nginx/nginx.conf
+COPY runtimes/config/php-fpm.conf /etc/php8/php-fpm.d/acs.conf
+COPY runtimes/config/php.ini /etc/php8/conf.d/acs.ini
+COPY runtimes/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # add user acs:acs and make owner of /var/www/html and finally switch to acs:acs
 RUN addgroup -S acs 

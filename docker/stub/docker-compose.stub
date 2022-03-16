@@ -12,8 +12,10 @@ services:
         networks:
             - chimera
         env_file:
-            - .env.docker
+            - .env
         {{dependencies}}
+        stdin_open: true
+        tty: true
 {{services}}
 networks:
     chimera:

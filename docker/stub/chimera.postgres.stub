@@ -18,4 +18,4 @@
             retries: 3
             timeout: 5s
         env_file:
-            - .env.docker
+            - .env
