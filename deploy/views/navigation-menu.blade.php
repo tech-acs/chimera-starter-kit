@@ -22,12 +22,16 @@
                         </x-jet-nav-link>
                     @endcan
                 @endforeach
+                @if(config('chimera.map.enabled'))
                     <x-jet-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
                         {{ __('Map') }}
                     </x-jet-nav-link>
+                @endif
+                @if(config('chimera.reports.enabled'))
                     <x-jet-nav-link href="{{ route('reports') }}" :active="request()->routeIs('reports')">
                         {{ __('Reports') }}
                     </x-jet-nav-link>
+                @endif
                     <x-jet-nav-link href="{{ route('help') }}" :active="request()->routeIs('help')">
                         {{ __('Help') }}
                     </x-jet-nav-link>
@@ -66,7 +70,6 @@
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('stat.index') }}">{{ __('Homepage stats') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <x-jet-dropdown-link href="{{route('setting.index')}}">{{ __('Settings') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>
                                 </div>

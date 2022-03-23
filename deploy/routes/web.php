@@ -32,9 +32,12 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
     }
     Route::get('{page}/single/{chart}', [ChartsController::class, 'single'])->name('single');
 
-    Route::get('map', MapController::class)->name('map');
-
-    Route::get('reports', ReportsController::class)->name('reports');
+    if (config('chimera.map.enabled')) {
+        Route::get('map', MapController::class)->name('map');
+    }
+    if (config('chimera.map.enabled')) {
+        Route::get('reports', ReportsController::class)->name('reports');
+    }
 
     Route::get('faq', FaqController::class)->name('faq');
 
