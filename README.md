@@ -138,6 +138,23 @@ The following are available flags you can use when running the command
 Dashboard managers can organize indicators under various pages...
 
 
+### Homepage Stats
+Homepage Stats are simple, usually single figure based high-level indicators intended to give a high-level overview of the questionnaire.
+
+SCREENSHOT HERE
+
+You can generate these stats by using the chimera:make-stat artisan command
+
+```bash
+php artisan chimera:make-stat
+```
+
+The command is interactive and will prompt you for information that will be used to generate a stub for your stat.
+
+The following are available flags you can use when running the command
+
+--include-sample-code : Whether the generated stub should include functioning sample code
+
 
 ## Testing
 
