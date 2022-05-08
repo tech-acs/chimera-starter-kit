@@ -7,7 +7,7 @@
             @connectible($indicator->questionnaire)
                 @can($indicator->permission_name)
                     <x-chart-card :indicator="$indicator">
-                        @livewire($indicator->component, ['connection' => $indicator->questionnaire, 'graphDiv' => $indicator->component])
+                        @livewire($indicator->component, ['indicator' => $indicator])
                     </x-chart-card>
                 @endcan
             @else

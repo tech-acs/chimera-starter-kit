@@ -9,8 +9,8 @@
             </x-chart-card>--}}
 
             @can($indicator->permission_name)
-                <x-chart-card :indicator="$indicator">
-                    @livewire($indicator->component, ['connection' => $indicator->questionnaire, 'graphDiv' => $indicator->component])
+                <x-chart-card :indicator="$indicator" mode="Full Page">
+                    @livewire($indicator->component, ['indicator' => $indicator])
                 </x-chart-card>
             @endcan
         @else

@@ -16,13 +16,12 @@
         <!-- Styles -->
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
         <link rel="stylesheet" href="{{ mix('css/map.css') }}">
+        @livewireStyles
         <style>
             [x-cloak] {
                 display: none !important;
             }
         </style>
-
-        @livewireStyles
 
         <!-- Scripts -->
         <script src="{{ mix('js/app.js') }}" defer></script>

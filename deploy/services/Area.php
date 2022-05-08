@@ -13,6 +13,21 @@ class Area
         $this->connection = $connection;
     }
 
+    public function getAreaNamesForCurrentFilter(array $filter)
+    {
+        $area = null;
+        if (! empty($filter)) {
+            $area = DB::table('areas')
+                ->select('level', 'type', 'code')
+                ->where('connection_name', $this->connection)
+                ->whereIn('code', array_values($filter))
+                ->orderBy('level', 'DESC')
+                ->limit(1)
+                ->first();
+        }
+        return $this->areasByParent($area?->code);
+    }
+
     public function levels()
     {
         return DB::table('areas')
@@ -46,12 +61,22 @@ class Area
             ->get();
     }
 
-    public function areasByType(string $type, string $orderBy = 'name')
+    public function areasByType(?string $type, string $orderBy = 'name')
     {
         return DB::table('areas')
             ->select(['code', 'name'])
             ->where('connection_name', $this->connection)
             ->where('type', $type)
+            ->orderBy($orderBy)
+            ->get();
+    }
+
+    public function areasByParent(?string $parentCode, string $orderBy = 'name')
+    {
+        return DB::table('areas')
+            ->select(['code', 'name'])
+            ->where('connection_name', $this->connection)
+            ->where('parent_code', $parentCode)
             ->orderBy($orderBy)
             ->get();
     }

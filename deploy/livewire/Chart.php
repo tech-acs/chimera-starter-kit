@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Indicator;
 use App\Services\Caching;
 use App\Services\Traits\Cachable;
 use Livewire\Component;
@@ -10,6 +11,7 @@ abstract class Chart extends Component
 {
     use Cachable;
 
+    public Indicator $indicator;
     public string $graphDiv;
     public string $data;
     public string $layout;
@@ -125,6 +127,10 @@ abstract class Chart extends Component
 
     public function mount()
     {
+        $this->graphDiv = $this->indicator->component;
+        $this->connection = $this->indicator->questionnaire;
+        $this->help = $this->indicator->help;
+
         $this->setConfig([
             'responsive' => true,
             'displaylogo' => false,

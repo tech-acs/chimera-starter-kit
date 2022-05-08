@@ -27,23 +27,19 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
 
     Route::get('home', HomeController::class)->name('home');
 
-    foreach (array_keys(PageBuilder::pages() ?? []) as $page) {
-        Route::get($page, [ChartsController::class, 'multi'])->name($page);
-    }
-    Route::get('{page}/single/{chart}', [ChartsController::class, 'single'])->name('single');
+    Route::get("page/{slug}", [ChartsController::class, 'page'])->name('page');
 
-    if (config('chimera.map.enabled')) {
-        Route::get('map', MapController::class)->name('map');
-    }
-    if (config('chimera.map.enabled')) {
-        Route::get('reports', ReportsController::class)->name('reports');
-    }
+    Route::get('indicator/{slug}', [ChartsController::class, 'indicator'])->name('indicator');
+
+    Route::get('map', MapController::class)->name('map');
+
+    Route::get('reports', ReportsController::class)->name('reports');
 
     Route::get('faq', FaqController::class)->name('faq');
 
     Route::get('help', HelpController::class)->name('help');
 
-    Route::middleware(['can:Super Admin'])->group(function () {
+    Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {
         Route::resource('role', RoleController::class)->only(['index', 'store', 'edit', 'destroy']);
         Route::resource('user', UserController::class)->only(['index', 'edit', 'update', 'destroy']);
 
@@ -53,7 +49,7 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
 
         Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
         Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
-        Route::prefix('manage')->name('manage.')->group(function () {
+        Route::name('manage.')->group(function () {
             Route::resource('faq', FaqManagementController::class)->except(['show']);
         });
         Route::get('questionnaire/{questionnaire}/test-connection', [ConnectionTestController::class, 'test'])->name('questionnaire.connection.test');
