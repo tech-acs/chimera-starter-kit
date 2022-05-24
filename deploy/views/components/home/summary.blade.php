@@ -34,13 +34,8 @@
                     <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
                         {{ __('A few selected indicators') }}
                     </p>
-                    <dl class="rounded-lg bg-white grid grid-cols-4 gap-6">
-                        {{--@foreach($selectedIndicators as $name => $value)
-                            <x-home.indicator :name="$name" :value="$value" :color="$colors[$loop->index]" />
-                        @endforeach--}}
-
+                    <dl class="rounded-lg bg-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {{ $slot }}
-
                     </dl>
                 </div>
             </div>

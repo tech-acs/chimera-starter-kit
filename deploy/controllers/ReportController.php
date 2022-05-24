@@ -30,7 +30,7 @@ class ReportController extends Controller
             $report->blueprintInstance->generate();
             return redirect()->back()->withMessage('The report is now being generated');
         } catch (\Exception $exception) {
-            return redirect()->back()->withErrors(new MessageBag(['Unable to generate the requested report at this time']));
+            return redirect()->back()->withErrors(new MessageBag(['Unable to generate the requested report at this time. Make sure the getCollection method returns data.']));
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Report;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 
@@ -36,6 +37,9 @@ abstract class ReportBlueprint
     public function generate()
     {
         $data = $this->getCollection();
+        if (empty($data)) {
+            throw new Exception('There is no data to export');
+        }
         $rowified = $data->map(function ($obj) {
             return (array)$obj;
         })->all();
