@@ -30,7 +30,7 @@ class InvitationManager extends Component
     {
         $this->validate();
         try {
-            $expiresAt = now()->addHours(config('chimera.invitation.ttl_hours', 72));
+            $expiresAt = now()->addHours(config('chimera.invitation.ttl_hours'));
             Invitation::create([
                 'email' => $this->email,
                 'link' => URL::temporarySignedRoute('register', $expiresAt, ['email' => $this->email]),

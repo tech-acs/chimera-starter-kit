@@ -5,6 +5,9 @@ return [
     'secure' => env('SECURE', false),
     'indicators_per_page' => env('INDICATORS_PER_PAGE', 2),
     'records_per_page' => env('RECORDS_PER_PAGE', 20),
+    'invitation' => [
+        'ttl_hours' => env('INVITATION_TTL_HOURS', 72)
+    ],
     'map' => [
         'shape_simplification' => [
             'region' => 0.001,

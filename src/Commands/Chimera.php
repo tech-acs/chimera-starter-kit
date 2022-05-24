@@ -188,6 +188,9 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/livewire', app_path('Http/Livewire'));
         $this->comment('Copied livewire components');
 
+        $this->copyFilesInDir(__DIR__ . '/../../deploy/actions/fortify', app_path('Actions/Fortify'));
+        $this->comment('Copied actions');
+
         $this->copyFilesInDir(__DIR__ . '/../../deploy/middleware', app_path('Http/Middleware'));
         $this->comment('Copied middlewares');
 
@@ -202,6 +205,9 @@ class Chimera extends Command
 
         File::copyDirectory(__DIR__ . '/../../deploy/views', resource_path('views'));
         $this->comment('Copied views');
+
+        copy(__DIR__.'/../../deploy/jetstream-views/register.blade.php', resource_path('views/auth/register.blade.php'));
+        $this->comment('Copied customized jetstream register view');
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/fonts', resource_path('fonts'), '*.*');
