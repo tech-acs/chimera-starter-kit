@@ -179,7 +179,7 @@ class Chimera extends Command
         $this->copyFilesInDir(__DIR__ . '/../../deploy/commands', app_path('Console/Commands'));
         $this->comment('Copied commands');
 
-        copy(__DIR__.'/../../deploy/Kernel.php', app_path('Console'));
+        copy(__DIR__.'/../../deploy/Kernel.php', app_path('Console/Kernel.php'));
         $this->comment('Copied Console/Kernel.php');
 
         File::copyDirectory(__DIR__ . '/../../deploy/controllers', app_path('Http/Controllers'));
@@ -247,7 +247,7 @@ class Chimera extends Command
 
         // Exception handler (for token mismatch and invalid invitation exceptions)
         //$this->registerExceptionHandler($this->exceptionHandlingCallbacks());
-        copy(__DIR__.'/../../deploy/Handler.php', app_path('Exceptions'));
+        copy(__DIR__.'/../../deploy/Handler.php', app_path('Exceptions/Handler.php'));
 
         $this->info('All done');
 
