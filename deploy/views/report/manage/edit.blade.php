@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Homepage Stats') }}
+            {{ __('Reports') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('You are editing an existing homepage stat') }}
+            {{ __('You are editing an existing report') }}
         </p>
     </x-slot>
 
@@ -28,10 +28,10 @@
             </div>
         @endif
 
-        <form action="{{route('stat.update', $stat->id)}}" method="POST">
+        <form action="{{route('manage.report.update', $report->id)}}" method="POST">
             @csrf
             @method('PATCH')
-            @include('stat.form')
+            @include('report.manage.form')
         </form>
 
     </div>

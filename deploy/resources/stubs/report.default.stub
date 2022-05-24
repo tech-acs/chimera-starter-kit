@@ -1,0 +1,13 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Services\ReportBlueprint;
+
+class {{ class }} extends ReportBlueprint
+{
+    public function getCollection()
+    {
+        // TODO: Implement getCollection() method.
+    }
+}

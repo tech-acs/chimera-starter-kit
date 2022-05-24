@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PageRequest;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
 
 class PageController extends Controller
 {
@@ -39,6 +40,9 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
+        if ($page->indicators()->count() > 0) {
+            return redirect()->back()->withErrors(new MessageBag(['The page contains indicators and thus can not be deleted. Move the indicators to another page before trying again.']));
+        }
         $page->delete();
         return redirect()->route('page.index')->withMessage('Page deleted');
     }

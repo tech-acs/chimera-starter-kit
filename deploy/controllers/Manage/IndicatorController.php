@@ -23,7 +23,7 @@ class IndicatorController extends Controller
 
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
-        $indicator->update($request->only(['title', 'description', 'help', 'published', 'page_id']));
+        $indicator->update($request->only(['title', 'description', 'help', 'page_id', 'published']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

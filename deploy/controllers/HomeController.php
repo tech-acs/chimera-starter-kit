@@ -10,11 +10,11 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
-        try {
+        /*try {
             $this->authorize('home', Auth::user());
         } catch (AuthorizationException $authorizationException) {
             return redirect('faq');
-        }
+        }*/
 
         $questionnaires = Questionnaire::showOnHomePage()->get();
         return view('home', compact('questionnaires'));

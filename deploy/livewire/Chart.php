@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Indicator;
+use App\Services\Area;
 use App\Services\Caching;
 use App\Services\Traits\Cachable;
 use Livewire\Component;
@@ -19,7 +20,6 @@ abstract class Chart extends Component
     public string $connection;
     public bool $noData = false;
     public string $dataTimestamp;
-    public string $help;
 
     protected function getLayoutArray(): array
     {
@@ -32,9 +32,7 @@ abstract class Chart extends Component
                 'type' => 'category',
                 'tickmode' => 'linear',
                 'automargin' => true,
-                'title' => [
-                    'text' => ''
-                ],
+                'title' => ['text' => ''],
             ],
             'yaxis' => [
                 'title' => ['text' => '']
@@ -75,9 +73,7 @@ abstract class Chart extends Component
             "xref" => "paper",
             "yref" => "paper",
             "showarrow" => False,
-            "font" => [
-                "size" => 28
-            ]
+            "font" => ["size" => 28]
         ]];
         return $layout;
     }
@@ -98,24 +94,14 @@ abstract class Chart extends Component
 
     public static function getXAxisTitle($filter)
     {
-        if (!blank($filter['constituency'] ?? null)) {
-            $xAxisTitle = "EAs of {$filter['constituencyName']} constituency";
-        } elseif (!blank($filter['region'] ?? null)) {
-            $xAxisTitle = "Constituencies of {$filter['regionName']} region";
+        $area = new Area();
+        $current = $area->resolveSmallestFilter($filter);
+        if ($current) {
+            $nextTypeName = $area->nextLevel($current->level);
+            $xAxisTitle = str($nextTypeName)->plural()->title() . " of {$current->name} {$current->type}";
         } else {
-            $xAxisTitle = 'Regions';
-        }
-        return $xAxisTitle;
-    }
-
-    public static function getCurrentAreaTitle($filter)
-    {
-        if (!blank($filter['constituency'] ?? null)) {
-            $xAxisTitle = "of {$filter['constituencyName']} constituency";
-        } elseif (!blank($filter['region'] ?? null)) {
-            $xAxisTitle = "of {$filter['regionName']} region";
-        } else {
-            $xAxisTitle = '';
+            $topLevel = $area->levels()->flip()->first();
+            $xAxisTitle = str($topLevel)->plural()->title();
         }
         return $xAxisTitle;
     }
@@ -135,11 +121,11 @@ abstract class Chart extends Component
             'responsive' => true,
             'displaylogo' => false,
             'modeBarButtonsToRemove' => ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
-            'toImageButtonOptions' => ['filename' => $this->graphDiv,],
+            'toImageButtonOptions' => ['filename' => $this->graphDiv . ' (' . now()->toDayDateTimeString() . ')',],
         ]);
         $filtersToApply = array_merge(
             auth()->user()->areaFilter($this->connection),
-            session()->get($this->connection, [])
+            session()->get('area-filter', [])
         );
         $this->setData($filtersToApply);
         $key = Caching::makeIndicatorCacheKey($this->graphDiv, $filtersToApply);

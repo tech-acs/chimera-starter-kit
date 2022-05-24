@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 
 class Page extends Model
@@ -20,6 +22,13 @@ class Page extends Model
         return $this->hasMany(Indicator::class);
     }
 
+    protected function permissionName(): Attribute
+    {
+        return new Attribute(
+            get: fn () => str($this->slug)->replace('.', ':')->toString(),
+        );
+    }
+
     public function scopePublished($query)
     {
         return $query->wherePublished(true);
@@ -29,6 +38,13 @@ class Page extends Model
     {
         static::creating(function ($page) {
             $page->slug = Str::slug($page->title);
+        });
+
+        static::created(function ($page) {
+            Permission::create(['guard_name' => 'web', 'name' => $page->permission_name]);
+        });
+        static::deleted(function ($page) {
+            Permission::whereName($page->permission_name)->delete();
         });
     }
 }

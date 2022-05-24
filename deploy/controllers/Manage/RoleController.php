@@ -35,8 +35,7 @@ class RoleController extends Controller
         if ($role->name === 'Super Admin') {
             abort(403, 'Unauthorized action');
         }
-        $pages = config('chimera.pages');
-        return view('role.manage', compact('role', 'pages'));
+        return view('role.manage', compact('role'));
     }
 
     public function destroy(Role $role)

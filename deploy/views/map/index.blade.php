@@ -1,5 +1,8 @@
 @push('scripts')
     <script src="{{ mix('js/map.js') }}" defer></script>
+@endpush
+
+@push('late-scripts')
     <script>
         const styles = {
             blank: {
@@ -17,6 +20,7 @@
                 fillColor: '#60ef06'
             }
         }
+
         const basemaps = [
             {
                 "name":"Google Hybrid",
@@ -48,14 +52,9 @@
             },
         ]
         var maps = {};
-    </script>
-@endpush
-
-@push('late-scripts')
-    <script>
         document.addEventListener('DOMContentLoaded', function () {
             let map = L.map('map', {
-                center: [7.9, -1.03],
+                center: @json(config('chimera.map.center')),
                 zoom: 6,
                 attributionControl: false
             });
@@ -71,7 +70,6 @@
             L.control.layers(baseLayers).addTo(map);
 
         });
-
     </script>
 @endpush
 <x-app-layout>

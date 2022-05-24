@@ -127,36 +127,6 @@ class Chimera extends Command
         }
     }
 
-    protected function registerExceptionHandler($contentToAppend)
-    {
-        $handler = file_get_contents(app_path("Exceptions/Handler.php"));
-        $bootMethodContents = Str::before(Str::after($handler, 'function register()'), '}' . PHP_EOL);
-
-        file_put_contents(app_path("Exceptions/Handler.php"), str_replace(
-            $bootMethodContents,
-            $bootMethodContents . PHP_EOL . '    ' . $contentToAppend . PHP_EOL,
-            $handler
-        ));
-    }
-
-    protected function exceptionHandlingCallbacks()
-    {
-        return <<<'EOF'
-	$this->renderable(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e) {
-			return response()->view('error.link-invalid', [], 403);
-		});
-
-		$this->renderable(function (Throwable $e) {
-			if ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {
-				app('redirect')->setIntendedUrl(url()->previous());
-				return redirect()->route('login')
-					->withInput(request()->except('_token'))
-					->withErrors('Security token has expired. Please sign-in again.');
-			}
-		});
-EOF;
-    }
-
     protected function requireComposerPackages($packages)
     {
         $composer = $this->option('composer');
@@ -184,7 +154,6 @@ EOF;
 
     public function handle(): int
     {
-        //$this->requireComposerPackages('laravel/jetstream:^2.6');
         $this->installJetstream();
         $this->comment('Installed jetstream');
 
@@ -204,12 +173,14 @@ EOF;
                     $this->output->write($output);
                 });
 
-        // blade-component-classes -> app/View/Components
         File::copyDirectory(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
         $this->comment('Copied blade component classes');
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/commands', app_path('Console/Commands'));
         $this->comment('Copied commands');
+
+        copy(__DIR__.'/../../deploy/Kernel.php', app_path('Console'));
+        $this->comment('Copied Console/Kernel.php');
 
         File::copyDirectory(__DIR__ . '/../../deploy/controllers', app_path('Http/Controllers'));
         $this->comment('Copied controllers');
@@ -217,53 +188,44 @@ EOF;
         File::copyDirectory(__DIR__ . '/../../deploy/livewire', app_path('Http/Livewire'));
         $this->comment('Copied livewire components');
 
-        // middleware -> app_path('Http/Middleware')
         $this->copyFilesInDir(__DIR__ . '/../../deploy/middleware', app_path('Http/Middleware'));
         $this->comment('Copied middlewares');
 
-        // models -> app_path('Models')
         $this->copyFilesInDir(__DIR__ . '/../../deploy/models', app_path('Models'));
         $this->comment('Copied models');
 
-        // app -> app_path('Services')
         File::copyDirectory(__DIR__ . '/../../deploy/services', app_path('Services'));
         $this->comment('Copied Services');
 
-        // app -> app_path('Requests')
         File::copyDirectory(__DIR__ . '/../../deploy/requests', app_path('Http/Requests'));
         $this->comment('Copied Requests');
 
-        // views -> resource_path('views')
         File::copyDirectory(__DIR__ . '/../../deploy/views', resource_path('views'));
         $this->comment('Copied views');
 
-        // Assets...
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/fonts', resource_path('fonts'), '*.*');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'), '*.*');
         $this->comment('Copied resources');
 
-        // langs
         File::copyDirectory(__DIR__ . '/../../deploy/resources/lang', resource_path('lang'));
         $this->comment('Copied langs');
 
-        // Images
         $this->copyFilesInDir(__DIR__ . '/../../deploy/public/images', public_path('images'), '*.*');
+        $this->comment('Copied public images');
 
-        // Tailwind Configuration...
         copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
         copy(__DIR__.'/../../deploy/npm/webpack.mix.js', base_path('webpack.mix.js'));
         $this->comment('Copied npm configs');
 
-        // NPM Packages...
         $this->updateNodePackages(function ($packages) {
             return [
-                "leaflet" => "^1.7.1",
-                "plotly.js-basic-dist" => "^2.8.0"
+                "leaflet" => "^1.8.0",
+                "plotly.js-basic-dist" => "^2.12.1"
             ] + $packages;
         });
-        $this->comment('Updated package.json with required packages');
+        $this->comment('Updated package.json with required npm packages');
 
         copy(__DIR__.'/../../deploy/routes/web.php', base_path('routes/web.php'));
         $this->comment('Copied route file (web.php)');
@@ -280,9 +242,12 @@ EOF;
         // Enable profile photo (jetstream)
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
 
+        // Make timezone setable from .env
+        $this->replaceInFile("'timezone' => 'UTC'", "'timezone' => env('APP_TIMEZONE', 'UTC')", config_path('app.php'));
+
         // Exception handler (for token mismatch and invalid invitation exceptions)
-        $this->registerExceptionHandler($this->exceptionHandlingCallbacks());
-        
+        //$this->registerExceptionHandler($this->exceptionHandlingCallbacks());
+        copy(__DIR__.'/../../deploy/Handler.php', app_path('Exceptions'));
 
         $this->info('All done');
 

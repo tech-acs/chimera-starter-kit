@@ -8,10 +8,11 @@ return [
     'map' => [
         'enabled' => env('ENABLE_MAP', false),
         'shape_simplification' => [
-            /*'region' => 0.001,
+            'region' => 0.001,
             'constituency' => 0.001,
-            'ea' => 0.0001*/
+            'ea' => 0.0001
         ],
+        'center' => [9.005401, 38.763611],
     ],
     'reports' => [
         'enabled' => env('ENABLE_REPORTS', false),

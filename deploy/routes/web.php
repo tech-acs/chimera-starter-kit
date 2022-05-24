@@ -7,16 +7,17 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Manage\ConnectionTestController;
 use App\Http\Controllers\Manage\FaqManagementController;
 use App\Http\Controllers\Manage\IndicatorController;
+use App\Http\Controllers\Manage\MapManagementController;
 use App\Http\Controllers\Manage\PageController;
 use App\Http\Controllers\Manage\QuestionnaireController;
+use App\Http\Controllers\Manage\ReportManagementController;
 use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\SettingController;
-use App\Http\Controllers\Manage\StatController;
+use App\Http\Controllers\Manage\ScorecardController;
 use App\Http\Controllers\Manage\UsageStatsController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\MapController;
-use App\Http\Controllers\ReportsController;
-use App\Services\PageBuilder;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,16 +28,13 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
 
     Route::get('home', HomeController::class)->name('home');
 
-    Route::get("page/{slug}", [ChartsController::class, 'page'])->name('page');
-
-    Route::get('indicator/{slug}', [ChartsController::class, 'indicator'])->name('indicator');
-
+    Route::get("page/{page:slug}", [ChartsController::class, 'page'])->name('page');
+    Route::get('indicator/{indicator:slug}', [ChartsController::class, 'indicator'])->name('indicator');
     Route::get('map', MapController::class)->name('map');
-
-    Route::get('reports', ReportsController::class)->name('reports');
-
+    Route::get('report', [ReportController::class, 'index'])->name('report');
+    Route::get('report/{report}/download', [ReportController::class, 'download'])->name('report.download');
+    Route::get('report/{report}/generate', [ReportController::class, 'generate'])->name('report.generate');
     Route::get('faq', FaqController::class)->name('faq');
-
     Route::get('help', HelpController::class)->name('help');
 
     Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {
@@ -45,13 +43,14 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views'])->group(functio
 
         Route::resource('page', PageController::class)->except(['show']);
         Route::resource('indicator', IndicatorController::class)->except(['show', 'create', 'store', 'destroy']);
-        Route::resource('stat', StatController::class)->except(['show', 'create', 'store', 'destroy']);
-
-        Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
-        Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
+        Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
         Route::name('manage.')->group(function () {
+            Route::resource('report', ReportManagementController::class)->except(['show']);
+            Route::resource('map', MapManagementController::class)->except(['show']);
             Route::resource('faq', FaqManagementController::class)->except(['show']);
         });
+        Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
+        Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
         Route::get('questionnaire/{questionnaire}/test-connection', [ConnectionTestController::class, 'test'])->name('questionnaire.connection.test');
         Route::resource('questionnaire', QuestionnaireController::class);
     });

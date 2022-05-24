@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Homepage Stats') }}
+            {{ __('Homepage Scorecards') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage homepage stats here') }}
+            {{ __('Manage homepage scorecards here') }}
         </p>
     </x-slot>
 
@@ -53,7 +53,7 @@
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                        <x-delete-confirmation prompt="[ This action will delete the component file and also the database entry for the indicator ]" />
+                        <x-delete-confirmation prompt="[ This action will delete the component file and also the database entry for the scorecard ]" />
 
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -95,7 +95,7 @@
                                     <x-yes-no value="{{$record->published}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{route('stat.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                    <a href="{{route('scorecard.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                 </td>
                             </tr>
                         @empty

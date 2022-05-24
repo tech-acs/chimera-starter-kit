@@ -4,118 +4,97 @@ namespace App\Http\Livewire;
 
 use App\Models\AreaRestriction;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
+use App\Services\Area;
+use App\Services\Traits\ChecksumSafetyTrait;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class AreaRestrictionManager extends Component
 {
-    public User $user;
-    public array $regions;
-    public string $selectedRegion = '';
-    public array$districts;
-    public string $selectedDistrict = '';
-    public array$sas;
-    public string $selectedSa = '';
-    public string $connection;
+    use ChecksumSafetyTrait;
 
-    private function addChecksumSafety($value) : string
-    {
-        return empty($value) ? '' : "*$value";
-    }
+    public $user;
+    public ?string $connection = null;
+    public Collection $areas;
+    public array $selections = [];
+    public array $areaRestrictions = [];
 
-    private function removeChecksumSafety($value) : string
+    public function mount()
     {
-        return ltrim($value, '*');
-    }
-
-    private function getAreaList($connection, $areaType, $parentArea)
-    {
-        if (config('chimera.cache.enabled')) {
-            return Cache::tags([$connection, 'area-list'])
-                ->remember("$areaType-$parentArea", config('chimera.cache.ttl'), function () use ($connection, $areaType, $parentArea) {
-                    //return DataSource::getAreaList($connection, $areaType, $parentArea);
-                });
+        $areaRepository = new Area($this->connection);
+        $levels = $areaRepository->levels();
+        $levels->pop(); // We do not have a select for the last level (EA). So, drop it!
+        $sessionFilter = session()->get('area-filter', []);
+        $previouslySet = $this->user->areaRestrictions()->first();
+        //dump($previouslySet);
+        $this->areas = collect([]);
+        $parentLevel = null;
+        foreach ($levels as $levelName => $level) {
+            if (is_null($parentLevel)) {
+                $this->areas[$levelName] = $areaRepository->areas()->pluck('name', 'code')->all();
+            } else {
+                $parent = $sessionFilter[$parentLevel] ?? null;
+                $this->areas[$levelName] = $parent ?
+                    $areaRepository->areas($this->removeChecksumSafety($parent), type: $levelName)->pluck('name', 'code')->all() :
+                    [];
+            }
+            $parentLevel = $levelName;
         }
-        //return DataSource::getAreaList($connection, $areaType, $parentArea);
+        $this->selections = $levels->map(fn ($level, $levelName) => $this->addChecksumSafety($sessionFilter[$levelName] ?? null))->all();
     }
 
-    private function getRegions()
+    public function changeHandler($changedSelect, $selected)
     {
-        $areaList = $this->getAreaList($this->connection, 'region', null);
-        $areaList = collect($areaList)->mapWithKeys(function ($name, $code) {
-            return ["*$code" => $name];
-        })->all();
-        return $areaList;
+        $this->selections[$changedSelect] = $selected;
+        $next = $this->nextKey($changedSelect);
+        if ($next) {
+            $this->areas[$next] = (new Area($this->connection))->areas($this->removeChecksumSafety($selected), type: $next)->pluck('name', 'code')->all();
+            $nextKeys = $this->nextKeys($changedSelect);
+            foreach ($nextKeys as $key) {
+                if ($key !== $next) {
+                    $this->areas[$key] = [];
+                }
+                $this->selections[$key] = null;
+            }
+        }
     }
 
-    private function getDistricts()
+    public function filter()
     {
-        $areaList = $this->getAreaList($this->connection, 'district', $this->removeChecksumSafety($this->selectedRegion));
-        $areaList = collect($areaList)->mapWithKeys(function ($name, $code) {
-            return ["*$code" => $name];
-        })->all();
-        return $areaList;
-    }
+        $selections = collect($this->selections)->filter();
+        $selectionNames = $selections->mapWithKeys(fn ($code, $type) => [$type.'Name' => $this->areas[$type][$code]])->all();
+        $selectionCodes = $selections->map(fn ($code) => $this->removeChecksumSafety($code))->all();
+        $filter = [...$selectionNames, ...$selectionCodes];
+        $smallest = (new Area())->resolveSmallestFilter($filter);
 
-    private function getSas()
-    {
-        $areaList = $this->getAreaList($this->connection, 'sa', $this->removeChecksumSafety($this->selectedDistrict));
-        $areaList = collect($areaList)->mapWithKeys(function ($name, $code) {
-            return ["*$code" => $name];
-        })->all();
-        return $areaList;
-    }
-
-    public function apply()
-    {
         AreaRestriction::updateOrCreate(
             [
                 'user_id' => $this->user->id,
                 'connection' => $this->connection,
             ],
             [
-                'region_code' => $this->removeChecksumSafety($this->selectedRegion),
-                'region_name' => $this->regions[$this->selectedRegion] ?? null,
-                'district_code' => $this->removeChecksumSafety($this->selectedDistrict),
-                'district_name' => $this->districts[$this->selectedDistrict] ?? null,
-                'sa_code' => $this->removeChecksumSafety($this->selectedSa),
-                'sa_name' => $this->sas[$this->selectedSa] ?? null,
+                'code' => $smallest->code,
+                'name' => $smallest->name ?? null,
             ]
         );
     }
 
-    public function regionSelected($selected)
+    private function nextKey($currentKey)
     {
-        $this->selectedRegion = $selected;
-        $this->selectedDistrict = '';
-        $this->selectedSa = '';
-        $this->districts = $this->getDistricts();
+        $keys = $this->areas->keys();
+        $currentKeyIndex = $keys->search($currentKey);
+        return $keys[$currentKeyIndex + 1] ?? null;
     }
 
-    public function districtSelected($selected)
+    private function nextKeys($currentKey)
     {
-        $this->selectedDistrict = $selected;
-        $this->selectedSa = '';
-    }
-
-    public function saSelected($selected)
-    {
-        $this->selectedSa = $selected;
-    }
-
-    public function mount()
-    {
-        $areaRestriction = $this->user->areaRestrictions()->where('connection', $this->connection)->first();
-        $this->selectedRegion = $this->addChecksumSafety($areaRestriction->region_code ?? '');
-        $this->selectedDistrict = $this->addChecksumSafety($areaRestriction->district_code ?? '');
-        $this->selectedSa = $this->addChecksumSafety($areaRestriction->sa_code ?? '');
+        $keys = $this->areas->keys();
+        $currentKeyIndex = $keys->search($currentKey);
+        return array_slice($keys->all(), $currentKeyIndex + 1);
     }
 
     public function render()
     {
-        $this->regions = $this->getRegions();
-        $this->districts = $this->getDistricts();
-        $this->sas = $this->getSas();
         return view('livewire.area-restriction-manager');
     }
 }

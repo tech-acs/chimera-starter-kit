@@ -8,6 +8,7 @@ module.exports = {
         './resources/views/**/*.blade.php',
         './config/chimera.php',
         './app/Http/Livewire/Home/Summary.php',
+        './app/Services/Theme.php',
     ],
 
     theme: {

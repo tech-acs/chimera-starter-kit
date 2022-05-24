@@ -2,17 +2,17 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Pages') }}
+            {{ __('Reports') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage pages here') }}
+            {{ __('Manage reports here') }}
         </p>
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div class="text-right">
+        {{--<div class="text-right">
             <a href="{{route('page.create')}}"><x-jet-button>{{ __('Create new') }}</x-jet-button></a>
-        </div>
+        </div>--}}
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
                 <div class="flex">
@@ -40,7 +40,7 @@
                     <div class="ml-3 flex-1 md:flex md:justify-between text-sm text-red-700">
                         <ul class="">
                             @foreach($errors->all() as $error)
-                                <li class="">{{$error}}</li>
+                                <li class="list-disc">{{$error}}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -51,27 +51,27 @@
         <div class="mt-2 flex flex-col">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                        <x-delete-confirmation />
+                        <x-delete-confirmation prompt="[ This action will delete the component file and also the database entry for the report ]" />
 
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{ __('Name') }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Title') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Slug') }}
-                                </th>
-                                {{--<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Questionnaire') }}
-                                </th>--}}
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Indicators') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Published') }}
+                                    {{ __('Enabled') }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{ __('Schedule') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
@@ -80,24 +80,22 @@
                         @forelse($records as $record)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{$record->name}}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{$record->title}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-                                    {{$record->slug}}
-                                </td>
-                                {{--<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{$record->questionnaire}}
-                                </td>--}}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->indicators_count}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    <x-yes-no value="{{$record->published}}" />
+                                    <x-yes-no value="{{$record->enabled}}" />
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                    {{ $record->schedule }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{route('page.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                    <span class="text-gray-400 px-1">|</span>
-                                    <a href="{{ route('page.destroy', $record->id) }}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600">{{ __('Delete') }}</a>
+                                    <a href="{{route('manage.report.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                 </td>
                             </tr>
                         @empty

@@ -12,7 +12,7 @@
         <div class="flex">
             @if($mode === 'grid')
                 <div class="self-center">
-                    <a href="{{$fullPageViewRoute}}" title="Display chart full page" type="button" class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-indigo-400 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="{{route('indicator', $indicator?->slug)}}" title="Display chart full page" type="button" class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-indigo-400 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                     </a>
                 </div>
@@ -24,7 +24,7 @@
                 </div>
             @endif
 
-            <livewire:exporter :chart="$indicator->component" />
+            <livewire:exporter :chart="$indicator->component" :questionnaire="$indicator->questionnaire" />
 
             <div class="self-center ml-2">
                 <a @click="show_help = !show_help" title="Help" type="button" class="cursor-pointer inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-indigo-400 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

@@ -13,7 +13,6 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
     {
         $migrations = [
             'create_area_restrictions_table',
-            'create_database_connections_table',
             'create_faqs_table',
             'create_invitations_table',
             'create_maps_table',
@@ -23,12 +22,13 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_pages_table',
             'create_questionnaires_table',
             'create_indicators_table',
-            'create_stats_table',
+            'create_scorecards_table',
+            'create_reports_table',
         ];
         $package
             ->name('chimera')
             //->hasViews() // Makes views publishable only
-            ->hasConfigFile(['chimera', 'languages']) // Makes config file publishable only
+            ->hasConfigFile(['chimera', 'languages', 'filesystems']) // Makes config file publishable only
             //->hasTranslations() // Makes translations publishable
             ->hasMigrations($migrations) // Makes migrations publishable only
             //->hasRoute('web')

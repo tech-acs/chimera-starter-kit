@@ -8,13 +8,13 @@
         <div class="grid grid-cols-1 gap-6">
             <div class="">
                 <x-jet-label for="name" value="{{ __('Name') }}" />
-                <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $stat->name }}" />
+                <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $scorecard->name }}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
             <div class="">
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
                 {{--<x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $stat->title ?? null)}}" />--}}
-                <x-multi-lang-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $stat->title ?? null)}}" />
+                <x-multi-lang-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $scorecard->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
             {{--<div class="">
@@ -38,7 +38,7 @@
             </div>--}}
             <div class="">
                 <x-jet-label for="page" value="{{ __('Status') }}" />
-                <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($stat->published ?? false) }">
+                <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($scorecard->published ?? false) }">
                     <span class="" id="annual-billing-label">
                         <span class="text-sm text-gray-500">{{ __('Draft') }}</span>
                     </span>

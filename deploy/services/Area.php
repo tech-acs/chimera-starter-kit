@@ -13,17 +13,22 @@ class Area
         $this->connection = $connection;
     }
 
+    public function resolveSmallestFilter(array $filter)
+    {
+        return DB::table('areas')
+            ->select('level', 'type', 'code', 'name')
+            ->where('connection_name', $this->connection)
+            ->whereIn('code', array_values($filter))
+            ->orderBy('level', 'DESC')
+            ->limit(1)
+            ->first();
+    }
+
     public function getAreaNamesForCurrentFilter(array $filter)
     {
         $area = null;
         if (! empty($filter)) {
-            $area = DB::table('areas')
-                ->select('level', 'type', 'code')
-                ->where('connection_name', $this->connection)
-                ->whereIn('code', array_values($filter))
-                ->orderBy('level', 'DESC')
-                ->limit(1)
-                ->first();
+            $area = $this->resolveSmallestFilter($filter);
         }
         return $this->areasByParent($area?->code);
     }
@@ -79,5 +84,10 @@ class Area
             ->where('parent_code', $parentCode)
             ->orderBy($orderBy)
             ->get();
+    }
+
+    public function nextLevel(int $level): ?string
+    {
+        return $this->levels()->flip()[$level + 1] ?? null;
     }
 }

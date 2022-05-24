@@ -18,7 +18,7 @@ class Questionnaire extends Model
 
     public function getHomepageStatsAttribute()
     {
-        return Stat::published()
+        return Scorecard::published()
             ->whereQuestionnaire($this->name)
             ->get();
     }

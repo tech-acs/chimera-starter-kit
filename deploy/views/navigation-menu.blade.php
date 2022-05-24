@@ -17,7 +17,7 @@
                     </x-jet-nav-link>
                 @foreach($pages as $route => $page)
                     @can($page->slug)
-                        <x-jet-nav-link href="{{ route('page', $route) }}" :active="request()->is($route, $route . '/*')">
+                        <x-jet-nav-link href="{{ route('page', $route) }}" :active="request()->is('page/*')">
                             {{$page->title}}
                         </x-jet-nav-link>
                     @endcan
@@ -25,9 +25,11 @@
                     <x-jet-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
                         {{ __('Map') }}
                     </x-jet-nav-link>
-                    <x-jet-nav-link href="{{ route('reports') }}" :active="request()->routeIs('reports')">
+                @can('reports')
+                    <x-jet-nav-link href="{{ route('report') }}" :active="request()->routeIs('report')">
                         {{ __('Reports') }}
                     </x-jet-nav-link>
+                @endcan
                     <x-jet-nav-link href="{{ route('help') }}" :active="request()->routeIs('help')">
                         {{ __('Help') }}
                     </x-jet-nav-link>
@@ -61,12 +63,14 @@
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('questionnaire.index')}}">{{ __('Questionnaires') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Manage Indicators') }}</div>
+                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Dashboard Elements') }}</div>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('stat.index') }}">{{ __('Homepage stats') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('manage.report.index') }}">{{ __('Reports') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Maps') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <x-jet-dropdown-link href="{{route('setting.index')}}">{{ __('Settings') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="">{{ __('Settings') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>
                                 </div>
@@ -131,7 +135,7 @@
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <button class="flex items-center text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                    <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                    <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" />
                                     <span class="hidden ml-3 text-gray-700 text-sm font-medium lg:block">{{Auth::user()->name}}</span>
                                     <svg class="hidden flex-shrink-0 ml-1 h-5 w-5 text-gray-400 lg:block" x-description="Heroicon name: solid/chevron-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -228,7 +232,7 @@
                 <x-jet-responsive-nav-link href="{{ route('indicator.index') }}" :active="request()->routeIs('indicator.*')">
                     {{ __('Indicators') }}
                 </x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('stat.index') }}" :active="request()->routeIs('stat.*')">
+                <x-jet-responsive-nav-link href="{{ route('scorecard.index') }}" :active="request()->routeIs('scorecard.*')">
                     {{ __('Homepage Stats') }}
                 </x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('usage_stats') }}" :active="request()->routeIs('usage_stats')">

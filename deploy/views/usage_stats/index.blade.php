@@ -60,9 +60,9 @@
                             @endforelse
                             </tbody>
                             @if ($records->hasPages())
-                                <tfoot>
+                            <tfoot>
                                 <tr><td colspan="3" class="px-6 text-left text-xs text-gray-500  tracking-wider">{{ $records->appends(request()->all())->links() }}</td></tr>
-                                </tfoot>
+                            </tfoot>
                             @endif
                         </table>
                     </div>

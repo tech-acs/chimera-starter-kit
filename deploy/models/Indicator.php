@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 
 class Indicator extends Model
@@ -24,7 +25,7 @@ class Indicator extends Model
     protected function permissionName(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->slug,
+            get: fn () => str($this->slug)->replace('.', ':')->toString(),
         );
     }
 
@@ -33,6 +34,11 @@ class Indicator extends Model
         return new Attribute(
             get: fn () => $this->slug,
         );
+    }
+
+    public function getQuestionnaire()
+    {
+        return Questionnaire::where('name', $this->questionnaire)->first();
     }
 
     protected static function booted()
@@ -49,6 +55,13 @@ class Indicator extends Model
             } else {
                 $page->slug = (string)$className;
             }
+        });
+
+        static::created(function ($indicator) {
+            Permission::create(['guard_name' => 'web', 'name' => $indicator->permission_name]);
+        });
+        static::deleted(function ($indicator) {
+            Permission::whereName($indicator->permission_name)->delete();
         });
     }
 }

@@ -11,9 +11,17 @@ class Exporter extends Component
 {
     protected $listeners = ['updateChart' => 'update'];
 
-    //public $page;
+    public $questionnaire;
     public $chart;
     public $filter = [];
+
+    public function mount()
+    {
+        $this->filter = array_merge(
+            auth()->user()->areaFilter($this->questionnaire),
+            session()->get('area-filter', [])
+        );
+    }
 
     public function update(array $filter)
     {
@@ -22,9 +30,7 @@ class Exporter extends Component
 
     public function export()
     {
-        //$connection = config("chimera.pages.{$this->page}.connection");
-        //$data = DataSource::getCollection($this->chart)($connection, $this->filter);
-        $indicatorInstance = IndicatorFactory::make($this->chart);
+        $indicatorInstance = IndicatorFactory::make($this->questionnaire, $this->chart);
         $data = $indicatorInstance->getData($this->filter);
 
         $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->chart) . '.csv';

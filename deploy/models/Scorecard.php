@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Translatable\HasTranslations;
 
-class Stat extends Model
+class Scorecard extends Model
 {
     use HasFactory;
     use HasTranslations;
@@ -35,5 +35,9 @@ class Stat extends Model
                 $page->slug = (string)$className;
             }
         });
+
+        /*static::created(function ($indicator) {
+            Permission::create(['guard_name' => 'web', 'name' => $indicator->permission_name]);
+        });*/
     }
 }

@@ -3,24 +3,18 @@
 namespace App\Console\Commands;
 
 use App\Models\Questionnaire;
-use App\Models\Stat;
+use App\Models\Scorecard;
 use App\Services\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 
-class MakeStats extends GeneratorCommand
+class MakeScorecard extends GeneratorCommand
 {
-    protected $signature = 'chimera:make-stat
+    protected $signature = 'chimera:make-scorecard
                             {--include-sample-code : Whether the generated stub should include functioning sample code}';
 
-    protected $description = 'Create a new stat component. Creates file from stub and adds entry in stats table.';
+    protected $description = 'Create a new scorecard component. Creates file from stub and adds entry in scorecards table.';
 
-    protected $types = [
-        'Bar chart' => 'barchart',
-        'Line chart' => 'linechart',
-        'Pie chart' => 'piechart',
-        'Default' => 'default',
-    ];
     protected $type = 'default';
 
     use InteractiveCommand;
@@ -32,7 +26,7 @@ class MakeStats extends GeneratorCommand
 
     protected function getStub()
     {
-        return resource_path("stubs/stat.{$this->type}.stub");
+        return resource_path("stubs/scorecard.{$this->type}.stub");
     }
 
     protected function writeFile(string $name)
@@ -61,18 +55,14 @@ class MakeStats extends GeneratorCommand
         }
 
         $name = $this->askValid(
-            "Please provide a name for the stat\n\n (This will serve as the component name and has to be in camel case. Eg. TotalHouseholds\n You can also include directory to help with organization of stat files. Eg. Household/BirthRate)",
+            "Please provide a name for the scorecard\n\n (This will serve as the component name and has to be in camel case. Eg. TotalHouseholds\n You can also include directory to help with organization of scorecard files. Eg. Household/BirthRate)",
             'name',
-            ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:stats,name']
+            ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:scorecards,name']
         );
 
         $questionnaires = Questionnaire::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
         $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
-
-        /*$chartTypeMenu = array_combine(range(1, count($this->types)), array_keys($this->types));
-        $chosenType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);
-        $this->type = $this->types[$chosenType];*/
 
         $title = $this->askValid(
             "Please enter a reader friendly title for the indicator (press enter to leave empty for now)",
@@ -80,27 +70,19 @@ class MakeStats extends GeneratorCommand
             ['nullable', ]
         );
 
-        /*$description = $this->askValid(
-            "Please enter a description for the indicator (press enter to leave empty for now)",
-            'description',
-            ['nullable', ]
-        );*/
-
         DB::transaction(function () use ($name, $title, $questionnaire) {
 
             $result = $this->writeFile($name);
             if ($result) {
-                $this->info('Stat created successfully.');
+                $this->info('Scorecard created successfully.');
             } else {
                 throw new \Exception('There was a problem creating the class file');
             }
 
-            Stat::create([
+            Scorecard::create([
                 'name' => $name,
                 'title' => $title,
-                //'description' => $description,
                 'questionnaire' => $questionnaire,
-                //'type' => $chosenType,
             ]);
         });
 

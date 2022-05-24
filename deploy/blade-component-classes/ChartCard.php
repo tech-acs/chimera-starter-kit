@@ -8,24 +8,12 @@ use Illuminate\View\Component;
 class ChartCard extends Component
 {
     public Indicator $indicator;
-    /*public string $page;
-    public string $chart;
-    public string $title;
-    public string $description;*/
     public string $mode;
-    public string $help;
-    public string $fullPageViewRoute;
 
-    public function __construct(Indicator $indicator, $mode = 'grid', $help = 'Put help text here')
+    public function __construct(Indicator $indicator, $mode = 'grid')
     {
-        /*$this->page = $page;
-        $this->chart = $chart;
-        $this->title = $title;
-        $this->description = $description;*/
         $this->indicator = $indicator;
-        $this->fullPageViewRoute = route('indicator', $indicator->slug);
         $this->mode = $mode;
-        $this->help = $help;
     }
 
     public function render()

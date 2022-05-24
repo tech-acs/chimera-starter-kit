@@ -13,17 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('stats', function (Blueprint $table) {
+        Schema::create('scorecards', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->string('slug');
             $table->string('title')->nullable();
-            //$table->json('description')->nullable();
-            //$table->text('help')->nullable();
             $table->string('questionnaire')->nullable();
             $table->boolean('published')->default(false);
-            $table->string('type')->nullable();
-            //$table->foreignId('page_id')->nullable()->constrained();
             $table->timestamps();
         });
     }
@@ -35,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stats');
+        Schema::dropIfExists('scorecards');
     }
 };

@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Indicator;
 use App\Models\Page;
-use App\Models\Questionnaire;
-use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
 
 class ChartsController extends Controller
 {
@@ -29,45 +27,37 @@ class ChartsController extends Controller
     {
         $list = is_countable($list) ? collect($list) : collect([]);
         $perPage = config('chimera.indicators_per_page');
-        return $list->map(function($indicator) {
-            return $indicator['title'];
+        return $list->map(function ($indicator) {
+            return $indicator->title;
         })->values()->chunk($perPage);
     }
 
-    public function page($slug, Request $request)
+    public function page(Page $page, Request $request)
     {
-        $page = Page::with('indicators')->where('slug', $slug)->first();
+        $page->load(['indicators' => function ($query) {
+            $query->where('published', true);
+        }]);
         try {
-            $this->authorize($slug, Auth::user());
+            $this->authorize($page->permission_name, Auth::user());
         } catch (AuthorizationException $authorizationException) {
             return redirect('faq');
         }
-        $indicators = $page?->indicators?->all();
+        $indicators = $page?->indicators?->filter(function ($indicator) {
+            return Gate::allows($indicator->permission_name);
+        })->all();
         $preview = $this->generatePreviewContent($indicators);
         $indicators = $this->paginate($indicators, $page->slug, $request->get('page', 1));
-
-        return view("charts.multi")->with([
-            'page' => $page->slug,
-            'indicators' => $indicators,
-            //'questionnaire' => $page?->questionnaire, //config("chimera.pages.{$page}.connection"),
-            'preview' => $preview
-        ]);
+        return view('charts.multi', compact('indicators', 'preview'));
     }
 
-    public function indicator($slug)
+    public function indicator(Indicator $indicator)
     {
-        $indicator = Indicator::where('slug', $slug)->first();
-        //$page = Page::where('slug', $slug)->first();
         try {
-            $this->authorize($slug, Auth::user());
+            $this->authorize($indicator->permission_name, Auth::user());
         } catch (AuthorizationException $authorizationException) {
             abort(404);
             exit;
         }
-        return view('charts.single')->with([
-            //'page' => $slug,
-            'indicator' => $indicator,
-            //'connection' => $page->connection, //config("chimera.pages.{$page}.connection"),
-        ]);
+        return view('charts.single', compact('indicator'));
     }
 }

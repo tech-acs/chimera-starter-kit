@@ -35,22 +35,6 @@
                             <dl class="grid grid-cols-1 gap-x-4 gap-y-8">
                                 <div class="sm:col-span-1">
                                     <dt class="text-sm font-medium text-gray-500">
-                                        {{ __('Title') }}
-                                    </dt>
-                                    <dd class="mt-1 text-sm text-gray-900">
-                                        {{$user->title}}
-                                    </dd>
-                                </div>
-                                <div class="sm:col-span-1">
-                                    <dt class="text-sm font-medium text-gray-500">
-                                        {{ __('Organization') }}
-                                    </dt>
-                                    <dd class="mt-1 text-sm text-gray-900">
-                                        {{$user->organization}}
-                                    </dd>
-                                </div>
-                                <div class="sm:col-span-1">
-                                    <dt class="text-sm font-medium text-gray-500">
                                         {{ __('Registered on') }}
                                     </dt>
                                     <dd class="mt-1 text-sm text-gray-900">
@@ -90,15 +74,9 @@
                             </div>
                             <div class="mt-6">
                                 <div class="mb-2">
-                                    <span class="text-base font-medium text-gray-900">{{ __('Area restriction (listing)') }}</span>
+                                    <span class="text-base font-medium text-gray-900">{{ __('Area restriction') }}</span>
                                 </div>
-                                <livewire:area-restriction-manager connection="listing" :user="$user" />
-                            </div>
-                            <div class="mt-6">
-                                <div class="mb-2">
-                                    <span class="text-base font-medium text-gray-900">{{ __('Area restriction (enumeration)') }}</span>
-                                </div>
-                                <livewire:area-restriction-manager connection="enumeration" :user="$user" />
+                                <livewire:area-restriction-manager :user="$user" />
                             </div>
                         </fieldset>
                     </div>

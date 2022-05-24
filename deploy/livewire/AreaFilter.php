@@ -21,7 +21,7 @@ class AreaFilter extends Component
         $areaRepository = new Area($this->connection);
         $levels = $areaRepository->levels();
         $levels->pop(); // We do not have a select for the last level (EA). So, drop it!
-        $sessionFilter = session()->get("area-filter{$this->connection}", []);
+        $sessionFilter = session()->get('area-filter', []);
         $this->areas = collect([]);
         $parentLevel = null;
         foreach ($levels as $levelName => $level) {
@@ -60,13 +60,13 @@ class AreaFilter extends Component
         $selectionNames = $selections->mapWithKeys(fn ($code, $type) => [$type.'Name' => $this->areas[$type][$code]])->all();
         $selectionCodes = $selections->map(fn ($code) => $this->removeChecksumSafety($code))->all();
         $filter = [...$selectionNames, ...$selectionCodes];
-        session()->put("area-filter{$this->connection}", $filter);
+        session()->put('area-filter', $filter);
         $this->emit('updateChart', $filter);
     }
 
     public function clear()
     {
-        session()->forget("area-filter{$this->connection}");
+        session()->forget('area-filter');
         $this->mount();
         $this->emit('updateChart', []);
     }

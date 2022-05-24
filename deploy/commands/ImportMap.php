@@ -5,11 +5,12 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
-class ShpToDb extends Command
+class ImportMap extends Command
 {
-    protected $signature = 'chimera:shp-to-db';
+    protected $signature = 'chimera:import-map
+                            {path : Path to directory containing all your shapefiles}';
 
-    protected $description = 'Load all shapefiles into the database (maps table)';
+    protected $description = 'Import shapefiles into the database (maps table)';
 
     public function __construct()
     {
@@ -18,11 +19,11 @@ class ShpToDb extends Command
 
     public function handle()
     {
-        $maps = config('chimera.maps', []);
-        $shapefiles = collect($maps)->map(function ($item, $key) {
-            return glob(base_path("shapefiles/$key/") . '*.shp');
+        $pathToShapefiles = rtrim($this->argument('path'), '/') . '/';
+        $simplificationFactors = config('chimera.map.shape_simplification', []);
+        $shapefiles = collect($simplificationFactors)->map(function ($factor, $type) use ($pathToShapefiles) {
+            return glob($pathToShapefiles . $type . '/*.shp');
         });
-        $tolerances = $maps;
 
         foreach ($shapefiles as $areaType => $areaShapefiles) {
             $this->info("\nImporting " . Str::of($areaType)->plural()->upper());
@@ -36,7 +37,7 @@ class ShpToDb extends Command
                     $shapefile . '" -nln "maps" -sql "select \'' . $areaType .
                     "' AS area_type, code, name, pcode, geometry AS geom from '" .
                     basename($shapefile, '.shp') .
-                    "'\" -dialect sqlite -t_srs EPSG:4326 -simplify {$tolerances[$areaType]} -skipfailures";
+                    "'\" -dialect sqlite -t_srs EPSG:4326 -simplify {$simplificationFactors[$areaType]} -skipfailures";
                 exec($command, $output, $retval);
             }
         }

@@ -11,7 +11,7 @@
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <livewire:role-manager :role="$role" :permissionGroups="$pages"/>
+        <livewire:role-manager :role="$role" />
     </div>
 
 </x-app-layout>

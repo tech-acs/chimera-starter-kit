@@ -39,7 +39,7 @@ class ChimeraServiceProvider extends ServiceProvider
 
         Blade::if('connectible', function ($value) {
             try {
-                DB::connection($value);
+                DB::connection($value)->getPdo();
                 return true;
             } catch (\Exception $exception) {
                 return false;

@@ -19,9 +19,6 @@
                                 {{ __('Name') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Title') }}
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {{ __('Created') }}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -51,10 +48,6 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{$record->title}}</div>
-                                    <div class="text-sm text-gray-500">{{$record->organization}}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm">
                                 {{$record->created_at->toFormattedDateString()}}
                             </span>
@@ -66,10 +59,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if (!$record->hasRole('Super Admin'))
-                                        <a href="{{route('users.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                        <a href="{{route('user.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                         @can('Super User')
                                             <span class="text-gray-400 px-1">|</span>
-                                            <form action="{{route('users.destroy', $record->id)}}" method="post" class="inline">
+                                            <form action="{{route('user.destroy', $record->id)}}" method="post" class="inline">
                                                 @method('delete')
                                                 @csrf
                                                 <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
