@@ -12,10 +12,11 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $migrations = [
+            'install_postgis_extension',
+            'install_ltree_extension',
             'create_area_restrictions_table',
             'create_faqs_table',
             'create_invitations_table',
-            'create_maps_table',
             'create_usage_stats_table',
             'create_areas_table',
             'create_expected_values_table',
@@ -24,6 +25,8 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_indicators_table',
             'create_scorecards_table',
             'create_reports_table',
+            'create_scorecards_table',
+            'add_is_suspended_column_to_users_table',
         ];
         $package
             ->name('chimera')

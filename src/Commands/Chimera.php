@@ -229,14 +229,16 @@ class Chimera extends Command
         $this->copyFilesInDir(__DIR__ . '/../../deploy/public/images', public_path('images'), '*.*');
         $this->comment('Copied public images');
 
-        copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
-        copy(__DIR__.'/../../deploy/npm/webpack.mix.js', base_path('webpack.mix.js'));
+        //copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
+        //copy(__DIR__.'/../../deploy/npm/webpack.mix.js', base_path('webpack.mix.js'));
+        copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
         $this->comment('Copied npm configs');
 
         $this->updateNodePackages(function ($packages) {
             return [
                 "leaflet" => "^1.9.2",
-                "plotly.js-basic-dist" => "^2.16.1"
+                "plotly.js-basic-dist-min" => "^2.16.1",
+                "@alpinejs/focus" => "3.10.5"
             ] + $packages;
         });
         $this->comment('Updated package.json with required npm packages');
@@ -253,7 +255,7 @@ class Chimera extends Command
 
         // Service Providers...
         $this->copyFilesInDir(__DIR__.'/../../deploy/providers', app_path('Providers'));
-        $this->s('JetstreamServiceProvider', 'ChimeraServiceProvider'); 
+        $this->installServiceProviderAfter('JetstreamServiceProvider', 'ChimeraServiceProvider'); 
 
         // Enable profile photo (jetstream)
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
