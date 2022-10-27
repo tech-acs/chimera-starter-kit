@@ -3,16 +3,25 @@
 namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $records = User::paginate(env('PAGE_SIZE', 20));
-        return view('user.index', compact('records'));
+        $search = $request->get('search');
+        $sortColumn = $request->get('sort') ?? 'name';
+        $records = User::query()
+            ->when(! empty($search), function ($query) use ($search) {
+                $query->where('name', 'ilike', "%$search%")
+                    ->orWhere('email', 'ilike', "$search%");
+            })
+            ->orderBy($sortColumn)
+            ->paginate(config('chimera.records_per_page'));
+        return view('user.index', ['records' => $records, 'users_count' => User::count(), 'invitations_count' => Invitation::count()]);
     }
 
     public function edit(User $user)

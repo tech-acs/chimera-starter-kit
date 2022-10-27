@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('slug');
-            $table->string('title')->nullable();
+            $table->jsonb('title')->nullable();
             $table->string('questionnaire')->nullable();
             $table->boolean('published')->default(false);
+            $table->string('linked_indicator')->nullable();
             $table->timestamps();
         });
     }

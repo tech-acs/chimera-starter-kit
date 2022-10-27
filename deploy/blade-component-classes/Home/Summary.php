@@ -14,22 +14,6 @@ class Summary extends Component
     public array $dates = [];
     public string $lastUpdated;
 
-    /*public array $caseStats = [];
-    public array $colors = [
-        'bg-red-500',
-        'bg-yellow-500',
-        'bg-green-500',
-        'bg-blue-500',
-        'bg-pink-500',
-        'bg-purple-500',
-        'bg-red-800',
-        'bg-yellow-800',
-        'bg-green-800',
-        'bg-blue-800',
-        'bg-purple-800',
-        'bg-pink-800',
-    ];*/
-
     public function __construct(Questionnaire $questionnaire)
     {
         $this->questionnaire = $questionnaire;
@@ -39,18 +23,6 @@ class Summary extends Component
         $this->lastUpdated = $this->getLastUpdated();
         $this->title = $questionnaire->title;
         $this->color = 'text-black';
-
-        /*$indicatorInstance = IndicatorFactory::make($questionnaire->name, 'case-stats');
-        $this->caseStats = $indicatorInstance->getData([]);*/
-
-        /*foreach ($this->subIndicators as $metadata) {
-            $indicatorInstance = IndicatorFactory::make($metadata['connection'], $metadata['indicator']);
-            if (($metadata['type'] ?? null) === 'case-stats') {
-                $this->caseStats = $indicatorInstance->getData([]);
-            } else {
-                $this->selectedIndicators[$metadata['label'] ?? $metadata['title']] = $indicatorInstance->getData([]);
-            }
-        }*/
     }
 
     private function makeProgressStatement(Carbon $s, Carbon $e, Carbon $now)

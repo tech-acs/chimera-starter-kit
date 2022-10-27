@@ -13,7 +13,7 @@ class ExpectedValue
     public function __construct(?string $connection = null)
     {
         $this->connection = $connection;
-        $this->levels = (new Area($this->connection))->levels();
+        $this->levels = (new AreaTree($this->connection))->levels();
     }
 
     private function nextLevelDown($currentLevel)

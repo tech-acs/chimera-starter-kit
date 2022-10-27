@@ -98,7 +98,7 @@
             </div>
             <div class="mt-8 md:mt-0 md:order-1">
                 <p class="text-center text-base text-gray-400">
-                    {{ __('Created by') }} <a href="https://www.uneca.org/data-and-statistics" target="_blank" class="text-blue-400">ECA</a> | ecastats@un.org
+                    {{ __('Created by') }} <a href="https://www.uneca.org/data-and-statistics" target="_blank" class="text-blue-400">ECA</a>
                 </p>
             </div>
         </div>

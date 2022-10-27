@@ -2,54 +2,87 @@
 
 namespace App\Http\Livewire;
 
-use App\Services\Area;
+use App\Services\AreaTree;
 use App\Services\Traits\ChecksumSafetyTrait;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class AreaFilter extends Component
 {
     use ChecksumSafetyTrait;
 
-    public ?string $connection = null;
-    public Collection $areas;
-    public array $selections = [];
-    public array $areaRestrictions = [];
+    public array $hierarchies;  // [ 0 => 'region',  1 => 'constituency', ... ]
+    public array $dropdowns;    // [ 'region' => [path1 => name1, path2 => name2, ...] ]
+    public array $selections;   // [ 'region' => '*02', 'regionName' => 'Erongo', ... ]
+    public array $restrictions; // [ 'region' => '*02', ... ]
 
     public function mount()
     {
-        $areaRepository = new Area($this->connection);
-        $levels = $areaRepository->levels();
-        $levels->pop(); // We do not have a select for the last level (EA). So, drop it!
-        $sessionFilter = session()->get('area-filter', []);
-        $this->areas = collect([]);
-        $parentLevel = null;
-        foreach ($levels as $levelName => $level) {
-            if (is_null($parentLevel)) {
-                $this->areas[$levelName] = $areaRepository->areas()->pluck('name', 'code')->all();
-            } else {
-                $parent = $sessionFilter[$parentLevel] ?? null;
-                $this->areas[$levelName] = $parent ?
-                    $areaRepository->areas($this->removeChecksumSafety($parent), type: $levelName)->pluck('name', 'code')->all() :
-                    [];
+        $this->hierarchies = (new AreaTree)->hierarchies;
+        $selectionsFromSession = session()->get('area-filter', []);
+        $restrictions = []; //['region' => '02', 'constituency' => '02.0201'];
+        $heldPath = null;
+        $this->dropdowns = array_map(function ($level) use ($selectionsFromSession, $restrictions) {
+            global $heldPath;
+            $levelName = $this->hierarchies[$level];
+            $replacementValue = [];
+            if ($level === 0) {
+                $replacementValue = $this->areas()->pluck('name', 'path')->all();
             }
-            $parentLevel = $levelName;
+            if ($heldPath) {
+                $replacementValue = $this->areas($heldPath)->pluck('name', 'path')->all();
+                $heldPath = null;
+            }
+            if (array_key_exists($levelName, $selectionsFromSession)) {
+                $heldPath = $selectionsFromSession[$levelName];
+            }
+            if (array_key_exists($levelName, $restrictions)) {
+                $heldPath = $restrictions[$levelName];
+            }
+            return $replacementValue;
+        }, array_flip($this->hierarchies));
+        //dump($selectionsFromSession, $restrictions);
+        $this->selections = array_map(fn ($level) => $this->addChecksumSafety($selectionsFromSession[$this->hierarchies[$level]] ?? null), array_flip($this->hierarchies));
+        $this->restrictions = array_map(fn ($path) => $this->addChecksumSafety($path), $restrictions);
+        if (! empty($this->restrictions)) {
+            $this->selections = array_replace($this->selections, $this->restrictions);
         }
-        $this->selections = $levels->map(fn ($level, $levelName) => $this->addChecksumSafety($sessionFilter[$levelName] ?? null))->all();
     }
 
-    public function changeHandler($changedSelect, $selected)
+    private function prev($levelName)
     {
-        $this->selections[$changedSelect] = $selected;
-        $next = $this->nextKey($changedSelect);
-        if ($next) {
-            $this->areas[$next] = (new Area($this->connection))->areas($this->removeChecksumSafety($selected), type: $next)->pluck('name', 'code')->all();
-            $nextKeys = $this->nextKeys($changedSelect);
-            foreach ($nextKeys as $key) {
-                if ($key !== $next) {
-                    $this->areas[$key] = [];
+        $key = array_search($levelName, $this->hierarchies);
+        return $key === false ? null : $this->hierarchies[$key - 1] ?? null;
+    }
+
+    private function next($levelName)
+    {
+        $key = array_search($levelName, $this->hierarchies);
+        return $key === false ? null : $this->hierarchies[$key + 1] ?? null;
+    }
+
+    private function nextLevelNames($levelName)
+    {
+        $currentKey = array_search($levelName, $this->hierarchies);
+        return array_slice(array_values($this->hierarchies), $currentKey + 1);
+    }
+
+    public function changeHandler($changedLevelName, $selectedPath)
+    {
+        $this->selections[$changedLevelName] = $selectedPath;
+        $nextDropdown = $this->next($changedLevelName);
+        if ($nextDropdown) {
+            $this->dropdowns[$nextDropdown] = $this
+                ->areas($this->removeChecksumSafety($selectedPath))
+                ->pluck('name', 'path')
+                ->all();
+            $nextLevelNames = $this->nextLevelNames($changedLevelName);
+            //dump($changedLevelName, $nextLevelNames, $nextDropdown);
+            foreach ($nextLevelNames as $levelName) {
+                if ($levelName !== $nextDropdown) {
+                    $this->dropdowns[$levelName] = [];
                 }
-                $this->selections[$key] = null;
+                $this->selections[$levelName] = null;
             }
         }
     }
@@ -57,11 +90,13 @@ class AreaFilter extends Component
     public function filter()
     {
         $selections = collect($this->selections)->filter();
-        $selectionNames = $selections->mapWithKeys(fn ($code, $type) => [$type.'Name' => $this->areas[$type][$code]])->all();
-        $selectionCodes = $selections->map(fn ($code) => $this->removeChecksumSafety($code))->all();
-        $filter = [...$selectionNames, ...$selectionCodes];
+        $selectionNames = $selections->mapWithKeys(fn ($path, $levelName) => [$levelName.'Name' => $this->dropdowns[$levelName][$path]])->all();
+        $selectionNames = [];
+        $selectionPaths = $selections->map(fn ($path) => $this->removeChecksumSafety($path))->all();
+        $filter = [...$selectionNames, ...$selectionPaths];
         session()->put('area-filter', $filter);
         $this->emit('updateChart', $filter);
+        //dump($filter);
     }
 
     public function clear()
@@ -71,18 +106,14 @@ class AreaFilter extends Component
         $this->emit('updateChart', []);
     }
 
-    private function nextKey($currentKey)
+    public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)
     {
-        $keys = $this->areas->keys();
-        $currentKeyIndex = $keys->search($currentKey);
-        return $keys[$currentKeyIndex + 1] ?? null;
-    }
-
-    private function nextKeys($currentKey)
-    {
-        $keys = $this->areas->keys();
-        $currentKeyIndex = $keys->search($currentKey);
-        return array_slice($keys->all(), $currentKeyIndex + 1);
+        $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";
+        return DB::table('areas')
+            ->selectRaw($checksumSafe ? "CONCAT('*', path) AS path, code, name" : 'path, code, name')
+            ->whereRaw("path ~ '{$lquery}'")
+            ->orderBy($orderBy)
+            ->get();
     }
 
     public function render()

@@ -9,6 +9,7 @@ module.exports = {
         './config/chimera.php',
         './app/Http/Livewire/Home/Summary.php',
         './app/Services/Theme.php',
+        './app/Http/Middleware/RedirectIf2FAEnforced.php',
     ],
 
     theme: {

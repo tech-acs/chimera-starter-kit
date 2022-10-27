@@ -89,7 +89,7 @@
                                     {{$record->type}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record?->page?->title ?? 'Not assigned'}}
+                                    {{$record->pages->isEmpty() ? 'Not assigned' : $record->pages->pluck('title')->join(', ')}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     <x-yes-no value="{{$record->published}}" />

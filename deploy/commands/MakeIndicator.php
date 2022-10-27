@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class MakeIndicator extends GeneratorCommand
 {
-    protected $signature = 'chimera:make-indicator
-                            {--include-sample-code : Whether the generated stub should include functioning sample code}';
-
+    protected $signature = 'chimera:make-indicator';
     protected $description = 'Create a new indicator component. Creates file from stub and adds entry in indicators table.';
 
     protected $chartTypes = [
@@ -22,6 +20,7 @@ class MakeIndicator extends GeneratorCommand
         'Default' => 'default',
     ];
     protected $type = 'default';
+    protected $includeSampleCode = '';
 
     use InteractiveCommand;
 
@@ -32,7 +31,7 @@ class MakeIndicator extends GeneratorCommand
 
     protected function getStub()
     {
-        return resource_path("stubs/indicator.{$this->type}.stub");
+        return resource_path("stubs/indicators/{$this->type}{$this->includeSampleCode}.stub");
     }
 
     protected function writeIndicatorFile(string $name)
@@ -41,13 +40,6 @@ class MakeIndicator extends GeneratorCommand
         $path = $this->getPath($className);
         $this->makeDirectory($path);
         $content = $this->buildClass($className);
-        if ($this->option('include-sample-code')) {
-            $content = str_replace(['/*', '*/'], '', $content);
-        } else {
-            // Strip out commented sample code
-            //$content = preg_replace('/\/\*[0-9a-zA-Z\s]*\*\//', '', $content);
-            $content = preg_replace('/\/\*.*\*\//', '', $content);
-        }
         return $this->files->put($path, $content);
     }
 
@@ -73,6 +65,9 @@ class MakeIndicator extends GeneratorCommand
         $chartTypeMenu = array_combine(range(1, count($this->chartTypes)), array_keys($this->chartTypes));
         $chosenChartType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);
         $this->type = $this->chartTypes[$chosenChartType];
+
+        $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
+        $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
 
         $title = $this->askValid(
             "Please enter a reader friendly title for the indicator (press enter to leave empty for now)",

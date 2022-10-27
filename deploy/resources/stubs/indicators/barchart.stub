@@ -1,0 +1,26 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Http\Livewire\Chart;
+use App\Services\Interfaces\BarChart;
+
+class {{ class }} extends Chart implements BarChart
+{
+    protected $listeners = ['updateChart' => 'update'];
+
+    public function getCollection(array $filter)
+    {
+        // TODO: Implement getCollection() method.
+    }
+
+    protected function setData(array $filter = [])
+    {
+        // TODO: Implement setData() method.
+    }
+
+    protected function setLayout(array $filter = [])
+    {
+        parent::setLayout($filter);
+    }
+}

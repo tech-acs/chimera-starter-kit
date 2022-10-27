@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('slug');
-            $table->string('title')->nullable();
-            $table->json('description')->nullable();
+            $table->jsonb('title')->nullable();
+            $table->jsonb('description')->nullable();
             $table->string('questionnaire')->nullable();
             $table->boolean('enabled')->default(false);
             $table->timestamp('last_generated_at')->nullable();

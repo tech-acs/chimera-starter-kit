@@ -11,17 +11,10 @@ use Spatie\Permission\Models\Permission;
 
 class MakeReport extends GeneratorCommand
 {
-    protected $signature = 'chimera:make-report
-                            {--include-sample-code : Whether the generated stub should include functioning sample code}';
+    protected $signature = 'chimera:make-report';
 
     protected $description = 'Create a new report. Creates file from stub and adds entry in reports table.';
 
-    /*protected $chartTypes = [
-        'Bar chart' => 'barchart',
-        'Line chart' => 'linechart',
-        'Pie chart' => 'piechart',
-        'Default' => 'default',
-    ];*/
     protected $type = 'default';
 
     use InteractiveCommand;
@@ -33,7 +26,7 @@ class MakeReport extends GeneratorCommand
 
     protected function getStub()
     {
-        return resource_path("stubs/report.{$this->type}.stub");
+        return resource_path("stubs/reports/{$this->type}.stub");
     }
 
     protected function writeFile(string $name)
@@ -42,13 +35,6 @@ class MakeReport extends GeneratorCommand
         $path = $this->getPath($className);
         $this->makeDirectory($path);
         $content = $this->buildClass($className);
-        if ($this->option('include-sample-code')) {
-            $content = str_replace(['/*', '*/'], '', $content);
-        } else {
-            // Strip out commented sample code
-            //$content = preg_replace('/\/\*[0-9a-zA-Z\s]*\*\//', '', $content);
-            $content = preg_replace('/\/\*.*\*\//', '', $content);
-        }
         return $this->files->put($path, $content);
     }
 
@@ -109,6 +95,9 @@ class MakeReport extends GeneratorCommand
                 'description' => $description,
                 'questionnaire' => $questionnaire,
             ]);
+
+            // If the 'reports' (used for controlling 'Reports' page) permission does not already exist, create it!
+            Permission::firstOrCreate(['name' => 'reports', 'guard' => 'web']);
         });
 
         return 0;

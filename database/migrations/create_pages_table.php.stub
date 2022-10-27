@@ -15,11 +15,10 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->json('title');
+            $table->jsonb('title');
             $table->string('slug');
-            $table->json('description')->nullable();
+            $table->jsonb('description')->nullable();
             $table->boolean('published')->default(false);
-            //$table->string('questionnaire');
             $table->timestamps();
         });
     }

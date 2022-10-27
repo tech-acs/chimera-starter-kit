@@ -11,7 +11,7 @@ class IndicatorController extends Controller
 {
     public function index()
     {
-        $records = Indicator::with('page')->orderBy('title')->get();
+        $records = Indicator::with('pages')->orderBy('title')->get();
         return view('indicator.index', compact('records'));
     }
 
@@ -23,7 +23,8 @@ class IndicatorController extends Controller
 
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
-        $indicator->update($request->only(['title', 'description', 'help', 'page_id', 'published']));
+        $indicator->pages()->sync($request->get('pages', []));
+        $indicator->update($request->only(['title', 'description', 'help', 'published']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

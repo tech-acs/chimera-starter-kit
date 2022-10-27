@@ -29,6 +29,7 @@ class PageController extends Controller
 
     public function edit(Page $page)
     {
+        $page->load('indicators');
         return view('page.edit', compact('page'));
     }
 

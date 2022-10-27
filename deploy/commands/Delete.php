@@ -34,6 +34,7 @@ class Delete extends Command
         // Delete file for this element using $modelToDelete->slug ???
         //unlink("");
         $modelToDelete->delete();
+        //$this->info("Successfully deleted");
         return 0;
     }
 }

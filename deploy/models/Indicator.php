@@ -17,9 +17,10 @@ class Indicator extends Model
     protected $guarded = ['id'];
     public $translatable = ['title', 'description', 'help'];
 
-    public function page()
+    public function pages()
     {
-        return $this->belongsTo(Page::class);
+        return $this->belongsToMany(Page::class)
+            ->withPivot('rank');
     }
 
     protected function permissionName(): Attribute

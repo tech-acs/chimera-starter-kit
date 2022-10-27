@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +28,6 @@ class Invitation extends Model
 
     public function getStatusAttribute()
     {
-        return $this->expires_at->isPast() ? "Expired" : "Expires in " . $this->expires_at->diffInHours() . ' ' . Str::plural('hour', $this->expires_at->diffInHours());
+        return $this->expires_at->isPast() ? "Expired" : "Expires in " . $this->expires_at->diffForHumans(['parts' => 3, 'syntax' => CarbonInterface::DIFF_ABSOLUTE]);
     }
 }

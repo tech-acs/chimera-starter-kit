@@ -3,17 +3,17 @@
         <div class="grid grid-cols-1 gap-6">
             <div class="">
                 <x-jet-label for="title" value="{{ __('Title') }}" />
-                <x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $page->title ?? null)}}" />
+                <x-multi-lang-input id="title" name="title" type="text" value="{{old('title', $page->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
             <div class="">
                 <x-jet-label for="description" value="{{ __('Description') }}" />
-                <textarea name="description" rows="5" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $page->description ?? null)}}</textarea>
+                <x-multi-lang-textarea name="description" rows="3">{{old('description', $page->description ?? null)}}</x-multi-lang-textarea>
                 <x-jet-input-error for="description" class="mt-2" />
             </div>
             <div class="">
                 <x-jet-label for="published" value="{{ __('Status') }}" />
-                <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($page->published ?? false) }">
+                <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($page->published ?? false) }" x-cloak>
                     <span class="">
                         <span class="text-sm text-gray-500">Draft</span>
                     </span>
@@ -33,15 +33,31 @@
                 </div>
 
             </div>
-            {{--<div class="">
-                <x-jet-label for="questionnaire" value="{{ __('Questionnaire') }}" />
-                <select name="questionnaire" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    @foreach($questionnaires as $questionnaire)
-                        <option value="{{ $questionnaire }}" {{old('questionnaire', $questionnaire ?? null) ? 'selected' : ''}}>{{ $questionnaire }}</option>
-                    @endforeach
-                </select>
-                <x-jet-input-error for="questionnaire" class="mt-2" />
-            </div>--}}
+            @if (isset($page))
+                <div class="">
+                    <x-jet-label for="indicators" value="{{ __('Indicators on page') }}" />
+
+                    <div class="w-1/2 mt-2 px-2 border border-gray-300 rounded-md">
+                        <ul role="list" class="divide-y divide-gray-200">
+                            @forelse($page->indicators as $indicator)
+                                <li class="flex py-4">
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-gray-900">{{ $indicator->title }}</p>
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="flex py-4">
+                                    <div class="">
+                                        <p class="text-sm font-medium text-gray-900">
+                                            {{ __('You have not added any indicators to this page') }}
+                                        </p>
+                                    </div>
+                                </li>
+                            @endforelse
+                        </ul>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">

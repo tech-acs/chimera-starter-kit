@@ -1,6 +1,7 @@
 <div>
     <div class="flex justify-end py-2">
-        <x-jet-button wire:click="$toggle('showModal')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-jet-button>
+        <x-jet-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-jet-button>
+        <x-jet-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled" class="ml-3">{{ __('Invite Bulk') }}</x-jet-button>
     </div>
     <div class="py-2 align-middle inline-block min-w-full">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -42,6 +43,8 @@
                                 <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="renew({{$record->id}})">{{ __('Renew') }}</a>
                             @else
                                 <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="showLink({{$record->id}})">{{ __('Show link') }}</a>
+                                |
+                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="sendEmail({{$record->id}})">{{ __('Resend email') }}</a>
                             @endif
                              |
                             <a class="text-red-600 hover:text-red-800 cursor-pointer" wire:click.prevent="delete({{$record->id}})">{{ __('Delete') }}</a>
@@ -61,18 +64,23 @@
         </div>
     </div>
 
-    <x-jet-dialog-modal wire:model="showModal">
+    <x-jet-dialog-modal wire:model="showSingleInviteForm">
         <x-slot name="title">
             {{ __('Invite new user') }}
         </x-slot>
 
         <x-slot name="content">
             {{ __('Using the email address of the user you want to invite, a registration link will be generated which you can then send to the prospective user.') }}
-            {{ __('The link will expire in 24 hours.') }}
+            {{ __('The link will expire in :ttl hours.', ['ttl' => config('chimera.invitation.ttl_hours')]) }}
             <div class="mt-6">
                 <x-jet-label for="email" value="{{ __('Email address') }}" />
                 <x-jet-input id="email" type="email" class="mt-1 block w-2/3" wire:model.defer="email" />
                 <x-jet-input-error for="email" class="mt-2" />
+                @if(config('chimera.emailing_enabled'))
+                    <x-jet-label>
+                        <x-jet-checkbox name="send_email" class="mr-1" wire:model="sendEmail" checked /> {{ __('send invitation email') }}
+                    </x-jet-label>
+                @endif
             </div>
             <div class="mt-6">
                 <x-jet-label for="role" value="{{ __('Role to assign') }}" />
@@ -91,7 +99,30 @@
                 {{ __('Invited.') }}
             </x-jet-action-message>
 
-            <x-jet-secondary-button wire:click="$toggle('showModal')" wire:loading.attr="disabled">
+            <x-jet-secondary-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">
+                {{ __('Close') }}
+            </x-jet-secondary-button>
+
+            <x-jet-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
+                {{ __('Invite') }}
+            </x-jet-button>
+        </x-slot>
+    </x-jet-dialog-modal>
+
+    <x-jet-dialog-modal wire:model="showBulkInviteForm">
+        <x-slot name="title">
+            {{ __('Invite new user') }}
+        </x-slot>
+
+        <x-slot name="content">
+            Hi
+        </x-slot>
+        <x-slot name="footer">
+            <x-jet-action-message class="mr-3 inline-flex" on="invited">
+                {{ __('Invited.') }}
+            </x-jet-action-message>
+
+            <x-jet-secondary-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled">
                 {{ __('Close') }}
             </x-jet-secondary-button>
 

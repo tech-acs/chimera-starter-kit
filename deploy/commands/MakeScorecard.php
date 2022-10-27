@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class MakeScorecard extends GeneratorCommand
 {
-    protected $signature = 'chimera:make-scorecard
-                            {--include-sample-code : Whether the generated stub should include functioning sample code}';
+    protected $signature = 'chimera:make-scorecard';
 
     protected $description = 'Create a new scorecard component. Creates file from stub and adds entry in scorecards table.';
 
@@ -26,7 +25,7 @@ class MakeScorecard extends GeneratorCommand
 
     protected function getStub()
     {
-        return resource_path("stubs/scorecard.{$this->type}.stub");
+        return resource_path("stubs/scorecards/{$this->type}.stub");
     }
 
     protected function writeFile(string $name)
@@ -35,13 +34,6 @@ class MakeScorecard extends GeneratorCommand
         $path = $this->getPath($className);
         $this->makeDirectory($path);
         $content = $this->buildClass($className);
-        if ($this->option('include-sample-code')) {
-            $content = str_replace(['/*', '*/'], '', $content);
-        } else {
-            // Strip out commented sample code
-            //$content = preg_replace('/\/\*[0-9a-zA-Z\s]*\*\//', '', $content);
-            $content = preg_replace('/\/\*.*\*\//', '', $content);
-        }
         return $this->files->put($path, $content);
     }
 

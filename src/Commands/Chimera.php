@@ -163,8 +163,10 @@ class Chimera extends Command
 
         $this->requireComposerPackages([
             'spatie/laravel-permission:^5.5', 
-            'spatie/simple-excel:^1.15',
-            'spatie/laravel-translatable:^5.2'
+            'spatie/simple-excel:^2.3',
+            'spatie/laravel-translatable:^6.1',
+            'spatie/db-dumper:^3.3',
+            'gasparesganga/php-shapefile:^3.4'
         ]);
 
         (new Process(['php', 'artisan', 'vendor:publish', '--provider=Spatie\Permission\PermissionServiceProvider', '--force'], base_path()))
@@ -200,6 +202,12 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/services', app_path('Services'));
         $this->comment('Copied Services');
 
+        File::copyDirectory(__DIR__ . '/../../deploy/mail', app_path('Mail'));
+        $this->comment('Copied Mail Classes');
+
+        File::copyDirectory(__DIR__ . '/../../deploy/rules', app_path('Rules'));
+        $this->comment('Copied Rules');
+
         File::copyDirectory(__DIR__ . '/../../deploy/requests', app_path('Http/Requests'));
         $this->comment('Copied Requests');
 
@@ -212,7 +220,7 @@ class Chimera extends Command
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/fonts', resource_path('fonts'), '*.*');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'), '*.*');
+        File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
         $this->comment('Copied resources');
 
         File::copyDirectory(__DIR__ . '/../../deploy/resources/lang', resource_path('lang'));
@@ -227,8 +235,8 @@ class Chimera extends Command
 
         $this->updateNodePackages(function ($packages) {
             return [
-                "leaflet" => "^1.8.0",
-                "plotly.js-basic-dist" => "^2.12.1"
+                "leaflet" => "^1.9.2",
+                "plotly.js-basic-dist" => "^2.16.1"
             ] + $packages;
         });
         $this->comment('Updated package.json with required npm packages');
@@ -237,13 +245,15 @@ class Chimera extends Command
         $this->comment('Copied route file (web.php)');
         
 
-        // Add 'log_page_views' => \App\Http\Middleware\LogPageView::class, and Language... to Kernel.php
+        // Add things to Kernel.php
         $this->installMiddlewareAfter('SubstituteBindings::class', '\App\Http\Middleware\Language::class');
+        $this->installMiddlewareAfter('SubstituteBindings::class', '\App\Http\Middleware\CheckAccountSuspension::class');
         $this->installRouteMiddlewareAfter('EnsureEmailIsVerified::class', "'log_page_views' => \App\Http\Middleware\LogPageView::class");
+        $this->installRouteMiddlewareAfter('EnsureEmailIsVerified::class', "'enforce_2fa' => \App\Http\Middleware\RedirectIf2FAEnforced::class");
 
         // Service Providers...
-        copy(__DIR__.'/../../deploy/providers/ChimeraServiceProvider.php', app_path('Providers/ChimeraServiceProvider.php'));
-        $this->installServiceProviderAfter('JetstreamServiceProvider', 'ChimeraServiceProvider'); 
+        $this->copyFilesInDir(__DIR__.'/../../deploy/providers', app_path('Providers'));
+        $this->s('JetstreamServiceProvider', 'ChimeraServiceProvider'); 
 
         // Enable profile photo (jetstream)
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));

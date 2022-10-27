@@ -11,9 +11,9 @@
                 <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $indicator->name }}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
-            <div class="">
+            <div class="mt-1">
                 <x-jet-label for="title" value="{{ __('Title') }}" />
-                <x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $indicator->title ?? null)}}" />
+                <x-multi-lang-input id="title" name="title" value="{{old('title', $indicator->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
             <div class="">
@@ -27,10 +27,11 @@
                 <x-jet-input-error for="help" class="mt-2" />
             </div>
             <div class="">
-                <x-jet-label for="page_id" value="{{ __('Page') }}" />
-                <select name="page_id" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <x-jet-label for="pages" value="{{ __('Page') }}" />
+                <select name="pages[]" multiple class="space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                    <option disabled>{{ __('You can add the indicator to multiple pages') }}</option>
                     @foreach($pages as $id => $pageTitle)
-                        <option value="{{ $id }}" {{old('page_id', $indicator->page_id ?? null) === $id ? 'selected' : ''}}>{{ $pageTitle }}</option>
+                        <option class="p-2 rounded-md" value="{{ $id }}" @selected(in_array($id, $indicator->pages->pluck('id')->all()))>{{ $pageTitle }}</option>
                     @endforeach
                 </select>
                 <x-jet-input-error for="page_id" class="mt-2" />

@@ -58,6 +58,10 @@ class Adminify extends Command
             ]);
             if ($user->hasRole(self::ROLE)) {
                 $this->info("The user account, with email address $email, is already assigned the '" . self::ROLE . "' role\n");
+                $response = $this->choice("Do you want to remove the role from the user?", [1 => 'yes', 2 => 'no'], 2);
+                if ($response === 'yes') {
+                    $user->removeRole(self::ROLE);
+                }
             } else {
                 $user->assignRole(self::ROLE);
                 $this->info("The user account, with email address $email, has been assigned the '" . self::ROLE . "' role\n");

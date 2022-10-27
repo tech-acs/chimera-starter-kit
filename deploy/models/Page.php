@@ -19,7 +19,9 @@ class Page extends Model
 
     public function indicators()
     {
-        return $this->hasMany(Indicator::class);
+        return $this->belongsToMany(Indicator::class)
+            ->withPivot('rank')
+            ->orderByPivot('rank');;
     }
 
     protected function permissionName(): Attribute

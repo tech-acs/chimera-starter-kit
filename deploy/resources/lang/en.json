@@ -315,5 +315,9 @@
     "the roles dictate which charts and features of the dashboard they will have access to.": "the roles dictate which charts and features of the dashboard they will have access to.",
     "the roles dictate which charts and features of the dashboard they will have access to. A user that is assigned a role receives all of the privileges of that role.": "the roles dictate which charts and features of the dashboard they will have access to. A user that is assigned a role receives all of the privileges of that role.",
     "your digital census": "your digital census",
-    "Can't find the answer you're looking for? Reach out to the administrator or ": ""
+    "Can't find the answer you're looking for? Reach out to the administrator or ": "",
+    "country": "Country",
+    "region": "Region",
+    "constituency": "Constituency",
+    "ea": "EA"
 }

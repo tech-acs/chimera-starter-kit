@@ -2,20 +2,21 @@
 
 namespace DummyNamespace;
 
+use App\Models\Scorecard;
 use App\Services\Theme;
 use Illuminate\View\Component;
 
 class {{ class }} extends Component
 {
-    public $stat;
+    public $scorecard;
     public $name;
     public $value;
     public $bgColor;
 
-    public function __construct($stat, $index)
+    public function __construct(Scorecard $scorecard, $index)
     {
-        $this->stat = $stat;
-        $this->name = $this->stat->title;
+        $this->scorecard = $scorecard;
+        $this->name = $this->scorecard->title;
         $this->bgColor = Theme::colors()[$index];
 
         $this->value = 'NA';
@@ -23,6 +24,6 @@ class {{ class }} extends Component
 
     public function render()
     {
-        return view('components.home.stat');
+        return view('components.home.scorecard');
     }
 }

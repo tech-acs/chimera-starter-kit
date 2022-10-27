@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StatRequest;
+use App\Models\Indicator;
 use App\Models\Scorecard;
 
 class ScorecardController extends Controller
@@ -16,12 +17,13 @@ class ScorecardController extends Controller
 
     public function edit(Scorecard $scorecard)
     {
-        return view('scorecard.edit', compact('scorecard'));
+        $indicators = Indicator::where('questionnaire', $scorecard->questionnaire)->get()->pluck('title', 'slug');
+        return view('scorecard.edit', compact('scorecard', 'indicators'));
     }
 
     public function update(Scorecard $scorecard, StatRequest $request)
     {
-        $scorecard->update($request->only(['title', 'description', 'published']));
+        $scorecard->update($request->only(['title', 'description', 'linked_indicator', 'published']));
         return redirect()->route('scorecard.index')->withMessage('Record updated');
     }
 }

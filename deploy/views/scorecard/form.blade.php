@@ -8,14 +8,24 @@
         <div class="grid grid-cols-1 gap-6">
             <div class="">
                 <x-jet-label for="name" value="{{ __('Name') }}" />
-                <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $scorecard->name }}" />
+                <x-multi-lang-input disabled id="name" name="name" value="{{ $scorecard->name }}" class="bg-gray-50" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
             <div class="">
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
                 {{--<x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $stat->title ?? null)}}" />--}}
-                <x-multi-lang-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $scorecard->title ?? null)}}" />
+                <x-multi-lang-input id="title" name="title" value="{{old('title', $scorecard->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
+            </div>
+            <div class="">
+                <x-jet-label for="linked_indicator" value="{{ __('Linked Indicator') }}" />
+                <select name="linked_indicator" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">None</option>
+                    @foreach($indicators as $slug => $title)
+                        <option value="{{ $slug }}" {{old('linked_indicator', $scorecard->linked_indicator ?? null) === $slug ? 'selected' : ''}}>{{ $title }}</option>
+                    @endforeach
+                </select>
+                <x-jet-input-error for="linked_indicator" class="mt-2" />
             </div>
             {{--<div class="">
                 <x-jet-label for="description" value="{{ __('Description') }}" />

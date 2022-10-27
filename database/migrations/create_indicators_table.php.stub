@@ -17,13 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('slug');
-            $table->string('title')->nullable();
-            $table->json('description')->nullable();
-            $table->text('help')->nullable();
+            $table->jsonb('title')->nullable();
+            $table->jsonb('description')->nullable();
+            $table->jsonb('help')->nullable();
             $table->string('questionnaire')->nullable();
             $table->boolean('published')->default(false);
             $table->string('type')->nullable();
-            $table->foreignId('page_id')->nullable()->constrained();
+            //$table->foreignId('page_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

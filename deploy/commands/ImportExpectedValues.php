@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Area;
+use App\Services\AreaTree;
 use App\Services\Traits\InteractiveCommand;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -12,9 +12,9 @@ use Spatie\SimpleExcel\SimpleExcelReader;
 
 class ImportExpectedValues extends Command
 {
-    protected $signature = 'chimera:import-expected-values 
-                            {file : CSV or XSLX file that contains the expected values} 
-                            {--truncate : Whether the expected values table should be truncated before importing the indicator values} 
+    protected $signature = 'chimera:import-expected-values
+                            {file : CSV or XSLX file that contains the expected values}
+                            {--truncate : Whether the expected values table should be truncated before importing the indicator values}
                             {--zero-pad-codes : Whether to zero pad codes, padding length will be requested for the code column}
                             {--connection= : You can provide a connection name if you have different areas per connection}
                             {--non-additive : Whether the expected values should not be summed up for higher level areas}';
@@ -42,7 +42,7 @@ class ImportExpectedValues extends Command
 
     private function nextLevelUp($currentLevel)
     {
-        $levels = (new Area($this->connection))->levels()->flip();
+        $levels = (new AreaTree($this->connection))->levels()->flip();
         $currentKeyIndex = $levels->search($currentLevel);
         return $levels[$currentKeyIndex - 1] ?? null;
     }
@@ -107,7 +107,7 @@ class ImportExpectedValues extends Command
         $this->info('This command will import indicator expected values.');
         $this->info('Values will be saved as decimal values (to 2 decimal places) along side column names given in your file.');
 
-        $levels = (new Area($this->connection))->levels();
+        $levels = (new AreaTree($this->connection))->levels();
         $lowestLevel = $levels->search($levels->max());
         $areaCodeColumn = $this->choice("Which column holds the {$lowestLevel} codes directly associated to the expected values?", $menu);
         $zeroPadLength = 0;

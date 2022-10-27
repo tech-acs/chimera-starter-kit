@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Indicator;
-use App\Services\Area;
+use App\Services\AreaTree;
 use App\Services\Caching;
 use App\Services\Traits\Cachable;
 use Livewire\Component;
@@ -45,6 +45,21 @@ abstract class Chart extends Component
         ];
     }
 
+    protected function getEmptyLayoutArray(): array
+    {
+        $layout = $this->getLayoutArray();
+        $layout['xaxis']['visible'] = false;
+        $layout['yaxis']['visible'] = false;
+        $layout['annotations'] = [[
+            "text" => "There is no data for this chart at this level",
+            "xref" => "paper",
+            "yref" => "paper",
+            "showarrow" => False,
+            "font" => ["size" => 28]
+        ]];
+        return $layout;
+    }
+
     protected function getThresholdColors(array $expected, array $actual)
     {
         return collect($expected)
@@ -63,19 +78,36 @@ abstract class Chart extends Component
             })->all();
     }
 
-    protected function getEmptyLayoutArray(): array
+    protected static function getFinestResolutionFilterPath(array $filter)
     {
-        $layout = $this->getLayoutArray();
-        $layout['xaxis']['visible'] = false;
-        $layout['yaxis']['visible'] = false;
-        $layout['annotations'] = [[
-            "text" => "There is no data for this chart at this level",
-            "xref" => "paper",
-            "yref" => "paper",
-            "showarrow" => False,
-            "font" => ["size" => 28]
-        ]];
-        return $layout;
+        return array_reduce($filter, function ($carriedLongest, $path) {
+            return strlen($path) >= strlen($carriedLongest) ? $path : $carriedLongest;
+        }, '');
+    }
+
+    public static function getXAxisTitle($filter)
+    {
+        $areaTree = new AreaTree;
+        $path = self::getFinestResolutionFilterPath($filter);
+        $depth = collect(explode('.', $path))->filter()->count();
+        $levelName = $areaTree->hierarchies[$depth];
+        $title = str($levelName)->plural()->title();
+        if ($depth > 0) {
+            $previousLevel = $areaTree->getArea($path);
+            $title .= " of " . $previousLevel->name . ' ' . $areaTree->hierarchies[$previousLevel->level];
+        }
+        return $title;
+
+        $area = new AreaTree();
+        $current = $area->resolveSmallestFilter($filter);
+        if ($current) {
+            $nextTypeName = $area->nextLevel($current->level);
+            $xAxisTitle = str($nextTypeName)->plural()->title() . " of {$current->name} {$current->type}";
+        } else {
+            $topLevel = $area->levels()->flip()->first();
+            $xAxisTitle = str($topLevel)->plural()->title();
+        }
+        return $xAxisTitle;
     }
 
     protected function setNoData($result)
@@ -90,20 +122,6 @@ abstract class Chart extends Component
     protected function setConfig(array $config)
     {
         $this->config = json_encode($config);
-    }
-
-    public static function getXAxisTitle($filter)
-    {
-        $area = new Area();
-        $current = $area->resolveSmallestFilter($filter);
-        if ($current) {
-            $nextTypeName = $area->nextLevel($current->level);
-            $xAxisTitle = str($nextTypeName)->plural()->title() . " of {$current->name} {$current->type}";
-        } else {
-            $topLevel = $area->levels()->flip()->first();
-            $xAxisTitle = str($topLevel)->plural()->title();
-        }
-        return $xAxisTitle;
     }
 
     protected function setLayout(array $filter = [])

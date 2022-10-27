@@ -4,7 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\AreaRestriction;
 use App\Models\User;
-use App\Services\Area;
+use App\Services\AreaTree;
 use App\Services\Traits\ChecksumSafetyTrait;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -21,7 +21,7 @@ class AreaRestrictionManager extends Component
 
     public function mount()
     {
-        $areaRepository = new Area($this->connection);
+        $areaRepository = new AreaTree($this->connection);
         $levels = $areaRepository->levels();
         $levels->pop(); // We do not have a select for the last level (EA). So, drop it!
         $sessionFilter = session()->get('area-filter', []);
@@ -48,7 +48,7 @@ class AreaRestrictionManager extends Component
         $this->selections[$changedSelect] = $selected;
         $next = $this->nextKey($changedSelect);
         if ($next) {
-            $this->areas[$next] = (new Area($this->connection))->areas($this->removeChecksumSafety($selected), type: $next)->pluck('name', 'code')->all();
+            $this->areas[$next] = (new AreaTree($this->connection))->areas($this->removeChecksumSafety($selected), type: $next)->pluck('name', 'code')->all();
             $nextKeys = $this->nextKeys($changedSelect);
             foreach ($nextKeys as $key) {
                 if ($key !== $next) {
@@ -65,7 +65,7 @@ class AreaRestrictionManager extends Component
         $selectionNames = $selections->mapWithKeys(fn ($code, $type) => [$type.'Name' => $this->areas[$type][$code]])->all();
         $selectionCodes = $selections->map(fn ($code) => $this->removeChecksumSafety($code))->all();
         $filter = [...$selectionNames, ...$selectionCodes];
-        $smallest = (new Area())->resolveSmallestFilter($filter);
+        $smallest = (new AreaTree())->resolveSmallestFilter($filter);
 
         AreaRestriction::updateOrCreate(
             [

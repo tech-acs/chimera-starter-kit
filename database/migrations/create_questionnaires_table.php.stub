@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('questionnaires', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->json('title')->nullable();
+            $table->jsonb('title')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->boolean('show_on_home_page')->default(false);

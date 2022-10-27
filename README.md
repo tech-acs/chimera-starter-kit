@@ -214,6 +214,14 @@ The following is a sample configuration
 ],
 ```
 
+### Environment Variables
+- APP_TIMEZONE
+- INDICATORS_PER_PAGE
+- SECURE
+- INVITATION_TTL_HOURS
+- CACHE_ENABLED
+- CACHE_TTL
+- Mail settings (E.g MAIL_FROM_ADDRESS)
 
 ## Testing
 

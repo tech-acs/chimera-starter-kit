@@ -20,7 +20,7 @@
                 </div>
                 <div>
                     <x-jet-label for="title" value="{{ __('Display title') }} *" />
-                    <x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $questionnaire->title ?? null)}}" />
+                    <x-multi-lang-input id="title" name="title" value="{{old('title', $questionnaire->title ?? null)}}" />
                     <x-jet-input-error for="title" class="mt-2" />
                 </div>
             </div>
