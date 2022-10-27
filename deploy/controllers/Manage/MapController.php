@@ -43,7 +43,7 @@ class MapController extends Controller
     {
         return array_map(function ($feature) use ($level) {
             if ($level > 0) {
-                $ancestor = self::findContainingGeometry((new AreaTree)->upperLevel($level), $feature['geom']);
+                $ancestor = self::findContainingGeometry($level - 1, $feature['geom']);
                 $feature['path'] = empty($ancestor) ? null : $this->makePath($ancestor, $feature['attribs']['code']);
             } else {
                 $feature['path'] = $this->makePath(null, $feature['attribs']['code']);

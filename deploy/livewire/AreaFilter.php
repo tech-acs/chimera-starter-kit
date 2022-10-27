@@ -4,7 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Services\AreaTree;
 use App\Services\Traits\ChecksumSafetyTrait;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class AreaFilter extends Component
@@ -18,19 +17,20 @@ class AreaFilter extends Component
 
     public function mount()
     {
-        $this->hierarchies = (new AreaTree)->hierarchies;
+        $areaTree = new AreaTree;
+        $this->hierarchies = $areaTree->hierarchies;
         $selectionsFromSession = session()->get('area-filter', []);
         $restrictions = []; //['region' => '02', 'constituency' => '02.0201'];
         $heldPath = null;
-        $this->dropdowns = array_map(function ($level) use ($selectionsFromSession, $restrictions) {
+        $this->dropdowns = array_map(function ($level) use ($selectionsFromSession, $restrictions, $areaTree) {
             global $heldPath;
             $levelName = $this->hierarchies[$level];
             $replacementValue = [];
             if ($level === 0) {
-                $replacementValue = $this->areas()->pluck('name', 'path')->all();
+                $replacementValue = $areaTree->areas()->pluck('name', 'path')->all();
             }
             if ($heldPath) {
-                $replacementValue = $this->areas($heldPath)->pluck('name', 'path')->all();
+                $replacementValue = $areaTree->areas($heldPath)->pluck('name', 'path')->all();
                 $heldPath = null;
             }
             if (array_key_exists($levelName, $selectionsFromSession)) {
@@ -49,34 +49,17 @@ class AreaFilter extends Component
         }
     }
 
-    private function prev($levelName)
-    {
-        $key = array_search($levelName, $this->hierarchies);
-        return $key === false ? null : $this->hierarchies[$key - 1] ?? null;
-    }
-
-    private function next($levelName)
-    {
-        $key = array_search($levelName, $this->hierarchies);
-        return $key === false ? null : $this->hierarchies[$key + 1] ?? null;
-    }
-
-    private function nextLevelNames($levelName)
-    {
-        $currentKey = array_search($levelName, $this->hierarchies);
-        return array_slice(array_values($this->hierarchies), $currentKey + 1);
-    }
-
     public function changeHandler($changedLevelName, $selectedPath)
     {
+        $areaTree = new AreaTree;
         $this->selections[$changedLevelName] = $selectedPath;
-        $nextDropdown = $this->next($changedLevelName);
+        $nextDropdown = $areaTree->next($changedLevelName);
         if ($nextDropdown) {
-            $this->dropdowns[$nextDropdown] = $this
+            $this->dropdowns[$nextDropdown] = $areaTree
                 ->areas($this->removeChecksumSafety($selectedPath))
                 ->pluck('name', 'path')
                 ->all();
-            $nextLevelNames = $this->nextLevelNames($changedLevelName);
+            $nextLevelNames = $areaTree->nextLevelNames($changedLevelName);
             //dump($changedLevelName, $nextLevelNames, $nextDropdown);
             foreach ($nextLevelNames as $levelName) {
                 if ($levelName !== $nextDropdown) {
@@ -104,16 +87,6 @@ class AreaFilter extends Component
         session()->forget('area-filter');
         $this->mount();
         $this->emit('updateChart', []);
-    }
-
-    public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)
-    {
-        $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";
-        return DB::table('areas')
-            ->selectRaw($checksumSafe ? "CONCAT('*', path) AS path, code, name" : 'path, code, name')
-            ->whereRaw("path ~ '{$lquery}'")
-            ->orderBy($orderBy)
-            ->get();
     }
 
     public function render()

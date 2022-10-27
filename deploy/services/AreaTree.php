@@ -31,4 +31,22 @@ class AreaTree
             ->whereRaw("path ~ '{$path}'")
             ->first();
     }
+
+    public function prev($levelName)
+    {
+        $key = array_search($levelName, $this->hierarchies);
+        return $key === false ? null : $this->hierarchies[$key - 1] ?? null;
+    }
+
+    public function next($levelName)
+    {
+        $key = array_search($levelName, $this->hierarchies);
+        return $key === false ? null : $this->hierarchies[$key + 1] ?? null;
+    }
+
+    public function nextLevelNames($levelName)
+    {
+        $currentKey = array_search($levelName, $this->hierarchies);
+        return array_slice(array_values($this->hierarchies), $currentKey + 1);
+    }
 }

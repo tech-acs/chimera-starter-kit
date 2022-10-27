@@ -14,9 +14,9 @@ abstract class Chart extends Component
 
     public Indicator $indicator;
     public string $graphDiv;
-    public string $data;
-    public string $layout;
-    public string $config;
+    public array $data;
+    public array $layout;
+    public array $config;
     public string $connection;
     public bool $noData = false;
     public string $dataTimestamp;
@@ -88,26 +88,16 @@ abstract class Chart extends Component
     public static function getXAxisTitle($filter)
     {
         $areaTree = new AreaTree;
+        $hierarchies = config('chimera.area.hierarchies');
         $path = self::getFinestResolutionFilterPath($filter);
         $depth = collect(explode('.', $path))->filter()->count();
-        $levelName = $areaTree->hierarchies[$depth];
+        $levelName = $hierarchies[$depth];
         $title = str($levelName)->plural()->title();
         if ($depth > 0) {
             $previousLevel = $areaTree->getArea($path);
-            $title .= " of " . $previousLevel->name . ' ' . $areaTree->hierarchies[$previousLevel->level];
+            $title .= " of " . $previousLevel->name . ' ' . $hierarchies[$previousLevel->level];
         }
         return $title;
-
-        $area = new AreaTree();
-        $current = $area->resolveSmallestFilter($filter);
-        if ($current) {
-            $nextTypeName = $area->nextLevel($current->level);
-            $xAxisTitle = str($nextTypeName)->plural()->title() . " of {$current->name} {$current->type}";
-        } else {
-            $topLevel = $area->levels()->flip()->first();
-            $xAxisTitle = str($topLevel)->plural()->title();
-        }
-        return $xAxisTitle;
     }
 
     protected function setNoData($result)
@@ -121,12 +111,12 @@ abstract class Chart extends Component
 
     protected function setConfig(array $config)
     {
-        $this->config = json_encode($config);
+        $this->config = $config;
     }
 
     protected function setLayout(array $filter = [])
     {
-        $this->layout = json_encode($this->getLayoutArray());
+        $this->layout = $this->getLayoutArray();
     }
 
     public function mount()

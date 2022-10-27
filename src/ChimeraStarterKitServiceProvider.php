@@ -23,6 +23,7 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_pages_table',
             'create_questionnaires_table',
             'create_indicators_table',
+            'create_indicator_page_table',
             'create_scorecards_table',
             'create_reports_table',
             'create_scorecards_table',
