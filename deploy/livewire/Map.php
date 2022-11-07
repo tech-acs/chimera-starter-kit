@@ -2,16 +2,16 @@
 
 namespace App\Http\Livewire;
 
+use App\MapIndicators\Population;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Map extends Component
 {
-    protected $listeners = [
-        'map-ready' => 'prepareInitialMap',
-        'map-clicked' => 'prepareClickedAreaSubMap'
-    ];
+    public string $geojson;
+    public array $styles;
+    public array $mapOptions;
 
     const DEFAULT_STYLE = [ // https://leafletjs.com/reference.html#polyline-option
         'stroke'                => true,
@@ -27,59 +27,22 @@ class Map extends Component
         'fillOpacity'           => 0.2,
         'fillRule'	            => 'evenodd',
         'bubblingMouseEvents'   => false,
+        'className'             => 'border-0',
     ];
 
-    public string $geojson;
-    public array $styles;
-    public array $mapOptions;
-
-    /*public function getGeoJsonV1(string $areaType, array $boundingBox)
+    protected function getListeners()
     {
-        list($x1, $y1, $x2, $y2) = $boundingBox;
-        $sql = "
-            SELECT json_build_object(
-                'type', 'FeatureCollection',
-                'features', json_agg(
-                    json_build_object(
-                        'type',       'Feature',
-                        'geometry',   ST_AsGeoJSON(ST_GeomFromWKB(filtered_areas.geom))::json,
-                        'properties', json_build_object(
-                            'code', code,
-                            'name', name,
-                            'style', 'orange'
-                        )
-                    )
-                )
-            ) AS feature_collection
-            FROM
-                 (
-                    SELECT name, code, area_type, geom
-                    FROM
-                         maps
-                    WHERE
-                        area_type = '{$areaType}' AND
-                        geom::geometry && ST_MakeEnvelope($x1, $y1, $x2, $y2, 4326)
-                 ) AS filtered_areas
-        ";
-        try {
-            $result = DB::select($sql);
-        } catch (Exception $exception) {
-            return '';
-        }
-        return $result[0]->feature_collection;
+        return [
+            'mapReady' => 'updateMap',
+            'mapClicked' => 'updateMap',
+            'levelTransitioned' => 'updateMap'
+        ];
     }
 
-    private function areaTypeFromZoomLevel(int $zoomLevel) : string {
-        return match($zoomLevel) {
-            6, 7 => 'region',
-            8, 9, 10, 11, 12 => 'constituency',
-            13, 14, 15, 16, 17 => 'ea'
-        };
-    }*/
-
-    private function getGeoJson(?string $path = null)
+    protected function getGeoJson(array $parentPaths = [])
     {
-        $whereClause = is_null($path) ? "level = 0" : "path <@ '{$path}'";
+        $lqueryArray = "ARRAY[" . collect($parentPaths)->map(fn ($path) => "'{$path}.*{1}'")->join(', ') . "]::lquery[]";
+        $whereClause = empty($parentPaths) ? "level = 0" : "path ?? $lqueryArray";
         $sql = "
             SELECT json_build_object(
                 'type', 'FeatureCollection',
@@ -99,39 +62,41 @@ class Map extends Component
             ) AS feature_collection
             FROM
             (
-                SELECT name, code, geom, level, path
+                SELECT name, code, level, path, geom
                 FROM areas
                 WHERE $whereClause
             ) AS filtered_areas
         ";
+        //logger('getGeoJson()', ['sql' => $sql]);
         try {
             $result = DB::select($sql);
         } catch (Exception $exception) {
+            logger('Query error in getGeoJson()', ['exception' => $exception->getMessage()]);
             return '';
         }
         return $result[0]->feature_collection;
     }
 
-    public function prepareInitialMap()
+    public function getData(array $parentPaths = [])
     {
-        $this->geojson = $this->getGeoJson();
-        $this->emit('updateMap', json_decode($this->geojson));
+        return (new Population('households'))->getData();
     }
 
-    public function prepareClickedAreaSubMap(string $path)
+    final public function updateMap(array $parentPaths = [])
     {
-        $this->geojson = $this->getGeoJson($path);
-        $this->emit('updateMap', json_decode($this->geojson));
+        //logger('updateMap()', ['$parentPaths' => $parentPaths]);
+        $this->geojson = $this->getGeoJson($parentPaths);
+        $level = empty($parentPaths) ? 0 : str($parentPaths[0])->explode('.')->count();
+        $this->emit('geojsonUpdated', json_decode($this->geojson), $level, $this->getData());
     }
 
-    public function mount()
+    final public function mount()
     {
         $this->mapOptions = [
             'center' => config('chimera.area.map.center'),
-            'zoom' => 5,
+            'zoom' => 6,
             'attributionControl' => false,
         ];
-        //$this->geojson = $this->getGeoJson();
         $this->styles = [
             'default' => self::DEFAULT_STYLE
         ];

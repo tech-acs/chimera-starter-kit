@@ -33,9 +33,14 @@ class PageController extends Controller
         return view('page.edit', compact('page'));
     }
 
-    public function update(Page $page, Request $request)
+    public function update(Page $page, PageRequest $request)
     {
         $page->update($request->only(['title', 'description', 'published']));
+        foreach ($request->get('indicators', []) as $rank => $indicatorId) {
+            $page->indicators()->updateExistingPivot(
+                $indicatorId, ['rank' => $rank]
+            );
+        }
         return redirect()->route('page.index')->withMessage('Page updated');
     }
 

@@ -78,6 +78,7 @@ class MakeReport extends GeneratorCommand
             ['nullable', ]
         );
 
+        // If the 'reports' (used for controlling 'Reports' page) permission does not already exist, create it!
         $this->ensureReportsPermissionExists();
 
         DB::transaction(function () use ($name, $title, $description, $questionnaire) {
@@ -95,9 +96,6 @@ class MakeReport extends GeneratorCommand
                 'description' => $description,
                 'questionnaire' => $questionnaire,
             ]);
-
-            // If the 'reports' (used for controlling 'Reports' page) permission does not already exist, create it!
-            Permission::firstOrCreate(['name' => 'reports', 'guard' => 'web']);
         });
 
         return 0;

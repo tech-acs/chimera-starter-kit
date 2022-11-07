@@ -1,4 +1,4 @@
-<div x-data="{ ready: false }" x-cloak>
+<div x-data="commandPalette()" x-cloak>
     <!-- Trigger -->
     <a class="cursor-pointer text-indigo-400" x-on:click="ready = true" title="Search">
         <svg class="w-7 h-7 mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -57,7 +57,12 @@
                     <svg class="pointer-events-none absolute top-3.5 left-4 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" wire:model.debounce.200ms="search" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="Search..." role="combobox" aria-expanded="false" aria-controls="options">
+                    <input type="text"
+                           wire:model.debounce.200ms="search"
+                           @keyup.down.prevent="move('down')"
+                           @keyup.up.prevent="move('up')"
+                           @keyup.enter="a"
+                           class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="Search..." role="combobox" aria-expanded="false" aria-controls="options">
                 </div>
 
                 <div class="py-14 px-6 text-center text-sm sm:px-14 self-center" wire:loading.block wire:loading.delay>
@@ -87,7 +92,7 @@
                     <ul class="max-h-96 scroll-py-3 overflow-y-auto p-3" id="options" role="listbox" wire:loading.remove>
                     @foreach($results as $result)
                         <!-- Active: "bg-gray-100" -->
-                        <li wire:key="result-{{ $result->id }}" class="group flex cursor-default select-none rounded-xl p-3" role="option" tabindex="-1">
+                        <li wire:key="result-{{ $result->id }}" class="group flex cursor-default select-none rounded-xl p-3" role="option" tabindex="-1" :class="active === {{$loop->index}} ? 'bg-gray-100' : ''">
                             <a class="group flex" href="/indicator/{{ $result->slug }}" x-on:click.stop>
                                 <div class="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-indigo-500">
                                     <!-- Heroicon name: outline/pencil-square -->
@@ -97,9 +102,9 @@
                                 </div>
                                 <div class="ml-4 flex-auto">
                                     <!-- Active: "text-gray-900", Not Active: "text-gray-700" -->
-                                    <p class="text-sm font-medium text-gray-700">{{ $result->title }}</p>
+                                    <p class="text-sm font-medium" :class="active === {{$loop->index}} ? 'text-gray-900' : 'text-gray-700'">{{ $result->title }}</p>
                                     <!-- Active: "text-gray-700", Not Active: "text-gray-500" -->
-                                    <p class="text-sm text-gray-500">{{ $result->description }}</p>
+                                    <p class="text-sm text-gray-500" :class="active === {{$loop->index}} ? 'text-gray-700' : 'text-gray-500'">{{ $result->description }}</p>
                                 </div>
                             </a>
                         </li>
@@ -109,5 +114,20 @@
             </div>
         </div>
     </div>
-
+    <script>
+        function commandPalette() {
+            return {
+                ready: false,
+                active: 0,
+                total: @entangle('resultCount'),
+                move: function (dir) {
+                    if (dir === 'up') {
+                        this.active = Math.max(0, this.active - 1);
+                    } else {
+                        this.active = Math.min(this.total - 1, this.active + 1);
+                    }
+                }
+            }
+        }
+    </script>
 </div>

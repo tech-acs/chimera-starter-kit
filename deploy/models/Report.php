@@ -71,7 +71,6 @@ class Report extends Model
         static::created(function ($report) {
             Permission::create(['guard_name' => 'web', 'name' => $report->permission_name]);
         });
-
         static::deleted(function ($report) {
             Permission::whereName($report->permission_name)->delete();
         });

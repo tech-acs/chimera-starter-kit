@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Indicator;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class CommandPalette extends Component
@@ -10,40 +11,25 @@ class CommandPalette extends Component
     const MAX_RESULTS = 6;
 
     public string $search = '';
-    //public array $results;
-
-    /*public function mount()
-    {
-        $this->results = Indicator::take(self::MAX_RESULTS)
-            ->get()
-            ->mapWithKeys(function ($indicator) {
-                return [$indicator->slug => [$indicator->title, $indicator->description]];
-            })
-            ->all();
-    }
-
-    public function search()
-    {
-        //$this->results = Indicator::where('name', 'ilike', "$this->search%")->paginate(config('chimera.records_per_page'))->all();
-        return Indicator::take(self::MAX_RESULTS)
-            ->where('name', 'ilike', "$this->search%")
-            ->get()
-            ->mapWithKeys(function ($indicator) {
-                return [$indicator->slug => [$indicator->title, $indicator->description]];
-            })
-            ->all();
-    }*/
+    public int $resultCount;
+    public int $activeResult = 0;
 
     public function render()
     {
-        $results = Indicator::take(self::MAX_RESULTS)
+        $results = Indicator::query()
+            ->published()
             ->when(! empty($this->search), function ($builder) {
                 $builder
                     ->whereRaw("title->>'en' ilike '%{$this->search}%'")
                     ->orWhereRaw("description->>'en' ilike '%{$this->search}%'");
-                // description->>'en' ilike 'c%'
-            })->get();
-        //dump($results->toSql(), $results->getBindings());
+            })
+            ->take(self::MAX_RESULTS)
+            ->get()
+            ->filter(function ($indicator) {
+                return Gate::allows($indicator->permission_name);
+            });
+        $this->resultCount = $results->count();
+        $this->activeResult = 0;
         return view('livewire.command-palette', compact('results'));
     }
 }

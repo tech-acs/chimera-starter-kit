@@ -3,142 +3,146 @@
 namespace App\Http\Livewire;
 
 use App\Models\Indicator;
-use App\Services\AreaTree;
 use App\Services\Caching;
-use App\Services\Traits\Cachable;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 abstract class Chart extends Component
 {
-    use Cachable;
-
     public Indicator $indicator;
     public string $graphDiv;
     public array $data;
     public array $layout;
     public array $config;
-    public string $connection;
-    public bool $noData = false;
-    public string $dataTimestamp;
 
-    protected function getLayoutArray(): array
+    const DEFAULT_CONFIG = [
+        'responsive' => true,
+        'displaylogo' => false,
+        'modeBarButtonsToRemove' => ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
+    ];
+    const DEFAULT_LAYOUT = [
+        'height' => 450,
+        'title' => [],
+        'showlegend' => true,
+        'legend' => ['orientation' => 'h', 'x' => 0, 'y' => 1.12],
+        'xaxis' => [
+            'type' => 'category',
+            'tickmode' => 'linear',
+            'automargin' => true,
+            'title' => ['text' => ''],
+        ],
+        'yaxis' => [
+            'title' => ['text' => ''],
+        ],
+        'margin' => ['l' => 60, 'r' => 10, 't' => 10, 'b' => 40],
+        'modebar' => ['orientation' => 'v', 'color' => 'white', 'bgcolor' => 'darkgray'],
+        'dragmode' => 'pan',
+        'colorway' => ['#0abab5', '#d2b48c', '#f28500', '#45b08c'],
+    ];
+    const EMPTY_CHART_LAYOUT_DIFF = [
+        'xaxis' => ['visible' => false],
+        'yaxis' => ['visible' => false],
+        'annotations' => [[
+            'text' => 'There is no data for this chart at this level',
+            'xref' => 'paper',
+            'yref' => 'paper',
+            'showarrow' => false,
+            'font' => ['size' => 28]
+        ]]
+    ];
+
+    protected function getListeners(): array
     {
-        return [
-            'height' => 450,
-            'title' => [],
-            'showlegend' => true,
-            'legend' => ['orientation' => 'h', 'x' => 0, 'y' => 1.12],
-            'xaxis' => [
-                'type' => 'category',
-                'tickmode' => 'linear',
-                'automargin' => true,
-                'title' => ['text' => ''],
-            ],
-            'yaxis' => [
-                'title' => ['text' => '']
-            ],
-            'margin' => ['l' => 60, 'r' => 10, 't' => 10, 'b' => 40],
-            'modebar' => ['orientation' => 'v', 'color' => 'white', 'bgcolor' => 'darkgray'],
-            'dragmode' => 'pan',
-            'colorway' => ['#0abab5', '#d2b48c', '#f28500', '#45b08c'],
-            'separators' => '.,',
+        return ['filterChanged' => 'updateChart'];
+    }
+
+    protected function getConfig(): array
+    {
+        $dynamicOptions = [
+            'toImageButtonOptions' => ['filename' => $this->graphDiv . ' (' . now()->toDayDateTimeString() . ')'],
+            'locale' => app()->getLocale(),
         ];
+        return [...self::DEFAULT_CONFIG, ...$dynamicOptions];
     }
 
-    protected function getEmptyLayoutArray(): array
+    protected function getData(array $filter = []): array
     {
-        $layout = $this->getLayoutArray();
-        $layout['xaxis']['visible'] = false;
-        $layout['yaxis']['visible'] = false;
-        $layout['annotations'] = [[
-            "text" => "There is no data for this chart at this level",
-            "xref" => "paper",
-            "yref" => "paper",
-            "showarrow" => False,
-            "font" => ["size" => 28]
-        ]];
-        return $layout;
+        return [];
     }
 
-    protected function getThresholdColors(array $expected, array $actual)
+    protected function getLayout(array $filter = []): array
     {
-        return collect($expected)
-            ->zip($actual)
-            ->map(function ($pair) {
-                list($expected, $actual) = $pair;
-                $green = [$expected * 0.95, $expected * 1.05];
-                $amber = [$expected * 0.90, $expected * 1.1];
-                if (($green[0] <= $actual) && ($actual <= $green[1])) {
-                    return 'green';
-                } elseif (($amber[0] <= $actual) && ($actual <= $amber[1])) {
-                    return '#FFBF00'; // Amber
-                } else {
-                    return 'red';
-                }
-            })->all();
+        return self::DEFAULT_LAYOUT;
     }
 
-    protected static function getFinestResolutionFilterPath(array $filter)
+    protected function mounted(): void
     {
-        return array_reduce($filter, function ($carriedLongest, $path) {
-            return strlen($path) >= strlen($carriedLongest) ? $path : $carriedLongest;
-        }, '');
+        // A lifecycle hook method to be used in derived classes, if needed
     }
 
-    public static function getXAxisTitle($filter)
+    private function isDataEmpty(): bool
     {
-        $areaTree = new AreaTree;
-        $hierarchies = config('chimera.area.hierarchies');
-        $path = self::getFinestResolutionFilterPath($filter);
-        $depth = collect(explode('.', $path))->filter()->count();
-        $levelName = $hierarchies[$depth];
-        $title = str($levelName)->plural()->title();
-        if ($depth > 0) {
-            $previousLevel = $areaTree->getArea($path);
-            $title .= " of " . $previousLevel->name . ' ' . $hierarchies[$previousLevel->level];
-        }
-        return $title;
+        return array_reduce($this->data, function ($carry, $trace) {
+            /*
+            * Not all graphs put their data under the 'x' and 'y' keys.
+            * Pies for example put it in the 'values' key.
+            * Therefore, you might need to add those other cases here!
+            */
+            return match ($trace['type'] ?? null) {
+                'pie' => empty($trace['values']) && $carry,
+                default => empty($trace['x']) && $carry,
+            };
+        }, true);
     }
 
-    protected function setNoData($result)
+    private function getDataWithCaching(array $filter = []): array
     {
-        if ($result->count() > 0) {
-            $this->noData = false;
-        } else {
-            $this->noData = true;
+        $indicator = $indicator ?? $this->graphDiv;
+        try {
+            if (config('chimera.cache.enabled')) {
+                $key = Caching::makeIndicatorCacheKey($indicator, $filter);
+                //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
+                return Cache::tags(['indicator'])
+                    ->rememberForever($key, function () use ($indicator, $filter) {
+                        return $this->getData($filter);
+                    });
+            }
+            return $this->getData($filter);
+        } catch (\Exception $exception) {
+            logger("Exception occurred while trying to cache", ['Exception: ' => $exception]);
+            return $this->getData($filter);
         }
     }
 
-    protected function setConfig(array $config)
+    private function updateDataAndLayout(array $filter = []): void
     {
-        $this->config = $config;
+        $this->data = $this->getDataWithCaching($filter);
+        $this->layout = $this->getLayout($filter);
+
+        if ($this->isDataEmpty()) {
+            $this->layout = array_merge(self::DEFAULT_LAYOUT, self::EMPTY_CHART_LAYOUT_DIFF);
+        }
     }
 
-    protected function setLayout(array $filter = [])
+    final public function updateChart(array $filter): void
     {
-        $this->layout = $this->getLayoutArray();
+        $this->updateDataAndLayout($filter);
+        $this->emit("redrawChart-{$this->graphDiv}", $this->data, $this->layout);
     }
 
-    public function mount()
+    final public function mount()
     {
         $this->graphDiv = $this->indicator->component;
-        $this->connection = $this->indicator->questionnaire;
-        $this->help = $this->indicator->help;
 
-        $this->setConfig([
-            'responsive' => true,
-            'displaylogo' => false,
-            'modeBarButtonsToRemove' => ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
-            'toImageButtonOptions' => ['filename' => $this->graphDiv . ' (' . now()->toDayDateTimeString() . ')',],
-        ]);
         $filtersToApply = array_merge(
-            auth()->user()->areaFilter($this->connection),
+            auth()->user()->areaFilter(),
             session()->get('area-filter', [])
         );
-        $this->setData($filtersToApply);
-        $key = Caching::makeIndicatorCacheKey($this->graphDiv, $filtersToApply);
-        //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
-        $this->setLayout($filtersToApply);
+
+        $this->config = $this->getConfig();
+        $this->updateDataAndLayout($filtersToApply);
+
+        $this->mounted();
     }
 
     public function render()

@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('questionnaire')->nullable();
             $table->boolean('published')->default(false);
             $table->string('type')->nullable();
-            //$table->foreignId('page_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

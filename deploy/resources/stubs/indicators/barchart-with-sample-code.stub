@@ -7,43 +7,32 @@ use App\Services\Interfaces\BarChart;
 
 class {{ class }} extends Chart implements BarChart
 {
-    protected $listeners = ['updateChart' => 'update'];
-
-    public function getCollection(array $filter)
+    protected function getData(array $filter = []): array
     {
-        // TODO: Implement getCollection() method.
-        return collect(range('J', 'Z'))
-            ->zip(range(10, 180, 10))
-            ->map(fn ($pair) => (object)['eas' => $pair[0], 'households' => $pair[1]]);
-    }
-
-    protected function setData(array $filter = [])
-    {
-        // TODO: Implement setData() method.
-        $result = $this->getData($filter);
-        $this->setNoData($result);
+        $result = collect(new \DatePeriod(
+                new \DateTime('2010-04-01'),
+                new \DateInterval('P1D'),
+                new \DateTime('2010-04-19')
+            ))
+            ->zip(range(1, 18, 1))
+            ->map(fn ($pair) => (object)['eas' => $pair[0]->format('Y-m-d'), 'households' => $pair[1]/10]);
         $trace = array_merge(
             $this::ValueTraceTemplate,
             [
                 'x' => $result->pluck('eas')->all(),
                 'y' => $result->pluck('households')->all(),
-                'text' => $result->pluck('households')->all(),
                 'name' => 'Households',
             ]
         );
-        $this->data = json_encode([$trace]);
+        return [$trace];
     }
 
-    protected function setLayout(array $filter = [])
+    protected function getLayout(array $filter = []): array
     {
-        parent::setLayout($filter);
-        if ($this->noData) {
-            $layout = $this->getEmptyLayoutArray();
-        } else {
-            $layout = $this->getLayoutArray();
-            $layout['xaxis']['title']['text'] = 'EAs';
-            $layout['yaxis']['title']['text'] = "Households";
-        }
-        $this->layout = json_encode($layout);
+        $layout = parent::getLayout($filter);
+        $layout['xaxis']['title']['text'] = "Alphabets";
+        $layout['xaxis']['type'] = 'date';
+        $layout['yaxis']['title']['text'] = "Households";
+        return $layout;
     }
 }

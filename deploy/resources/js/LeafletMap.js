@@ -3,14 +3,18 @@ import L from 'leaflet';
 export default class LeafletMap {
     map;
     mapOptions;
-    geojsonStyles;
+    styles;
     geojson;
     geojsonLayerGroup;
+    options;
+    level = undefined;
+    data;
 
     constructor(mapContainer, options) {
+        this.options = options;
         this.collectDataPassedViaDataAttributes(mapContainer);
         this.initializeMap(mapContainer, options.basemaps);
-        this.initializeGeojsonLayer();
+        this.initializeGeojsonLayer(options.levelToZoomMapping);
         this.registerDomEventListeners();
         this.registerLivewireEventListeners();
     }
@@ -26,7 +30,7 @@ export default class LeafletMap {
 
     collectDataPassedViaDataAttributes(el) {
         this.mapOptions = this.extractDataAttributeSafely(el, 'mapOptions');
-        this.geojsonStyles = this.extractDataAttributeSafely(el, 'styles');
+        this.styles = this.extractDataAttributeSafely(el, 'styles');
     }
 
     initializeMap(mapContainer, basemaps) {
@@ -43,61 +47,97 @@ export default class LeafletMap {
         L.control.layers(basemapLayers).addTo(this.map);
     }
 
-    initializeGeojsonLayer() {
+    initializeGeojsonLayer(levels) {
         this.geojsonLayerGroup = L.layerGroup();
+        const levelsCount = levels.length;
+        let emptyGeojson = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        for (let i = 0; i < levelsCount; i++) {
+            this.geojsonLayerGroup.addLayer(L.geoJSON(emptyGeojson, {
+                level: i,
+                style: (feature) => {
+                    return this.styles[feature.properties.style];
+                },
+                onEachFeature: (feature, layer) => {
+                    layer.bindTooltip(feature.properties.name + ' - ', {permanent: false, direction: 'center'});
+                    layer.on({
+                        /*mouseover: () => {}, // highlightFeature,
+                        mouseout: () => {}, // resetHighlight,
+                        click: (e) => {
+                            this.map.fitBounds(e.target.getBounds());
+                            let feature = e.target.feature;
+                            Livewire.emit('mapClicked', [feature.properties.path]);
+                            return false;
+                        }*/
+                    });
+                }
+            }));
+        }
         this.geojsonLayerGroup.addTo(this.map);
+    }
+
+    getFeaturesIntersectingBounds(layer, bounds) {
+        const features = layer.getLayers();
+        let intersectingFeatures = [];
+        features.forEach(feature => {
+            if (bounds.intersects(feature.getBounds())) {
+                console.log(feature.feature.properties.name);
+                intersectingFeatures.push(feature.feature);
+            }
+        });
+        return intersectingFeatures;
+    }
+
+    inferLevelFromZoom(zoom) {
+        return this.options.levelToZoomMapping.findIndex((zoomLevelGroup) => zoomLevelGroup.includes(zoom));
     }
 
     registerDomEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-            Livewire.emit('map-ready');
+            Livewire.emit('mapReady');
         });
 
-        this.map.addEventListener('zoomend', (e) => {
+        this.map.addEventListener('zoomend', e => {
             let zoom = e.target.getZoom();
-            let bounds = this.map.getBounds().toBBoxString();
-            this.geojsonLayerGroup.eachLayer(function(layer) {
-                console.log(layer.getLayers());
-                /*if (bounds.contains(marker.getLatLng())) {
-                    inBounds.push(marker.options.title);
-                }*/
-            });
-            Livewire.emit('zoomed', zoom, bounds);
+            let bounds = this.map.getBounds();
+            Livewire.emit('mapZoomed', zoom, bounds.toBBoxString());
+
+            const projectedLevel = this.inferLevelFromZoom(zoom);
+            if ((! _.isUndefined(this.level)) && (projectedLevel !== this.level)) {
+                if (projectedLevel > this.level) {
+                    console.log({currentLevel: this.level, nextLevel: projectedLevel});
+                    const levelLayers = this.geojsonLayerGroup.getLayers();
+                    let withinBoundsFeatures = this.getFeaturesIntersectingBounds(levelLayers[this.level], bounds);
+                    let withinBoundsPaths = _.map(withinBoundsFeatures, _.property('properties.path'));
+                    Livewire.emit('levelTransitioned', withinBoundsPaths);
+                    console.log({withinBoundsPaths})
+                } else {
+                    this.level = projectedLevel;
+                }
+            }
         });
 
         this.map.addEventListener('moveend', (e) => {
             let zoom = e.target.getZoom();
-            let bounds = this.map.getBounds().toBBoxString();
-            Livewire.emit('panned', zoom, bounds);
+            let bounds = this.map.getBounds();
+            Livewire.emit('mapPanned', zoom, bounds.toBBoxString());
         });
     }
 
     registerLivewireEventListeners() {
-        Livewire.on('updateMap', (geojson) => {
-            console.log({'Geojson to render': geojson});
-            this.renderGeojsonData(geojson);
+        Livewire.on('geojsonUpdated', (geojson, level, data) => {
+            console.log({'Received from server': geojson, level, data});
+            this.data = data;
+            this.render(geojson, level);
         });
     }
 
-    renderGeojsonData(geojson) {
-        let updatedIndicatorsLayer = L.geoJSON(geojson, {
-            style: (feature) => {
-                return this.geojsonStyles[feature.properties.style]
-            },
-            onEachFeature: (feature, layer) => {
-                layer.bindTooltip(feature.properties.name, {permanent: true, direction: 'center'});
-                layer.on({
-                    //mouseover: highlightFeature,
-                    //mouseout: resetHighlight,
-                    click: (e) => {
-                        this.map.fitBounds(e.target.getBounds());
-                        let feature = e.target.feature;
-                        //console.log(feature)
-                        Livewire.emit('map-clicked', feature.properties.path);
-                    }
-                });
-            }
-        });
-        this.geojsonLayerGroup.addLayer(updatedIndicatorsLayer);
+    render(geojson, level) {
+        let targetLayer = this.geojsonLayerGroup.getLayers()[level];
+        this.level = level;
+        targetLayer.addData(geojson);
+        console.log({level, targetLayer: targetLayer.options.level});
     };
 }

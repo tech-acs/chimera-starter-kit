@@ -8,12 +8,11 @@
         <div class="grid grid-cols-1 gap-6">
             <div class="">
                 <x-jet-label for="name" value="{{ __('Name') }}" />
-                <x-multi-lang-input disabled id="name" name="name" value="{{ $scorecard->name }}" class="bg-gray-50" />
+                <x-jet-input disabled type="text" name="name" class="mt-1 block w-full bg-gray-100" value="{{ $scorecard->name }}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
             <div class="">
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
-                {{--<x-jet-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{old('title', $stat->title ?? null)}}" />--}}
                 <x-multi-lang-input id="title" name="title" value="{{old('title', $scorecard->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>

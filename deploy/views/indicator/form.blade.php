@@ -6,27 +6,27 @@
     </div>--}}
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
         <div class="grid grid-cols-1 gap-6">
-            <div class="">
+            <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $indicator->name }}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
             <div class="mt-1">
-                <x-jet-label for="title" value="{{ __('Title') }}" />
+                <x-jet-label for="title" value="{{ __('Title') }} *" />
                 <x-multi-lang-input id="title" name="title" value="{{old('title', $indicator->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
-            <div class="">
-                <x-jet-label for="description" value="{{ __('Description') }}" />
+            <div>
+                <x-jet-label for="description" value="{{ __('Description') }} *" class="inline" /><x-locale-display />
                 <textarea name="description" rows="3" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $indicator->description ?? null)}}</textarea>
                 <x-jet-input-error for="description" class="mt-2" />
             </div>
-            <div class="">
-                <x-jet-label for="help" value="{{ __('Contextual Help Text') }}" />
+            <div>
+                <x-jet-label for="help" value="{{ __('Contextual Help Text') }}" class="inline" /><x-locale-display />
                 <textarea name="help" rows="5" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $indicator->help ?? null)}}</textarea>
                 <x-jet-input-error for="help" class="mt-2" />
             </div>
-            <div class="">
+            <div>
                 <x-jet-label for="pages" value="{{ __('Page') }}" />
                 <select name="pages[]" multiple class="space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
                     <option disabled>{{ __('You can add the indicator to multiple pages') }}</option>
@@ -36,7 +36,7 @@
                 </select>
                 <x-jet-input-error for="page_id" class="mt-2" />
             </div>
-            <div class="">
+            <div>
                 <x-jet-label for="page" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($indicator->published ?? false) }">
                     <span class="" id="annual-billing-label">

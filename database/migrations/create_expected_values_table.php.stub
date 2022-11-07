@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('area_type', 50)->index();
             $table->string('indicator', 50)->index();
             $table->decimal('value', 12, 2);
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at');
         });
     }
 

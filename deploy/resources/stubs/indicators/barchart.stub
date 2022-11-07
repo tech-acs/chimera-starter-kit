@@ -4,23 +4,21 @@ namespace DummyNamespace;
 
 use App\Http\Livewire\Chart;
 use App\Services\Interfaces\BarChart;
+use App\Services\Traits\FilterBasedAxisTitle;
 
 class {{ class }} extends Chart implements BarChart
 {
-    protected $listeners = ['updateChart' => 'update'];
+    use FilterBasedAxisTitle;
 
-    public function getCollection(array $filter)
+    protected function getData(array $filter = []): array
     {
-        // TODO: Implement getCollection() method.
+        // TODO: Implement this to return an array of traces
     }
 
-    protected function setData(array $filter = [])
+    protected function getLayout(array $filter = []): array
     {
-        // TODO: Implement setData() method.
-    }
-
-    protected function setLayout(array $filter = [])
-    {
-        parent::setLayout($filter);
+        $layout = parent::getLayout();
+        // TODO: You can modify the default layout here
+        return $layout;
     }
 }

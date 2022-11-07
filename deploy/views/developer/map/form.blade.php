@@ -6,11 +6,11 @@
                 <x-multi-lang-input id="name" name="name" type="text" value="{{old('name', $area->name ?? null)}}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
-            <div class="">
+            {{--<div class="">
                 <x-jet-label for="code" value="{{ __('Code') }}" />
-                <x-multi-lang-input id="code" name="code" type="text" value="{{old('code', $area->code ?? null)}}" />
+                <x-jet-input id="code" name="code" type="text" value="{{old('code', $area->code ?? null)}}" />
                 <x-jet-input-error for="code" class="mt-2" />
-            </div>
+            </div>--}}
 
         </div>
     </div>

@@ -42,6 +42,11 @@ class Indicator extends Model
         return Questionnaire::where('name', $this->questionnaire)->first();
     }
 
+    public function scopePublished($query)
+    {
+        return $query->where('published', true);
+    }
+
     protected static function booted()
     {
         static::creating(function ($page) {

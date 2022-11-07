@@ -78,7 +78,7 @@ class AreaFilter extends Component
         $selectionPaths = $selections->map(fn ($path) => $this->removeChecksumSafety($path))->all();
         $filter = [...$selectionNames, ...$selectionPaths];
         session()->put('area-filter', $filter);
-        $this->emit('updateChart', $filter);
+        $this->emit('filterChanged', $filter);
         //dump($filter);
     }
 
@@ -86,7 +86,7 @@ class AreaFilter extends Component
     {
         session()->forget('area-filter');
         $this->mount();
-        $this->emit('updateChart', []);
+        $this->emit('filterChanged', []);
     }
 
     public function render()

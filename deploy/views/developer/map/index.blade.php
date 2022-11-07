@@ -10,8 +10,13 @@
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div class="text-right">
-            <a href="{{route('developer.area.create')}}"><x-jet-button>{{ __('Create new') }}</x-jet-button></a>
+        <div class="flex justify-between">
+            <div class="bg-sky-400/20 text-sky-600 px-4 text-sm flex items-center rounded-full font-medium">
+                {{ empty($summary) ? "No areas imported yet" : $summary }}
+            </div>
+            <div>
+                <a href="{{route('developer.area.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
+            </div>
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">

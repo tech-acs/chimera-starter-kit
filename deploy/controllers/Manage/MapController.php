@@ -17,8 +17,13 @@ class MapController extends Controller
 {
     public function index()
     {
-        $records = Area::paginate(config('chimera.records_per_page'));
-        return view('developer.map.index', compact('records'));
+        $records = Area::orderBy('level')->orderBy('path')->paginate(config('chimera.records_per_page'));
+        $levelCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get();
+        $hierarchies = (new AreaTree(removeLastLevel: false))->hierarchies;
+        $summary = $levelCounts->map(function ($item) use ($hierarchies) {
+            return $item->count . ' ' . str($hierarchies[$item->level] ?? 'unknown')->plural($item->count);
+        })->join(', ', ' and ');
+        return view('developer.map.index', compact('records', 'summary'));
     }
 
     public function create()

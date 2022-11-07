@@ -12,15 +12,15 @@ interface BarChart
 
     public const ValueTraceTemplate = [
         'textposition' => 'auto',
-        'texttemplate' => "%{text}",
-        'hovertemplate' => "%{text}",
+        'texttemplate' => "%{value}",
+        'hovertemplate' => "%{value}",
         'type' => 'bar'
     ];
 
     public const PercentageBarTraceTemplate = [
         'textposition' => 'auto',
-        'texttemplate' => "%{text} %",
-        'hovertemplate' => "%{text} %",
+        'texttemplate' => "%{value} %",
+        'hovertemplate' => "%{value} %",
         'type' => 'bar',
     ];
 }

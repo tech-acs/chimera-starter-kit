@@ -1,4 +1,5 @@
 import Plotly from 'plotly.js-basic-dist-min';
+import {fr} from 'plotly.js-locales';
 
 export default class PlotlyChart {
     id;
@@ -8,7 +9,7 @@ export default class PlotlyChart {
 
     constructor(chartContainer, options) {
         this.collectDataPassedViaDataAttributes(chartContainer);
-        this.initializeChart(chartContainer, options);
+        this.initializeChart(chartContainer);
         this.registerDomEventListeners();
         this.registerLivewireEventListeners();
     }
@@ -29,7 +30,10 @@ export default class PlotlyChart {
         this.config = this.extractDataAttributeSafely(el, 'config');
     }
 
-    initializeChart(chartContainer, basemaps) {
+    initializeChart(chartContainer) {
+        if (this.config.locale === 'fr') {
+            Plotly.register(fr);
+        }
         Plotly.newPlot(chartContainer, this.data, this.layout, this.config);
     }
 
