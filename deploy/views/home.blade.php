@@ -5,10 +5,10 @@
         @forelse($questionnaires as $questionnaire)
 
             <x-home.summary :questionnaire="$questionnaire">
-                @forelse($questionnaire->homepage_stats as $stat)
-                    <x-dynamic-component component="home.{{$stat->slug}}" :stat="$stat" :index="$loop->index" />
+                @forelse($questionnaire->scorecards as $scorecard)
+                    <x-dynamic-component component="home.{{$scorecard->slug}}" :scorecard="$scorecard" :index="$loop->index" />
                 @empty
-                    {{ __('There are no scorecards yet.') }}
+                    {{ __('There are no scorecards to display.') }}
                 @endforelse
             </x-home.summary>
 
