@@ -80,7 +80,7 @@ abstract class Chart extends Component
         // A lifecycle hook method to be used in derived classes, if needed
     }
 
-    private function isDataEmpty(): bool
+    protected function isDataEmpty(): bool
     {
         return array_reduce($this->data, function ($carry, $trace) {
             /*

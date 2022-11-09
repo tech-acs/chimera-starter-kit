@@ -51,7 +51,7 @@
                 <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-start">
-                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500"> {{ __('Breakout Database') }} </span>
+                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500"> {{ __('Database') }} </span>
             </div>
         </div>
 

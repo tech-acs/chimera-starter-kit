@@ -32,31 +32,38 @@
                         {{ __('Reports') }}
                     </x-jet-nav-link>
                 @endcan
-                    <x-jet-nav-link href="{{ route('help') }}" :active="request()->routeIs('help')">
+                    {{--<x-jet-nav-link href="{{ route('help') }}" :active="request()->routeIs('help')">
                         {{ __('Help') }}
-                    </x-jet-nav-link>
+                    </x-jet-nav-link>--}}
+                    @if(\App\Models\Faq::count())
                     <x-jet-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
                         {{ __('FAQ') }}
                     </x-jet-nav-link>
+                    @endif
 
                     <livewire:command-palette />
                 </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <div class="flex space-x-4">
+                    <x-jet-dropdown align="right" width="w-96" contentClasses="py-0 bg-white overflow-hidden">
+                        <x-slot name="trigger">
+                            <livewire:notification-bell />
+                        </x-slot>
+                        <x-slot name="content" class="overflow-hidden py-0">
+                            <livewire:notification-dropdown />
+                        </x-slot>
+                    </x-jet-dropdown>
 
-                <livewire:language-switcher />
+                    <livewire:language-switcher />
 
-                @can('Super User')
-                    <div class="ml-3 relative">
+                    @can('Super User')
                         <x-jet-dropdown align="right" width="60">
                             <x-slot name="trigger">
-                                <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                                    {{ __('Manage') }}
-                                    <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
+                                <x-round-button title="{{ __('Manage dashboard') }}">
+                                    <x-icon.wrench />
+                                </x-round-button>
                             </x-slot>
 
                             <x-slot name="content">
@@ -72,19 +79,23 @@
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('manage.report.index') }}">{{ __('Reports') }}</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Maps') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('manage.map.index') }}">{{ __('Maps') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     {{--<x-jet-dropdown-link href="">{{ __('Settings') }}</x-jet-dropdown-link>--}}
-                                    <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('announcement.index')}}">{{ __('Announcements') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage stats') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>
-                                    <div class="border-t border-gray-100"></div>
-                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Developer Mode') }}</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Area (Map)') }}</x-jet-dropdown-link>
+                                    @if (config('chimera.developer_mode'))
+                                        <div class="border-t border-gray-100"></div>
+                                        <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Developer Mode') }}</div>
+                                        <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Hierarchical Areas') }}</x-jet-dropdown-link>
+                                        <x-jet-dropdown-link class="px-6" href="{{ route('developer.target.index') }}">{{ __('Target Values') }}</x-jet-dropdown-link>
+                                    @endif
                                 </div>
                             </x-slot>
                         </x-jet-dropdown>
-                    </div>
-                @endcan
+                    @endcan
+                </div>
 
                 <!-- Teams Dropdown -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
@@ -228,9 +239,7 @@
                     {{ __('Reports') }}
                 </x-jet-responsive-nav-link>
             @endcan
-            <x-jet-responsive-nav-link href="{{ route('help') }}" :active="request()->routeIs('help')">
-                {{ __('Help') }}
-            </x-jet-responsive-nav-link>
+
             <x-jet-responsive-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
                 {{ __('FAQ') }}
             </x-jet-responsive-nav-link>

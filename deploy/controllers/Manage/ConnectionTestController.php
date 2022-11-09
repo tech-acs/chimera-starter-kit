@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
 use App\Models\Questionnaire;
+use Illuminate\Http\RedirectResponse;
 
 class ConnectionTestController extends Controller
 {
-    public function test(Questionnaire $questionnaire)
+    public function __invoke(Questionnaire $questionnaire): RedirectResponse
     {
         $results = $questionnaire->test();
         $passesTest = $results->reduce(function ($carry, $item) {

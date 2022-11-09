@@ -5,7 +5,7 @@
             {{ __('Areas') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Upload shapefile containing area maps, names and codes') }}
+            {{ __('Upload files containing area maps, names and codes') }}
         </p>
     </x-slot>
 
@@ -28,63 +28,157 @@
             </div>
         @endif
 
-        <form action="{{route('developer.area.store')}}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="shadow sm:rounded-md sm:overflow-hidden">
-                <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                    <div class="md:grid md:grid-cols-3 md:gap-6">
-                        <div class="md:col-span-1">
-                            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Shapefile') }}</h3>
-                            <p class="mt-2 text-sm text-gray-500">{{ __('Your area shapefiles must include name and code columns.') }}</p>
-                            <p class="mt-2 text-sm text-gray-500">{{ __('You need to upload the three required component files of a shapefile. The main, index and attributes files with .shp, .shx and .dbf file extensions respectively.') }}</p>
-                        </div>
-                        <div class="mt-5 space-y-6 md:col-span-2 md:mt-0">
-                            <div>
-                                {{--<label class="block text-sm font-medium text-gray-700">Cover photo</label>--}}
-                                <div class="mt-1 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                                    <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
-                                        </svg>
-                                        <div class="flex text-sm text-gray-600">
-                                            <label for="shapefile" class="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none  hover:text-indigo-500">
-                                                <span>{{ __('Upload a file') }}</span>
-                                                <input id="shapefile" name="shapefile[]" type="file" multiple class="sr-only">
-                                            </label>
-                                            <p class="pl-1">{{ __('or drag and drop') }}</p>
-                                        </div>
-                                        <p class="text-xs text-gray-500">SHP, SHX & DBF</p>
-                                    </div>
-                                </div>
-                                <x-jet-input-error for="shapefile" />
-                            </div>
-                        </div>
+            <div x-cloak x-data="{
+                selectedId: null,
+                init() {
+                    // Set the first tab on page load.
+                    this.$nextTick(() => this.select('shapefile'))
+                },
+                select(id) {
+                    this.selectedId = id
+                },
+                isSelected(id) {
+                    return this.selectedId === id
+                }
+            }"
+            >
+                {{--Tabs--}}
+                <div class="hidden sm:block">
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                            <a
+                                @click="select('shapefile')"
+                                :class="isSelected('shapefile') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
+                                class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
+                            >
+                                Shapefile
+                                <svg class="w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><polyline points="96 184 32 200 32 56 96 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline><polygon points="160 216 96 184 96 40 160 72 160 216" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polygon><polyline points="160 72 224 56 224 200 160 216" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline></svg>
+                            </a>
 
-                        <div class="md:col-span-1 pt-4 md:pt-0">
-                            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Level') }}</h3>
-                            <p class="mt-2 text-sm text-gray-500">{{ __('This says what area hierarchy is present in the given shapefile.') }}</p>
-                        </div>
-                        <div class="mt-5 md:col-span-2 md:mt-0">
-                            <select id="level" name="level" class="mt-1 w-1/3 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                <option value="">{{ __('Select level') }}</option>
-                                @forelse($levels as $level => $name)
-                                    <option value="{{ $level }}" @selected(old('level') === $level)>{{ __($name) }}</option>
-                                @empty
-                                    <option value="">{{ __('Not configured') }}</option>
-                                @endforelse
-                            </select>
-                            <x-jet-input-error for="level" />
-                        </div>
+                            <a
+                                @click="select('spreadsheet')"
+                                :class="isSelected('spreadsheet') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
+                                class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
+                            >
+                                Spreadsheet
+                                <svg class="w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M32,56H224a0,0,0,0,1,0,0V192a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56A0,0,0,0,1,32,56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><line x1="32" y1="104" x2="224" y2="104" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><line x1="32" y1="152" x2="224" y2="152" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><line x1="88" y1="104" x2="88" y2="200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line></svg>
+                            </a>
+                        </nav>
                     </div>
                 </div>
+                {{--Content--}}
+                <div>
+                    {{-- First tab --}}
+                    <section id="users" x-show="isSelected('shapefile')">
+                        <form action="{{route('developer.area.store')}}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="shadow sm:rounded-md sm:overflow-hidden mt-4">
+                                <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                                    <div class="md:grid md:grid-cols-3 md:gap-6">
+                                        <div class="md:col-span-1">
+                                            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Shapefile') }}</h3>
+                                            <p class="mt-2 text-sm text-gray-500">{{ __('Your shapefile must have name and code columns.') }}</p>
+                                        </div>
+                                        <div class="mt-5 md:col-span-2 md:mt-0">
+                                            <div>
+                                                <div class="flex items-stretch flex-grow">
+                                                    <label for="shapefile" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
+                                                        <span id="shapefile_label" class="my-auto pl-4 text-gray-700">Choose your files</span>
+                                                        <div class="relative inline-flex items-center hover:bg-gray-100 cursor-pointer space-x-2 px-4 py-2 border-0 border-l rounded-r-md border-gray-300 text-sm font-medium text-gray-700 bg-gray-50">
+                                                            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
+                                                            <span>Browse</span>
+                                                        </div>
+                                                    </label>
+                                                    <input
+                                                        multiple
+                                                        type="file"
+                                                        id="shapefile"
+                                                        class="hidden"
+                                                        name="shapefile[]"
+                                                        onchange="document.getElementById('shapefile_label').innerText = Array.from(this.files).map(f => f.name).join(', ')"
+                                                    >
+                                                </div>
+                                            </div>
+                                            @if($errors->has('shapefile'))
+                                                <x-jet-input-error for="shapefile" />
+                                            @else
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    You must upload three files that make up the shapefile (.shp, .shx and .dbf)
+                                                </div>
+                                            @endif
+                                        </div>
 
-                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                    <x-jet-button>
-                        {{ __('Upload') }}
-                    </x-jet-button>
+                                        <div class="md:col-span-1 pt-4 md:pt-0">
+                                            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Level') }}</h3>
+                                            <p class="mt-2 text-sm text-gray-500">{{ __('This says what area hierarchy is present in the given shapefile.') }}</p>
+                                        </div>
+                                        <div class="mt-5 md:col-span-2 md:mt-0">
+                                            <select id="level" name="level" class="mt-1 w-1/3 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                <option value="">{{ __('Select level') }}</option>
+                                                @forelse($levels as $level => $name)
+                                                    <option @if(old('level') === $level) selected @endif value="{{ $level }}" @selected(old('level') === $level) >{{ __($name) }}</option>
+                                                @empty
+                                                    <option value="">{{ __('Not configured') }}</option>
+                                                @endforelse
+                                            </select>
+                                            <x-jet-input-error for="level" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                                    <x-jet-button>
+                                        {{ __('Upload') }}
+                                    </x-jet-button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </section>
+                    {{-- Second tab --}}
+                    <section id="invitations" x-show="isSelected('spreadsheet')">
+                        <form action="{{route('developer.area.store')}}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="shadow sm:rounded-md sm:overflow-hidden mt-4">
+                                <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                                    <div class="md:grid md:grid-cols-3 md:gap-6">
+                                        <div class="md:col-span-1">
+                                            <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Spreadsheet') }}</h3>
+                                            <p class="mt-2 text-sm text-gray-500">{{ __('Your spreadsheet must be formatted in such a way that it includes all your areas') }}</p>
+                                        </div>
+                                        <div class="mt-5 md:col-span-2 md:mt-0">
+                                            <div>
+                                                <div class="flex items-stretch flex-grow">
+                                                    <label for="import" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
+                                                        <span id="import" class="my-auto pl-4 text-gray-700">Choose your file</span>
+                                                        <div class="relative inline-flex items-center hover:bg-gray-100 cursor-pointer space-x-2 px-4 py-2 border-0 border-l rounded-r-md border-gray-300 text-sm font-medium text-gray-700 bg-gray-50">
+                                                            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
+                                                            <span>Browse</span>
+                                                        </div>
+                                                    </label>
+                                                    <input type="file" name="import[]" onchange="document.getElementById('f').innerText=this.files[0].name;" class="hidden">
+                                                </div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                You can upload either a comma-separated values (.csv) or an Excel (.xslx) file
+                                            </div>
+                                            <x-jet-input-error for="import[]" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                                    <x-jet-button>
+                                        {{ __('Upload') }}
+                                    </x-jet-button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </section>
                 </div>
-
             </div>
-        </form>
+
+
     </div>
 </x-app-layout>

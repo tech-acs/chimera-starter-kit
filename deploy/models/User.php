@@ -63,9 +63,14 @@ class User extends Authenticatable
         return $this->hasMany(AreaRestriction::class);
     }
 
-    public function areaFilter($connection)
+    public function announcements()
     {
-        $areaRestriction = $this->areaRestrictions()->where('connection', $connection)->first();
+        return $this->hasMany(Announcement::class);
+    }
+
+    public function areaFilter()
+    {
+        $areaRestriction = $this->areaRestrictions()->first();
         if ($areaRestriction) {
             return $areaRestriction->toFilter();
         } else {

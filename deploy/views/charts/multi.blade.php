@@ -1,3 +1,7 @@
+@push('late-scripts')
+    @vite(['resources/js/chart.js'])
+@endpush
+
 <x-app-layout>
 
     <livewire:area-filter />
@@ -5,11 +9,9 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 sm:p-6 sm:pt-0 pb-6 bg-gray-100 grid-flow-row">
         @forelse($indicators as $indicator)
             @connectible($indicator->questionnaire)
-
-                    <x-chart-card :indicator="$indicator">
-                        @livewire($indicator->component, ['indicator' => $indicator])
-                    </x-chart-card>
-
+                <x-chart-card :indicator="$indicator">
+                    @livewire($indicator->component, ['indicator' => $indicator])
+                </x-chart-card>
             @else
                 <x-simple-card>
                     This indicator is not available because the database connection of the questionnaire
@@ -21,7 +23,6 @@
                 {{ __('There are no indicators to display') }}
             </x-simple-card>
         @endforelse
-
     </div>
 
     <div class="pt-0">

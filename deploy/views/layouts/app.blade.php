@@ -4,18 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <link rel="icon" href="{{asset('images/favicon.ico', env('SECURE', false))}}" />
+        <link rel="icon" href="{{asset('images/favicon.ico', config('chimera.secure'))}}" />
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        {{--<link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">--}}
-        {{--<link rel="stylesheet" href="{{ mix('css/fonts.css') }}">--}}
-
-        <!-- Styles -->
-        {{--<link rel="stylesheet" href="{{ mix('css/app.css') }}">
-        <link rel="stylesheet" href="{{ mix('css/map.css') }}">--}}
+        <title>{{ config('app.name') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -26,8 +17,6 @@
             }
         </style>
 
-        <!-- Scripts -->
-        {{--<script src="{{ mix('js/app.js') }}" defer></script>--}}
         @stack('scripts')
 
     </head>
@@ -79,7 +68,7 @@
                     </div>
                     <div class="mt-8 md:mt-0 md:order-1">
                         <p class="text-center text-base text-gray-400">
-                            {{ __('Created by') }} <a href="https://www.uneca.org/data-and-statistics" target="_blank" class="text-blue-400">ECA</a> | ecastats@un.org
+                            {{ __('Created by') }} <a href="https://www.uneca.org/data-and-statistics" target="_blank" class="text-blue-400">{{ __('ECA') }}</a> | ecastats@un.org
                         </p>
                     </div>
                 </div>
@@ -92,6 +81,5 @@
         @livewireScripts
 
         @stack('late-scripts')
-        @stack('js')
     </body>
 </html>

@@ -11,9 +11,9 @@ use Spatie\SimpleExcel\SimpleExcelReader;
 
 class ImportAreas extends Command
 {
-    protected $signature = 'chimera:import-areas 
-                            {file : CSV or XSLX file that contains the names and codes of the areas} 
-                            {--truncate : Whether the table should be truncated before importing the areas} 
+    protected $signature = 'chimera:import-areas
+                            {file : CSV or XSLX file that contains the names and codes of the areas}
+                            {--truncate : Whether the table should be truncated before importing the areas}
                             {--zero-pad-codes : Whether to zero pad codes, padding length will be requested for each code column}
                             {--connection= : You can provide a connection name if you have different areas per connection}';
 
@@ -104,7 +104,7 @@ class ImportAreas extends Command
                                     '0'
                                 ) :
                                 null,
-                        'connection_name' => $this->connection,
+                        //'connection_name' => $this->connection,
                         'created_at' => Carbon::now(),
                         'updated_at' => Carbon::now(),
                     ];

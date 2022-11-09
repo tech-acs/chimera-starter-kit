@@ -205,6 +205,12 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/mail', app_path('Mail'));
         $this->comment('Copied Mail Classes');
 
+        File::copyDirectory(__DIR__ . '/../../deploy/notifications', app_path('Notifications'));
+        $this->comment('Copied Notification Classes');
+
+        File::copyDirectory(__DIR__ . '/../../deploy/jobs', app_path('Jobs'));
+        $this->comment('Copied Job Classes');
+
         File::copyDirectory(__DIR__ . '/../../deploy/rules', app_path('Rules'));
         $this->comment('Copied Rules');
 
@@ -229,8 +235,7 @@ class Chimera extends Command
         $this->copyFilesInDir(__DIR__ . '/../../deploy/public/images', public_path('images'), '*.*');
         $this->comment('Copied public images');
 
-        //copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
-        //copy(__DIR__.'/../../deploy/npm/webpack.mix.js', base_path('webpack.mix.js'));
+        copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
         copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
         $this->comment('Copied npm configs');
 
@@ -238,7 +243,9 @@ class Chimera extends Command
             return [
                 "leaflet" => "^1.9.2",
                 "plotly.js-basic-dist-min" => "^2.16.1",
-                "@alpinejs/focus" => "3.10.5"
+                "plotly.js-locales" => "^2.16.1",
+                "@alpinejs/focus" => "3.10.5",
+                "@tailwindcss/line-clamp" => "^0.4.2"
             ] + $packages;
         });
         $this->comment('Updated package.json with required npm packages');
@@ -259,6 +266,9 @@ class Chimera extends Command
 
         // Enable profile photo (jetstream)
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
+
+        // Disable account deletion (jetstream)
+        $this->replaceInFile('Features::accountDeletion(),', '// Features::accountDeletion(),', config_path('jetstream.php'));
 
         // Make timezone setable from .env
         $this->replaceInFile("'timezone' => 'UTC'", "'timezone' => env('APP_TIMEZONE', 'UTC')", config_path('app.php'));

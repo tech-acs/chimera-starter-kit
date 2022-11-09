@@ -4,17 +4,22 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MapRequest;
+use App\Jobs\ImportShapefileJob;
 use App\Models\Area;
 use App\Services\AreaTree;
 use App\Services\ShapefileImporter;
+use App\Services\Traits\Geospatial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class MapController extends Controller
 {
+    use Geospatial;
+
     public function index()
     {
         $records = Area::orderBy('level')->orderBy('path')->paginate(config('chimera.records_per_page'));
@@ -32,31 +37,6 @@ class MapController extends Controller
         return view('developer.map.create', compact('levels'));
     }
 
-    private static function findContainingGeometry($level, $geom)
-    {
-        return Area::ofLevel($level)
-            ->whereRaw("ST_Area(ST_Intersection(geom::geometry, $geom)) > 0.70 * ST_Area($geom)")
-            ->first();
-    }
-
-    private function makePath($ancestor, $code)
-    {
-        return is_null($ancestor) ? $code : $ancestor->path . '.' . $code;
-    }
-
-    private function augumentData(array $features, int $level)
-    {
-        return array_map(function ($feature) use ($level) {
-            if ($level > 0) {
-                $ancestor = self::findContainingGeometry($level - 1, $feature['geom']);
-                $feature['path'] = empty($ancestor) ? null : $this->makePath($ancestor, $feature['attribs']['code']);
-            } else {
-                $feature['path'] = $this->makePath(null, $feature['attribs']['code']);
-            }
-            return $feature;
-        }, $features);
-    }
-
     public function store(MapRequest $request)
     {
         $level = $request->integer('level', null);
@@ -70,11 +50,14 @@ class MapController extends Controller
         $importer = new ShapefileImporter();
         $features = $importer->import(Storage::disk('shapefiles')->path($shpFile));
 
+        // Check for empty shapefiles?
         if (empty($features)) {
             throw ValidationException::withMessages([
-                'shapefile' => ['The shapefile does not contain any valid features'],
+                'shapefile' => ['The shapefile does not contain any valid features.'],
             ]);
         }
+
+        // Check that shapefile has 'name' and 'code' columns in the attribute table
         $firstFeatureAttributes = $features[0]['attribs'];
         if (! (array_key_exists('name', $firstFeatureAttributes) && array_key_exists('code', $firstFeatureAttributes))) {
             throw ValidationException::withMessages([
@@ -82,38 +65,29 @@ class MapController extends Controller
             ]);
         }
 
-        $augmentedFeatures = $this->augumentData($features, $level);
-
-        $featuresMissingCode = array_filter($augmentedFeatures, fn ($feature) => empty($feature['attribs']['code']));
-        if (! empty($featuresMissingCode)) {
+        // Check that all areas have valid value for 'code'
+        $featuresWithInvalidCode = array_filter($features, function ($feature) {
+            $codeValidator = Validator::make(
+                $feature['attribs'],
+                [
+                    'code' => ['required', 'max:255', 'regex:/[A-Za-z0-9_]+/i', 'unique:areas,code']
+                ]
+            );
+            if ($codeValidator->fails()) {
+                logger('Shapefile validation error', ['Error' => $codeValidator->errors()->all()]);
+            }
+            return $codeValidator->fails();
+        });
+        if (! empty($featuresWithInvalidCode)) {
             throw ValidationException::withMessages([
-                'shapefile' => [count($featuresMissingCode) . " area(s) with no value for 'code' attribute found. Required for all."],
+                'shapefile' => [count($featuresWithInvalidCode) . " area(s) with invalid value for 'code' attribute found."],
             ]);
         }
 
-        // Validate that code is a sequence of alphanumeric characters and underscores (A-Za-z0-9_)
-        // Must be less than 256 characters long.
+        ImportShapefileJob::dispatch($features, $level, auth()->user());
 
-        $orphanFeatures = array_filter($augmentedFeatures, fn ($feature) => empty($feature['path']));
-        if (! empty($orphanFeatures)) {
-            $orphans = collect($orphanFeatures)->pluck('attribs.code')->join(', ', ' and ');
-            throw ValidationException::withMessages([
-                'shapefile' => [count($orphanFeatures) . " orphan area(s) found [code: $orphans]. All areas require a containing parent area."],
-            ]);
-        }
-        $results = [];
-        foreach ($augmentedFeatures as $feature) {
-            $results[] = Area::create([
-                'name' => $feature['attribs']['name'],
-                'code' => $feature['attribs']['code'],
-                'level' => $level,
-                'geom' => $feature['geom'],
-                'path' => $feature['path'],
-            ]);
-        }
-        $insertedCount = collect($results)->filter()->count();
         return redirect()->route('developer.area.index')
-            ->withMessage("$insertedCount areas have been imported.");
+            ->withMessage("Importing is in progress. You will be notified when it is complete.");
     }
 
     public function edit(Area $area)

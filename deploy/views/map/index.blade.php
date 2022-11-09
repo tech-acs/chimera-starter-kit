@@ -1,3 +1,7 @@
+@push('scripts')
+    @vite(['resources/css/map.css', 'resources/js/map.js'])
+@endpush
+
 <x-app-layout>
     <div class="w-full py-6 px-4 sm:px-6 lg:px-8">
         <x-simple-card>

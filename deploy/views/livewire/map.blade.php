@@ -1,9 +1,3 @@
-@once
-    @push('scripts')
-        @vite(['resources/css/map.css', 'resources/js/map.js'])
-    @endpush
-@endonce
-
 <div class="relative z-0">
     <div
         id="map"

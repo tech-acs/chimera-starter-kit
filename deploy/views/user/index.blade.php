@@ -135,14 +135,14 @@
                                                     @else
                                                         <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900">{{ __('Suspend') }}</a>
                                                     @endif
-                                                    @can('Super User')
+                                                    {{--@can('Super User')
                                                         <span class="text-gray-400 px-1">|</span>
                                                         <form action="{{route('user.destroy', $record->id)}}" method="post" class="inline">
                                                             @method('delete')
                                                             @csrf
                                                             <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                                         </form>
-                                                    @endcan
+                                                    @endcan--}}
                                                 @endif
                                             </td>
                                         </tr>

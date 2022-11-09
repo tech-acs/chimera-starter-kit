@@ -1,3 +1,7 @@
+@push('scripts')
+    @vite(['resources/js/chart.js'])
+@endpush
+
 <x-app-layout>
 
     <livewire:area-filter />
@@ -10,7 +14,7 @@
         @else
             <x-simple-card>
                 This indicator is not available because the database connection of the questionnaire
-                called <b>{{ $indicator->questionnaire }}</b> is not functioning properly.
+                called <b>{{ $indicator->questionnaire }}</b> is not available.
             </x-simple-card>
         @endconnectible
     </div>

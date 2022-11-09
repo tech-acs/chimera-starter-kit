@@ -1,4 +1,7 @@
 import L from 'leaflet';
+import map from 'lodash/map';
+import property from 'lodash/property';
+import isUndefined from 'lodash/isUndefined';
 
 export default class LeafletMap {
     map;
@@ -105,12 +108,12 @@ export default class LeafletMap {
             Livewire.emit('mapZoomed', zoom, bounds.toBBoxString());
 
             const projectedLevel = this.inferLevelFromZoom(zoom);
-            if ((! _.isUndefined(this.level)) && (projectedLevel !== this.level)) {
+            if ((! isUndefined(this.level)) && (projectedLevel !== this.level)) {
                 if (projectedLevel > this.level) {
                     console.log({currentLevel: this.level, nextLevel: projectedLevel});
                     const levelLayers = this.geojsonLayerGroup.getLayers();
                     let withinBoundsFeatures = this.getFeaturesIntersectingBounds(levelLayers[this.level], bounds);
-                    let withinBoundsPaths = _.map(withinBoundsFeatures, _.property('properties.path'));
+                    let withinBoundsPaths = map(withinBoundsFeatures, property('properties.path'));
                     Livewire.emit('levelTransitioned', withinBoundsPaths);
                     console.log({withinBoundsPaths})
                 } else {

@@ -4,11 +4,12 @@ use App\Http\Controllers\ChartsController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Manage\AnnouncementController;
 use App\Http\Controllers\Manage\ConnectionTestController;
 use App\Http\Controllers\Manage\FaqManagementController;
 use App\Http\Controllers\Manage\IndicatorController;
-use App\Http\Controllers\Manage\MapManagementController;
 use App\Http\Controllers\Manage\MapController;
+use App\Http\Controllers\Manage\MapIndicatorController;
 use App\Http\Controllers\Manage\PageController;
 use App\Http\Controllers\Manage\QuestionnaireController;
 use App\Http\Controllers\Manage\ReportManagementController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Manage\UsageStatsController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\UserSuspensionController;
 use App\Http\Controllers\MapPageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,11 +39,11 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])
     Route::get('report/{report}/download', [ReportController::class, 'download'])->name('report.download');
     Route::get('report/{report}/generate', [ReportController::class, 'generate'])->name('report.generate');
     Route::get('faq', FaqController::class)->name('faq');
-    Route::get('help', HelpController::class)->name('help');
+    Route::get('notification', NotificationController::class)->name('notification.index');
 
     Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {
         Route::resource('role', RoleController::class)->only(['index', 'store', 'edit', 'destroy']);
-        Route::resource('user', UserController::class)->only(['index', 'edit', 'update', 'destroy']);
+        Route::resource('user', UserController::class)->only(['index', 'edit', 'update']);
         Route::get('user/{user}/suspension', UserSuspensionController::class)->name('user.suspension');
 
         Route::resource('page', PageController::class)->except(['show']);
@@ -49,17 +51,19 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])
         Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
         Route::name('manage.')->group(function () {
             Route::resource('report', ReportManagementController::class)->except(['show']);
-            /*Route::resource('map', MapManagementController::class)->except(['show']);*/
+            Route::resource('map', MapIndicatorController::class)->except(['show']);
             Route::resource('faq', FaqManagementController::class)->except(['show']);
         });
         Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
+        Route::resource('announcement', AnnouncementController::class)->only(['index', 'create', 'store']);
         Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
-        Route::get('questionnaire/{questionnaire}/test-connection', [ConnectionTestController::class, 'test'])->name('questionnaire.connection.test');
+        Route::get('questionnaire/{questionnaire}/test-connection', ConnectionTestController::class)->name('questionnaire.connection.test');
         Route::resource('questionnaire', QuestionnaireController::class);
 
         if (config('chimera.developer_mode')) {
             Route::prefix('developer')->name('developer.')->group(function () {
                 Route::resource('area', MapController::class);
+                Route::resource('target', MapController::class);
             });
         }
     });

@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Questionnaires with their databases') }}
+            {{ __('Announcements') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Creating a new questionnaire and database connection') }}
+            {{ __('Send broadcast messages to all users') }}
         </p>
     </x-slot>
 
@@ -28,9 +28,30 @@
             </div>
         @endif
 
-        <form action="{{route('questionnaire.store')}}" method="POST">
+        <form action="{{route('announcement.store')}}" method="POST">
             @csrf
-            @include('questionnaire.form')
+            <div class="shadow sm:rounded-md sm:overflow-hidden">
+                <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <x-jet-label for="title" value="{{ __('Title') }} *" />
+                            <x-jet-input class="w-full" id="title" name="title" type="text" value="{{old('title')}}" />
+                            <x-jet-input-error for="title" class="mt-2" />
+                        </div>
+                        <div>
+                            <x-jet-label for="body" value="{{ __('Message') }} *" />
+                            <x-textarea name="body" id="body" rows="4">{{old('body')}}</x-textarea>
+                            <x-jet-input-error for="body" class="mt-2" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                    <x-jet-button>
+                        {{ __('Send') }}
+                    </x-jet-button>
+                </div>
+            </div>
         </form>
 
     </div>

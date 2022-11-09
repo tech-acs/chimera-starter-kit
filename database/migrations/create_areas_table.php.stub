@@ -26,6 +26,7 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE areas ADD COLUMN path ltree");
+        DB::statement("ALTER TABLE ADD CONSTRAINT UNIQUE(path)");
         DB::statement("CREATE INDEX areas_path_gist_idx ON areas USING gist(path)");
     }
 
