@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\DB;
 
 class AreaTree
 {
-    public array $hierarchies;  // [ 0 => 'region',  1 => 'constituency', ... ]
+    public array $hierarchies;  // [ 0 => 'admin level one',  1 => 'admin level two', ... ]
 
-    public function __construct()
+    public function __construct(int $removeLastNLevels = 0)
     {
-        $this->hierarchies = config('chimera.area.hierarchies');
-        array_pop($this->hierarchies); // Remove last element (ea)
+        $hierarchies = config('chimera.area.hierarchies');
+        $this->hierarchies = array_slice($hierarchies, 0, count($hierarchies) - $removeLastNLevels);
     }
 
     public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)

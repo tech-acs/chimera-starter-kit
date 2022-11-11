@@ -44,9 +44,9 @@ return [
             'throw' => false,
         ],
 
-        'shapefiles' => [
+        'imports' => [
             'driver' => 'local',
-            'root' => storage_path('app/shapefiles'),
+            'root' => storage_path('app/imports'),
             'throw' => false,
             'permissions' => [
                 'file' => [

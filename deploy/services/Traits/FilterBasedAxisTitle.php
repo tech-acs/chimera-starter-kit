@@ -15,7 +15,7 @@ trait FilterBasedAxisTitle
 
     protected function getAreaBasedAxisTitle($filter): string
     {
-        $areaTree = new AreaTree(removeLastLevel: false);
+        $areaTree = new AreaTree();
         $path = $this->getFinestResolutionFilterPath($filter);
         $depth = collect(explode('.', $path))->filter()->count();
         $levelName = $areaTree->hierarchies[$depth];

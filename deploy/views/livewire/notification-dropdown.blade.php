@@ -1,16 +1,15 @@
 <div>
     <div class="block py-2 px-4 font-medium text-center text-gray-700 bg-gray-50">
-        {{ __('Notifications') }}
+        {{ __('Notifications') }} ({{ $totalCount }})
     </div>
-    <div class="grid grid-cols-1 bg-gray-200">
+    <div class="grid grid-cols-1 bg-gray-200" wire:poll.1000ms.visible>
         @forelse($notifications as $notification)
             <a
-                href="#"
-                wire:click="show('$notification->id')"
+                href="{{ route('notification.index') }}"
                 class="flex py-3 px-4 hover:bg-gray-100 bg-white mt-[1px] first:mt-0 @if($notification->read_at) text-gray-400 @else border-l-4 border-blue-500 text-blue-700 @endif"
             >
                 <div class="flex-shrink-0">
-                    <x-dynamic-component component="icon.announcement" class="mt-4" />
+                    <x-dynamic-component component="icon.{{ $notification->data['icon'] }}" class="mt-4" />
                 </div>
                 <div class="pl-3 w-full">
                     <div class="text-sm mb-1.5">
@@ -37,7 +36,7 @@
     <div class="bg-gray-50 px-5 py-3">
         <div class="text-sm flex justify-between">
             <a href="{{ route('notification.index') }}" class="whitespace-nowrap text-indigo-600 hover:text-indigo-500">View all</a>
-            <a href="" wire:click="markAllAsRead()" class="whitespace-nowrap text-indigo-600 hover:text-indigo-500">Mark all as read</a>
+            <a href="" wire:click.prevent.stop="markAllAsRead()" class="whitespace-nowrap text-indigo-600 hover:text-indigo-500">Mark all as read</a>
         </div>
     </div>
 </div>

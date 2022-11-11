@@ -17,7 +17,7 @@ class AreaFilter extends Component
 
     public function mount()
     {
-        $areaTree = new AreaTree;
+        $areaTree = new AreaTree(removeLastNLevels: 1);
         $this->hierarchies = $areaTree->hierarchies;
         $selectionsFromSession = session()->get('area-filter', []);
         $restrictions = []; //['region' => '02', 'constituency' => '02.0201'];
@@ -51,7 +51,7 @@ class AreaFilter extends Component
 
     public function changeHandler($changedLevelName, $selectedPath)
     {
-        $areaTree = new AreaTree;
+        $areaTree = new AreaTree(removeLastNLevels: 1);
         $this->selections[$changedLevelName] = $selectedPath;
         $nextDropdown = $areaTree->next($changedLevelName);
         if ($nextDropdown) {

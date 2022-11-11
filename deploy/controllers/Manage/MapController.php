@@ -24,7 +24,7 @@ class MapController extends Controller
     {
         $records = Area::orderBy('level')->orderBy('path')->paginate(config('chimera.records_per_page'));
         $levelCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get();
-        $hierarchies = (new AreaTree(removeLastLevel: false))->hierarchies;
+        $hierarchies = (new AreaTree())->hierarchies;
         $summary = $levelCounts->map(function ($item) use ($hierarchies) {
             return $item->count . ' ' . str($hierarchies[$item->level] ?? 'unknown')->plural($item->count);
         })->join(', ', ' and ');
@@ -37,19 +37,8 @@ class MapController extends Controller
         return view('developer.map.create', compact('levels'));
     }
 
-    public function store(MapRequest $request)
+    private function validateShapefile(array $features)
     {
-        $level = $request->integer('level', null);
-        $files = $request->file('shapefile');
-        $filename = Str::random(40);
-        foreach ($files as $file) {
-            $filenameWithExt = collect([$filename, $file->getClientOriginalExtension()])->join('.');
-            $file->storeAs('/', $filenameWithExt, 'shapefiles');
-        }
-        $shpFile = collect([$filename, 'shp'])->join('.');
-        $importer = new ShapefileImporter();
-        $features = $importer->import(Storage::disk('shapefiles')->path($shpFile));
-
         // Check for empty shapefiles?
         if (empty($features)) {
             throw ValidationException::withMessages([
@@ -69,9 +58,7 @@ class MapController extends Controller
         $featuresWithInvalidCode = array_filter($features, function ($feature) {
             $codeValidator = Validator::make(
                 $feature['attribs'],
-                [
-                    'code' => ['required', 'max:255', 'regex:/[A-Za-z0-9_]+/i', 'unique:areas,code']
-                ]
+                ['code' => ['required', 'max:255', 'regex:/[A-Za-z0-9_]+/i', 'unique:areas,code']]
             );
             if ($codeValidator->fails()) {
                 logger('Shapefile validation error', ['Error' => $codeValidator->errors()->all()]);
@@ -83,6 +70,22 @@ class MapController extends Controller
                 'shapefile' => [count($featuresWithInvalidCode) . " area(s) with invalid value for 'code' attribute found."],
             ]);
         }
+    }
+
+    public function store(MapRequest $request)
+    {
+        $level = $request->integer('level', null);
+        $files = $request->file('shapefile');
+        $filename = Str::random(40);
+        foreach ($files as $file) {
+            $filenameWithExt = collect([$filename, $file->getClientOriginalExtension()])->join('.');
+            $file->storeAs('/shapefiles', $filenameWithExt, 'imports');
+        }
+        $shpFile = collect([$filename, 'shp'])->join('.');
+        $importer = new ShapefileImporter();
+        $features = $importer->import(Storage::disk('imports')->path('shapefiles/' . $shpFile));
+
+        $this->validateShapefile($features);
 
         ImportShapefileJob::dispatch($features, $level, auth()->user());
 

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Area;
 use App\Notifications\TaskCompletedNotification;
+use App\Notifications\TaskFailedNotification;
 use App\Services\Traits\Geospatial;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -71,6 +72,14 @@ class ImportShapefileJob implements ShouldQueue
         Notification::sendNow($this->user, new TaskCompletedNotification(
             'Task completed',
             "$insertedCount areas have been imported."
+        ));
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        Notification::sendNow($this->user, new TaskFailedNotification(
+            'Task failed',
+            $exception->getMessage()
         ));
     }
 }

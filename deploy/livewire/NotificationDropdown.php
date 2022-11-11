@@ -10,10 +10,10 @@ class NotificationDropdown extends Component
 {
     public DatabaseNotificationCollection $notifications;
     public bool $show;
+    public int $totalCount;
 
     public function mount()
     {
-        $this->notifications = auth()->user()->notifications;
         $this->show = false;
     }
 
@@ -24,6 +24,9 @@ class NotificationDropdown extends Component
 
     public function render()
     {
+        $user = auth()->user();
+        $this->notifications = $user->notifications()->take(5)->get();
+        $this->totalCount = $user->notifications->count();
         return view('livewire.notification-dropdown');
     }
 }

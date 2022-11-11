@@ -16,6 +16,7 @@ use App\Http\Controllers\Manage\ReportManagementController;
 use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\SettingController;
 use App\Http\Controllers\Manage\ScorecardController;
+use App\Http\Controllers\Manage\TargetController;
 use App\Http\Controllers\Manage\UsageStatsController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\UserSuspensionController;
@@ -62,8 +63,8 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])
 
         if (config('chimera.developer_mode')) {
             Route::prefix('developer')->name('developer.')->group(function () {
-                Route::resource('area', MapController::class);
-                Route::resource('target', MapController::class);
+                Route::resource('area', MapController::class)->except('show');
+                Route::resource('target', TargetController::class)->except('show');
             });
         }
     });
