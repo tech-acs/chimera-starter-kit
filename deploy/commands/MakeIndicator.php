@@ -21,6 +21,8 @@ class MakeIndicator extends GeneratorCommand
     ];
     protected $type = 'default';
     protected $includeSampleCode = '';
+    protected $title = null;
+    protected $template = null;
 
     use InteractiveCommand;
 
@@ -39,10 +41,61 @@ class MakeIndicator extends GeneratorCommand
         $className = $this->qualifyClass($name);
         $path = $this->getPath($className);
         $this->makeDirectory($path);
-        $content = $this->buildClass($className);
+        $content =  $this->template !== null?str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], $this->template, $this->buildClass($className)):$this->buildClass($className);
         return $this->files->put($path, $content);
     }
 
+
+    protected function choiceTemplate(){
+        $templates = $this->scanForIndicators();
+
+        $templateNotFound = true;
+        while($templateNotFound){
+            $template = $this->anticipate('Enter template you would like to use for your indicator(use arrow ⇅ to navigate)?', $templates,null);
+            if(in_array($template, $templates) || $template == null){
+                $templateNotFound = false;
+            } else {
+                $this->error('Template not found');
+            }
+
+        }
+        if($template == null){
+            $this->type = 'default';
+        } else {
+            $this->type = 'template';
+            
+        $this->template = str_replace('.php', '', $template);
+        $reflection = new \ReflectionClass('\\App\Http\\Livewire\\IndicatorTemplate\\'.$this->template);
+        $reflectionDoc = $reflection->getDocComment();
+        $docBlock =  preg_split("/\r\n|\n|\r/",trim(substr($reflectionDoc, 3, -2)));
+        if(count($docBlock) > 1){
+            $this->title= trim(substr($docBlock[0],1));
+        }
+        }
+    }
+
+    protected function scanForIndicators(){
+        $path =\app_path('Http/Livewire/IndicatorTemplate');
+        
+        return $this->scanAllDir($path);
+
+    } 
+
+    protected function scanAllDir($dir) {
+        $result = [];
+        foreach(scandir($dir) as $filename) {
+          if ($filename[0] === '.') continue;
+          $filePath = $dir . '/' . $filename;
+          if (is_dir($filePath)) {
+            foreach ($this->scanAllDir($filePath) as $childFilename) {
+              $result[] = $filename . '/' . $childFilename;
+            }
+          } else {
+            $result[] = $filename;
+          }
+        }
+        return $result;
+      }
     public function handle()
     {
         if (Questionnaire::all()->isEmpty()) {
@@ -61,17 +114,25 @@ class MakeIndicator extends GeneratorCommand
         $questionnaires = Questionnaire::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
         $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
+        $this->choiceTemplate();
 
-        $chartTypeMenu = array_combine(range(1, count($this->chartTypes)), array_keys($this->chartTypes));
-        $chosenChartType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);
-        $this->type = $this->chartTypes[$chosenChartType];
-
-        $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
-        $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
-
+        if($this->type == 'template'){
+            $this->type = 'template';
+            $chosenChartType = 'Template';
+            $this->includeSampleCode = false;
+        }
+        else{
+            $chartTypeMenu = array_combine(range(1, count($this->chartTypes)), array_keys($this->chartTypes));
+            $chosenChartType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);
+            $this->type = $this->chartTypes[$chosenChartType];
+            $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
+            $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
+        }
+        
+        
         $title = $this->askValid(
-            "Please enter a reader friendly title for the indicator (press enter to leave empty for now)",
-            'title',
+            "Please enter a reader friendly title for the indicator (press enter to set ".($this->title??'empty')." for now) ",
+            'title', 
             ['nullable', ]
         );
 
@@ -80,7 +141,6 @@ class MakeIndicator extends GeneratorCommand
             'description',
             ['nullable', ]
         );
-
         DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType) {
 
             $result = $this->writeIndicatorFile($name);
