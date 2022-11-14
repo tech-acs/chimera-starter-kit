@@ -8,13 +8,32 @@ class {{ class }} extends Chart
 {
     protected $listeners = ['updateChart' => 'update'];
 
-    public function getCollection(array $filter)
+    protected function getData(array $filter = []): array
     {
-        // TODO: Implement getCollection() method.
+        $result = collect(new \DatePeriod(
+                new \DateTime('2010-04-01'),
+                new \DateInterval('P1D'),
+                new \DateTime('2010-04-19')
+            ))
+            ->zip(range(1, 18, 1))
+            ->map(fn ($pair) => (object)['eas' => $pair[0]->format('Y-m-d'), 'households' => $pair[1]/10]);
+        $trace = array_merge(
+            $this::ValueTraceTemplate,
+            [
+                'x' => $result->pluck('eas')->all(),
+                'y' => $result->pluck('households')->all(),
+                'name' => 'Households',
+            ]
+        );
+        return [$trace];
     }
 
-    protected function setData(array $filter = [])
+    protected function getLayout(array $filter = []): array
     {
-        // TODO: Implement setData() method.
+        $layout = parent::getLayout($filter);
+        $layout['xaxis']['title']['text'] = "Alphabets";
+        $layout['xaxis']['type'] = 'date';
+        $layout['yaxis']['title']['text'] = "Households";
+        return $layout;
     }
 }

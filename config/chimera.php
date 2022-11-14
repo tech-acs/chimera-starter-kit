@@ -27,4 +27,5 @@ return [
         'enabled' => env('CACHE_ENABLED', false),
         'ttl' => env('CACHE_TTL', 300)
     ],
+    'templates_path' => env('TEMPLATES_PATH', 'app/Http/Livewire/IndicatorTemplate'),
 ];
