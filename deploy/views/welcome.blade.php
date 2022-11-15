@@ -4,18 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ __('Census Dashboard') }}</title>
+    <title>{{ __('Census & Survey Dashboard') }}</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
-    {{--<link rel="stylesheet" href="{{ mix('css/app.css') }}">--}}
     @vite(['resources/css/app.css'])
 </head>
 <body class="antialiased">
 
-
-<div class="relative bg-gray-50 flex flex-col min-h-screen">
+    <div class="relative bg-gray-50 flex flex-col min-h-screen">
     <div class="relative bg-white shadow">
         <div class="mx-auto px-4 sm:px-6">
             <div class="flex justify-between items-center py-6 md:justify-start md:space-x-10">
@@ -45,12 +43,12 @@
             <div class="px-4 lg:w-1/2 sm:px-8 xl:pr-16">
                 <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl lg:text-5xl">
                     <span class="block xl:inline">{{ __('The power to manage') }}</span>
-                    <span class="block text-indigo-600 xl:inline">{{ __('your digital census') }}</span>
+                    <span class="block text-indigo-600 xl:inline">{{ __('your digital census & survey') }}</span>
                 </h1>
                 <p class="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl">
-                {{ __('A census dashboard is an information management tool that visually tracks, analyzes and displays
+                {{ __('A dashboard is an information management tool that visually tracks, analyzes and displays
                     key performance indicators (KPI), metrics and key data points to monitor the progress of a
-                    digital census.') }}
+                    digital census & survey.') }}
                 </p>
                 <div class="mt-10 sm:flex sm:justify-center lg:justify-start">
                     <div class="rounded-md shadow">
@@ -59,7 +57,7 @@
                         </a>
                     </div>
                     <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                        <a href="mailto:ecastats@un.org?subject=Mail from ECA (Ghana) Census Dashboard" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
+                        <a href="mailto:ecastats@un.org?subject=Mail from Dashboard" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
                             {{ __('Contact :agency',['agency'=>'ECA']) }}
                         </a>
                     </div>

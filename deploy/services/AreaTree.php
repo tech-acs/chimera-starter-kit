@@ -32,6 +32,11 @@ class AreaTree
             ->first();
     }
 
+    public function levelFromPath(string $path)
+    {
+        return str($path)->explode('.')->count() - 1;
+    }
+
     public function prev($levelName)
     {
         $key = array_search($levelName, $this->hierarchies);

@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Indicator;
 use App\Services\Caching;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
@@ -65,12 +66,17 @@ abstract class Chart extends Component
         return [...self::DEFAULT_CONFIG, ...$dynamicOptions];
     }
 
-    protected function getData(array $filter = []): array
+    protected function loadInputData(array $filter): Collection
+    {
+        return collect([]);
+    }
+
+    protected function getTraces(Collection $inputData, array $filter): array
     {
         return [];
     }
 
-    protected function getLayout(array $filter = []): array
+    protected function getLayout(array $filter): array
     {
         return self::DEFAULT_LAYOUT;
     }
@@ -95,28 +101,29 @@ abstract class Chart extends Component
         }, true);
     }
 
-    private function getDataWithCaching(array $filter = []): array
+    private function loadInputDataWithCaching(array $filter): Collection
     {
-        $indicator = $indicator ?? $this->graphDiv;
+        $indicator = $this->graphDiv;
         try {
             if (config('chimera.cache.enabled')) {
                 $key = Caching::makeIndicatorCacheKey($indicator, $filter);
                 //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
-                return Cache::tags(['indicator'])
+                return Cache::tags([$indicator])
                     ->rememberForever($key, function () use ($indicator, $filter) {
-                        return $this->getData($filter);
+                        return $this->loadInputData($filter);
                     });
             }
-            return $this->getData($filter);
+            //return $this->getData($filter);
+            return $this->loadInputData($filter);
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache", ['Exception: ' => $exception]);
-            return $this->getData($filter);
+            return $this->loadInputData($filter);
         }
     }
 
-    private function updateDataAndLayout(array $filter = []): void
+    private function updateDataAndLayout(array $filter): void
     {
-        $this->data = $this->getDataWithCaching($filter);
+        $this->data = $this->getTraces($this->loadInputDataWithCaching($filter), $filter);
         $this->layout = $this->getLayout($filter);
 
         if ($this->isDataEmpty()) {

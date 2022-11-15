@@ -70,6 +70,7 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+        <x-jet-secondary-button class="mr-2"><a href="{{ route('page.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
         <x-jet-button>
             {{ __('Submit') }}
         </x-jet-button>

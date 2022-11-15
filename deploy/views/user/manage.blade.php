@@ -76,7 +76,7 @@
                                 <div class="mb-2">
                                     <span class="text-base font-medium text-gray-900">{{ __('Area restriction') }}</span>
                                 </div>
-                                <livewire:area-restriction-manager :user="$user" />
+                                {{--<livewire:area-restriction-manager :user="$user" />--}}
                             </div>
                         </fieldset>
                     </div>

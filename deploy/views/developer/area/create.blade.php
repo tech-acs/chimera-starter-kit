@@ -127,9 +127,8 @@
                             </div>
 
                             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                <x-jet-button>
-                                    {{ __('Import') }}
-                                </x-jet-button>
+                                <x-jet-secondary-button class="mr-2"><a href="{{ route('developer.area.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
+                                <x-jet-button>{{ __('Import') }}</x-jet-button>
                             </div>
 
                         </div>

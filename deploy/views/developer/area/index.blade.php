@@ -2,21 +2,28 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Target Values') }}
+            {{ __('Areas') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage target values for indicators.') }}
+            {{ __('Manage areas. Names, codes and map.') }}
         </p>
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between">
             <div class="bg-sky-400/20 text-sky-600 px-4 text-sm flex items-center rounded-full font-medium">
-                {{ empty($summary) ? "No target values imported yet" : $summary }}
+                {{ empty($summary) ? "No areas imported yet" : $summary }}
             </div>
-            <div>
-                <a href="{{route('developer.target.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
-            </div>
+            @if(app()->environment('local'))
+                <div x-data="confirmedDeletion">
+                    <a href="{{route('developer.area.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
+
+                    <x-delete-confirmation />
+                    <a href="{{route('developer.area.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
+                        <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
+                    </a>
+                </div>
+            @endif
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
@@ -58,22 +65,23 @@
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                        <x-delete-confirmation prompt="[ This action will delete the component file and also the database entry for the indicator ]" />
-
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Indicator') }}
+                                    {{ __('Name') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Area Code') }}
+                                    {{ __('Code') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Level') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Value') }}
+                                    {{ __('Path') }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{ __('Has map') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
@@ -93,10 +101,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{$record->path}}
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
+                                    <x-yes-no value="{{$record->geom}}" />
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{route('developer.area.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                    <span class="text-gray-400 px-1">|</span>
-                                    <a href="{{route('developer.area.destroy', $record->id)}}" class="text-red-600 hover:text-red-900">{{ __('Delete') }}</a>
+                                    {{--<span class="text-gray-400 px-1">|</span>
+                                    <a href="{{route('developer.area.destroy', $record->id)}}" class="text-red-600 hover:text-red-900">{{ __('Delete') }}</a>--}}
                                 </td>
                             </tr>
                             @empty
@@ -107,11 +118,11 @@
                             </tr>
                             @endforelse
                             </tbody>
-                            {{--@if ($records->hasPages())
+                            @if ($records->hasPages())
                                 <tfoot>
                                     <tr><td colspan="6" class="px-6 text-left text-xs text-gray-500 tracking-wider">{{ $records->withQueryString()->links() }}</td></tr>
                                 </tfoot>
-                            @endif--}}
+                            @endif
                         </table>
                     </div>
                 </div>

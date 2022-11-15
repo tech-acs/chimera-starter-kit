@@ -29,7 +29,9 @@ class PageController extends Controller
 
     public function edit(Page $page)
     {
-        $page->load('indicators');
+        $page->load(['indicators' => function ($query) {
+            $query->where('published', true);
+        }]);
         return view('page.edit', compact('page'));
     }
 

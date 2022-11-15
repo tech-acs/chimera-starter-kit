@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Jobs\ImportTargetSpreadsheetJob;
+use App\Jobs\ImportReferenceValueSpreadsheetJob;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +11,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Spatie\SimpleExcel\SimpleExcelReader;
 
-class TargetSpreadsheetImporter extends Component
+class ReferenceValueSpreadsheetImporter extends Component
 {
     use WithFileUploads;
 
@@ -80,12 +80,12 @@ class TargetSpreadsheetImporter extends Component
     {
         $this->validate();
 
-        ImportTargetSpreadsheetJob::dispatch($this->filePath, $this->areaLevels, $this->columnMapping, auth()->user());
+        ImportReferenceValueSpreadsheetJob::dispatch($this->filePath, $this->columnMapping, auth()->user());
         $this->message = "The file is being imported. You will receive a notification when the process is complete.";
     }
 
     public function render()
     {
-        return view('livewire.target-spreadsheet-importer');
+        return view('livewire.reference-value-spreadsheet-importer');
     }
 }

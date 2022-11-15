@@ -21,9 +21,8 @@ class AreaRestrictionManager extends Component
 
     public function mount()
     {
-        $areaRepository = new AreaTree($this->connection);
-        $levels = $areaRepository->levels();
-        $levels->pop(); // We do not have a select for the last level (EA). So, drop it!
+        $areaRepository = new AreaTree(removeLastNLevels: 1);
+        $levels = $areaRepository->hierarchies;
         $sessionFilter = session()->get('area-filter', []);
         $previouslySet = $this->user->areaRestrictions()->first();
         //dump($previouslySet);
@@ -35,7 +34,7 @@ class AreaRestrictionManager extends Component
             } else {
                 $parent = $sessionFilter[$parentLevel] ?? null;
                 $this->areas[$levelName] = $parent ?
-                    $areaRepository->areas($this->removeChecksumSafety($parent), type: $levelName)->pluck('name', 'code')->all() :
+                    $areaRepository->areas($this->removeChecksumSafety($parent), $levelName)->pluck('name', 'code')->all() :
                     [];
             }
             $parentLevel = $levelName;
@@ -48,7 +47,7 @@ class AreaRestrictionManager extends Component
         $this->selections[$changedSelect] = $selected;
         $next = $this->nextKey($changedSelect);
         if ($next) {
-            $this->areas[$next] = (new AreaTree($this->connection))->areas($this->removeChecksumSafety($selected), type: $next)->pluck('name', 'code')->all();
+            $this->areas[$next] = (new AreaTree($this->connection))->areas($this->removeChecksumSafety($selected), $next)->pluck('name', 'code')->all();
             $nextKeys = $this->nextKeys($changedSelect);
             foreach ($nextKeys as $key) {
                 if ($key !== $next) {

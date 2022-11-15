@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Areas') }}
+            {{ __('Reference Values') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Editing an existing area') }}
+            {{ __('Editing an existing reference value') }}
         </p>
     </x-slot>
 
@@ -28,10 +28,10 @@
             </div>
         @endif
 
-        <form action="{{route('developer.area.update', $area->id)}}" method="POST">
+        <form action="{{route('developer.reference-value.update', $referenceValue)}}" method="POST">
             @csrf
             @method('PATCH')
-            @include('developer.map.form')
+            @include('developer.reference-value.form')
         </form>
 
     </div>

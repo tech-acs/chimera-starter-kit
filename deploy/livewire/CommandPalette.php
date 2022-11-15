@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class CommandPalette extends Component
 {
-    const MAX_RESULTS = 6;
+    const MAX_RESULTS = 5;
 
     public string $search = '';
     public int $resultCount;
@@ -16,18 +16,21 @@ class CommandPalette extends Component
 
     public function render()
     {
+        $locale = app()->getLocale();
         $results = Indicator::query()
             ->published()
-            ->when(! empty($this->search), function ($builder) {
-                $builder
-                    ->whereRaw("title->>'en' ilike '%{$this->search}%'")
-                    ->orWhereRaw("description->>'en' ilike '%{$this->search}%'");
+            ->when(! empty($this->search), function ($builder) use ($locale) {
+                $builder->where(function ($builder) use ($locale) {
+                    $builder->whereRaw("title->>'{$locale}' ilike '%{$this->search}%'")
+                            ->orWhereRaw("description->>'{$locale}' ilike '%{$this->search}%'");
+                });
             })
-            ->take(self::MAX_RESULTS)
+            ->orderByRaw("title->>'{$locale}'")
             ->get()
             ->filter(function ($indicator) {
                 return Gate::allows($indicator->permission_name);
-            });
+            })
+            ->take(self::MAX_RESULTS);
         $this->resultCount = $results->count();
         $this->activeResult = 0;
         return view('livewire.command-palette', compact('results'));

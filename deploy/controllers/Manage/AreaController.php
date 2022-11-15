@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class MapController extends Controller
+class AreaController extends Controller
 {
     use Geospatial;
 
@@ -28,13 +28,13 @@ class MapController extends Controller
         $summary = $levelCounts->map(function ($item) use ($hierarchies) {
             return $item->count . ' ' . str($hierarchies[$item->level] ?? 'unknown')->plural($item->count);
         })->join(', ', ' and ');
-        return view('developer.map.index', compact('records', 'summary'));
+        return view('developer.area.index', compact('records', 'summary'));
     }
 
     public function create()
     {
         $levels = config('chimera.area.hierarchies', []);
-        return view('developer.map.create', compact('levels'));
+        return view('developer.area.create', compact('levels'));
     }
 
     private function validateShapefile(array $features)
@@ -95,7 +95,7 @@ class MapController extends Controller
 
     public function edit(Area $area)
     {
-        return view('developer.map.edit', compact('area'));
+        return view('developer.area.edit', compact('area'));
     }
 
     public function update(Area $area, Request $request)
@@ -105,10 +105,10 @@ class MapController extends Controller
             ->withMessage("The area has been updated");
     }
 
-    public function destroy(Area $area)
+    public function destroy()
     {
-        $area->delete();
+        Area::truncate();
         return redirect()->route('developer.area.index')
-            ->withMessage("The area has been deleted");
+            ->withMessage("The areas table has been truncated");
     }
 }

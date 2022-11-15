@@ -31,7 +31,7 @@
         <form action="{{route('developer.area.update', $area->id)}}" method="POST">
             @csrf
             @method('PATCH')
-            @include('developer.map.form')
+            @include('developer.area.form')
         </form>
 
     </div>

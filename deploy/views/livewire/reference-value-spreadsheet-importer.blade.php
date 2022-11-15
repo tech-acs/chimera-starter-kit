@@ -46,7 +46,7 @@
             <div class="md:col-span-1 pt-4 md:pt-0">
                 <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Column mapping') }}</h3>
                 <p class="mt-2 text-sm text-gray-500">
-                    For each target you are importing, please indicate which of your spreadsheet columns hold the indicator values and which one holds the corresponding area codes.
+                    For each reference value you are importing, please indicate which of your spreadsheet columns hold the indicator values and which one holds the corresponding area codes.
                 </p>
                 <p class="mt-2 text-sm text-gray-500">
                     If <b>Is additive</b> is not checked, the same value will be assigned to all higher level areas.
@@ -58,7 +58,7 @@
                     <table class="min-w-full">
                         <thead>
                         <tr>
-                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Target for indicator') }}</th>
+                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Reference value for indicator') }}</th>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Corresponding area code') }}</th>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Is additive') }}</th>
                         </tr>
@@ -93,7 +93,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="text-center">
-                                    <button type="button" wire:click="add()" class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-3 py-2 text-sm font-medium leading-4 text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add another indicator target</button>
+                                    <button type="button" wire:click="add()" class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-3 py-2 text-sm font-medium leading-4 text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add another indicator reference</button>
                                 </td>
                             </tr>
                         </tfoot>
@@ -104,6 +104,7 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+        <x-jet-secondary-button class="mr-2"><a href="{{ route('developer.reference-value.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
         <x-jet-button wire:click.prevent="import()">
             {{ __('Import') }}
         </x-jet-button>

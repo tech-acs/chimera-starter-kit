@@ -8,7 +8,7 @@ use App\Http\Controllers\Manage\AnnouncementController;
 use App\Http\Controllers\Manage\ConnectionTestController;
 use App\Http\Controllers\Manage\FaqManagementController;
 use App\Http\Controllers\Manage\IndicatorController;
-use App\Http\Controllers\Manage\MapController;
+use App\Http\Controllers\Manage\AreaController;
 use App\Http\Controllers\Manage\MapIndicatorController;
 use App\Http\Controllers\Manage\PageController;
 use App\Http\Controllers\Manage\QuestionnaireController;
@@ -16,7 +16,7 @@ use App\Http\Controllers\Manage\ReportManagementController;
 use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\SettingController;
 use App\Http\Controllers\Manage\ScorecardController;
-use App\Http\Controllers\Manage\TargetController;
+use App\Http\Controllers\Manage\ReferenceValueController;
 use App\Http\Controllers\Manage\UsageStatsController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\UserSuspensionController;
@@ -24,7 +24,6 @@ use App\Http\Controllers\MapPageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,12 +60,17 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])
         Route::get('questionnaire/{questionnaire}/test-connection', ConnectionTestController::class)->name('questionnaire.connection.test');
         Route::resource('questionnaire', QuestionnaireController::class);
 
-        if (config('chimera.developer_mode')) {
-            Route::prefix('developer')->name('developer.')->group(function () {
-                Route::resource('area', MapController::class)->except('show');
-                Route::resource('target', TargetController::class)->except('show');
-            });
-        }
+        Route::prefix('developer')->name('developer.')->group(function () {
+            Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
+            Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
+            if (app()->environment('local')) {
+                Route::resource('area', AreaController::class)->only(['create', 'store']);
+                Route::delete('area/truncate', [AreaController::class, 'destroy'])->name('area.destroy');
+                Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
+                Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
+            }
+        });
+
     });
 
     Route::fallback(function () {

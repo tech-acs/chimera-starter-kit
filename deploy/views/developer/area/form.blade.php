@@ -15,8 +15,7 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-jet-button>
-            {{ __('Submit') }}
-        </x-jet-button>
+        <x-jet-secondary-button onclick="window.history.back();" class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button>
+        <x-jet-button>{{ __('Submit') }}</x-jet-button>
     </div>
 </div>

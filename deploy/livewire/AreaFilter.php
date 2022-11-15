@@ -60,7 +60,6 @@ class AreaFilter extends Component
                 ->pluck('name', 'path')
                 ->all();
             $nextLevelNames = $areaTree->nextLevelNames($changedLevelName);
-            //dump($changedLevelName, $nextLevelNames, $nextDropdown);
             foreach ($nextLevelNames as $levelName) {
                 if ($levelName !== $nextDropdown) {
                     $this->dropdowns[$levelName] = [];
@@ -79,7 +78,12 @@ class AreaFilter extends Component
         $filter = [...$selectionNames, ...$selectionPaths];
         session()->put('area-filter', $filter);
         $this->emit('filterChanged', $filter);
-        //dump($filter);
+
+        /*$checksumRemovedSelection = $this->removeChecksumSafety($this->selection);
+        session()->put('area-filter', $checksumRemovedSelection);
+        $explodedPath = explode('.', $checksumRemovedSelection);
+        $filter = array_combine(array_slice($this->hierarchies, 0, count($explodedPath)), $explodedPath);
+        $this->emit('filterChanged', $filter);*/
     }
 
     public function clear()

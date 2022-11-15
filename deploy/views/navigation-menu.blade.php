@@ -84,12 +84,10 @@
                                     <x-jet-dropdown-link href="{{route('announcement.index')}}">{{ __('Announcements') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage stats') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>
-                                    @if (config('chimera.developer_mode'))
-                                        <div class="border-t border-gray-100"></div>
-                                        <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Developer Mode') }}</div>
-                                        <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Hierarchical Areas') }}</x-jet-dropdown-link>
-                                        <x-jet-dropdown-link class="px-6" href="{{ route('developer.target.index') }}">{{ __('Target Values') }}</x-jet-dropdown-link>
-                                    @endif
+                                    <div class="border-t border-gray-100"></div>
+                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Imported Data') }}</div>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Area Hierarchy') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-jet-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-jet-dropdown>

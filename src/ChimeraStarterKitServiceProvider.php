@@ -29,7 +29,8 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_scorecards_table',
             'add_is_suspended_column_to_users_table',
             'create_notifications_table',
-            'create_announcements_table'
+            'create_announcements_table',
+            'create_reference_values_table'
         ];
         $package
             ->name('chimera')

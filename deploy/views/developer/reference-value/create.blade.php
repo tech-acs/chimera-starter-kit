@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Areas') }}
+            {{ __('Reference values') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Import hierarchical data from files containing area maps, names and codes') }}
+            {{ __('Import reference values for indicators.') }}
         </p>
     </x-slot>
 
@@ -28,6 +28,6 @@
         </div>
     @endif
 
-    <livewire:target-spreadsheet-importer />
+    <livewire:reference-value-spreadsheet-importer />
 
 </x-app-layout>
