@@ -1,0 +1,9 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Http\Livewire\IndicatorTemplate\{{ parent_class }};
+
+class {{ class }} extends {{ parent_class }} {
+
+}
