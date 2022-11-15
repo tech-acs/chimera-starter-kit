@@ -7,22 +7,18 @@ use App\Models\Questionnaire;
 use App\Services\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
+use ReflectionClass;
 
 class MakeIndicator extends GeneratorCommand
 {
+    use InteractiveCommand;
     protected $signature = 'chimera:make-indicator';
     protected $description = 'Create a new indicator component. Creates file from stub and adds entry in indicators table.';
 
-    protected $chartTypes = [
-        'Bar chart' => 'barchart',
-        'Line chart' => 'linechart',
-        'Pie chart' => 'piechart',
-        'Default' => 'default',
-    ];
     protected $type = 'default';
     protected $includeSampleCode = '';
-
-    use InteractiveCommand;
+    protected $title = null;
+    protected $template = null;
 
     protected function getDefaultNamespace($rootNamespace)
     {
@@ -39,8 +35,47 @@ class MakeIndicator extends GeneratorCommand
         $className = $this->qualifyClass($name);
         $path = $this->getPath($className);
         $this->makeDirectory($path);
-        $content = $this->buildClass($className);
+        if (is_null($this->template)) {
+            $content = $this->buildClass($className);
+        } else {
+            $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], $this->template, $this->buildClass($className));
+        }
         return $this->files->put($path, $content);
+    }
+
+
+    protected function askForIndicatorTemplate()
+    {
+        $templates = $this->loadIndicatorTemplates();
+        $templateNotFound = true;
+        while ($templateNotFound) {
+            $template = $this->anticipate('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', $templates, null);
+            if (in_array($template, $templates)) {
+                $templateNotFound = false;
+                $this->type = 'template';
+
+                $this->template = str_replace('.php', '', $template);
+                $reflection = new ReflectionClass(config('chimera.templates_namepsace', '\\App\Http\\Livewire\\IndicatorTemplate\\') . $this->template);
+                $reflectionDoc = $reflection->getDocComment();
+                $docBlock =  preg_split("/\r\n|\n|\r/", trim(substr($reflectionDoc, 3, -2)));
+                if (count($docBlock) > 1) {
+                    $this->title = trim(substr($docBlock[0], 1));
+                }
+            } elseif (is_null($template)) {
+                $templateNotFound = false;
+            } else {
+                $this->error('Template not found');
+            }
+        }
+    }
+
+    protected function loadIndicatorTemplates()
+    {
+        $path = base_path(config('chimera.templates_path', 'app/Http/Livewire/IndicatorTemplate'));
+        $files = array_map(function ($file) {
+            return str_replace('.php', '', basename($file));
+        }, glob($path . '/*.php'));
+        return $files;
     }
 
     public function handle()
@@ -61,35 +96,39 @@ class MakeIndicator extends GeneratorCommand
         $questionnaires = Questionnaire::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
         $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
+        $this->askForIndicatorTemplate();
 
-        $chartTypeMenu = array_combine(range(1, count($this->chartTypes)), array_keys($this->chartTypes));
-        $chosenChartType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);
-        $this->type = $this->chartTypes[$chosenChartType];
+        if ($this->type == 'template') {
+            $this->type = 'template';
+            $chosenChartType = 'Template';
+            $this->includeSampleCode = false;
+        } else {
+            $chosenChartType = 'Default';
+            $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
+            $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
+        }
 
-        $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
-        $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
 
         $title = $this->askValid(
-            "Please enter a reader friendly title for the indicator (press enter to leave empty for now)",
+            "Please enter a reader friendly title for the indicator (press enter to set " . ($this->title ?? 'empty') . " for now) ",
             'title',
-            ['nullable', ]
+            ['nullable',]
         );
+
+        $title = $title ?? $this->title;
 
         $description = $this->askValid(
             "Please enter a description for the indicator (press enter to leave empty for now)",
             'description',
-            ['nullable', ]
+            ['nullable',]
         );
-
         DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType) {
-
             $result = $this->writeIndicatorFile($name);
             if ($result) {
                 $this->info('Indicator created successfully.');
             } else {
                 throw new \Exception('There was a problem creating the indicator file');
             }
-
             Indicator::create([
                 'name' => $name,
                 'title' => $title,
