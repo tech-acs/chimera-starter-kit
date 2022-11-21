@@ -2,8 +2,8 @@
 
 namespace DummyNamespace;
 
-use App\Http\Livewire\IndicatorTemplate\{{ parent_class }};
+use App\IndicatorTemplates\{{ parent_class }} as Template;
 
-class {{ class }} extends {{ parent_class }} {
+class {{ class }} extends Template {
 
 }

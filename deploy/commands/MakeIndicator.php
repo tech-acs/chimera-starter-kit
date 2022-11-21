@@ -7,7 +7,7 @@ use App\Models\Questionnaire;
 use App\Services\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
-use ReflectionClass;
+use Illuminate\Support\Facades\Storage;
 
 class MakeIndicator extends GeneratorCommand
 {
@@ -38,11 +38,20 @@ class MakeIndicator extends GeneratorCommand
         if (is_null($this->template)) {
             $content = $this->buildClass($className);
         } else {
-            $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], $this->template, $this->buildClass($className));
+
+            $template_path = Storage::disk('indicator_templates')->path($this->template).'.php';
+            $destination_path = \app_path()."/IndicatorTemplates/{$this->template}.php";
+            $this->makeDirectory($destination_path);
+            \copy($template_path,$destination_path);
+            $content = $this->buildClassWithTemplate($className);
         }
         return $this->files->put($path, $content);
     }
-
+    protected function buildClassWithTemplate($className){
+        
+        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/',"\\",$this->template), $this->buildClass($className));
+        return $content;
+    }
 
     protected function askForIndicatorTemplate()
     {
@@ -53,14 +62,7 @@ class MakeIndicator extends GeneratorCommand
             if (in_array($template, $templates)) {
                 $templateNotFound = false;
                 $this->type = 'template';
-
                 $this->template = str_replace('.php', '', $template);
-                $reflection = new ReflectionClass(config('chimera.templates_namepsace', '\\App\Http\\Livewire\\IndicatorTemplate\\') . $this->template);
-                $reflectionDoc = $reflection->getDocComment();
-                $docBlock =  preg_split("/\r\n|\n|\r/", trim(substr($reflectionDoc, 3, -2)));
-                if (count($docBlock) > 1) {
-                    $this->title = trim(substr($docBlock[0], 1));
-                }
             } elseif (is_null($template)) {
                 $templateNotFound = false;
             } else {
@@ -71,11 +73,15 @@ class MakeIndicator extends GeneratorCommand
 
     protected function loadIndicatorTemplates()
     {
-        $path = base_path(config('chimera.templates_path', 'app/Http/Livewire/IndicatorTemplate'));
-        $files = array_map(function ($file) {
-            return str_replace('.php', '', basename($file));
-        }, glob($path . '/*.php'));
-        return $files;
+
+        $files = Storage::disk('indicator_templates')->allFiles();
+        $templates = array_map(function ($file) {
+            //check if file is a php file
+            if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
+                return str_replace('.php', '', $file);
+            }
+        }, $files);
+        return $templates;
     }
 
     public function handle()
