@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
-class InstallIndicatorTemplates extends Command
+class DownloadIndicatorTemplates extends Command
 {
-    const LATEST_RELEASE_API = '/releases/latest';
-    const RELEASE_BY_TAG_API = '/releases/tags/';
+    public const LATEST_RELEASE_API = '/releases/latest';
+    public const RELEASE_BY_TAG_API = '/releases/tags/';
     protected ?string $tag = null;
 
     protected string $downloadUrl;
@@ -19,7 +19,7 @@ class InstallIndicatorTemplates extends Command
      *
      * @var string
      */
-    protected $signature = 'chimera:install-indicator-templates
+    protected $signature = 'chimera:download-indicator-templates
                             {--tag= : The version of the indicator templates to install. If not provided, the latest release will be installed.}
                             {--force : Whether to overwrite existing files}';
     /**
@@ -27,7 +27,7 @@ class InstallIndicatorTemplates extends Command
      *
      * @var string
      */
-    protected $description = 'Install indicator templates from the repository to the local storage';
+    protected $description = 'Download indicator templates from the repository to the local storage';
 
     /**
      * Execute the console command.
@@ -36,7 +36,6 @@ class InstallIndicatorTemplates extends Command
      */
     public function handle()
     {
-       
         $downloadPath = $this->downloadIndicatorTemplates();
 
         $this->extractIndicatorTemplates($downloadPath);
@@ -46,22 +45,21 @@ class InstallIndicatorTemplates extends Command
         return Command::SUCCESS;
     }
 
-    protected function getReleaseUrl(): string {
-        $url = config('chimera.indicator_template.url','https://api.github.com/repos/tech-acs/chimera-indicator-templates/');
+    protected function getReleaseUrl(): string
+    {
+        $repository_url = config('chimera.indicator_template.repository_url', 'https://api.github.com/repos/tech-acs/chimera-indicator-templates/');
 
-        if( $this->option('tag')){
-            $url .= self::RELEASE_BY_TAG_API. $this->option('tag');
+        if ($this->option('tag')) {
+            return $repository_url.self::RELEASE_BY_TAG_API. $this->option('tag');
+        } else {
+            return $repository_url.self::LATEST_RELEASE_API;
         }
-        else{
-            $url .= self::LATEST_RELEASE_API;
-        }
-        return $url;
-
     }
 
-   
 
-    protected function getDownloadUrl(): string{
+
+    protected function getDownloadUrl(): string
+    {
         $response = Http::withHeaders([
             'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
         ])->get($this->getReleaseUrl());
@@ -87,7 +85,7 @@ class InstallIndicatorTemplates extends Command
     {
         //Todo: this is a hack, need to find a better way to extract the zip file and remove the root folder
         $destination_path = Storage::disk('indicator_templates')->path('');
-    
+
         $this->info('Extracting indicator templates...');
         //First, extract the zip file
         $zip = new ZipArchive();
@@ -106,5 +104,4 @@ class InstallIndicatorTemplates extends Command
         Storage::disk('indicator_templates')->deleteDirectory($rootFolder);
         $this->info('Extracted indicator templates successfully.');
     }
-    
 }
