@@ -27,14 +27,21 @@ class Delete extends Command
         $listMenu = array_keys($list);
         array_unshift($listMenu, '');
         unset($listMenu[0]);
-        $chosenRecord = $this->choice("Which $chosenElement do you want to delete?", $listMenu);
-        $recordId = $list[$chosenRecord];
-        $modelToDelete = $class::find($recordId);
+        if (empty($listMenu)) {
+            $this->info("No {$chosenElement}s found!");
+            $this->newLine();
+        } else {
+            $chosenRecord = $this->choice("Which $chosenElement do you want to delete?", $listMenu);
+            $recordId = $list[$chosenRecord];
+            $modelToDelete = $class::find($recordId);
 
-        // Delete file for this element using $modelToDelete->slug ???
-        //unlink("");
-        $modelToDelete->delete();
-        //$this->info("Successfully deleted");
+            $reflection = new \ReflectionClass("App\Http\Livewire\\" . str_replace('/', '\\', $modelToDelete->name));
+            $pathToFile = $reflection->getFileName();
+
+            unlink($pathToFile);
+            $modelToDelete->delete();
+            $this->info("Successfully deleted");
+        }
         return 0;
     }
 }

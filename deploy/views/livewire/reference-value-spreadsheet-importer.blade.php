@@ -60,10 +60,12 @@
                         <tr>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Reference value for indicator') }}</th>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Corresponding area code') }}</th>
+                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Area type') }}</th>
+                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center w-24">{{ __('Zero pad code to length') }}</th>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Is additive') }}</th>
                         </tr>
                         </thead>
-                        <tbody class="">
+                        <tbody>
                         @for($i = 0; $i < $indicatorsToImport; $i++)
                             <tr>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
@@ -84,8 +86,19 @@
                                     </select>
                                     <x-jet-input-error for="columnMapping.{{ $i }}.code" class="text-xs" />
                                 </td>
-                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500 align-top text-center">
-                                    <input wire:model="columnMapping.{{ $i }}.is_additive" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                                    <select wire:model="columnMapping.{{ $i }}.level" class="rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                        @foreach($levels as $level => $name)
+                                            <option value="{{ $level }}" @selected($loop->last) >{{ __($name) }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                                    <input wire:model="columnMapping.{{ $i }}.zeroPadding" type="number" min="0" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    <x-jet-input-error for="columnMapping.{{ $i }}.zeroPadding" class="text-xs" />
+                                </td>
+                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500 text-center">
+                                    <input wire:model="columnMapping.{{ $i }}.isAdditive" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                 </td>
                             </tr>
                         @endfor
@@ -104,7 +117,7 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-jet-secondary-button class="mr-2"><a href="{{ route('developer.reference-value.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
+        <a href="{{ route('developer.reference-value.index') }}"><x-jet-secondary-button class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button></a>
         <x-jet-button wire:click.prevent="import()">
             {{ __('Import') }}
         </x-jet-button>

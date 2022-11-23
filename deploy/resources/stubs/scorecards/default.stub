@@ -9,14 +9,14 @@ use Illuminate\View\Component;
 class {{ class }} extends Component
 {
     public $scorecard;
-    public $name;
+    public $title;
     public $value;
     public $bgColor;
 
     public function __construct(Scorecard $scorecard, $index)
     {
         $this->scorecard = $scorecard;
-        $this->name = $this->scorecard->title;
+        $this->title = $this->scorecard->title;
         $this->bgColor = Theme::colors()[$index];
 
         $this->value = 'NA';

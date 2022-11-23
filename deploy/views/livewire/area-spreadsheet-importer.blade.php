@@ -25,7 +25,8 @@
                 <div>
                     <div class="flex items-stretch flex-grow">
                         <label for="spreadsheet" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
-                            <span id="file_label" class="my-auto pl-4 text-gray-700">{{ $spreadsheet?->getClientOriginalName() ?? "Choose your file" }}</span>
+                            <span wire:loading.remove wire:target="spreadsheet" id="file_label" class="my-auto pl-4 text-gray-700">{{ $spreadsheet?->getClientOriginalName() ?? "Choose your file" }}</span>
+                            <span wire:loading wire:target="spreadsheet" class="my-auto pl-4 text-gray-700">Uploading...</span>
                             <div class="relative inline-flex items-center hover:bg-gray-100 cursor-pointer space-x-2 px-4 py-2 border-0 border-l rounded-r-md border-gray-300 text-sm font-medium text-gray-700 bg-gray-50">
                                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
                                 <span>Browse</span>
@@ -108,7 +109,7 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-jet-secondary-button class="mr-2"><a href="{{ route('developer.area.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
+        <a href="{{ route('developer.area.index') }}"><x-jet-secondary-button class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button></a>
         <x-jet-button wire:click.prevent="import()">
             {{ __('Import') }}
         </x-jet-button>

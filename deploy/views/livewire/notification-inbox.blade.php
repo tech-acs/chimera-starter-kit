@@ -1,7 +1,7 @@
 <div class="flex h-[calc(100vh_-_290px)] max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-    <div class="w-2/5 overflow-y-auto scrollbar">
+    <div class="w-2/5 overflow-y-auto scrollbar bg-white">
         <ul role="list" class="grid grid-cols-1 gap-1 text-gray-800">
-            <li class="bg-white text-base font-medium p-2">
+            <li class="bg-white text-base font-medium p-2 border-b-2">
                 {{ $notifications->count() }} notifications <span class="font-semibold">({{ $unreadCount }} unread)</span>
             </li>
             @forelse($notifications as $notification)
@@ -25,11 +25,14 @@
                     </div>
                 </li>
             @empty
-                You have no notifications yet
+                <li class="relative cursor-pointer bg-white py-5 px-4 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 hover:bg-gray-50 text-center">
+                    You have no notifications
+                </li>
             @endforelse
         </ul>
     </div>
-    <div class="w-full p-6 bg-white">
+    <div class="w-full p-6 bg-white border-l-2">
+        @if (! empty($selectedNotification))
         <div>
             <div class="border-b border-gray-200 font-medium text-gray-900 py-4 flex justify-between">
                 <p>From: {{ $selectedNotification->data['from'] }}</p>
@@ -41,5 +44,6 @@
                 {{ is_null($selectedNotification->read_at) ? '' : 'Seen ' . $selectedNotification->read_at->diffForHumans() }}
             </div>
         </div>
+        @endif
     </div>
 </div>

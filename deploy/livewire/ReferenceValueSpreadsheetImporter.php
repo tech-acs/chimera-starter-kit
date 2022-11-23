@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Jobs\ImportReferenceValueSpreadsheetJob;
+use App\Services\AreaTree;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     public array $columnMapping = [];
     public $filePath = '';
     public string $message = '';
+    public array $levels;
 
     protected function rules()
     {
@@ -32,10 +34,7 @@ class ReferenceValueSpreadsheetImporter extends Component
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v]);
-        return [
-            'spreadsheet' => 'required|file|mimetypes:text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            ...$columnMappingRules
-        ];
+        return array_merge(['spreadsheet' => 'required|file|mimes:csv,xlsx'], $columnMappingRules);
     }
 
     protected function messages()
@@ -48,16 +47,14 @@ class ReferenceValueSpreadsheetImporter extends Component
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v])->all();
-        return [
-            'spreadsheet.mimetypes' => 'The file must be either an excel or a csv valid file',
-            ...$columnMappingMessages
-        ];
+        return array_merge(['spreadsheet.mimes' => 'The file must be either an excel or a csv valid file'], $columnMappingMessages);
     }
 
     public function mount()
     {
+        $this->levels = (new AreaTree)->hierarchies;
         $this->columnMapping = Collection::times($this->indicatorsToImport, function () {
-            return ['name' => '', 'code' => '', 'is_additive' => true];
+            return ['name' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
         })->all();
     }
 
@@ -73,13 +70,12 @@ class ReferenceValueSpreadsheetImporter extends Component
     public function add()
     {
         $this->indicatorsToImport++;
-        $this->columnMapping[] = ['name' => '', 'code' => '', 'is_additive' => true];
+        $this->columnMapping[] = ['name' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
     }
 
     public function import()
     {
         $this->validate();
-
         ImportReferenceValueSpreadsheetJob::dispatch($this->filePath, $this->columnMapping, auth()->user());
         $this->message = "The file is being imported. You will receive a notification when the process is complete.";
     }

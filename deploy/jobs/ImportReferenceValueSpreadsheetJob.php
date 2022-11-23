@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ReferenceValue;
 use App\Notifications\TaskCompletedNotification;
 use App\Notifications\TaskFailedNotification;
 use App\Services\AreaTree;
@@ -22,76 +23,70 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 600;
+
     public function __construct(private string $filePath, private array $columnMapping, private User $user)
     {
     }
 
-    private function writeHigherLevelValues(string $indicator, ?string $currentLevel, bool $isAdditive)
+    private function writeHigherLevelValues(array $indicatorMapping, int $level)
     {
-        while ($nextLevelUp = $this->nextLevelUp($currentLevel)) {
-            echo("Now calculating $nextLevelUp level expected values...");
+        $aggMethod = $indicatorMapping['isAdditive'] ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
+        DB::insert("
+            INSERT INTO reference_values(code, level, indicator, value)
+            SELECT areas.code, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
+            FROM (
+                SELECT $aggMethod, subpath(areas.path, 0, $level) AS path, reference_values.indicator
+                FROM reference_values INNER JOIN areas ON reference_values.code = areas.code
+                WHERE reference_values.indicator = '{$indicatorMapping['name']}' AND reference_values.level = $level
+                GROUP BY indicator, subpath(areas.path, 0, $level)
+            ) AS agg INNER JOIN areas ON agg.path = areas.path
+        ");
+    }
 
-            $propagation = $isAdditive ? 'SUM(reference-values.value) AS value' : 'AVG(reference-values.value) AS value';
-            $evsUp = DB::table('reference-values')
-                ->join('areas', 'areas.code', '=', 'reference-values.code')
-                ->select('areas.parent_code AS code', DB::raw($propagation))
-                ->where('reference-values.indicator', 'ILIKE', $indicator)
-                ->where('reference-values.area_type', $currentLevel)
-                ->groupBy('areas.parent_code')
-                ->get()
-                ->map(function ($row) use ($nextLevelUp, $indicator){
-                    return [
-                        'code' => $row->code,
-                        'level' => $nextLevelUp,
-                        'indicator' => $indicator,
-                        'value' => $row->value,
-                        'created_at' => Carbon::now(),
-                    ];
-                });
-
-            $inserted = 0;
-            $evsUp->chunk(500)->each(function ($chunk) use (&$inserted) {
-                $inserted += DB::table('reference-values')->insertOrIgnore($chunk->all());
+    private function insertInitialValues($indicatorMapping)
+    {
+        SimpleExcelReader::create($this->filePath)->getRows()
+            /*->unique(function ($row) {
+                return true;
+            })*/
+            ->map(function($row) use ($indicatorMapping) {
+                $code = Str::padLeft($row[$indicatorMapping['code']], $indicatorMapping['zeroPadding'] ?? 0, '0');
+                return [
+                    'code' => $code,
+                    'level' => $indicatorMapping['level'],
+                    'indicator' => $indicatorMapping['name'],
+                    'value' => $row[$indicatorMapping['name']],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
+            })
+            ->chunk(500)
+            ->each(function ($chunk) {
+                DB::table('reference_values')->insertOrIgnore($chunk->all());
             });
-
-            echo("$inserted values written.");
-
-            $currentLevel = $nextLevelUp;
-        }
     }
 
     public function handle()
     {
-        $insertedCount = 0;
-        SimpleExcelReader::create($this->filePath)->getRows()
-            ->each(function($row) use (&$insertedCount) {
-                $targets = [];
-                //$path = '';
-                foreach ($this->columnMapping as $columnMapping) {
-                    $code = Str::padLeft($row[$columnMapping['code']], $columnMapping['zeroPadding'] ?? 0, '0');
-                    //$path = (str($path)->isEmpty() ? $path : str($path)->append('.')) . $code;
-                    $targets[] = [
-                        'code' => $code,
-                        'level' => array_key_last((new AreaTree())->hierarchies),
-                        'indicator' => $columnMapping['name'],
-                        'value' => $row[$columnMapping['name']],
-                        //'path' => $path,
-                        'created_at' => Carbon::now(),
-                    ];
-                }
-                $insertedCount += DB::table('reference_values')->insertOrIgnore($targets);
-            });
-
-
+        $initialCount = ReferenceValue::count();
+        foreach ($this->columnMapping as $mapping) {
+            $this->insertInitialValues($mapping);
+            for ($level = $mapping['level']; $level > 0; $level--){
+                $this->writeHigherLevelValues($mapping, $level);
+            }
+        }
+        $insertedCount = ReferenceValue::count() - $initialCount;
 
         Notification::sendNow($this->user, new TaskCompletedNotification(
             'Task completed',
-            "$insertedCount target values have been imported across " . count($this->columnMapping) . ' ' . str('indicator')->plural(count($this->columnMapping))
+            "$insertedCount reference values have been imported across " . count($this->columnMapping) . ' ' . str('indicator')->plural(count($this->columnMapping))
         ));
     }
 
     public function failed(\Throwable $exception)
     {
+        logger('ImportReferenceValueSpreadsheet Job Failed', ['Exception: ' => $exception->getMessage()]);
         Notification::sendNow($this->user, new TaskFailedNotification(
             'Task failed',
             $exception->getMessage()

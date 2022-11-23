@@ -3,15 +3,33 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
+use SplDoublyLinkedList;
 
 class AreaTree
 {
     public array $hierarchies;  // [ 0 => 'admin level one',  1 => 'admin level two', ... ]
+    private SplDoublyLinkedList $hierarchiesDll;
 
     public function __construct(int $removeLastNLevels = 0)
     {
         $hierarchies = config('chimera.area.hierarchies');
         $this->hierarchies = array_slice($hierarchies, 0, count($hierarchies) - $removeLastNLevels);
+
+        $this->hierarchiesDll = new SplDoublyLinkedList;
+        foreach($hierarchies as $hierarchy) {
+            $this->hierarchiesDll->push($hierarchy);
+        }
+    }
+
+    public function getHierarchy(string $order = 'top-down'): SplDoublyLinkedList
+    {
+        if ($order === 'bottom-up') {
+            $this->hierarchiesDll->setIteratorMode(SplDoublyLinkedList::IT_MODE_LIFO);
+        } else {
+            $this->hierarchiesDll->setIteratorMode(SplDoublyLinkedList::IT_MODE_FIFO);
+        }
+        $this->hierarchiesDll->rewind();
+        return $this->hierarchiesDll;
     }
 
     public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)

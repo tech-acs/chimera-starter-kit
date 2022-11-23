@@ -11,12 +11,10 @@ return [
         'ttl_hours' => env('INVITATION_TTL_HOURS', 72)
     ],
     'color_theme' => env('COLOR_THEME', 'default'),
-    'developer_mode' => env('DEVELOPER_MODE', false),
     'area' => [
         'hierarchies' => [
-            'region',
-            'constituency',
-            'ea',
+            // Put your hierarchies here. Top down.
+            // Example: 'region', 'zone', 'woreda', 'kebele'
         ],
         'map' => [
             'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],

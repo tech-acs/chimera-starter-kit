@@ -220,6 +220,9 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/views', resource_path('views'));
         $this->comment('Copied views');
 
+        //File::makeDirectory(app_path('IndicatorTemplates'));
+        //$this->comment('Created IndicatorTemplates directory');
+
         copy(__DIR__.'/../../deploy/jetstream-views/register.blade.php', resource_path('views/auth/register.blade.php'));
         $this->comment('Copied customized jetstream register view');
 

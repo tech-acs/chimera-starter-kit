@@ -3,18 +3,36 @@
 namespace DummyNamespace;
 
 use App\Http\Livewire\Chart;
+use Illuminate\Support\Collection;
 
 class {{ class }} extends Chart
 {
-    protected $listeners = ['updateChart' => 'update'];
-
-    public function getCollection(array $filter)
+    protected function loadInputData(array $filter = []): Collection
     {
-        // TODO: Implement getCollection() method.
+        return collect(new \DatePeriod(
+            new \DateTime('2010-04-01'),
+            new \DateInterval('P1D'),
+            new \DateTime('2010-04-19')
+        ))
+            ->zip(range(1, 18, 1))
+            ->map(fn ($pair) => (object)['eas' => $pair[0]->format('Y-m-d'), 'households' => $pair[1]/10]);
     }
 
-    protected function setData(array $filter = [])
+    protected function getTraces(Collection $queryResult, array $filter): array
     {
-        // TODO: Implement setData() method.
+        $trace1 = [
+            'x' => $queryResult->pluck('eas')->all(),
+            'y' => $queryResult->pluck('households')->all(),
+            'name' => 'Households',
+        ];
+        return [$trace1];
+    }
+
+    protected function getLayout(array $filter = []): array
+    {
+        $layout = parent::getLayout($filter);
+        $layout['xaxis']['type'] = 'date';
+        $layout['yaxis']['title']['text'] = __('Households');
+        return $layout;
     }
 }

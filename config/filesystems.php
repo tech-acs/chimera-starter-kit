@@ -36,6 +36,13 @@ return [
             'throw' => false,
         ],
 
+        'indicator_templates' => [
+            'driver' => 'local',
+            'root' => storage_path('app/indicator_templates'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
+
         'reports' => [
             'driver' => 'local',
             'root' => storage_path('app/reports'),

@@ -34,7 +34,7 @@ class AreaController extends Controller
     public function create()
     {
         $levels = config('chimera.area.hierarchies', []);
-        return view('developer.area.create', compact('levels'));
+        return view('developer.area.create', ['levels' => array_map(fn ($level) => ucfirst($level), $levels)]);
     }
 
     private function validateShapefile(array $features)
@@ -51,23 +51,6 @@ class AreaController extends Controller
         if (! (array_key_exists('name', $firstFeatureAttributes) && array_key_exists('code', $firstFeatureAttributes))) {
             throw ValidationException::withMessages([
                 'shapefile' => ["The shapefile needs to have 'name' and 'code' among its attributes"],
-            ]);
-        }
-
-        // Check that all areas have valid value for 'code'
-        $featuresWithInvalidCode = array_filter($features, function ($feature) {
-            $codeValidator = Validator::make(
-                $feature['attribs'],
-                ['code' => ['required', 'max:255', 'regex:/[A-Za-z0-9_]+/i', 'unique:areas,code']]
-            );
-            if ($codeValidator->fails()) {
-                logger('Shapefile validation error', ['Error' => $codeValidator->errors()->all()]);
-            }
-            return $codeValidator->fails();
-        });
-        if (! empty($featuresWithInvalidCode)) {
-            throw ValidationException::withMessages([
-                'shapefile' => [count($featuresWithInvalidCode) . " area(s) with invalid value for 'code' attribute found."],
             ]);
         }
     }

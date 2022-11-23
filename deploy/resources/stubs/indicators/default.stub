@@ -6,15 +6,5 @@ use App\Http\Livewire\Chart;
 
 class {{ class }} extends Chart
 {
-    protected function getData(array $filter = []): array
-    {
-        // TODO: Implement this to return an array of traces
-    }
 
-    protected function getLayout(array $filter = []): array
-    {
-        $layout = parent::getLayout();
-        // TODO: You can modify the default layout here
-        return $layout;
-    }
 }

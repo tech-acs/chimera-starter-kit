@@ -63,7 +63,7 @@ abstract class Chart extends Component
             'toImageButtonOptions' => ['filename' => $this->graphDiv . ' (' . now()->toDayDateTimeString() . ')'],
             'locale' => app()->getLocale(),
         ];
-        return [...self::DEFAULT_CONFIG, ...$dynamicOptions];
+        return array_merge(self::DEFAULT_CONFIG, $dynamicOptions);
     }
 
     protected function loadInputData(array $filter): Collection

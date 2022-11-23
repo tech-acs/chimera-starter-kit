@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('indicator', 100)->index();
             $table->decimal('value', 12, 2);
 
+            $table->unique('code', 'level', 'indicator');
+
             $table->timestamps();
         });
     }
