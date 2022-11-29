@@ -217,9 +217,8 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/requests', app_path('Http/Requests'));
         $this->comment('Copied Requests');
 
-        copy(__DIR__.'/../../deploy/MapIndicatorBaseClass.php', app_path('MapIndicators'));
-        $this->comment('Copied MapIndicatorBaseClass.php');
-
+        File::copyDirectory(__DIR__ . '/../../deploy/map-indicators', app_path('MapIndicators'));
+        $this->comment('Copied MapIndicators');
 
         File::copyDirectory(__DIR__ . '/../../deploy/views', resource_path('views'));
         $this->comment('Copied views');
