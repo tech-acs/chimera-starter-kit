@@ -8,6 +8,7 @@ use App\Models\Announcement;
 use App\Models\User;
 use App\Notifications\BroadcastMessageNotification;
 use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Models\Role;
 
 class AnnouncementController extends Controller
 {
@@ -17,16 +18,37 @@ class AnnouncementController extends Controller
         return view('announcement.index', compact('records'));
     }
 
+    private function recipientsList()
+    {
+        return Role::whereNotIn('name', ['Super Admin'])
+            ->pluck('name', 'id')
+            ->map(fn ($role) => "Users having $role role")
+            ->prepend('Everyone', 0)
+            ->all();
+    }
+
     public function create()
     {
-        return view('announcement.create');
+        $recipients = $this->recipientsList();
+        return view('announcement.create', compact('recipients'));
     }
 
     public function store(AnnouncementRequest $request)
     {
-        $announcement = auth()->user()->announcements()->create($request->safe()->all());
         $sender = auth()->user();
-        Notification::sendNow(User::whereKeyNot($sender->id)->get(), new BroadcastMessageNotification($announcement));
-        return redirect()->route('announcement.index')->withMessage('The announcement has been broadcast to all users.');
+        $recipients = $request->integer('recipients');
+        $recipientUsers = match ($recipients) {
+            0 => User::whereKeyNot($sender->id)->get(),
+            default => Role::find($recipients)->users,
+        };
+        if ($recipientUsers->count() > 0) {
+            $recipientsList = $this->recipientsList();
+            $announcement = auth()->user()
+                ->announcements()
+                ->create(array_merge($request->safe()->all(), ['recipients' => $recipientsList[$recipients]]));
+            Notification::sendNow($recipientUsers, new BroadcastMessageNotification($announcement));
+            return redirect()->route('announcement.index')->withMessage('The announcement has been sent to the specified recipients group.');
+        }
+        return redirect()->route('announcement.index')->withMessage('No users found for specified recipients group.');
     }
 }

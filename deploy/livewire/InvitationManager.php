@@ -8,19 +8,21 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Spatie\Permission\Models\Role;
 
 class InvitationManager extends Component
 {
+    use WithFileUploads;
+
     public $records = [];
     public $roles;
-    public $showSingleInviteForm = false;
-    public $showBulkInviteForm = false;
     public $showLink = false;
     public $link;
     public $email;
     public $role;
     public $sendEmail = true;
+    public $showSingleInviteForm = false;
 
     protected $rules = [
         'email' => 'required|email|unique:App\Models\Invitation,email|unique:App\Models\User,email',

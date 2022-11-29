@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Questionnaires with their databases') }}
+            {{ __('Area Hierarchies') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Editing an existing questionnaire and database connection') }}
+            {{ __('Editing an existing area hierarchy') }}
         </p>
     </x-slot>
 
@@ -28,10 +28,10 @@
             </div>
         @endif
 
-        <form action="{{route('questionnaire.update', $questionnaire->id)}}" method="POST">
+        <form action="{{route('developer.area-hierarchy.update', $areaHierarchy->id)}}" method="POST">
             @csrf
             @method('PATCH')
-            @include('questionnaire.form')
+            @include('developer.area-hierarchy.form')
         </form>
 
     </div>

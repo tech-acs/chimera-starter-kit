@@ -35,8 +35,18 @@
                     <div class="grid grid-cols-1 gap-6">
                         <div>
                             <x-jet-label for="title" value="{{ __('Title') }} *" />
-                            <x-jet-input class="w-full" id="title" name="title" type="text" value="{{old('title')}}" />
+                            <x-jet-input class="w-1/2" id="title" name="title" type="text" value="{{old('title')}}" />
                             <x-jet-input-error for="title" class="mt-2" />
+                        </div>
+                        <div>
+                            <x-jet-label for="title" value="{{ __('Recipients') }} *" />
+                            <select name="recipients" class="mt-1 w-1/3 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                <option value="">{{ __('Select recipients') }}</option>
+                                @foreach($recipients as $roleId => $recipient)
+                                    <option value="{{ $roleId }}" @selected(old('recipients') == $roleId) >{{ __($recipient) }}</option>
+                                @endforeach
+                            </select>
+                            <x-jet-input-error for="recipients" class="mt-2" />
                         </div>
                         <div>
                             <x-jet-label for="body" value="{{ __('Message') }} *" />

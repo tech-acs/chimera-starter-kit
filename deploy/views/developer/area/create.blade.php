@@ -113,10 +113,10 @@
                                         <p class="mt-2 text-sm text-gray-500">{{ __('This says what area hierarchy is present in the given shapefile.') }}</p>
                                     </div>
                                     <div class="mt-5 md:col-span-2 md:mt-0">
-                                        <select id="level" name="level" class="mt-1 w-1/3 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                        <select name="level" class="mt-1 w-1/3 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                             <option value="">{{ __('Select level') }}</option>
                                             @forelse($levels as $level => $name)
-                                                <option @if(old('level') === $level) selected @endif value="{{ $level }}" @selected(old('level') === $level) >{{ __($name) }}</option>
+                                                <option value="{{ $level }}" @selected(old('level') == $level) >{{ __($name) }}</option>
                                             @empty
                                                 <option value="">{{ __('Not configured') }}</option>
                                             @endforelse

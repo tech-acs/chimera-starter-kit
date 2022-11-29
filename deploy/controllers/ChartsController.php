@@ -42,7 +42,7 @@ class ChartsController extends Controller
         } catch (AuthorizationException $authorizationException) {
             return redirect('faq');
         }
-        $indicators = $page?->indicators?->filter(function ($indicator) {
+        $indicators = $page->indicators?->filter(function ($indicator) {
             return Gate::allows($indicator->permission_name);
         })->all();
         $preview = $this->generatePreviewContent($indicators);
@@ -56,7 +56,7 @@ class ChartsController extends Controller
             $this->authorize($indicator->permission_name, Auth::user());
         } catch (AuthorizationException $authorizationException) {
             abort(404);
-            exit;
+            //exit;
         }
         return view('charts.single', compact('indicator'));
     }

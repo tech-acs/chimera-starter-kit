@@ -13,7 +13,7 @@ class GenerateReports extends Command
 
     public function handle()
     {
-        $dueReports = Report::enabled()->dueThisHour();
+        $dueReports = Report::enabled()->dueThisHour()->get();
         foreach ($dueReports as $report) {
             $report->blueprintInstance->generate();
         }

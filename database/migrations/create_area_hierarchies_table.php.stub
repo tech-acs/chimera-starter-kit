@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('announcements', function (Blueprint $table) {
+        Schema::create('area_hierarchies', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 100);
-            $table->string('recipients');
-            $table->text('body');
-            $table->foreignId('user_id');
+            $table->integer('index');
+            $table->string('name', 75);
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('area_hierarchies');
     }
 };

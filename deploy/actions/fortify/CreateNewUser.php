@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
+use Spatie\Permission\Models\Role;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -49,8 +51,19 @@ class CreateNewUser implements CreatesNewUsers
             ]);
 
             $invitation = Invitation::where('email', $input['email'])->firstOrFail();
-            if ($invitation->role != '') {
-                $user->assignRole($invitation->role);
+            if (! empty($invitation->role)) {
+                try {
+                    Role::findByName($invitation->role);
+                    $user->assignRole($invitation->role);
+                } catch (RoleDoesNotExist $exception) {
+                    // Do nothing
+                }
+            }
+            if (! empty($invitation->areaRestriction)) {
+                //$user->imposeAreRestriction($invitation->areaRestriction);
+                $user->areaRestrictions()->create([
+                    'path' => $invitation->areaRestriction
+                ]);
             }
             $invitation->delete();
 

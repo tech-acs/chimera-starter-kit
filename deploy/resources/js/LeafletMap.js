@@ -2,24 +2,28 @@ import L from 'leaflet';
 import map from 'lodash/map';
 import property from 'lodash/property';
 import isUndefined from 'lodash/isUndefined';
+import isEmpty from 'lodash/isEmpty';
 
 export default class LeafletMap {
     map;
     mapOptions;
     styles;
-    geojson;
     geojsonLayerGroup;
     options;
-    level = undefined;
-    data;
+    startingZoom;
+    movementWasZoom = false;
+    indicators = {};
 
     constructor(mapContainer, options) {
         this.options = options;
         this.collectDataPassedViaDataAttributes(mapContainer);
         this.initializeMap(mapContainer, options.basemaps);
+        this.addControls();
         this.initializeGeojsonLayer(options.levelToZoomMapping);
         this.registerDomEventListeners();
         this.registerLivewireEventListeners();
+        // ToDo: for debugging purposes only. Remove when done!
+        window.peek = this;
     }
 
     extractDataAttributeSafely(el, attribute) {
@@ -33,7 +37,7 @@ export default class LeafletMap {
 
     collectDataPassedViaDataAttributes(el) {
         this.mapOptions = this.extractDataAttributeSafely(el, 'mapOptions');
-        this.styles = this.extractDataAttributeSafely(el, 'styles');
+        this.indicators = this.extractDataAttributeSafely(el, 'indicators');
     }
 
     initializeMap(mapContainer, basemaps) {
@@ -50,6 +54,75 @@ export default class LeafletMap {
         L.control.layers(basemapLayers).addTo(this.map);
     }
 
+    setLegend(legendData) {
+        let legend = L.DomUtil.get('legend');
+        if (isEmpty(legendData)) {
+            L.DomUtil.addClass(legend,'hidden');
+        } else {
+            L.DomUtil.removeClass(legend,'hidden');
+        }
+        L.DomUtil.empty(legend);
+        for (const [color, label] of Object.entries(legendData)) {
+            legend.innerHTML += `<i class="${color}"></i> ${label}<br>`;
+        }
+    }
+
+    addControls() {
+        this.map.addControl(L.control.zoom({position: 'bottomright'}));
+
+        let indicatorMenu = L.control({position: 'topleft'});
+        indicatorMenu.onAdd = () => {
+            const menuContainer = L.DomUtil.create('div', 'leaflet-control info');
+            if (isEmpty(this.indicators)) {
+                L.DomUtil.addClass(menuContainer,'hidden');
+            } else {
+                L.DomUtil.removeClass(menuContainer,'hidden');
+            }
+            let index = 0;
+            for (const [classPath, indicatorName] of Object.entries(this.indicators)) {
+                const label = L.DomUtil.create('label', 'flex items-center px-2 py-1 cursor-pointer focus:outline-none', menuContainer);
+                const input = L.DomUtil.create('input', 'h-3 w-3 text-indigo-600 border-gray-300 focus:ring-indigo-500', label);
+                input.type = 'radio';
+                input.name = 'indicator[]';
+                input.value = classPath;
+                if (index === 0) {
+                    input.checked = true;
+                    index++;
+                }
+
+                let span = L.DomUtil.create('span', 'ml-3 font-medium text-xs', label);
+                span.innerText = indicatorName;
+                input.onchange = e => {
+                    let selectedIndicator = e.target.value
+                    Livewire.emit('indicatorSelected', selectedIndicator)
+                };
+            }
+            L.DomEvent.disableClickPropagation(menuContainer);
+            L.DomEvent.disableScrollPropagation(menuContainer);
+            return menuContainer;
+        }
+        indicatorMenu.addTo(this.map);
+
+        let legend = L.control({position: 'bottomleft'});
+        legend.onAdd = () => {
+            let legendContainer = L.DomUtil.create('div', 'info legend hidden');
+            legendContainer.id = 'legend';
+            return legendContainer;
+        };
+        legend.addTo(this.map);
+    }
+
+    highlightFeature(e) {
+        const layer = e.target;
+        layer.setStyle({weight: 3});
+        layer.bringToFront();
+    }
+
+    resetHighlight(e) {
+        const currentLevel = this.inferLevelFromZoom(this.map.getZoom());
+        this.geojsonLayerGroup.getLayers()[currentLevel].setStyle({weight: 1});
+    }
+
     initializeGeojsonLayer(levels) {
         this.geojsonLayerGroup = L.layerGroup();
         const levelsCount = levels.length;
@@ -58,21 +131,25 @@ export default class LeafletMap {
             "features": []
         };
         for (let i = 0; i < levelsCount; i++) {
+            let paneName = `pane${i}`;
+            this.map.createPane(paneName);
             this.geojsonLayerGroup.addLayer(L.geoJSON(emptyGeojson, {
+                pane: paneName,
                 level: i,
-                style: (feature) => {
-                    return this.styles[feature.properties.style];
+                style: () => {
+                    return {weight: 1};
                 },
+                show: () => this.map.getPane(paneName).style.display = '',
+                hide: () => this.map.getPane(paneName).style.display = 'none',
                 onEachFeature: (feature, layer) => {
-                    layer.bindTooltip(feature.properties.name + ' - ', {permanent: false, direction: 'center'});
+                    layer.bindTooltip(feature.properties.name, {permanent: false, direction: 'center'});
                     layer.on({
-                        /*mouseover: () => {}, // highlightFeature,
-                        mouseout: () => {}, // resetHighlight,
-                        click: (e) => {
+                        mouseover: (e) => this.highlightFeature(e),
+                        mouseout: (e) => this.resetHighlight(e),
+                        /*click: (e) => {
                             this.map.fitBounds(e.target.getBounds());
                             let feature = e.target.feature;
                             Livewire.emit('mapClicked', [feature.properties.path]);
-                            return false;
                         }*/
                     });
                 }
@@ -86,7 +163,7 @@ export default class LeafletMap {
         let intersectingFeatures = [];
         features.forEach(feature => {
             if (bounds.intersects(feature.getBounds())) {
-                console.log(feature.feature.properties.name);
+                //console.log(feature.feature.properties.name);
                 intersectingFeatures.push(feature.feature);
             }
         });
@@ -99,48 +176,80 @@ export default class LeafletMap {
 
     registerDomEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-            Livewire.emit('mapReady');
+            Livewire.emit('mapReady', this.inferLevelFromZoom(this.map.getZoom()));
         });
 
-        this.map.addEventListener('zoomend', e => {
-            let zoom = e.target.getZoom();
-            let bounds = this.map.getBounds();
-            Livewire.emit('mapZoomed', zoom, bounds.toBBoxString());
+        this.map.addEventListener('zoomstart', () => {
+            this.movementWasZoom = true;
+        });
 
-            const projectedLevel = this.inferLevelFromZoom(zoom);
-            if ((! isUndefined(this.level)) && (projectedLevel !== this.level)) {
-                if (projectedLevel > this.level) {
-                    console.log({currentLevel: this.level, nextLevel: projectedLevel});
-                    const levelLayers = this.geojsonLayerGroup.getLayers();
-                    let withinBoundsFeatures = this.getFeaturesIntersectingBounds(levelLayers[this.level], bounds);
-                    let withinBoundsPaths = map(withinBoundsFeatures, property('properties.path'));
-                    Livewire.emit('levelTransitioned', withinBoundsPaths);
-                    console.log({withinBoundsPaths})
-                } else {
-                    this.level = projectedLevel;
-                }
+        this.map.addEventListener('movestart', () => {
+            this.startingZoom = this.map.getZoom();
+        });
+
+        this.map.addEventListener('moveend', () => {
+            const previousLevel = this.inferLevelFromZoom(this.startingZoom);
+            const currentLevel = this.inferLevelFromZoom(this.map.getZoom());
+            console.log({previousLevel, currentLevel})
+
+            if ( // Do nothing if:
+                (this.movementWasZoom && (previousLevel === currentLevel)) ||
+                (! this.movementWasZoom && (currentLevel === 0))
+            ) {
+                this.movementWasZoom = false;
+                return;
             }
-        });
 
-        this.map.addEventListener('moveend', (e) => {
-            let zoom = e.target.getZoom();
-            let bounds = this.map.getBounds();
-            Livewire.emit('mapPanned', zoom, bounds.toBBoxString());
+            const levelLayers = this.geojsonLayerGroup.getLayers();
+            let dictatingLevel = currentLevel - 1;
+            if (previousLevel !== currentLevel) {
+                dictatingLevel = previousLevel;
+                levelLayers[currentLevel].options.show();
+                levelLayers[previousLevel].options.hide();
+            }
+            const bounds = this.map.getBounds();
+            const withinBoundsFeatures = this.getFeaturesIntersectingBounds(levelLayers[dictatingLevel], bounds);
+            const withinBoundsLtreePaths = map(withinBoundsFeatures, property('properties.path'));
+            //console.log({dictatingLevel, withinBoundsLtreePaths})
+
+            this.movementWasZoom = false;
+            Livewire.emit('mapMoved', currentLevel, currentLevel - previousLevel, withinBoundsLtreePaths);
+        });
+    }
+
+    applyIndicatorDataToMap(level, data) {
+        const currentLayer = this.geojsonLayerGroup.getLayers()[level];
+        currentLayer.resetStyle();
+        currentLayer.getLayers().forEach(feature => {
+            //console.log(data[feature.feature.properties.code]) //.code, .name, .path
+            let d = data[feature.feature.properties.code]
+            if (! isUndefined(d)) {
+                feature.setStyle(this.styles[d.style])
+                feature.setTooltipContent(feature.feature.properties.name + ': ' + d.value)
+            }
         });
     }
 
     registerLivewireEventListeners() {
         Livewire.on('geojsonUpdated', (geojson, level, data) => {
             console.log({'Received from server': geojson, level, data});
-            this.data = data;
             this.render(geojson, level);
+
+            this.applyIndicatorDataToMap(level, data);
+        });
+
+        Livewire.on('indicatorSwitched', (data, styles, legend) => {
+            console.log({data, styles, legend});
+            this.styles = styles;
+            this.setLegend(legend);
+
+            const level = this.inferLevelFromZoom(this.map.getZoom());
+            this.applyIndicatorDataToMap(level, data);
         });
     }
 
     render(geojson, level) {
-        let targetLayer = this.geojsonLayerGroup.getLayers()[level];
-        this.level = level;
+        const targetLayer = this.geojsonLayerGroup.getLayers()[level];
         targetLayer.addData(geojson);
-        console.log({level, targetLayer: targetLayer.options.level});
     };
 }

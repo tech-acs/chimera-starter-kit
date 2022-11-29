@@ -33,7 +33,7 @@ class AreaController extends Controller
 
     public function create()
     {
-        $levels = config('chimera.area.hierarchies', []);
+        $levels = (new AreaTree)->hierarchies; //config('chimera.area.hierarchies', []);
         return view('developer.area.create', ['levels' => array_map(fn ($level) => ucfirst($level), $levels)]);
     }
 
@@ -57,7 +57,7 @@ class AreaController extends Controller
 
     public function store(MapRequest $request)
     {
-        $level = $request->integer('level', null);
+        $level = $request->integer('level');
         $files = $request->file('shapefile');
         $filename = Str::random(40);
         foreach ($files as $file) {
@@ -67,7 +67,6 @@ class AreaController extends Controller
         $shpFile = collect([$filename, 'shp'])->join('.');
         $importer = new ShapefileImporter();
         $features = $importer->import(Storage::disk('imports')->path('shapefiles/' . $shpFile));
-
         $this->validateShapefile($features);
 
         ImportShapefileJob::dispatch($features, $level, auth()->user());

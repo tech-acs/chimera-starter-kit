@@ -12,10 +12,6 @@ return [
     ],
     'color_theme' => env('COLOR_THEME', 'default'),
     'area' => [
-        'hierarchies' => [
-            // Put your hierarchies here. Top down.
-            // Example: 'region', 'zone', 'woreda', 'kebele'
-        ],
         'map' => [
             'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],
         ],

@@ -66,12 +66,12 @@ abstract class Chart extends Component
         return array_merge(self::DEFAULT_CONFIG, $dynamicOptions);
     }
 
-    protected function loadInputData(array $filter): Collection
+    protected function getData(array $filter): Collection
     {
         return collect([]);
     }
 
-    protected function getTraces(Collection $inputData, array $filter): array
+    protected function getTraces(Collection $data, array $filter): array
     {
         return [];
     }
@@ -101,7 +101,7 @@ abstract class Chart extends Component
         }, true);
     }
 
-    private function loadInputDataWithCaching(array $filter): Collection
+    private function getDataAndCacheIt(array $filter): Collection
     {
         $indicator = $this->graphDiv;
         try {
@@ -109,21 +109,20 @@ abstract class Chart extends Component
                 $key = Caching::makeIndicatorCacheKey($indicator, $filter);
                 //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
                 return Cache::tags([$indicator])
-                    ->rememberForever($key, function () use ($indicator, $filter) {
-                        return $this->loadInputData($filter);
+                    ->rememberForever($key, function () use ($filter) {
+                        return $this->getData($filter);
                     });
             }
-            //return $this->getData($filter);
-            return $this->loadInputData($filter);
+            return $this->getData($filter);
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache", ['Exception: ' => $exception]);
-            return $this->loadInputData($filter);
+            return $this->getData($filter);
         }
     }
 
     private function updateDataAndLayout(array $filter): void
     {
-        $this->data = $this->getTraces($this->loadInputDataWithCaching($filter), $filter);
+        $this->data = $this->getTraces($this->getDataAndCacheIt($filter), $filter);
         $this->layout = $this->getLayout($filter);
 
         if ($this->isDataEmpty()) {

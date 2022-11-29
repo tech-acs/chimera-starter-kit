@@ -23,7 +23,7 @@
             </div>
             <div class="mt-5 md:col-span-2 md:mt-0">
                 <div>
-                    <div class="flex items-stretch flex-grow">
+                    <div class="flex flex-grow items-center">
                         <label for="spreadsheet" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
                             <span id="file_label" class="my-auto pl-4 text-gray-700">{{ $spreadsheet?->getClientOriginalName() ?? "Choose your file" }}</span>
                             <div class="relative inline-flex items-center hover:bg-gray-100 cursor-pointer space-x-2 px-4 py-2 border-0 border-l rounded-r-md border-gray-300 text-sm font-medium text-gray-700 bg-gray-50">
@@ -32,6 +32,12 @@
                             </div>
                         </label>
                         <input type="file" id="spreadsheet" name="spreadsheet" wire:model="spreadsheet" onchange="document.getElementById('file_label').innerText=this.files[0].name;" class="hidden">
+                        @if ($fileAccepted)
+                            <x-icon.accepted />
+                        @endif
+                        @if($errors->has('file'))
+                            <x-icon.rejected />
+                        @endif
                     </div>
                 </div>
                 @if($errors->has('spreadsheet'))

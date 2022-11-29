@@ -72,22 +72,22 @@
                                     <x-jet-dropdown-link class="px-6" href="{{ route('user.index') }}">{{ __('Users') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('role.index') }}">{{ __('Roles') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <x-jet-dropdown-link href="{{route('questionnaire.index')}}">{{ __('Questionnaires') }}</x-jet-dropdown-link>
+                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Core Configuration') }}</div>
+                                    <x-jet-dropdown-link class="px-6" href="{{route('developer.questionnaire.index')}}">{{ __('Questionnaires') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{route('developer.area-hierarchy.index')}}">{{ __('Area Hierarchy') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Dashboard Elements') }}</div>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('manage.report.index') }}">{{ __('Reports') }}</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('manage.map.index') }}">{{ __('Maps') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('manage.map_indicator.index') }}">{{ __('Map indicators') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('announcement.index')}}">{{ __('Announcements') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage stats') }}</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>
-                                    <div class="border-t border-gray-100"></div>
-                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Imported Data') }}</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Area Hierarchy') }}</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-jet-dropdown-link>
+                                    {{--<x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>--}}
                                 </div>
                             </x-slot>
                         </x-jet-dropdown>
@@ -244,7 +244,7 @@
                 <div class="border-t border-gray-200"></div>
                 <x-jet-responsive-nav-link href="{{ route('user.index') }}" :active="request()->routeIs('user.*')">{{ __('Users') }}</x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('role.index') }}" :active="request()->routeIs('role.*')">{{ __('Roles') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('questionnaire.index') }}" :active="request()->routeIs('questionnaire.*')">{{ __('Questionnaires') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('developer.questionnaire.index') }}" :active="request()->routeIs('questionnaire.*')">{{ __('Questionnaires') }}</x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('page.index') }}" :active="request()->routeIs('page.*')">{{ __('Pages') }}</x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('indicator.index') }}" :active="request()->routeIs('indicator.*')">{{ __('Indicators') }}</x-jet-responsive-nav-link>
                 <x-jet-responsive-nav-link href="{{ route('scorecard.index') }}" :active="request()->routeIs('scorecard.*')">{{ __('Scorecards') }}</x-jet-responsive-nav-link>

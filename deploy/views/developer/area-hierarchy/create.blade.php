@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Questionnaires with their databases') }}
+            {{ __('Area Hierarchies') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Creating a new questionnaire and database connection') }}
+            {{ __('Creating a new area hierarchy') }}
         </p>
     </x-slot>
 
@@ -28,9 +28,9 @@
             </div>
         @endif
 
-        <form action="{{route('questionnaire.store')}}" method="POST">
+        <form action="{{route('developer.area-hierarchy.store')}}" method="POST">
             @csrf
-            @include('questionnaire.form')
+            @include('developer.area-hierarchy.form')
         </form>
 
     </div>
