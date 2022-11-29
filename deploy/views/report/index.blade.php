@@ -82,7 +82,7 @@
                     @endcan
                 @empty
                     <div class="p-6">
-                        There are no records to display
+                    {{ __('There are no records to display') }}
                     </div>
                 @endforelse
             </ul>
