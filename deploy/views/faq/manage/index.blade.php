@@ -89,7 +89,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
-                                        There are no records to display
+                                    {{ __('There are no records to display') }}
                                     </td>
                                 </tr>
                             @endforelse
