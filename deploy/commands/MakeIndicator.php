@@ -108,6 +108,7 @@ class MakeIndicator extends GeneratorCommand
             $this->type = 'template';
             $chosenChartType = 'Template';
             $this->includeSampleCode = false;
+            $this->title = str(basename($this->template))->snake()->replace('_', ' ')->title();
         } else {
             $chosenChartType = 'Default';
             $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
