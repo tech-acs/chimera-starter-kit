@@ -7,7 +7,7 @@ use App\Models\Questionnaire;
 use App\Services\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
-use ReflectionClass;
+use Illuminate\Support\Facades\Storage;
 
 class MakeIndicator extends GeneratorCommand
 {
@@ -20,17 +20,17 @@ class MakeIndicator extends GeneratorCommand
     protected $title = null;
     protected $template = null;
 
-    protected function getDefaultNamespace($rootNamespace): string
+    protected function getDefaultNamespace($rootNamespace)
     {
         return $rootNamespace . '\Http\Livewire';
     }
 
-    protected function getStub(): string
+    protected function getStub()
     {
         return resource_path("stubs/indicators/{$this->type}{$this->includeSampleCode}.stub");
     }
 
-    protected function writeIndicatorFile(string $name): bool|int
+    protected function writeIndicatorFile(string $name)
     {
         $className = $this->qualifyClass($name);
         $path = $this->getPath($className);
@@ -38,21 +38,22 @@ class MakeIndicator extends GeneratorCommand
         if (is_null($this->template)) {
             $content = $this->buildClass($className);
         } else {
-            $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], $this->template, $this->buildClass($className));
+
+            $template_path = Storage::disk('indicator_templates')->path($this->template).'.php';
+            $destination_path = \app_path()."/IndicatorTemplates/{$this->template}.php";
+            $this->makeDirectory($destination_path);
+            \copy($template_path,$destination_path);
+            $content = $this->buildClassWithTemplate($className);
         }
         return $this->files->put($path, $content);
     }
-
-    protected function loadIndicatorTemplates(): array
-    {
-        $path = base_path(config('chimera.indicator_templates_path', 'app/IndicatorTemplates'));
-        $files = array_map(function ($file) {
-            return str_replace('.php', '', basename($file));
-        }, glob($path . '/*.php'));
-        return $files;
+    protected function buildClassWithTemplate($className){
+        
+        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/',"\\",$this->template), $this->buildClass($className));
+        return $content;
     }
 
-    protected function chooseTemplate()
+    protected function askForIndicatorTemplate()
     {
         $templates = $this->loadIndicatorTemplates();
         $templateNotFound = true;
@@ -61,14 +62,7 @@ class MakeIndicator extends GeneratorCommand
             if (in_array($template, $templates)) {
                 $templateNotFound = false;
                 $this->type = 'template';
-
                 $this->template = str_replace('.php', '', $template);
-                $reflection = new ReflectionClass(config('chimera.templates_namepsace', '\\App\\IndicatorTemplates\\') . $this->template);
-                $reflectionDoc = $reflection->getDocComment();
-                $docBlock =  preg_split("/\r\n|\n|\r/", trim(substr($reflectionDoc, 3, -2)));
-                if (count($docBlock) > 1) {
-                    $this->title = trim(substr($docBlock[0], 1));
-                }
             } elseif (is_null($template)) {
                 $templateNotFound = false;
             } else {
@@ -77,7 +71,20 @@ class MakeIndicator extends GeneratorCommand
         }
     }
 
-    public function handle(): int
+    protected function loadIndicatorTemplates()
+    {
+
+        $files = Storage::disk('indicator_templates')->allFiles();
+        $templates = array_map(function ($file) {
+            //check if file is a php file
+            if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
+                return str_replace('.php', '', $file);
+            }
+        }, $files);
+        return $templates;
+    }
+
+    public function handle()
     {
         if (Questionnaire::all()->isEmpty()) {
             $this->newLine();
@@ -95,23 +102,25 @@ class MakeIndicator extends GeneratorCommand
         $questionnaires = Questionnaire::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
         $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
+        $this->askForIndicatorTemplate();
 
-        $this->chooseTemplate();
-
-        if ($this->type === 'template') {
+        if ($this->type == 'template') {
+            $this->type = 'template';
             $chosenChartType = 'Template';
-            //$this->includeSampleCode = false;
+            $this->includeSampleCode = false;
         } else {
             $chosenChartType = 'Default';
             $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
             $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
         }
 
+
         $title = $this->askValid(
             "Please enter a reader friendly title for the indicator (press enter to set " . ($this->title ?? 'empty') . " for now) ",
             'title',
             ['nullable',]
         );
+
         $title = $title ?? $this->title;
 
         $description = $this->askValid(
