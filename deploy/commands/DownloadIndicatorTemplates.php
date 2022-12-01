@@ -47,7 +47,7 @@ class DownloadIndicatorTemplates extends Command
 
     protected function getReleaseUrl(): string
     {
-        $repository_url = config('chimera.indicator_template.repository_url', 'https://api.github.com/repos/tech-acs/chimera-indicator-templates/');
+        $repository_url = config('chimera.indicator_template.repository_url', 'https://api.github.com/repos/tech-acs/chimera-indicator-templates');
 
         if ($this->option('tag')) {
             return $repository_url.self::RELEASE_BY_TAG_API. $this->option('tag');

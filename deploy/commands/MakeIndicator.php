@@ -35,7 +35,7 @@ class MakeIndicator extends GeneratorCommand
         $className = $this->qualifyClass($name);
         $path = $this->getPath($className);
         $this->makeDirectory($path);
-        if (is_null($this->template)) {
+        if (empty($this->template)) {
             $content = $this->buildClass($className);
         } else {
 
@@ -63,7 +63,7 @@ class MakeIndicator extends GeneratorCommand
                 $templateNotFound = false;
                 $this->type = 'template';
                 $this->template = str_replace('.php', '', $template);
-            } elseif (is_null($template)) {
+            } elseif (empty($template)) {
                 $templateNotFound = false;
             } else {
                 $this->error('Template not found');
