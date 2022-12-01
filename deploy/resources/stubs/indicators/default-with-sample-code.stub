@@ -33,6 +33,14 @@ class {{ class }} extends Chart
         $layout = parent::getLayout($filter);
         $layout['xaxis']['type'] = 'date';
         $layout['yaxis']['title']['text'] = __('Households');
+        $layout['annotations'] = [[
+            'text' => __('SAMPLE'),
+            'textangle' => -30,
+            'opacity' => 0.12,
+            'xref' => 'paper',
+            'yref' => 'paper',
+            'font' => ['color' => 'black', 'size' => 120]
+        ]];
         return $layout;
     }
 }

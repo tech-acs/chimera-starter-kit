@@ -17,6 +17,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     use WithFileUploads;
 
     public $spreadsheet;
+    public bool $fileAccepted = false;
     public int $indicatorsToImport = 1;
     public array $columnHeaders = [];
     public array $columnMapping = [];
@@ -34,7 +35,7 @@ class ReferenceValueSpreadsheetImporter extends Component
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v]);
-        return array_merge(['spreadsheet' => 'required|file|mimes:csv,xlsx'], $columnMappingRules);
+        return array_merge(['spreadsheet' => 'required|file|mimes:csv,xlsx'], $columnMappingRules->all());
     }
 
     protected function messages()
@@ -65,6 +66,7 @@ class ReferenceValueSpreadsheetImporter extends Component
         $this->spreadsheet->storeAs('/spreadsheets', $filename, 'imports');
         $this->filePath = Storage::disk('imports')->path('spreadsheets/' . $filename);
         $this->columnHeaders = SimpleExcelReader::create($this->filePath)->getHeaders();
+        $this->fileAccepted = true;
     }
 
     public function add()

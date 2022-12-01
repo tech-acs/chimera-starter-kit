@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AreaHierarchy;
 use Illuminate\Support\Facades\DB;
 use SplDoublyLinkedList;
 
@@ -12,11 +13,12 @@ class AreaTree
 
     public function __construct(int $removeLastNLevels = 0)
     {
-        $hierarchies = config('chimera.area.hierarchies');
+        //$hierarchies = config('chimera.area.hierarchies');
+        $hierarchies = AreaHierarchy::orderBy('index')->pluck('name')->all();
         $this->hierarchies = array_slice($hierarchies, 0, count($hierarchies) - $removeLastNLevels);
 
         $this->hierarchiesDll = new SplDoublyLinkedList;
-        foreach($hierarchies as $hierarchy) {
+        foreach ($hierarchies as $hierarchy) {
             $this->hierarchiesDll->push($hierarchy);
         }
     }

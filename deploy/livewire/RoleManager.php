@@ -2,10 +2,12 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\MapIndicator;
 use App\Models\Page;
 use App\Models\Report;
 //use App\Services\PermissionHarmonizer;
 use Livewire\Component;
+use Spatie\Permission\Models\Permission;
 
 class RoleManager extends Component
 {
@@ -37,6 +39,7 @@ class RoleManager extends Component
             });
         $groups = $groups->merge($pages);
 
+        Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'reports']);
         $reports = [
             [
                 'title' => 'Reports',
@@ -54,10 +57,28 @@ class RoleManager extends Component
         ];
         $groups = $groups->merge($reports);
 
+        Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'maps']);
+        $maps = [
+            [
+                'title' => 'Map Indicators',
+                'description' => 'This is the maps page',
+                'permission_name' => 'maps',
+                'permissionables' => MapIndicator::all()->map(function ($record) {
+                    return [
+                        'title' => $record->title,
+                        'description' => $record->description,
+                        'permission_name' => $record->permission_name,
+                    ];
+                }),
+                'count' => MapIndicator::count(),
+            ]
+        ];
+        $groups = $groups->merge($maps);
+
         $this->permissionGroups = $groups;
-        foreach(($this->permissionGroups ?? []) as $permissionGroup) {
+        foreach (($this->permissionGroups ?? []) as $permissionGroup) {
             $this->permissions[$permissionGroup['permission_name']] = $this->role->hasPermissionTo($permissionGroup['permission_name']);
-            foreach($permissionGroup['permissionables'] as $permissionable) {
+            foreach ($permissionGroup['permissionables'] as $permissionable) {
                 $this->permissions[$permissionable['permission_name']] = $this->role->hasPermissionTo($permissionable['permission_name']);
             }
         }

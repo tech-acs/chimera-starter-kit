@@ -18,7 +18,7 @@ class Exporter extends Component
     public function mount()
     {
         $this->filter = array_merge(
-            auth()->user()->areaFilter($this->questionnaire),
+            auth()->user()->areaFilter(),
             session()->get('area-filter', [])
         );
     }

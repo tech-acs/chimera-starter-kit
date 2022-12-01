@@ -22,6 +22,7 @@ class Theme
                 'bg-pink-800',
             ],
             'subdued' => [],
+            default => [],
         };
     }
 }

@@ -23,7 +23,7 @@
             </div>
             <div class="mt-5 md:col-span-2 md:mt-0">
                 <div>
-                    <div class="flex items-stretch flex-grow">
+                    <div class="flex flex-grow items-center">
                         <label for="spreadsheet" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
                             <span wire:loading.remove wire:target="spreadsheet" id="file_label" class="my-auto pl-4 text-gray-700">{{ $spreadsheet?->getClientOriginalName() ?? "Choose your file" }}</span>
                             <span wire:loading wire:target="spreadsheet" class="my-auto pl-4 text-gray-700">Uploading...</span>
@@ -33,6 +33,12 @@
                             </div>
                         </label>
                         <input type="file" id="spreadsheet" name="spreadsheet" wire:model="spreadsheet" onchange="document.getElementById('file_label').innerText=this.files[0].name;" class="hidden">
+                        @if ($fileAccepted)
+                            <x-icon.accepted />
+                        @endif
+                        @if($errors->has('spreadsheet'))
+                            <x-icon.rejected />
+                        @endif
                     </div>
                 </div>
                 @if($errors->has('spreadsheet'))

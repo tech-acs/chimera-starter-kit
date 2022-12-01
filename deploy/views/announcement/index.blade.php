@@ -61,7 +61,10 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Title') }}
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{ __('Recipients') }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Body') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -75,8 +78,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 align-top">
                                     {{ $record->user->name }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 align-top">
+                                <td class="px-6 py-4 text-sm text-gray-900 align-top w-1/4">
                                     {{ $record->title }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 align-top">
+                                    {{ $record->recipients }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500 text-red">
                                     {{ $record->body }}
@@ -87,7 +93,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
+                                <td colspan="5" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
                                     {{ __('There are no records to display') }}
                                 </td>
                             </tr>

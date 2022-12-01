@@ -16,6 +16,7 @@ class AreaSpreadsheetImporter extends Component
     use WithFileUploads;
 
     public $spreadsheet;
+    public bool $fileAccepted = false;
     public array $areaLevels = [];
     public array $columnHeaders = [];
     public array $columnMapping = [];
@@ -70,12 +71,12 @@ class AreaSpreadsheetImporter extends Component
         $this->spreadsheet->storeAs('/spreadsheets', $filename, 'imports');
         $this->filePath = Storage::disk('imports')->path('spreadsheets/' . $filename);
         $this->columnHeaders = SimpleExcelReader::create($this->filePath)->getHeaders();
+        $this->fileAccepted = true;
     }
 
     public function import()
     {
         $this->validate();
-
         ImportAreaSpreadsheetJob::dispatch($this->filePath, $this->areaLevels, $this->columnMapping, auth()->user());
         $this->message = "The file is being imported. You will receive a notification when the process is complete.";
     }

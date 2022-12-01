@@ -14,21 +14,22 @@ class AreaRestrictionManager extends Component
     use ChecksumSafetyTrait;
 
     public $user;
-    public ?string $connection = null;
     public Collection $areas;
+    public array $hierarchies;  // [ 0 => 'region',  1 => 'constituency', ... ]
     public array $selections = [];
     public array $areaRestrictions = [];
 
     public function mount()
     {
         $areaRepository = new AreaTree(removeLastNLevels: 1);
+        $this->hierarchies = $areaRepository->hierarchies;
         $levels = $areaRepository->hierarchies;
         $sessionFilter = session()->get('area-filter', []);
         $previouslySet = $this->user->areaRestrictions()->first();
         //dump($previouslySet);
         $this->areas = collect([]);
         $parentLevel = null;
-        foreach ($levels as $levelName => $level) {
+        foreach (array_flip($this->hierarchies) as $levelName => $level) {
             if (is_null($parentLevel)) {
                 $this->areas[$levelName] = $areaRepository->areas()->pluck('name', 'code')->all();
             } else {
@@ -39,7 +40,8 @@ class AreaRestrictionManager extends Component
             }
             $parentLevel = $levelName;
         }
-        $this->selections = $levels->map(fn ($level, $levelName) => $this->addChecksumSafety($sessionFilter[$levelName] ?? null))->all();
+        //$this->selections = $levels->map(fn ($level, $levelName) => $this->addChecksumSafety($sessionFilter[$levelName] ?? null))->all();
+        $this->selections = array_map(fn ($level) => $this->addChecksumSafety($sessionFilter[$this->hierarchies[$level]] ?? null), array_flip($this->hierarchies));
     }
 
     public function changeHandler($changedSelect, $selected)

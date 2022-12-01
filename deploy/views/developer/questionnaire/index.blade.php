@@ -11,7 +11,7 @@
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="text-right">
-            <a href="{{route('questionnaire.create')}}"><x-jet-button>{{ __('Create new') }}</x-jet-button></a>
+            <a href="{{route('developer.questionnaire.create')}}"><x-jet-button>{{ __('Create new') }}</x-jet-button></a>
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
@@ -96,12 +96,12 @@
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if($record->connection_active)
-                                        <a href="{{route('questionnaire.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Test') }}</a>
+                                        <a href="{{route('developer.questionnaire.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Test') }}</a>
                                         <span class="text-gray-400 px-1">|</span>
                                     @endif
-                                    <a href="{{route('questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                    <a href="{{route('developer.questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                     <span class="text-gray-400 px-1">|</span>
-                                    <form action="{{route('questionnaire.destroy', $record->id)}}" method="post" class="inline">
+                                    <form action="{{route('developer.questionnaire.destroy', $record->id)}}" method="post" class="inline">
                                         @method('delete')
                                         @csrf
                                         <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>

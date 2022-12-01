@@ -1,7 +1,7 @@
 <div>
     <div class="flex justify-end py-2">
         <x-jet-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-jet-button>
-        <x-jet-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled" class="ml-3">{{ __('Bulk Invite') }}</x-jet-button>
+        <livewire:bulk-inviter />
     </div>
     <div class="py-2 align-middle inline-block min-w-full">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -100,29 +100,6 @@
             </x-jet-action-message>
 
             <x-jet-secondary-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">
-                {{ __('Close') }}
-            </x-jet-secondary-button>
-
-            <x-jet-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
-                {{ __('Invite') }}
-            </x-jet-button>
-        </x-slot>
-    </x-jet-dialog-modal>
-
-    <x-jet-dialog-modal wire:model="showBulkInviteForm">
-        <x-slot name="title">
-            {{ __('Invite multiple users') }}
-        </x-slot>
-
-        <x-slot name="content">
-            You can invite multiple users at once by importing a list from an Excel file.
-        </x-slot>
-        <x-slot name="footer">
-            <x-jet-action-message class="mr-3 inline-flex" on="invited">
-                {{ __('Invited.') }}
-            </x-jet-action-message>
-
-            <x-jet-secondary-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled">
                 {{ __('Close') }}
             </x-jet-secondary-button>
 

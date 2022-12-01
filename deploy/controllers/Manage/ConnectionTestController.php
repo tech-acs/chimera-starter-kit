@@ -15,10 +15,10 @@ class ConnectionTestController extends Controller
             return $carry && $item['passes'];
         }, true);
         if ($passesTest) {
-            return redirect()->route('questionnaire.index')
+            return redirect()->route('developer.questionnaire.index')
                 ->withMessage('Connection test successful');
         } else {
-            return redirect()->route('questionnaire.index')
+            return redirect()->route('developer.questionnaire.index')
                 ->withErrors($results->pluck('message')->filter()->all());
         }
     }

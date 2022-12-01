@@ -40,7 +40,8 @@ class PageController extends Controller
         $page->update($request->only(['title', 'description', 'published']));
         foreach ($request->get('indicators', []) as $rank => $indicatorId) {
             $page->indicators()->updateExistingPivot(
-                $indicatorId, ['rank' => $rank]
+                $indicatorId,
+                ['rank' => $rank]
             );
         }
         return redirect()->route('page.index')->withMessage('Page updated');

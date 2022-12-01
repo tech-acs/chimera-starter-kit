@@ -19,18 +19,18 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             'create_invitations_table',
             'create_usage_stats_table',
             'create_areas_table',
-            'create_expected_values_table',
             'create_pages_table',
             'create_questionnaires_table',
             'create_indicators_table',
             'create_indicator_page_table',
             'create_scorecards_table',
             'create_reports_table',
-            'create_scorecards_table',
             'add_is_suspended_column_to_users_table',
             'create_notifications_table',
             'create_announcements_table',
-            'create_reference_values_table'
+            'create_reference_values_table',
+            'create_area_hierarchies_table',
+            'create_map_indicators_table',
         ];
         $package
             ->name('chimera')

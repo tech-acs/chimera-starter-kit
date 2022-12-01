@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
             $table->string('title', 100);
+            $table->string('recipients');
             $table->text('body');
             $table->foreignId('user_id');
             $table->timestamps();

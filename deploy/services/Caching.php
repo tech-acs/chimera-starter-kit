@@ -29,17 +29,4 @@ class Caching
         Cache::tags([$indicatorInstance->connection, 'timestamp'])->put($key, $stamp);
         return Cache::tags([$indicatorInstance->connection, 'indicator'])->put($key, $freshData, $ttl);
     }
-
-    public static function updateAreaList(string $connection, string $areaType, ?string $parentArea)
-    {
-        $startTime = time();
-        $freshData = DataSource::getAreaList($connection, $areaType, $parentArea);
-        $key = static::makeAreaListCacheKey($connection, $areaType, $parentArea);
-        $endTime = time();
-        dump("Took " . ($endTime - $startTime) . " seconds to update $key");
-
-        $stamp = now()->format('Y-m-d H:i:s');
-        Cache::tags([$connection, 'timestamp'])->put($key, $stamp);
-        return Cache::tags([$connection, 'area-list'])->put($key, $freshData);
-    }
 }

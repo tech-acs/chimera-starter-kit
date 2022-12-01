@@ -84,13 +84,13 @@ class MakeIndicator extends GeneratorCommand
         return $templates;
     }
 
-    public function handle()
+    public function handle(): bool|null
     {
         if (Questionnaire::all()->isEmpty()) {
             $this->newLine();
             $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
             $this->newLine();
-            return 1;
+            return false;
         }
 
         $name = $this->askValid(
@@ -143,7 +143,6 @@ class MakeIndicator extends GeneratorCommand
                 'type' => $chosenChartType,
             ]);
         });
-
-        return 0;
+        return true;
     }
 }
