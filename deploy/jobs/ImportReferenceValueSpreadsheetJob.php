@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Models\ReferenceValue;
 use App\Notifications\TaskCompletedNotification;
 use App\Notifications\TaskFailedNotification;
-use App\Services\AreaTree;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -47,9 +46,6 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     private function insertInitialValues($indicatorMapping)
     {
         SimpleExcelReader::create($this->filePath)->getRows()
-            /*->unique(function ($row) {
-                return true;
-            })*/
             ->map(function($row) use ($indicatorMapping) {
                 $code = Str::padLeft($row[$indicatorMapping['code']], $indicatorMapping['zeroPadding'] ?? 0, '0');
                 return [

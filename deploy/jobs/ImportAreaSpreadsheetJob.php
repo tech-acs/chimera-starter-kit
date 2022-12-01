@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Area;
 use App\Notifications\TaskCompletedNotification;
 use App\Notifications\TaskFailedNotification;
 use Carbon\Carbon;
@@ -48,7 +49,7 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                             'updated_at' => $timestamp,
                         ];
                     }
-                    $insertedCount += DB::table('areas')->insertOrIgnore($areas);
+                    $insertedCount += Area::insertOrIgnore($areas);
                 });
 
             Notification::sendNow($this->user, new TaskCompletedNotification(

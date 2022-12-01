@@ -26,7 +26,10 @@ class Indicator extends Model
     protected function permissionName(): Attribute
     {
         return new Attribute(
-            get: fn () => str($this->slug)->replace('.', ':')->toString(),
+            get: fn () => str($this->slug)
+                ->replace('.', ':')
+                ->append(':indicator')
+                ->toString(),
         );
     }
 

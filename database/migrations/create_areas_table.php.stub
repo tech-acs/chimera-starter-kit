@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('code', 50)->index();
-            $table->string('name', 100);
+            $table->jsonb('name', 100);
             $table->tinyInteger('level')->index();
             $table->geometry('geom')->nullable();
 

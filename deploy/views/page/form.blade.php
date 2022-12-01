@@ -14,9 +14,9 @@
             <div>
                 <x-jet-label for="published" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($page->published ?? false) }" x-cloak>
-                    <span class="">
+                    <label for="status">
                         <span class="text-sm text-gray-500">Draft</span>
-                    </span>
+                    </label>
                     <input type="hidden" name="published" :value="enabled">
                     <button
                             x-on:click="enabled = ! enabled"
@@ -24,12 +24,13 @@
                             type="button"
                             class="ml-3  relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             role="switch"
+                            id="status"
                     >
                         <span aria-hidden="true" :class="enabled ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
                     </button>
-                    <span class="ml-3">
+                    <label for="status" class="ml-3">
                         <span class="text-sm text-gray-900">{{ __('Published') }}</span>
-                    </span>
+                    </label>
                 </div>
             </div>
             @if (isset($page))

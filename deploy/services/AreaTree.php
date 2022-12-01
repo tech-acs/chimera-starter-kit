@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Area;
 use App\Models\AreaHierarchy;
-use Illuminate\Support\Facades\DB;
 use SplDoublyLinkedList;
 
 class AreaTree
@@ -37,8 +37,7 @@ class AreaTree
     public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)
     {
         $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";
-        return DB::table('areas')
-            ->selectRaw($checksumSafe ? "CONCAT('*', path) AS path, code, name" : 'path, code, name')
+        return Area::selectRaw($checksumSafe ? "CONCAT('*', path) AS path, code, name" : 'path, code, name')
             ->whereRaw("path ~ '{$lquery}'")
             ->orderBy($orderBy)
             ->get();
@@ -46,8 +45,7 @@ class AreaTree
 
     public function getArea(string $path)
     {
-        return DB::table('areas')
-            ->select('path', 'code', 'name', 'level')
+        return Area::select('path', 'code', 'name', 'level')
             ->whereRaw("path ~ '{$path}'")
             ->first();
     }

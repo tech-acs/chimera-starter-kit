@@ -48,6 +48,4 @@ abstract class MapIndicatorBaseClass
             'green' => array_merge(self::DEFAULT_STYLE, ['color' => 'green', 'fillColor' => 'green'])
         ];
     }
-
-
 }

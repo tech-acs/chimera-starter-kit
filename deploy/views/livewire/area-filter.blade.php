@@ -29,7 +29,7 @@
                                         <option
                                             value="{{$path}}"
                                             @selected($path === ($selections[$levelName] ?? null))
-                                        >{{$name}}</option>
+                                        >{{ $name }}</option>
                                     @endforeach
                                 </select>
                             @endif

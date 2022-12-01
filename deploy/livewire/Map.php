@@ -103,6 +103,7 @@ class Map extends Component
             'zoomControl' => false,
             'attributionControl' => false,
             'preferCanvas' => true,
+            'locale' => app()->getLocale(),
         ];
         $this->indicators = MapIndicator::published()
             ->get()

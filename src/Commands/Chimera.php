@@ -162,8 +162,9 @@ class Chimera extends Command
         $this->comment('Published chimera config and migrations');
 
         $this->requireComposerPackages([
-            'spatie/laravel-permission:^5.5', 
-            'spatie/simple-excel:^2.3',
+            'ext-zip:*',
+            'spatie/laravel-permission:^5.7', 
+            'spatie/simple-excel:^2.4',
             'spatie/laravel-translatable:^6.1',
             'spatie/db-dumper:^3.3',
             'gasparesganga/php-shapefile:^3.4'

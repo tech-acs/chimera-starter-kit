@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\Traits\InteractiveCommand;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class Delete extends Command
 {
@@ -27,6 +28,7 @@ class Delete extends Command
         $listMenu = array_keys($list);
         array_unshift($listMenu, '');
         unset($listMenu[0]);
+
         if (empty($listMenu)) {
             $this->info("No {$chosenElement}s found!");
             $this->newLine();
@@ -40,6 +42,8 @@ class Delete extends Command
 
             unlink($pathToFile);
             $modelToDelete->delete();
+            Artisan::call('permission:cache-reset');
+
             $this->info("Successfully deleted");
         }
         return 0;

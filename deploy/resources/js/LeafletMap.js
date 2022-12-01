@@ -13,6 +13,7 @@ export default class LeafletMap {
     startingZoom;
     movementWasZoom = false;
     indicators = {};
+    locale;
 
     constructor(mapContainer, options) {
         this.options = options;
@@ -41,6 +42,7 @@ export default class LeafletMap {
     }
 
     initializeMap(mapContainer, basemaps) {
+        this.locale = this.mapOptions.locale;
         this.map = L.map(mapContainer, this.mapOptions);
         let basemapLayers = {};
         let basemapsCount = basemaps.length;
@@ -142,7 +144,7 @@ export default class LeafletMap {
                 show: () => this.map.getPane(paneName).style.display = '',
                 hide: () => this.map.getPane(paneName).style.display = 'none',
                 onEachFeature: (feature, layer) => {
-                    layer.bindTooltip(feature.properties.name, {permanent: false, direction: 'center'});
+                    layer.bindTooltip(feature.properties.name[this.locale], {permanent: false, direction: 'center'});
                     layer.on({
                         mouseover: (e) => this.highlightFeature(e),
                         mouseout: (e) => this.resetHighlight(e),
@@ -221,11 +223,10 @@ export default class LeafletMap {
         const currentLayer = this.geojsonLayerGroup.getLayers()[level];
         currentLayer.resetStyle();
         currentLayer.getLayers().forEach(feature => {
-            //console.log(data[feature.feature.properties.code]) //.code, .name, .path
             let d = data[feature.feature.properties.code]
             if (! isUndefined(d)) {
                 feature.setStyle(this.styles[d.style])
-                feature.setTooltipContent(feature.feature.properties.name + ': ' + d.value)
+                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + d.value)
             }
         });
     }

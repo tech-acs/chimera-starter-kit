@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class {{ class }} extends Chart
 {
-    protected function loadInputData(array $filter = []): Collection
+    protected function getData(array $filter = []): Collection
     {
         return collect(new \DatePeriod(
             new \DateTime('2010-04-01'),
@@ -18,11 +18,11 @@ class {{ class }} extends Chart
             ->map(fn ($pair) => (object)['eas' => $pair[0]->format('Y-m-d'), 'households' => $pair[1]/10]);
     }
 
-    protected function getTraces(Collection $queryResult, array $filter): array
+    protected function getTraces(Collection $data, array $filter): array
     {
         $trace1 = [
-            'x' => $queryResult->pluck('eas')->all(),
-            'y' => $queryResult->pluck('households')->all(),
+            'x' => $data->pluck('eas')->all(),
+            'y' => $data->pluck('households')->all(),
             'name' => 'Households',
         ];
         return [$trace1];

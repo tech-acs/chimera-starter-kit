@@ -40,7 +40,7 @@ class ReferenceValueSpreadsheetImporter extends Component
 
     protected function messages()
     {
-        $columnMappingMessages = collect(Arr::dot(
+        return collect(Arr::dot(
             Collection::times($this->indicatorsToImport, function ($number) {
                 return [
                     'name' => 'required',
@@ -48,7 +48,6 @@ class ReferenceValueSpreadsheetImporter extends Component
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v])->all();
-        return array_merge(['spreadsheet.mimes' => 'The file must be either an excel or a csv valid file'], $columnMappingMessages);
     }
 
     public function mount()
