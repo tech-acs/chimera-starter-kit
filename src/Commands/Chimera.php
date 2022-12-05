@@ -179,9 +179,7 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
         $this->comment('Copied blade component classes');
 
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/commands', app_path('Console/Commands'));
-        $this->comment('Copied commands');
-
+        
         copy(__DIR__.'/../../deploy/Kernel.php', app_path('Console/Kernel.php'));
         $this->comment('Copied Console/Kernel.php');
 

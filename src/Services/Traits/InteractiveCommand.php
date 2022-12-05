@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Traits;
+namespace Uneca\Chimera\Services\Traits;
 
 use Illuminate\Support\Facades\Validator;
 
