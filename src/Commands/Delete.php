@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Uneca\Chimera\Commands;
 
-use App\Services\Traits\InteractiveCommand;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Uneca\Chimera\Services\Traits\InteractiveCommand;
 
 class Delete extends Command
 {

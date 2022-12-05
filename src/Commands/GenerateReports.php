@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Uneca\Chimera\Commands;
 
 use App\Models\Report;
 use Illuminate\Console\Command;

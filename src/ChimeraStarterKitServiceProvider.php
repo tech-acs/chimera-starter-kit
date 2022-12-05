@@ -4,8 +4,16 @@ namespace Uneca\Chimera;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Uneca\Chimera\Commands\Adminify;
 use Uneca\Chimera\Commands\Chimera;
+use Uneca\Chimera\Commands\Delete;
 use Uneca\Chimera\Commands\Dockerize;
+use Uneca\Chimera\Commands\DownloadIndicatorTemplates;
+use Uneca\Chimera\Commands\GenerateReports;
+use Uneca\Chimera\Commands\MakeIndicator;
+use Uneca\Chimera\Commands\MakeMapIndicator;
+use Uneca\Chimera\Commands\MakeReport;
+use Uneca\Chimera\Commands\MakeScorecard;
 
 class ChimeraStarterKitServiceProvider extends PackageServiceProvider
 {
@@ -39,7 +47,17 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
             //->hasTranslations() // Makes translations publishable
             ->hasMigrations($migrations) // Makes migrations publishable only
             //->hasRoute('web')
-            ->hasCommands([Chimera::class,Dockerize::class])
+            ->hasCommands([Chimera::class,
+                            Dockerize::class,
+                            Adminify::class,
+                            Delete::class,
+                            DownloadIndicatorTemplates::class,
+                            GenerateReports::class,
+                            MakeIndicator::class,
+                            MakeMapIndicator::class,
+                            MakeReport::class,
+                            MakeScorecard::class,
+                            ]);
         ;
     }
 }

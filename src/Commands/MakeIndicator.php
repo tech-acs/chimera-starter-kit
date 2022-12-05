@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Uneca\Chimera\Commands;
 
 use App\Models\Indicator;
 use App\Models\Questionnaire;
-use App\Services\Traits\InteractiveCommand;
+use Uneca\Chimera\Services\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
