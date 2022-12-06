@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 
