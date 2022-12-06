@@ -3,6 +3,7 @@ import map from 'lodash/map';
 import property from 'lodash/property';
 import isUndefined from 'lodash/isUndefined';
 import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
 
 export default class LeafletMap {
     map;
@@ -65,7 +66,7 @@ export default class LeafletMap {
         }
         L.DomUtil.empty(legend);
         for (const [color, label] of Object.entries(legendData)) {
-            legend.innerHTML += `<i class="${color}"></i> ${label}<br>`;
+            legend.innerHTML += `<i style="background-color: ${color};"></i> ${label}<br>`;
         }
     }
 
@@ -96,7 +97,7 @@ export default class LeafletMap {
                 span.innerText = indicatorName;
                 input.onchange = e => {
                     let selectedIndicator = e.target.value
-                    Livewire.emit('indicatorSelected', selectedIndicator)
+                    Livewire.emit('indicatorSelected', selectedIndicator, this.map.getZoom())
                 };
             }
             L.DomEvent.disableClickPropagation(menuContainer);
@@ -192,7 +193,7 @@ export default class LeafletMap {
         this.map.addEventListener('moveend', () => {
             const previousLevel = this.inferLevelFromZoom(this.startingZoom);
             const currentLevel = this.inferLevelFromZoom(this.map.getZoom());
-            console.log({previousLevel, currentLevel})
+            //console.log({previousLevel, currentLevel})
 
             if ( // Do nothing if:
                 (this.movementWasZoom && (previousLevel === currentLevel)) ||
@@ -222,11 +223,15 @@ export default class LeafletMap {
     applyIndicatorDataToMap(level, data) {
         const currentLayer = this.geojsonLayerGroup.getLayers()[level];
         currentLayer.resetStyle();
+        const areaKeyedData = keyBy(data, 'area_code');
         currentLayer.getLayers().forEach(feature => {
-            let d = data[feature.feature.properties.code]
+            let d = areaKeyedData[feature.feature.properties.code];
+            console.log({data, areaKeyedData, code: feature.feature.properties.code, d})
             if (! isUndefined(d)) {
-                feature.setStyle(this.styles[d.style])
-                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + d.value)
+                feature.setStyle(this.styles[d.style]);
+                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + d.value);
+            } else {
+                feature.setTooltipContent(feature.feature.properties.name[this.locale]);
             }
         });
     }

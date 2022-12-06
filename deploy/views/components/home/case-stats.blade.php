@@ -9,9 +9,6 @@
                     </dt>
                 </div>
                 <dd class="mt-1 flex justify-end items-center md:block lg:flex">
-
-                    <x-stock-ticker diff="0" />
-
                     <div class="flex items-baseline ml-2 text-2xl font-semibold">
                         {{ $value }}
                     </div>

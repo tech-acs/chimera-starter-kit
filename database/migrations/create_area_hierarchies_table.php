@@ -17,6 +17,10 @@ return new class extends Migration
             $table->id();
             $table->integer('index');
             $table->jsonb('name');
+
+            $table->string('where_column')->nullable();
+            $table->string('select_column')->nullable();
+
             $table->timestamps();
         });
     }

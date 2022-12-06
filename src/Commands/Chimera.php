@@ -163,6 +163,7 @@ class Chimera extends Command
 
         $this->requireComposerPackages([
             'ext-zip:*',
+            'ext-pgsql:*',
             'spatie/laravel-permission:^5.7', 
             'spatie/simple-excel:^2.4',
             'spatie/laravel-translatable:^6.1',

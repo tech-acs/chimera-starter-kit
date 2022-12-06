@@ -4,29 +4,29 @@ namespace App\Services;
 
 use App\Models\Report;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 
 abstract class ReportBlueprint
 {
-    public $connection;
+    public string $questionnaire;
     public $report;
     public $file;
     public $fileType = 'csv';
 
-    public function __construct(Report $report, ?string $connection = null)
+    public function __construct(Report $report, ?string $questionnaire = null)
     {
-        $this->connection = $connection;
+        $this->questionnaire = $questionnaire;
         $this->report = $report;
         $this->file = "{$report->slug}.{$this->fileType}";
     }
 
-    abstract public function getCollection();
+    abstract public function getData(): Collection;
 
     public function writeFile($data)
     {
-        $writer = SimpleExcelWriter::create(Storage::disk('reports')->path($this->file))
-            ->addRows($data);
+        $writer = SimpleExcelWriter::create(Storage::disk('reports')->path($this->file))->addRows($data);
     }
 
     public function download()
@@ -36,7 +36,7 @@ abstract class ReportBlueprint
 
     public function generate()
     {
-        $data = $this->getCollection();
+        $data = $this->getData();
         if (empty($data)) {
             throw new Exception('There is no data to export');
         }

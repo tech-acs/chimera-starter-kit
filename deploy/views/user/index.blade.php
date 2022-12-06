@@ -50,9 +50,7 @@
                             >{{ $invitations_count }}</span>
                         </a>
                     </nav>
-
                 </div>
-
             </div>
             <div>
                 <section id="users" x-show="isSelected('users')">

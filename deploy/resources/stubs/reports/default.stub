@@ -3,11 +3,12 @@
 namespace DummyNamespace;
 
 use App\Services\ReportBlueprint;
+use Illuminate\Support\Collection;
 
 class {{ class }} extends ReportBlueprint
 {
-    public function getCollection()
+    public function getData(): Collection
     {
-        // TODO: Implement getCollection() method.
+        return collect([]);
     }
 }

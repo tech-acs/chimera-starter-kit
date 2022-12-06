@@ -8,10 +8,11 @@ use Illuminate\View\Component;
 
 class {{ class }} extends Component
 {
-    public $scorecard;
-    public $title;
+    public Scorecard $scorecard;
+    public string $title;
     public $value;
     public $bgColor;
+    public int $diff = 0;
 
     public function __construct(Scorecard $scorecard, $index)
     {

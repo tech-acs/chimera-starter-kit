@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\MapIndicator;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -23,11 +24,23 @@ class Map extends Component
         ];
     }
 
-    protected function getGeoJson(array $paths, int $zoomDirection)
+    protected function deriveNextPathsBasedOnZoomDirection(array $previousPaths, int $zoomDirection): Collection
     {
         if ($zoomDirection >= 0) {
+            return collect($previousPaths)
+                ->map(fn ($path) => "'{$path}.*{1}'");
+        } else {
+            return collect($previousPaths)
+                ->map(fn ($path) => str($path)->beforeLast('.')->toString())
+                ->unique()
+                ->map(fn ($path) => "'{$path}'");
+        }
+    }
+
+    protected function getGeoJson(Collection $derivedPaths)
+    {
+        /*if ($zoomDirection >= 0) {
             $lqueryArray = "ARRAY[" . collect($paths)->map(fn ($path) => "'{$path}.*{1}'")->join(', ') . "]::lquery[]";
-            $whereClause = empty($paths) ? "level = 0" : "path ?? $lqueryArray";
         } else {
             $lqueryArray = "ARRAY[" .
                 collect($paths)
@@ -36,9 +49,9 @@ class Map extends Component
                     ->map(fn ($x) => "'{$x}'")
                     ->join(', ') .
                 "]::lquery[]";
-            $whereClause = empty($paths) ? "level = 0" : "path ?? $lqueryArray";
-        }
-        //logger('getGeoJson', ['lqueryArray' => $lqueryArray, 'direction' => $zoomDirection]);
+        }*/
+        $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
+        $whereClause = empty($paths) ? "level = 0" : "path ?? $lqueryArray";
         $sql = "
             SELECT json_build_object(
                 'type', 'FeatureCollection',
@@ -72,27 +85,29 @@ class Map extends Component
         return $result[0]->feature_collection;
     }
 
-    public function setSelectedIndicator(string $mapIndicator)
+    public function setSelectedIndicator(string $mapIndicator, int $level)
     {
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
-        $this->emit('indicatorSwitched', $selectedIndicator->getData(), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
+        $this->emit('indicatorSwitched', $selectedIndicator->getData($level), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
     }
 
     final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
     {
-        //dd($level, $zoomDirection, $paths);
-        $defaultIndicator = null;
+        $derivedPaths = $this->deriveNextPathsBasedOnZoomDirection($paths, $zoomDirection);
+
+        $currentIndicator = null;
         if (! isset($this->selectedIndicator) && ! empty($this->indicators)) {
-            $this->setSelectedIndicator(array_key_first($this->indicators));
-            $defaultIndicator = new $this->selectedIndicator;
+            $this->setSelectedIndicator(array_key_first($this->indicators), $level);
+            $currentIndicator = new $this->selectedIndicator;
         }
-        $geojson = json_decode($this->getGeoJson($paths, $zoomDirection));
+
+        $geojson = json_decode($this->getGeoJson($derivedPaths));
         $filtered = collect($geojson->features)->filter(fn ($feature) => ! in_array($feature->properties->path, $this->previouslySentPaths));
         $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
         $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
         $geojson->features = $filtered->values()->all();
-        $this->emit('geojsonUpdated', $geojson, $level, $defaultIndicator?->getData() ?? []);
+        $this->emit('geojsonUpdated', $geojson, $level, $currentIndicator?->getData($level, $derivedPaths) ?? []);
     }
 
     final public function mount()
