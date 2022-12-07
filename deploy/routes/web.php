@@ -21,13 +21,13 @@ use App\Http\Controllers\Manage\ReferenceValueController;
 use App\Http\Controllers\Manage\UsageStatsController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\UserSuspensionController;
-use App\Http\Controllers\MapPageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Livewire\Map;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('chimera::welcome');
 })->name('landing');
 
 Route::middleware(['auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])->group(function () {
@@ -35,10 +35,14 @@ Route::middleware(['auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])
 
     Route::get("page/{page:slug}", [ChartsController::class, 'page'])->name('page');
     Route::get('indicator/{indicator:slug}', [ChartsController::class, 'indicator'])->name('indicator');
-    Route::get('map', MapPageController::class)->name('map');
-    Route::get('report', [ReportController::class, 'index'])->name('report');
+
+    Route::get('map', Map::class)->name('map')->can('maps');
+
+    Route::get('report', [ReportController::class, 'index'])->name('report')->can('reports');
+
     Route::get('report/{report}/download', [ReportController::class, 'download'])->name('report.download');
     Route::get('report/{report}/generate', [ReportController::class, 'generate'])->name('report.generate');
+
     Route::get('faq', FaqController::class)->name('faq');
     Route::get('notification', NotificationController::class)->name('notification.index');
 

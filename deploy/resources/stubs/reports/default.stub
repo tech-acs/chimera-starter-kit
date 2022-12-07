@@ -2,10 +2,10 @@
 
 namespace DummyNamespace;
 
-use App\Services\ReportBlueprint;
+use App\Reports\ReportBaseClass;
 use Illuminate\Support\Collection;
 
-class {{ class }} extends ReportBlueprint
+class {{ class }} extends ReportBaseClass
 {
     public function getData(): Collection
     {

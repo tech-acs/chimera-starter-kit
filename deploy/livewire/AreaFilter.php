@@ -95,6 +95,6 @@ class AreaFilter extends Component
 
     public function render()
     {
-        return view('livewire.area-filter');
+        return view('chimera::livewire.area-filter');
     }
 }

@@ -12,7 +12,7 @@ class RoleController extends Controller
     public function index()
     {
         $records = Role::all();
-        return view('role.index', compact('records'));
+        return view('chimera::role.index', compact('records'));
     }
 
     public function store(Request $request)
@@ -35,7 +35,7 @@ class RoleController extends Controller
         if ($role->name === 'Super Admin') {
             abort(403, 'Unauthorized action');
         }
-        return view('role.manage', compact('role'));
+        return view('chimera::role.manage', compact('role'));
     }
 
     public function destroy(Role $role)

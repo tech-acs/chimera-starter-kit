@@ -128,6 +128,6 @@ class Map extends Component
 
     public function render()
     {
-        return view('livewire.map');
+        return view('chimera::livewire.map');
     }
 }

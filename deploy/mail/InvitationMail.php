@@ -17,7 +17,7 @@ class InvitationMail extends Mailable
     public function build()
     {
         return $this->subject(config('app.name') . ' registration invitation')
-            ->markdown('mail.invitation')
+            ->markdown('chimera::mail.invitation')
             ->with(['ttl' => config('chimera.invitation.ttl_hours')]);
     }
 }

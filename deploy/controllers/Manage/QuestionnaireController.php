@@ -11,12 +11,12 @@ class QuestionnaireController extends Controller
     public function index()
     {
         $records = Questionnaire::orderBy('name')->get();
-        return view('developer.questionnaire.index', compact('records'));
+        return view('chimera::developer.questionnaire.index', compact('records'));
     }
 
     public function create()
     {
-        return view('developer.questionnaire.create');
+        return view('chimera::developer.questionnaire.create');
     }
 
     public function store(QuestionnaireRequest $request)
@@ -27,7 +27,7 @@ class QuestionnaireController extends Controller
 
     public function edit(Questionnaire $questionnaire)
     {
-        return view('developer.questionnaire.edit', compact('questionnaire'));
+        return view('chimera::developer.questionnaire.edit', compact('questionnaire'));
     }
 
     public function update(Questionnaire $questionnaire, QuestionnaireRequest $request)

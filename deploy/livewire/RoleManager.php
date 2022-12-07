@@ -96,6 +96,6 @@ class RoleManager extends Component
 
     public function render()
     {
-        return view('livewire.role-manager');
+        return view('chimera::livewire.role-manager');
     }
 }

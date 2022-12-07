@@ -29,6 +29,6 @@ class UsageStatsController extends Controller
         } else {
             $records = UsageStat::orderBy('created_at', 'DESC')->paginate(env('PAGE_SIZE', 20));
         }
-        return view('usage_stats.index', compact('records', 'filter'));
+        return view('chimera::usage_stats.index', compact('records', 'filter'));
     }
 }

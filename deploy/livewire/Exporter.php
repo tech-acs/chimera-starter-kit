@@ -43,6 +43,6 @@ class Exporter extends Component
 
     public function render()
     {
-        return view('livewire.exporter');
+        return view('chimera::livewire.exporter');
     }
 }

@@ -11,12 +11,12 @@ class AreaHierarchyController extends Controller
     public function index()
     {
         $records = AreaHierarchy::orderBy('index')->get();
-        return view('developer.area-hierarchy.index', compact('records'));
+        return view('chimera::developer.area-hierarchy.index', compact('records'));
     }
 
     public function create()
     {
-        return view('developer.area-hierarchy.create');
+        return view('chimera::developer.area-hierarchy.create');
     }
 
     public function store(Request $request)
@@ -30,7 +30,7 @@ class AreaHierarchyController extends Controller
 
     public function edit(AreaHierarchy $areaHierarchy)
     {
-        return view('developer.area-hierarchy.edit', compact('areaHierarchy'));
+        return view('chimera::developer.area-hierarchy.edit', compact('areaHierarchy'));
     }
 
     public function update(AreaHierarchy $areaHierarchy, Request $request)

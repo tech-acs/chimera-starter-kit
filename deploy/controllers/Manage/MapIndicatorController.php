@@ -11,12 +11,12 @@ class MapIndicatorController extends Controller
     public function index()
     {
         $records = MapIndicator::orderBy('title')->get();
-        return view('map_indicator.index', compact('records'));
+        return view('chimera::map_indicator.index', compact('records'));
     }
 
     public function edit(MapIndicator $mapIndicator)
     {
-        return view('map_indicator.edit', compact('mapIndicator'));
+        return view('chimera::map_indicator.edit', compact('mapIndicator'));
     }
 
     public function update(MapIndicator $mapIndicator, MapIndicatorRequest $request)

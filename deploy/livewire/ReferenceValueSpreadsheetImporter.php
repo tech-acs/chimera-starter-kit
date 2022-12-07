@@ -83,6 +83,6 @@ class ReferenceValueSpreadsheetImporter extends Component
 
     public function render()
     {
-        return view('livewire.reference-value-spreadsheet-importer');
+        return view('chimera::livewire.reference-value-spreadsheet-importer');
     }
 }

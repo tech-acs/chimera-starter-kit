@@ -23,7 +23,7 @@ class {{ class }} extends Chart
         $trace1 = [
             'x' => $data->pluck('eas')->all(),
             'y' => $data->pluck('households')->all(),
-            'name' => 'Households',
+            'name' => 'The indicator',
         ];
         return [$trace1];
     }
@@ -32,7 +32,7 @@ class {{ class }} extends Chart
     {
         $layout = parent::getLayout($filter);
         $layout['xaxis']['type'] = 'date';
-        $layout['yaxis']['title']['text'] = __('Households');
+        $layout['yaxis']['title']['text'] = __('No. of observations (cumulative)');
         $layout['annotations'] = [[
             'text' => __('SAMPLE'),
             'textangle' => -30,

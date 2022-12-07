@@ -34,6 +34,6 @@ class ColumnMapper extends Component
 
     public function render()
     {
-        return view('livewire.column-mapper');
+        return view('chimera::livewire.column-mapper');
     }
 }

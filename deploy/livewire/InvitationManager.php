@@ -97,6 +97,6 @@ class InvitationManager extends Component
 
     public function render()
     {
-        return view('livewire.invitation-manager');
+        return view('chimera::livewire.invitation-manager');
     }
 }

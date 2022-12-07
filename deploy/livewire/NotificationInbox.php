@@ -25,6 +25,6 @@ class NotificationInbox extends Component
 
     public function render()
     {
-        return view('livewire.notification-inbox');
+        return view('chimera::livewire.notification-inbox');
     }
 }

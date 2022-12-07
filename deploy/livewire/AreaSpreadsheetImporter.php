@@ -83,6 +83,6 @@ class AreaSpreadsheetImporter extends Component
 
     public function render()
     {
-        return view('livewire.area-spreadsheet-importer');
+        return view('chimera::livewire.area-spreadsheet-importer');
     }
 }

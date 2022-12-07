@@ -22,11 +22,11 @@
                         </x-jet-nav-link>
                     @endcan
                 @endforeach
-                {{--@can('map')--}}
+                @can('maps')
                     <x-jet-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
                         {{ __('Map') }}
                     </x-jet-nav-link>
-                {{--@endcan--}}
+                @endcan
                 @can('reports')
                     <x-jet-nav-link href="{{ route('report') }}" :active="request()->routeIs('report')">
                         {{ __('Reports') }}

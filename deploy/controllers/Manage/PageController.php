@@ -13,12 +13,12 @@ class PageController extends Controller
     public function index()
     {
         $records = Page::withCount('indicators')->get();
-        return view('page.index', compact('records'));
+        return view('chimera::page.index', compact('records'));
     }
 
     public function create()
     {
-        return view('page.create');
+        return view('chimera::page.create');
     }
 
     public function store(PageRequest $request)
@@ -32,7 +32,7 @@ class PageController extends Controller
         $page->load(['indicators' => function ($query) {
             $query->where('published', true);
         }]);
-        return view('page.edit', compact('page'));
+        return view('chimera::page.edit', compact('page'));
     }
 
     public function update(Page $page, PageRequest $request)

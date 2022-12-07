@@ -12,7 +12,7 @@ class Chimera extends Command
 {
     public $signature = 'chimera:install {--composer=global : Absolute path to the Composer binary which should be used to install packages}';
 
-    public $description = 'Install the Census (CSPro) Dashboard Starter Kit components and resources';
+    public $description = 'Install the Dashboard Starter Kit into your newly created Laravel application';
 
     private function installJetstream()
     {
@@ -164,7 +164,7 @@ class Chimera extends Command
         $this->requireComposerPackages([
             'ext-zip:*',
             'ext-pgsql:*',
-            'spatie/laravel-permission:^5.7', 
+            'spatie/laravel-permission:^5.7',
             'spatie/simple-excel:^2.4',
             'spatie/laravel-translatable:^6.1',
             'spatie/db-dumper:^3.3',
@@ -180,7 +180,6 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
         $this->comment('Copied blade component classes');
 
-        
         copy(__DIR__.'/../../deploy/Kernel.php', app_path('Console/Kernel.php'));
         $this->comment('Copied Console/Kernel.php');
 
@@ -220,6 +219,9 @@ class Chimera extends Command
         File::copyDirectory(__DIR__ . '/../../deploy/map-indicators', app_path('MapIndicators'));
         $this->comment('Copied MapIndicators');
 
+        File::copyDirectory(__DIR__ . '/../../deploy/reports', app_path('Reports'));
+        $this->comment('Copied Reports');
+
         File::copyDirectory(__DIR__ . '/../../deploy/views', resource_path('views'));
         $this->comment('Copied views');
 
@@ -230,7 +232,7 @@ class Chimera extends Command
         $this->comment('Copied customized jetstream register view');
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/fonts', resource_path('fonts'), '*.*');
+        //$this->copyFilesInDir(__DIR__ . '/../../deploy/resources/fonts', resource_path('fonts'), '*.*');
         $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
         File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
         $this->comment('Copied resources');
@@ -258,7 +260,7 @@ class Chimera extends Command
 
         copy(__DIR__.'/../../deploy/routes/web.php', base_path('routes/web.php'));
         $this->comment('Copied route file (web.php)');
-        
+
 
         // Add things to Kernel.php
         $this->installMiddlewareAfter('SubstituteBindings::class', '\App\Http\Middleware\Language::class');
@@ -268,7 +270,7 @@ class Chimera extends Command
 
         // Service Providers...
         $this->copyFilesInDir(__DIR__.'/../../deploy/providers', app_path('Providers'));
-        $this->installServiceProviderAfter('JetstreamServiceProvider', 'ChimeraServiceProvider'); 
+        $this->installServiceProviderAfter('JetstreamServiceProvider', 'ChimeraServiceProvider');
 
         // Enable profile photo (jetstream)
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));

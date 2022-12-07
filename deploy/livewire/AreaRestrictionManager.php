@@ -96,6 +96,6 @@ class AreaRestrictionManager extends Component
 
     public function render()
     {
-        return view('livewire.area-restriction-manager');
+        return view('chimera::livewire.area-restriction-manager');
     }
 }

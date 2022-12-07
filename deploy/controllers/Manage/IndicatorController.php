@@ -12,13 +12,13 @@ class IndicatorController extends Controller
     public function index()
     {
         $records = Indicator::with('pages')->orderBy('title')->get();
-        return view('indicator.index', compact('records'));
+        return view('chimera::indicator.index', compact('records'));
     }
 
     public function edit(Indicator $indicator)
     {
         $pages = Page::pluck('title', 'id');
-        return view('indicator.edit', compact('indicator', 'pages'));
+        return view('chimera::indicator.edit', compact('indicator', 'pages'));
     }
 
     public function update(Indicator $indicator, IndicatorRequest $request)

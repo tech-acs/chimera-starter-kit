@@ -18,13 +18,13 @@ class ReportManagementController extends Controller
     public function index()
     {
         $records = Report::all();
-        return view('report.manage.index', compact('records'));
+        return view('chimera::report.manage.index', compact('records'));
     }
 
     public function edit(Report $report)
     {
         $hourOptions = $this->getHourOptions();
-        return view('report.manage.edit', compact('report', 'hourOptions'));
+        return view('chimera::report.manage.edit', compact('report', 'hourOptions'));
     }
 
     public function update(ReportRequest $request, Report $report)

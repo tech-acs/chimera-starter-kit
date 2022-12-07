@@ -15,7 +15,7 @@ class AnnouncementController extends Controller
     public function index()
     {
         $records = Announcement::paginate(config('chimera.records_per_page'));
-        return view('announcement.index', compact('records'));
+        return view('chimera::announcement.index', compact('records'));
     }
 
     private function recipientsList()
@@ -30,7 +30,7 @@ class AnnouncementController extends Controller
     public function create()
     {
         $recipients = $this->recipientsList();
-        return view('announcement.create', compact('recipients'));
+        return view('chimera::announcement.create', compact('recipients'));
     }
 
     public function store(AnnouncementRequest $request)

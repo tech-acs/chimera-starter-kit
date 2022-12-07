@@ -12,13 +12,13 @@ class ScorecardController extends Controller
     public function index()
     {
         $records = Scorecard::orderBy('title')->get();
-        return view('scorecard.index', compact('records'));
+        return view('chimera::scorecard.index', compact('records'));
     }
 
     public function edit(Scorecard $scorecard)
     {
         $indicators = Indicator::where('questionnaire', $scorecard->questionnaire)->get()->pluck('title', 'slug');
-        return view('scorecard.edit', compact('scorecard', 'indicators'));
+        return view('chimera::scorecard.edit', compact('scorecard', 'indicators'));
     }
 
     public function update(Scorecard $scorecard, StatRequest $request)

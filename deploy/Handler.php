@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
         });
 
     	$this->renderable(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e) {
-			return response()->view('error.link-invalid', [], 403);
+			return response()->view('chimera::error.link-invalid', [], 403);
 		});
 
 		$this->renderable(function (Throwable $e) {

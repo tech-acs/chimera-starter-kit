@@ -67,6 +67,6 @@ class BulkInviter extends Component
 
     public function render()
     {
-        return view('livewire.bulk-inviter');
+        return view('chimera::livewire.bulk-inviter');
     }
 }

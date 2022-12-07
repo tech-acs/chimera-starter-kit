@@ -44,11 +44,12 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
         ];
         $package
             ->name('chimera')
-            //->hasViews() // Makes views publishable only
-            ->hasConfigFile(['chimera', 'languages', 'filesystems']) // Makes config file publishable only
+            ->hasViews()
+            //->hasViewComponents('chimera',ChartCard::class, SimpleCard::class)
+            ->hasConfigFile(['chimera', 'languages', 'filesystems'])
             //->hasTranslations() // Makes translations publishable
-            ->hasMigrations($migrations) // Makes migrations publishable only
             //->hasRoute('web')
+            ->hasMigrations($migrations)
             ->hasCommands([
                 Chimera::class,
                 DataExport::class,
@@ -62,7 +63,6 @@ class ChimeraStarterKitServiceProvider extends PackageServiceProvider
                 MakeMapIndicator::class,
                 MakeReport::class,
                 MakeScorecard::class,
-                            
             ]);
         ;
     }

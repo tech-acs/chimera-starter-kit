@@ -47,7 +47,7 @@ class ChartsController extends Controller
         })->all();
         $preview = $this->generatePreviewContent($indicators);
         $indicators = $this->paginate($indicators, $page->slug, $request->get('page', 1));
-        return view('charts.multi', compact('indicators', 'preview'));
+        return view('chimera::charts.multi', compact('indicators', 'preview'));
     }
 
     public function indicator(Indicator $indicator)
@@ -58,6 +58,6 @@ class ChartsController extends Controller
             abort(404);
             //exit;
         }
-        return view('charts.single', compact('indicator'));
+        return view('chimera::charts.single', compact('indicator'));
     }
 }

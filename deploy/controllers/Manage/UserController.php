@@ -21,13 +21,13 @@ class UserController extends Controller
             })
             ->orderBy($sortColumn)
             ->paginate(config('chimera.records_per_page'));
-        return view('user.index', ['records' => $records, 'users_count' => User::count(), 'invitations_count' => Invitation::count()]);
+        return view('chimera::user.index', ['records' => $records, 'users_count' => User::count(), 'invitations_count' => Invitation::count()]);
     }
 
     public function edit(User $user)
     {
         $roles = Role::all();
-        return view('user.manage', compact('user', 'roles'));
+        return view('chimera::user.manage', compact('user', 'roles'));
     }
 
     public function update(User $user, Request $request)

@@ -4,15 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\Gate;
 
 class ReportController extends Controller
 {
     public function index()
     {
+        /*$records = Report::enabled()->filter(function ($report) {
+                return Gate::allows($report->permission_name);
+            })
+            ->orderBy('title')
+            ->paginate(config('chimera.records_per_page'));*/
         $records = Report::enabled()
             ->orderBy('title')
             ->paginate(config('chimera.records_per_page'));
-        return view('report.index', compact('records'));
+        return view('chimera::report.index', compact('records'));
     }
 
     public function download(Report $report)

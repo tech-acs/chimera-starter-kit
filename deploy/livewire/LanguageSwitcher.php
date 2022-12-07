@@ -29,6 +29,6 @@ class LanguageSwitcher extends Component
 
     public function render()
     {
-        return view('livewire.language-switcher');
+        return view('chimera::livewire.language-switcher');
     }
 }

@@ -14,17 +14,17 @@ class ReferenceValueController extends Controller
         $records = ReferenceValue::orderBy('level')->paginate(config('chimera.records_per_page'));
         $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
         $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], "? reference values across ? " . Str::plural('indicator', $stats->no_of_indicators));
-        return view('developer.reference-value.index', compact('records', 'summary'));
+        return view('chimera::developer.reference-value.index', compact('records', 'summary'));
     }
 
     public function create()
     {
-        return view('developer.reference-value.create');
+        return view('chimera::developer.reference-value.create');
     }
 
     public function edit(ReferenceValue $referenceValue)
     {
-        return view('developer.reference-value.edit', compact('referenceValue'));
+        return view('chimera::developer.reference-value.edit', compact('referenceValue'));
     }
 
     public function update(ReferenceValue $referenceValue, Request $request)

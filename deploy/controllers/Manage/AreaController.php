@@ -28,13 +28,13 @@ class AreaController extends Controller
         $summary = $levelCounts->map(function ($item) use ($hierarchies) {
             return $item->count . ' ' . str($hierarchies[$item->level] ?? 'unknown')->plural($item->count);
         })->join(', ', ' and ');
-        return view('developer.area.index', compact('records', 'summary'));
+        return view('chimera::developer.area.index', compact('records', 'summary'));
     }
 
     public function create()
     {
         $levels = (new AreaTree)->hierarchies; //config('chimera.area.hierarchies', []);
-        return view('developer.area.create', ['levels' => array_map(fn ($level) => ucfirst($level), $levels)]);
+        return view('chimera::developer.area.create', ['levels' => array_map(fn ($level) => ucfirst($level), $levels)]);
     }
 
     private function validateShapefile(array $features)
@@ -77,7 +77,7 @@ class AreaController extends Controller
 
     public function edit(Area $area)
     {
-        return view('developer.area.edit', compact('area'));
+        return view('chimera::developer.area.edit', compact('area'));
     }
 
     public function update(Area $area, Request $request)

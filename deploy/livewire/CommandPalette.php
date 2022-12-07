@@ -33,6 +33,6 @@ class CommandPalette extends Component
             ->take(self::MAX_RESULTS);
         $this->resultCount = $results->count();
         $this->activeResult = 0;
-        return view('livewire.command-palette', compact('results'));
+        return view('chimera::livewire.command-palette', compact('results'));
     }
 }
