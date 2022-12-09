@@ -1,12 +1,12 @@
 {
-    "name": "uneca/census-dashboard-starter-kit",
-    "description": "Census (CSPro) dashboard starter kit",
+    "name": "uneca/dashboard-starter-kit",
+    "description": "Dashboard starter kit",
     "keywords": [
         "uneca",
         "census",
         "dashboard-starter-kit"
     ],
-    "homepage": "https://github.com/tech-acs/census-dashboard-starter-kit",
+    "homepage": "https://github.com/tech-acs/chimera-starter-kit",
     "license": "MIT",
     "authors": [
         {
