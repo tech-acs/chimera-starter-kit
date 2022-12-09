@@ -3,12 +3,12 @@
         <div class="grid grid-cols-1 gap-6">
             <div>
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
-                <x-multi-lang-input id="title" name="title" type="text" value="{{old('title', $page->title ?? null)}}" />
+                <x-chimera::multi-lang-input id="title" name="title" type="text" value="{{old('title', $page->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="description" value="{{ __('Description') }}" class="inline" /><x-locale-display />
-                <x-textarea name="description" rows="3">{{old('description', $page->description ?? null)}}</x-textarea>
+                <x-jet-label for="description" value="{{ __('Description') }}" class="inline" /><x-chimera::locale-display />
+                <x-chimera::textarea name="description" rows="3">{{old('description', $page->description ?? null)}}</x-chimera::textarea>
                 <x-jet-input-error for="description" class="mt-2" />
             </div>
             <div>

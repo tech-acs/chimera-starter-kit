@@ -20,7 +20,7 @@
                 </div>
                 <div>
                     <x-jet-label for="title" value="{{ __('Display title') }} *" />
-                    <x-multi-lang-input id="title" name="title" value="{{old('title', $questionnaire->title ?? null)}}" />
+                    <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $questionnaire->title ?? null)}}" />
                     <x-jet-input-error for="title" class="mt-2" />
                 </div>
             </div>

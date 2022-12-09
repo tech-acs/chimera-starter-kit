@@ -10,12 +10,7 @@ use Illuminate\Support\Facades\File;
 
 class Dockerize extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'chimera:dockerize                 
+    protected $signature = 'chimera:dockerize
                  {--with= : The services that should be included in the installation}
                  ';
     protected $dirStubs = __DIR__ .'/../../docker/stub/';
@@ -49,7 +44,7 @@ class Dockerize extends Command
         $this->buildDockerComposer($services);
         return 0;
     }
-        
+
     protected function createDirectory($dir)
     {
         if (!is_dir($dir)) {
@@ -57,7 +52,7 @@ class Dockerize extends Command
         }
     }
     protected function getServices(){
-        
+
         if($this->option('with')){
             $services = $this->option('with') == 'none' ? [] : explode(',', $this->option('with'));
         } elseif ($this->option('no-interaction')) {
@@ -90,18 +85,18 @@ class Dockerize extends Command
     }
 
     protected function copyConfigFiles(){
-        
+
     }
-    
+
     protected function buildDockerComposer(Collection $options){
         // get docker-compose
         $dockerComposer = rtrim(file_get_contents($this->dirStubs.'docker-compose.stub'));
-        
+
         // get services
         $services = $options->map(function($service){
             $this->info("Building service: $service");
             return rtrim(file_get_contents($this->dirStubs.'chimera.'.$service.'.stub'));
-        })->implode("");  
+        })->implode("");
         // get dependencies
         $dependencies = $options->map(function($service){
             $this->info("Adding $service to dependencies");
@@ -126,7 +121,7 @@ class Dockerize extends Command
         $this->comment('replaced memory limit on runtimes/config/php.ini');
 
         copy(__DIR__ . '/../../docker/runtimes/entrypoint.sh', base_path('runtimes/entrypoint.sh'));
-        copy(__DIR__ . '/../../docker/runtimes/Dockerfile', base_path('runtimes/DockerFile'));            
+        copy(__DIR__ . '/../../docker/runtimes/Dockerfile', base_path('runtimes/DockerFile'));
         $this->comment('Copied  Docker files');
         if($this->option('no-interaction')){
             $this->replaceEnvVariables($options);
@@ -137,9 +132,9 @@ class Dockerize extends Command
                 $this->replaceEnvVariables($options);
                 $this->comment('replaced .env variables');
         }
-            
 
-  
+
+
         // write docker-compose
         file_put_contents(base_path('docker-compose.yml'), $dockerComposer);
 

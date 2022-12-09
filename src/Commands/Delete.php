@@ -4,7 +4,7 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Uneca\Chimera\Services\Traits\InteractiveCommand;
+use Uneca\Chimera\Traits\InteractiveCommand;
 
 class Delete extends Command
 {
@@ -12,14 +12,20 @@ class Delete extends Command
 
     protected $description = 'Delete dashboard elements such as indicator, report etc. Removes file and database entry.';
 
-    protected array $elementsMenu = [1 => 'Indicator', 2 => 'Scorecard', 3 => 'Report'];
+    protected array $elementsMenu = [
+        'Indicator' => "App\Http\Livewire",
+        'Scorecard' => "",
+        'Report' => "App\Reports",
+        'MapIndicator' => "App\MapIndicators",
+    ];
 
     use InteractiveCommand;
 
     public function handle()
     {
-        $chosenElement = $this->choice("What do you want to delete?", $this->elementsMenu);
-        $class = "App\Models\\" . $chosenElement;
+        $menu = array_combine(range(1, count($this->elementsMenu)), array_keys($this->elementsMenu));
+        $chosenElement = $this->choice("What do you want to delete?", $menu);
+        $class = "Uneca\Chimera\Models\\" . $chosenElement;
         $list = app($class)
             ->all()
             ->mapWithKeys(function ($item) {
@@ -37,13 +43,18 @@ class Delete extends Command
             $recordId = $list[$chosenRecord];
             $modelToDelete = $class::find($recordId);
 
-            $reflection = new \ReflectionClass("App\Http\Livewire\\" . str_replace('/', '\\', $modelToDelete->name));
-            $pathToFile = $reflection->getFileName();
-
-            unlink($pathToFile);
-            $modelToDelete->delete();
-            Artisan::call('permission:cache-reset');
-
+            $namespace = $this->elementsMenu[$chosenElement];
+            if (empty($namespace)) {
+                $modelToDelete->delete();
+            } else {
+                $reflection = new \ReflectionClass($namespace . '\\' . str_replace('/', '\\', $modelToDelete->name));
+                $pathToFile = $reflection->getFileName();
+                if ($pathToFile) {
+                    unlink($pathToFile);
+                    $modelToDelete->delete();
+                    Artisan::call('permission:cache-reset');
+                }
+            }
             $this->info("Successfully deleted");
         }
         return 0;

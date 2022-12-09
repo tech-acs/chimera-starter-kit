@@ -1,8 +1,8 @@
 <x-jet-dropdown align="right" width="16">
     <x-slot name="trigger">
-        <x-round-button title="{{ __('Language') }}" class="px-1.5 font-medium">
+        <x-chimera::round-button title="{{ __('Language') }}" class="px-1.5 font-medium">
             {{ str()->upper($locale) }}
-        </x-round-button>
+        </x-chimera::round-button>
     </x-slot>
 
     <x-slot name="content">

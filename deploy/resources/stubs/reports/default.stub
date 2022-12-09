@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use App\Reports\ReportBaseClass;
+use Uneca\Chimera\Reports\ReportBaseClass;
 use Illuminate\Support\Collection;
 
 class {{ class }} extends ReportBaseClass

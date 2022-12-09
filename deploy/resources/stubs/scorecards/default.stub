@@ -2,8 +2,8 @@
 
 namespace DummyNamespace;
 
-use App\Models\Scorecard;
-use App\Services\Theme;
+use Uneca\Chimera\Models\Scorecard;
+use Uneca\Chimera\Services\Theme;
 use Illuminate\View\Component;
 
 class {{ class }} extends Component

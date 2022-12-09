@@ -18,7 +18,7 @@
                 <div x-data="confirmedDeletion">
                     <a href="{{route('developer.reference-value.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
 
-                    <x-delete-confirmation />
+                    <x-chimera::delete-confirmation />
                     <a href="{{route('developer.reference-value.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
                         <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
                     </a>

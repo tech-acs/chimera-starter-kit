@@ -2,9 +2,9 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Models\MapIndicator;
-use App\Models\Questionnaire;
-use Uneca\Chimera\Services\Traits\InteractiveCommand;
+use Uneca\Chimera\Models\MapIndicator;
+use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;

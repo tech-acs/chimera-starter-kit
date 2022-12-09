@@ -33,10 +33,10 @@
                         </label>
                         <input type="file" id="spreadsheet" name="spreadsheet" wire:model="spreadsheet" onchange="document.getElementById('file_label').innerText=this.files[0].name;" class="hidden">
                         @if ($fileAccepted)
-                            <x-icon.accepted />
+                            <x-chimera::icon.accepted />
                         @endif
                         @if($errors->has('file'))
-                            <x-icon.rejected />
+                            <x-chimera::icon.rejected />
                         @endif
                     </div>
                 </div>

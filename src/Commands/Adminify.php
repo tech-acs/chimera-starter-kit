@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Models\User;
+use Uneca\Chimera\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;

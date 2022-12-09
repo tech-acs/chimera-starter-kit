@@ -4,7 +4,7 @@
     "keywords": [
         "uneca",
         "census",
-        "census-dashboard-starter-kit"
+        "dashboard-starter-kit"
     ],
     "homepage": "https://github.com/tech-acs/census-dashboard-starter-kit",
     "license": "MIT",
@@ -19,7 +19,9 @@
         "php": "^8.0",
         "spatie/laravel-package-tools": "^1.9.2",
         "illuminate/contracts": "^9.0",
-        "laravel/jetstream": "^2.6"
+        "laravel/jetstream": "^2.6",
+        "livewire/livewire": "^2.5",
+        "spatie/laravel-translatable": "^6.1"
     },
     "require-dev": {
         "nunomaduro/collision": "^6.0",
@@ -55,7 +57,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Uneca\\Chimera\\ChimeraStarterKitServiceProvider"
+                "Uneca\\Chimera\\ChimeraServiceProvider"
             ],
             "aliases": {
                 "Chimera": "Uneca\\Chimera\\Facades"

@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use App\MapIndicators\MapIndicatorBaseClass;
+use Uneca\Chimera\MapIndicators\MapIndicatorBaseClass;
 
 class {{ class }} extends MapIndicatorBaseClass
 {

@@ -2,9 +2,9 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Models\Indicator;
-use App\Models\Questionnaire;
-use Uneca\Chimera\Services\Traits\InteractiveCommand;
+use Uneca\Chimera\Models\Indicator;
+use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -48,7 +48,7 @@ class MakeIndicator extends GeneratorCommand
         return $this->files->put($path, $content);
     }
     protected function buildClassWithTemplate($className){
-        
+
         $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/',"\\",$this->template), $this->buildClass($className));
         return $content;
     }

@@ -2,17 +2,17 @@
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 space-y-6">
         @forelse($questionnaires as $questionnaire)
-            <x-home.summary :questionnaire="$questionnaire">
+            <x-chimera-summary :questionnaire="$questionnaire">
                 @forelse($questionnaire->scorecards as $scorecard)
                     <x-dynamic-component component="home.{{$scorecard->slug}}" :scorecard="$scorecard" :index="$loop->index" />
                 @empty
                     {{ __('There are no scorecards to display.') }}
                 @endforelse
-            </x-home.summary>
+            </x-chimera-summary>
         @empty
-            <x-simple-card>
+            <x-chimera-simple-card>
                 {{ __('There are no questionnaires to display.') }}
-            </x-simple-card>
+            </x-chimera-simple-card>
         @endforelse
     </div>
 

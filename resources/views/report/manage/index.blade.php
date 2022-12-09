@@ -53,7 +53,7 @@
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                        <x-delete-confirmation prompt="[ This action will delete the component file and also the database entry for the report ]" />
+                        <x-chimera::delete-confirmation prompt="[ This action will delete the component file and also the database entry for the report ]" />
 
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -89,7 +89,7 @@
                                     {{$record->questionnaire}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    <x-yes-no value="{{$record->enabled}}" />
+                                    <x-chimera::yes-no value="{{$record->enabled}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{ $record->schedule }}

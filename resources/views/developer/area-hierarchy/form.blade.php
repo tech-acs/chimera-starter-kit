@@ -3,7 +3,7 @@
         <div class="grid grid-cols-1 gap-6">
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }} *" />
-                <x-multi-lang-input name="name" type="text" value="{{ old('name', $areaHierarchy->name ?? null) }}" autofocus />
+                <x-chimera::multi-lang-input name="name" type="text" value="{{ old('name', $areaHierarchy->name ?? null) }}" autofocus />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
         </div>

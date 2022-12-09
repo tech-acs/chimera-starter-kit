@@ -50,7 +50,7 @@
                         </div>
                         <div>
                             <x-jet-label for="body" value="{{ __('Message') }} *" />
-                            <x-textarea name="body" id="body" rows="4">{{old('body')}}</x-textarea>
+                            <x-chimera::textarea name="body" id="body" rows="4">{{old('body')}}</x-chimera::textarea>
                             <x-jet-input-error for="body" class="mt-2" />
                         </div>
 

@@ -9,7 +9,7 @@
                 class="flex py-3 px-4 hover:bg-gray-100 bg-white mt-[1px] first:mt-0 @if($notification->read_at) text-gray-400 @else border-l-4 border-blue-500 text-blue-700 @endif"
             >
                 <div class="flex-shrink-0">
-                    <x-dynamic-component component="icon.{{ $notification->data['icon'] }}" class="mt-4" />
+                    <x-dynamic-component component="chimera::icon.{{ $notification->data['icon'] }}" class="mt-4" />
                 </div>
                 <div class="pl-3 w-full">
                     <div class="text-sm mb-1.5">

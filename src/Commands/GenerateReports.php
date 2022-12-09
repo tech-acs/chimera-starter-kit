@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Models\Report;
+use Uneca\Chimera\Models\Report;
 use Illuminate\Console\Command;
 
 class GenerateReports extends Command

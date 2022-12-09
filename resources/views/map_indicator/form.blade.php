@@ -13,11 +13,11 @@
             </div>
             <div class="mt-1">
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
-                <x-multi-lang-input id="title" name="title" value="{{old('title', $mapIndicator->title ?? null)}}" />
+                <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $mapIndicator->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="description" value="{{ __('Description') }}" class="inline" /><x-locale-display />
+                <x-jet-label for="description" value="{{ __('Description') }}" class="inline" /><x-chimera::locale-display />
                 <textarea name="description" rows="3" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $mapIndicator->description ?? null)}}</textarea>
                 <x-jet-input-error for="description" class="mt-2" />
             </div>

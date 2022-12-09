@@ -18,7 +18,7 @@
                 <div x-data="confirmedDeletion">
                     <a href="{{route('developer.area.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
 
-                    <x-delete-confirmation />
+                    <x-chimera::delete-confirmation />
                     <a href="{{route('developer.area.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
                         <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
                     </a>
@@ -102,7 +102,7 @@
                                     {{$record->path}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-                                    <x-yes-no value="{{$record->geom}}" />
+                                    <x-chimera::yes-no value="{{$record->geom}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{route('developer.area.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>

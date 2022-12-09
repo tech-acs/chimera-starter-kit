@@ -53,7 +53,7 @@
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
 
-                        <x-delete-confirmation />
+                        <x-chimera::delete-confirmation />
 
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -92,7 +92,7 @@
                                     {{$record->indicators_count}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    <x-yes-no value="{{$record->published}}" />
+                                    <x-chimera::yes-no value="{{$record->published}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{route('page.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>

@@ -13,7 +13,7 @@
             </div>
             <div class="">
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
-                <x-multi-lang-input id="title" name="title" value="{{old('title', $scorecard->title ?? null)}}" />
+                <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $scorecard->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
             <div class="">
