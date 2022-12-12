@@ -25,6 +25,6 @@ class {{ class }} extends Component
 
     public function render()
     {
-        return view('components.home.scorecard');
+        return view('chimera::components.scorecard');
     }
 }
