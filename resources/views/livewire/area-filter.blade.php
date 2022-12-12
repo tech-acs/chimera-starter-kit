@@ -47,7 +47,7 @@
                 </div>
             </div>
             @else
-                <div class="text-red-700 pt-2">{{ __('No areas found. Please import your area maps/list.') }}</div>
+                <div class="text-red-700 pt-2">{{ __('No areas found. Please import your area.') }}</div>
             @endif
         </div>
     </div>

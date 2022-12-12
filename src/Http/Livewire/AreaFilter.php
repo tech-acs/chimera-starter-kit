@@ -22,8 +22,8 @@ class AreaFilter extends Component
         $selectionsFromSession = session()->get('area-filter', []);
         $restrictions = []; //['region' => '02', 'constituency' => '02.0201'];
         $heldPath = null;
-        $this->dropdowns = array_map(function ($level) use ($selectionsFromSession, $restrictions, $areaTree) {
-            global $heldPath;
+        $this->dropdowns = array_map(function ($level) use ($selectionsFromSession, $restrictions, $areaTree, &$heldPath) {
+            //global $heldPath;
             $levelName = $this->hierarchies[$level];
             $replacementValue = [];
             if ($level === 0) {
