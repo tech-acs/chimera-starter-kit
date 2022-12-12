@@ -75,7 +75,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
     });
 
-    /*Route::fallback(function () {
-        return redirect()->route('faq');
-    });*/
+    Route::fallback(function () {
+        return redirect()->route('home');
+    });
 });

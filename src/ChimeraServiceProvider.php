@@ -18,6 +18,7 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
 
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\ConnectionLoader;
 use Uneca\Chimera\Services\PageBuilder;
 
@@ -50,10 +51,10 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->name('chimera')
             ->hasViews()
             ->hasViewComponents(
-                'chimera', 
-                \Uneca\Chimera\Components\CaseStats::class, 
-                \Uneca\Chimera\Components\ChartCard::class, 
-                \Uneca\Chimera\Components\SimpleCard::class, 
+                'chimera',
+                \Uneca\Chimera\Components\CaseStats::class,
+                \Uneca\Chimera\Components\ChartCard::class,
+                \Uneca\Chimera\Components\SimpleCard::class,
                 \Uneca\Chimera\Components\Summary::class
             )
             ->hasConfigFile(['chimera', 'languages', 'filesystems'])
@@ -74,7 +75,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeReport::class,
                 \Uneca\Chimera\Commands\MakeScorecard::class,
             ]);
-        ;
     }
 
     public function packageRegistered()
@@ -95,8 +95,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('notification-inbox', \Uneca\Chimera\Http\Livewire\NotificationInbox::class);
         Livewire::component('reference-value-spreadsheet-importer', \Uneca\Chimera\Http\Livewire\ReferenceValueSpreadsheetImporter::class);
         Livewire::component('role-manager', \Uneca\Chimera\Http\Livewire\RoleManager::class);
-
-
     }
 
     public function boot()
@@ -154,8 +152,18 @@ class ChimeraServiceProvider extends PackageServiceProvider
         $router->aliasMiddleware('log_page_views', \Uneca\Chimera\Http\Middleware\LogPageView::class);
 
 
-        $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
             $schedule->command('chimera:generate-reports')->hourly();
         });
     }
+
+    /*public function register()
+    {
+        parent::register();
+
+        $this->app->bind('chimera', function($app) {
+            return new AreaTree();
+        });
+    }*/
 }

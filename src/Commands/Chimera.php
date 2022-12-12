@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
-use Illuminate\Support\Str;
 
 class Chimera extends Command
 {
@@ -133,50 +132,8 @@ class Chimera extends Command
                     $this->output->write($output);
                 });
 
-        /*File::copyDirectory(__DIR__ . '/../../deploy/blade-component-classes', app_path('View/Components'));
-        $this->comment('Copied blade component classes');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/controllers', app_path('Http/Controllers'));
-        $this->comment('Copied controllers');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/livewire', app_path('Http/Livewire'));
-        $this->comment('Copied livewire components');
-
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/middleware', app_path('Http/Middleware'));
-        $this->comment('Copied middlewares');
-
-        $this->copyFilesInDir(__DIR__ . '/../../deploy/models', app_path('Models'));
-        $this->comment('Copied models');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/services', app_path('Services'));
-        $this->comment('Copied Services');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/mail', app_path('Mail'));
-        $this->comment('Copied Mail Classes');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/notifications', app_path('Notifications'));
-        $this->comment('Copied Notification Classes');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/jobs', app_path('Jobs'));
-        $this->comment('Copied Job Classes');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/rules', app_path('Rules'));
-        $this->comment('Copied Rules');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/requests', app_path('Http/Requests'));
-        $this->comment('Copied Requests');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/map-indicators', app_path('MapIndicators'));
-        $this->comment('Copied MapIndicators');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/reports', app_path('Reports'));
-        $this->comment('Copied Reports');
-
-        File::copyDirectory(__DIR__ . '/../../deploy/views', resource_path('views'));
-        $this->comment('Copied views');*/
-
         $this->copyJetstreamModifications();
-        $this->comment('Copied Jetstream modifications');
+        $this->comment('Copied Jetstream customizations');
 
         $this->publishResources();
         $this->comment('Copied resources (js, css, stubs and public images)');
@@ -184,24 +141,10 @@ class Chimera extends Command
         copy(__DIR__.'/../../deploy/web.php', base_path('routes/web.php'));
         $this->comment('Copied empty route file (web.php)');
 
-        /*
-        // Add things to Kernel.php
-        $this->installMiddlewareAfter('SubstituteBindings::class', '\Uneca\Chimera\Http\Middleware\Language::class');
-        $this->installMiddlewareAfter('SubstituteBindings::class', '\Uneca\Chimera\Http\Middleware\CheckAccountSuspension::class');
-
-        $this->installRouteMiddlewareAfter('EnsureEmailIsVerified::class', "'log_page_views' => \Uneca\Chimera\Http\Middleware\LogPageView::class");
-        $this->installRouteMiddlewareAfter('EnsureEmailIsVerified::class', "'enforce_2fa' => \Uneca\Chimera\Http\Middleware\RedirectIf2FAEnforced::class");
-
-        // Service Providers...
-        $this->copyFilesInDir(__DIR__.'/../../deploy/providers', app_path('Providers'));
-        $this->installServiceProviderAfter('JetstreamServiceProvider', 'ChimeraServiceProvider');
-
-        // Hourly schedule for reports
-        copy(__DIR__.'/../../deploy/Kernel.php', app_path('Console/Kernel.php'));*/
-
         $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
+        $this->replaceInFile('// Features::termsAndPrivacyPolicy(),', 'Features::termsAndPrivacyPolicy(),', config_path('jetstream.php'));
         $this->replaceInFile('Features::accountDeletion(),', '// Features::accountDeletion(),', config_path('jetstream.php'));
-        $this->comment('Updated config/jetstream.php (enable profile photo and disable account deletion)');
+        $this->comment('Updated config/jetstream.php (enable: profile photo and terms + privacy policy | disable: account deletion)');
 
         // Make timezone setable from .env
         $this->replaceInFile("'timezone' => 'UTC'", "'timezone' => env('APP_TIMEZONE', 'UTC')", config_path('app.php'));
