@@ -3,95 +3,48 @@
 namespace Uneca\Chimera\Http\Livewire;
 
 use Uneca\Chimera\Models\AreaRestriction;
-use App\Models\User;
+use Uneca\Chimera\Models\User;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\ChecksumSafetyTrait;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
-class AreaRestrictionManager extends Component
+class AreaRestrictionManager extends AreaFilter
 {
     use ChecksumSafetyTrait;
 
-    public $user;
-    public Collection $areas;
-    public array $hierarchies;  // [ 0 => 'region',  1 => 'constituency', ... ]
-    public array $selections = [];
-    public array $areaRestrictions = [];
+    public User $user;
 
     public function mount()
     {
-        $areaRepository = new AreaTree(removeLastNLevels: 1);
-        $this->hierarchies = $areaRepository->hierarchies;
-        $levels = $areaRepository->hierarchies;
-        $sessionFilter = session()->get('area-filter', []);
-        $previouslySet = $this->user->areaRestrictions()->first();
-        //dump($previouslySet);
-        $this->areas = collect([]);
-        $parentLevel = null;
-        foreach (array_flip($this->hierarchies) as $levelName => $level) {
-            if (is_null($parentLevel)) {
-                $this->areas[$levelName] = $areaRepository->areas()->pluck('name', 'code')->all();
-            } else {
-                $parent = $sessionFilter[$parentLevel] ?? null;
-                $this->areas[$levelName] = $parent ?
-                    $areaRepository->areas($this->removeChecksumSafety($parent), $levelName)->pluck('name', 'code')->all() :
-                    [];
+        $areaTree = new AreaTree(removeLastNLevels: 1);
+        $subject = null;
+        $previousRestrictions = $this->user->areaFilter();
+        $this->dropdowns = array_map(function ($level) use ($previousRestrictions, $areaTree, &$subject) {
+            $dropdown = ['list' => [], 'selected' => null, 'restricted' => null];
+            $levelName = $areaTree->hierarchies[$level];
+            if ($level === 0) {
+                $dropdown['list'] = $areaTree->areas()->pluck('name', 'path')->all();
             }
-            $parentLevel = $levelName;
-        }
-        //$this->selections = $levels->map(fn ($level, $levelName) => $this->addChecksumSafety($sessionFilter[$levelName] ?? null))->all();
-        $this->selections = array_map(fn ($level) => $this->addChecksumSafety($sessionFilter[$this->hierarchies[$level]] ?? null), array_flip($this->hierarchies));
-    }
-
-    public function changeHandler($changedSelect, $selected)
-    {
-        $this->selections[$changedSelect] = $selected;
-        $next = $this->nextKey($changedSelect);
-        if ($next) {
-            $this->areas[$next] = (new AreaTree($this->connection))->areas($this->removeChecksumSafety($selected), $next)->pluck('name', 'code')->all();
-            $nextKeys = $this->nextKeys($changedSelect);
-            foreach ($nextKeys as $key) {
-                if ($key !== $next) {
-                    $this->areas[$key] = [];
-                }
-                $this->selections[$key] = null;
+            if ($subject) {
+                $dropdown['list'] = $areaTree->areas($subject)->pluck('name', 'path')->all();
+                $subject = null;
             }
-        }
+            if (array_key_exists($levelName, $previousRestrictions)) {
+                $subject = $previousRestrictions[$levelName];
+                $dropdown['selected'] = $this->addChecksumSafety($subject);
+            }
+            return $dropdown;
+        }, array_flip($areaTree->hierarchies));
     }
 
     public function filter()
     {
-        $selections = collect($this->selections)->filter();
-        $selectionNames = $selections->mapWithKeys(fn ($code, $type) => [$type.'Name' => $this->areas[$type][$code]])->all();
-        $selectionCodes = $selections->map(fn ($code) => $this->removeChecksumSafety($code))->all();
-        $filter = [...$selectionNames, ...$selectionCodes];
-        $smallest = (new AreaTree())->resolveSmallestFilter($filter);
-
-        AreaRestriction::updateOrCreate(
-            [
-                'user_id' => $this->user->id,
-                'connection' => $this->connection,
-            ],
-            [
-                'code' => $smallest->code,
-                'name' => $smallest->name ?? null,
-            ]
-        );
-    }
-
-    private function nextKey($currentKey)
-    {
-        $keys = $this->areas->keys();
-        $currentKeyIndex = $keys->search($currentKey);
-        return $keys[$currentKeyIndex + 1] ?? null;
-    }
-
-    private function nextKeys($currentKey)
-    {
-        $keys = $this->areas->keys();
-        $currentKeyIndex = $keys->search($currentKey);
-        return array_slice($keys->all(), $currentKeyIndex + 1);
+        $areaRestrictions = collect($this->dropdowns)
+            ->reject(fn ($dropdown) => is_null($dropdown['selected']))
+            ->mapWithKeys(fn ($dropdown, $key) => [$key => ['level' => AreaTree::levelFromPath($dropdown['selected']), 'path' => $this->removeChecksumSafety($dropdown['selected'])]]);
+        $this->user->areaRestrictions()->delete();
+        $this->user->areaRestrictions()->createMany($areaRestrictions->values());
     }
 
     public function render()

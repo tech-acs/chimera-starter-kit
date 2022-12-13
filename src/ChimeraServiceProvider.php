@@ -3,7 +3,6 @@
 namespace Uneca\Chimera;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
@@ -18,7 +17,6 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
 
-use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\ConnectionLoader;
 use Uneca\Chimera\Services\PageBuilder;
 
@@ -130,12 +128,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
         $pages = PageBuilder::pages();
         View::share('pages', $pages);
 
-
-        /*$exceptionHandler = $this->app->make(Handler::class);
-        $exceptionHandler->renderable(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e) {
-            return response()->view('chimera::error.link-invalid', [], 403);
-        });*/
-
         Fortify::registerView(function (Request $request) {
             if (! $request->hasValidSignature()) {
                 throw new InvalidSignatureException;
@@ -144,26 +136,30 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 ->with(['encryptedEmail' => Crypt::encryptString($request->email)]);
         });
 
-
         $router = $this->app->make(Router::class);
         $router->pushMiddlewareToGroup('web', \Uneca\Chimera\Http\Middleware\CheckAccountSuspension::class);
         $router->pushMiddlewareToGroup('web', \Uneca\Chimera\Http\Middleware\Language::class);
         $router->aliasMiddleware('enforce_2fa', \Uneca\Chimera\Http\Middleware\RedirectIf2FAEnforced::class);
         $router->aliasMiddleware('log_page_views', \Uneca\Chimera\Http\Middleware\LogPageView::class);
 
-
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
             $schedule->command('chimera:generate-reports')->hourly();
         });
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../resources/stubs' => resource_path('stubs'),
+            ], 'chimera-stubs');
+        }
     }
 
-    /*public function register()
+    public function register()
     {
         parent::register();
 
-        $this->app->bind('chimera', function($app) {
+        /*$this->app->bind('chimera', function($app) {
             return new AreaTree();
-        });
-    }*/
+        });*/
+    }
 }

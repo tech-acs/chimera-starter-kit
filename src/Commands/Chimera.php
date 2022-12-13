@@ -104,7 +104,22 @@ class Chimera extends Command
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/assets/images', public_path('images'), '*.*');
 
-        // File::copyDirectory(__DIR__ . '/../../deploy/resources/lang', resource_path('lang'));
+        copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
+        copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
+    }
+
+    private function editConfigFiles()
+    {
+        // enable: profile photo and terms + privacy | disable: account deletion
+        $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
+        $this->replaceInFile('// Features::termsAndPrivacyPolicy(),', 'Features::termsAndPrivacyPolicy(),', config_path('jetstream.php'));
+        $this->replaceInFile('Features::accountDeletion(),', '// Features::accountDeletion(),', config_path('jetstream.php'));
+
+        // Make timezone setable from .env
+        $this->replaceInFile("'timezone' => 'UTC'", "'timezone' => env('APP_TIMEZONE', 'UTC')", config_path('app.php'));
+
+        // Set the User model to be used
+        $this->replaceInFile("'model' => App\Models\User::class", "'model' => Uneca\Chimera\Models\User::class", config_path('auth.php'));
     }
 
     public function handle(): int
@@ -136,28 +151,19 @@ class Chimera extends Command
         $this->comment('Copied Jetstream customizations');
 
         $this->publishResources();
-        $this->comment('Copied resources (js, css, stubs and public images)');
+        $this->comment('Published resources (js, css, public images, tailwind.config.js and vite.config.js)');
+
+        $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);
+        $this->comment('Published stubs');
 
         copy(__DIR__.'/../../deploy/web.php', base_path('routes/web.php'));
         $this->comment('Copied empty route file (web.php)');
 
-        $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
-        $this->replaceInFile('// Features::termsAndPrivacyPolicy(),', 'Features::termsAndPrivacyPolicy(),', config_path('jetstream.php'));
-        $this->replaceInFile('Features::accountDeletion(),', '// Features::accountDeletion(),', config_path('jetstream.php'));
-        $this->comment('Updated config/jetstream.php (enable: profile photo and terms + privacy policy | disable: account deletion)');
-
-        // Make timezone setable from .env
-        $this->replaceInFile("'timezone' => 'UTC'", "'timezone' => env('APP_TIMEZONE', 'UTC')", config_path('app.php'));
-
-        // Set the User model to be used
-        $this->replaceInFile("'model' => App\Models\User::class", "'model' => Uneca\Chimera\Models\User::class", config_path('auth.php'));
+        $this->editConfigFiles();
+        $this->comment('Updated app, auth, and jetstream (enable: profile photo and terms + privacy | disable: account deletion) config files');
 
         // Exception handler (for token mismatch and invalid invitation exceptions) [??? try to not replace the file! Find a way!]
         copy(__DIR__.'/../../deploy/Handler.php', app_path('Exceptions/Handler.php'));
-
-        copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
-        copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
-        $this->comment('Copied npm configs');
 
         $this->updateNodePackages(function ($packages) {
             return [
@@ -171,6 +177,7 @@ class Chimera extends Command
         $this->comment('Updated package.json with required npm packages');
 
         $this->info('All done');
+        $this->newLine();
 
         return self::SUCCESS;
     }

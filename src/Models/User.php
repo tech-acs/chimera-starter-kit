@@ -2,14 +2,9 @@
 
 namespace Uneca\Chimera\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
-use Laravel\Sanctum\HasApiTokens;
+
 use Spatie\Permission\Traits\HasRoles;
+use Uneca\Chimera\Services\AreaTree;
 
 class User extends \App\Models\User
 {
@@ -36,11 +31,9 @@ class User extends \App\Models\User
 
     public function areaFilter()
     {
-        $areaRestriction = $this->areaRestrictions()->first();
-        if ($areaRestriction) {
-            return $areaRestriction->toFilter();
-        } else {
-            return [];
-        }
+        $areaTree = new AreaTree(removeLastNLevels: 1);
+        return $this->areaRestrictions->mapWithKeys(function ($areaRestriction) use ($areaTree) {
+            return [$areaTree->hierarchies[$areaRestriction->level] => $areaRestriction->path];
+        })->all();
     }
 }

@@ -35,7 +35,7 @@
             </div>
             <div class="ml-4 mt-6 text-lg text-gray-500">
                 <div class="font-semibold">
-                    {{ __('The link is invalid') }}
+                    {{ __('The invitation link is invalid') }}
                 </div>
                 <div>
                     {{ __('It might have expired, if so, please get a new one from the administrator') }}.
