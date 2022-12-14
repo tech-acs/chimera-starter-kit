@@ -95,7 +95,6 @@ class Map extends Component
     final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
     {
         $derivedPaths = $this->deriveNextPathsBasedOnZoomDirection($paths, $zoomDirection);
-
         $currentIndicator = null;
         if (! isset($this->selectedIndicator) && ! empty($this->indicators)) {
             $this->setSelectedIndicator(array_key_first($this->indicators), $level);

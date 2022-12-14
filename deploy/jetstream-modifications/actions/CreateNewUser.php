@@ -3,7 +3,7 @@
 namespace App\Actions\Fortify;
 
 use Uneca\Chimera\Models\Invitation;
-use App\Models\User;
+use Uneca\Chimera\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -48,6 +48,7 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
+                'is_suspended' => config('chimera.require_account_approval'),
             ]);
 
             $invitation = Invitation::where('email', $input['email'])->firstOrFail();

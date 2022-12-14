@@ -11,11 +11,6 @@ class Caching
         return $indicator . implode('-', array_filter($filter));
     }
 
-    public static function makeAreaListCacheKey(string $connection, string $areaType, string $parentArea)
-    {
-        return "$connection-area-list-$areaType-$parentArea";
-    }
-
     public static function updateIndicator(string $connection, string $indicator, array $filter, $ttl = null)
     {
         $startTime = time();

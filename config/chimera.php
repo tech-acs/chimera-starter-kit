@@ -10,6 +10,7 @@ return [
     'invitation' => [
         'ttl_hours' => env('INVITATION_TTL_HOURS', 72)
     ],
+    'require_account_approval' => env('REQUIRE_ACCOUNT_APPROVAL', false),
     'color_theme' => env('COLOR_THEME', 'default'),
     'area' => [
         'map' => [

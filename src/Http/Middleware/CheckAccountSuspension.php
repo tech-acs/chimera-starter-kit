@@ -17,7 +17,7 @@ class CheckAccountSuspension
             return redirect()
                 ->route('login')
                 ->withInput(['email' => auth()->user()->email])
-                ->withErrors('This account has been suspended. Please contact the administrator.');
+                ->withErrors('This account is not ready for use. Please contact the administrator.');
         }
         return $next($request);
     }

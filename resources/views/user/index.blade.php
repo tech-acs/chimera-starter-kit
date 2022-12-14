@@ -126,21 +126,13 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 @if (!$record->hasRole('Super Admin'))
-                                                    <a href="{{route('user.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                                    <span class="text-gray-400 px-1">|</span>
                                                     @if($record->is_suspended)
-                                                        <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900">{{ __('Restore') }}</a>
+                                                        <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900" title="Resume (allow) use of the account">{{ __('Resume') }}</a>
                                                     @else
-                                                        <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900">{{ __('Suspend') }}</a>
+                                                        <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900" title="Pause (stop) use of the account">{{ __('Pause') }}</a>
                                                     @endif
-                                                    {{--@can('Super User')
-                                                        <span class="text-gray-400 px-1">|</span>
-                                                        <form action="{{route('user.destroy', $record->id)}}" method="post" class="inline">
-                                                            @method('delete')
-                                                            @csrf
-                                                            <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
-                                                        </form>
-                                                    @endcan--}}
+                                                    <span class="text-gray-400 px-1">|</span>
+                                                    <a href="{{route('user.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                                 @endif
                                             </td>
                                         </tr>
