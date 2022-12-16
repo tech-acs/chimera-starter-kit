@@ -25,10 +25,10 @@
                 <div>
                     <div class="flex flex-grow items-center">
                         <label for="spreadsheet" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
-                            <span id="file_label" class="my-auto pl-4 text-gray-700">{{ $spreadsheet?->getClientOriginalName() ?? "Choose your file" }}</span>
+                            <span id="file_label" class="my-auto pl-4 text-gray-700">{{ $spreadsheet?->getClientOriginalName() ?? __('Choose your file') }}</span>
                             <div class="relative inline-flex items-center hover:bg-gray-100 cursor-pointer space-x-2 px-4 py-2 border-0 border-l rounded-r-md border-gray-300 text-sm font-medium text-gray-700 bg-gray-50">
                                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
-                                <span>Browse</span>
+                                <span>{{ __('Browse') }}</span>
                             </div>
                         </label>
                         <input type="file" id="spreadsheet" name="spreadsheet" wire:model="spreadsheet" onchange="document.getElementById('file_label').innerText=this.files[0].name;" class="hidden">
@@ -44,7 +44,7 @@
                     <x-jet-input-error for="spreadsheet" />
                 @else
                     <div class="text-xs text-gray-500 mt-1">
-                        You must upload a spreadsheet (.xlsx or .csv)
+                        {{ __('You must upload a spreadsheet (.xlsx or .csv)') }}
                     </div>
                 @endif
             </div>
@@ -52,14 +52,14 @@
             <div class="md:col-span-1 pt-4 md:pt-0">
                 <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Column mapping') }}</h3>
                 <p class="mt-2 text-sm text-gray-500">
-                    For each reference value you are importing, please indicate which of your spreadsheet columns hold the indicator values and which one holds the corresponding area codes.
+                    {{ __('For each reference value you are importing, please indicate which of your spreadsheet columns hold the indicator values and which one holds the corresponding area codes.') }}
                 </p>
                 <p class="mt-2 text-sm text-gray-500">
                     If <b>Is additive</b> is not checked, the same value will be assigned to all higher level areas.
                 </p>
             </div>
             <div class="mt-5 md:col-span-2 md:mt-0">
-                <div class="">
+                <div>
 
                     <table class="min-w-full">
                         <thead>

@@ -7,7 +7,7 @@
                 <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-start">
-                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Questionnaire Details ') }}</span>
+                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Questionnaire Details') }}</span>
             </div>
         </div>
 
@@ -27,17 +27,17 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                    <x-jet-label for="start_date" value="{{ __('Exercise start date') }} *" />
+                    <x-jet-label for="start_date" value="{!! __('Exercise start date') !!} *" />
                     <x-jet-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($questionnaire ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
                     <x-jet-input-error for="start_date" class="mt-2" />
                 </div>
-                <div class="">
-                    <x-jet-label for="end_date" value="{{ __('Exercise end date') }} *" />
+                <div>
+                    <x-jet-label for="end_date" value="{!! __('Exercise end date') !!} *" />
                     <x-jet-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($questionnaire ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
                     <x-jet-input-error for="end_date" class="mt-2" />
                 </div>
-                <div class="">
-                    <x-jet-label for="show_on_home_page" value="{{ __('Show on home page') }}" />
+                <div>
+                    <x-jet-label for="show_on_home_page" value="{!! __('Show on home page') !!}" />
                     <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
                         <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
@@ -74,7 +74,7 @@
                 <x-jet-input-error for="database" class="mt-2" />
             </div>
             <div class="">
-                <x-jet-label for="username" value="{{ __('Username') }} *" />
+                <x-jet-label for="username" value="{!! __('Username') !!} *" />
                 <x-jet-input id="username" name="username" type="text" class="mt-1 block w-full" value="{{old('username', $questionnaire->username ?? null)}}" />
                 <x-jet-input-error for="username" class="mt-2" />
             </div>
@@ -82,12 +82,12 @@
                 <x-jet-label for="password" value="{{ __('Password') }} *" />
                 <div class="relative mt-1 rounded-md shadow-sm" x-data="{eyeOpener: true}" x-cloak>
                     <input id="password" name="password" x-bind:type="eyeOpener ? 'password' : 'text'" type="password" value="{{old('password', $questionnaire->password ?? null)}}" class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm block w-full">
-                    <div class="absolute inset-y-0 right-0 flex items-center">
+                    <div class="absolute inset-y-0 right-0 flex items-center cursor-pointer">
                         <div class="mr-2 text-gray-500" x-show="eyeOpener" x-on:click="eyeOpener = false" title="{{ __('Show password') }}">
                             {{-- eye --}}
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
                         </div>
-                        <div class="mr-2 text-gray-500" x-show="! eyeOpener" x-on:click="eyeOpener = true" title="Hide password">
+                        <div class="mr-2 text-gray-500" x-show="! eyeOpener" x-on:click="eyeOpener = true" title="{{ __('Hide password') }}">
                             {{-- eye-off --}}
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"></path><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"></path></svg>
                         </div>

@@ -74,7 +74,7 @@
                                     {{$record->name}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-                                    {{ $loop->first ? 'First' : ($loop->last ? 'Last' : '') }}
+                                    {{ $loop->first ? __('First') : ($loop->last ? __('Last') : '') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if (app()->isLocal())

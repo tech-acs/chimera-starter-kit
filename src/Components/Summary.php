@@ -28,12 +28,13 @@ class Summary extends Component
     private function makeProgressStatement(Carbon $s, Carbon $e, Carbon $now)
     {
         if ($now->isBefore($s)) {
-            $progress = $now->diffInDays($s) . " days to go";
+            $progress = __(':diff days ago', ['diff' => $now->diffInDays($s)]);
         } elseif ($now->isBetween($s, $e)) {
-            $progress = "Day " . ($now->diffInDays($s) + 1) . " of " . ($s->diffInDays($e) + 1);
+            $progress = __('Day :sofar of :total', ['sofar' => $now->diffInDays($s) + 1, 'total' => $s->diffInDays($e) + 1]);
         } elseif ($now->isAfter($e)) {
-            $progress = "Ended " . $now->diffInDays($e) . " days ago";
+            $progress = __('Ended :diff days ago', ['diff' => $now->diffInDays($e)]);
         } else {
+            // Jan 21 to Jan 30
             $progress = $s->format('M d') . " to " . $e->format('M d');
         }
         return $progress;
@@ -44,7 +45,7 @@ class Summary extends Component
         $result = (new QueryBuilder($this->questionnaire->name))
             ->get("SELECT modified_time FROM cspro_jobs ORDER BY modified_time DESC LIMIT 1")
             ->first();
-        return is_null($result) ? '-' : Carbon::parse($result->modified_time)->format('D M d, Y g:i A');
+        return is_null($result) ? '-' : Carbon::parse($result->modified_time)->locale(app()->getLocale())->isoFormat('llll');
     }
 
     public function render()

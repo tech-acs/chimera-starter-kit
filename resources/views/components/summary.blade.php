@@ -6,7 +6,7 @@
             </dt>
             <dd class="flex items-baseline">
                 <p class="flex items-baseline text-sm font-semibold">
-                    {{$dates['start']->format('M d')}} - {{$dates['end']->format('M d')}}
+                    {{$dates['start']->locale(app()->getLocale())->isoFormat('ll')}} - {{$dates['end']->locale(app()->getLocale())->isoFormat('ll')}}
                 </p>
             </dd>
         </div>

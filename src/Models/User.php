@@ -29,7 +29,7 @@ class User extends \App\Models\User
         return $this->hasMany(Announcement::class);
     }
 
-    public function areaFilter()
+    public function areaRestrictionAsFilter()
     {
         $areaTree = new AreaTree(removeLastNLevels: 1);
         return $this->areaRestrictions->mapWithKeys(function ($areaRestriction) use ($areaTree) {

@@ -51,7 +51,7 @@
                             :class="isSelected('shapefile') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
                             class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
-                            Shapefile
+                            {{ __('Shapefile') }}
                             <svg class="w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><polyline points="96 184 32 200 32 56 96 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline><polygon points="160 216 96 184 96 40 160 72 160 216" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polygon><polyline points="160 72 224 56 224 200 160 216" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline></svg>
                         </a>
 
@@ -60,7 +60,7 @@
                             :class="isSelected('spreadsheet') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
                             class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
-                            Spreadsheet
+                            {{ __('Spreadsheet') }}
                             <svg class="w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M32,56H224a0,0,0,0,1,0,0V192a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56A0,0,0,0,1,32,56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><line x1="32" y1="104" x2="224" y2="104" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><line x1="32" y1="152" x2="224" y2="152" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><line x1="88" y1="104" x2="88" y2="200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line></svg>
                         </a>
                     </nav>
@@ -83,10 +83,10 @@
                                         <div>
                                             <div class="flex items-stretch flex-grow">
                                                 <label for="shapefile" class="flex justify-between w-2/3 rounded-md sm:text-sm border border-gray-300">
-                                                    <span id="shapefile_label" class="my-auto pl-4 text-gray-700">Choose your files</span>
+                                                    <span id="shapefile_label" class="my-auto pl-4 text-gray-700">{{ __('Choose your files') }}</span>
                                                     <div class="relative inline-flex items-center hover:bg-gray-100 cursor-pointer space-x-2 px-4 py-2 border-0 border-l rounded-r-md border-gray-300 text-sm font-medium text-gray-700 bg-gray-50">
                                                         <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
-                                                        <span>Browse</span>
+                                                        <span>{{ __('Browse') }}</span>
                                                     </div>
                                                 </label>
                                                 <input
@@ -103,7 +103,7 @@
                                             <x-jet-input-error for="shapefile" />
                                         @else
                                             <div class="text-xs text-gray-500 mt-1">
-                                                You must upload three files that make up the shapefile (.shp, .shx and .dbf)
+                                                {{ __('You must upload three files that make up the shapefile (.shp, .shx and .dbf)') }}
                                             </div>
                                         @endif
                                     </div>

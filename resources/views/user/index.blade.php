@@ -116,7 +116,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm">
-                                                    {{$record->created_at->toFormattedDateString()}}
+                                                    {{$record->created_at->locale(app()->getLocale())->isoFormat('ll')}}
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

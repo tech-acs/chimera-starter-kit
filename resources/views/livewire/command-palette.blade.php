@@ -1,6 +1,6 @@
 <div x-data="commandPalette()" x-cloak>
     <!-- Trigger -->
-    <a class="cursor-pointer text-indigo-400" x-on:click="ready = true" title="Search">
+    <a class="cursor-pointer text-indigo-400" x-on:click="ready = true" title="{{ __('Search') }}">
         <svg class="w-7 h-7 mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
     </a>
 
@@ -62,7 +62,7 @@
                            @keyup.down.prevent="move('down')"
                            @keyup.up.prevent="move('up')"
                            @keyup.enter="a"
-                           class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="Search..." role="combobox" aria-expanded="false" aria-controls="options">
+                           class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="{{ __('Search') }}..." role="combobox" aria-expanded="false" aria-controls="options">
                 </div>
 
                 <div class="py-14 px-6 text-center text-sm sm:px-14 self-center" wire:loading.block wire:loading.delay>

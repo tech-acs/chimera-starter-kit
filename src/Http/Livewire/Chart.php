@@ -103,14 +103,15 @@ abstract class Chart extends Component
 
     private function getDataAndCacheIt(array $filter): Collection
     {
-        $indicator = $this->graphDiv;
         try {
             if (config('chimera.cache.enabled')) {
-                $key = Caching::makeIndicatorCacheKey($indicator, $filter);
+                $key = Caching::makeIndicatorCacheKey($this->indicator, $filter);
                 //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
-                return Cache::tags([$indicator])
+                return Cache::tags([$this->indicator->slug, 'indicators'])
                     ->rememberForever($key, function () use ($filter) {
-                        return $this->getData($filter);
+                        $data = $this->getData($filter);
+                        Cache::tags([$this->indicator->slug, 'timestamps'])->put("$key|timestamp", time());
+                        return $data;
                     });
             }
             return $this->getData($filter);
@@ -141,7 +142,7 @@ abstract class Chart extends Component
         $this->graphDiv = $this->indicator->component;
 
         $filtersToApply = array_merge(
-            auth()->user()->areaFilter(),
+            auth()->user()->areaRestrictionAsFilter(),
             session()->get('area-filter', [])
         );
 

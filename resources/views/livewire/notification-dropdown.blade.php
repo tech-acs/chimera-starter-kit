@@ -17,8 +17,8 @@
                         <div class="line-clamp-3 mb-2 text-gray-500 ">{{ $notification->data['body'] }}</div>
                     </div>
                     <div class="flex justify-between">
-                        <div class="text-xs text-blue-600">{{ $notification->created_at->diffForHumans() }}</div>
-                        <div class="text-xs text-gray-500">Sent by {{ $notification->data['from'] }}</div>
+                        <div class="text-xs text-blue-600">{{ $notification->created_at->locale(app()->getLocale())->diffForHumans() }}</div>
+                        <div class="text-xs text-gray-500">{{ __('Sent by') }} {{ $notification->data['from'] }}</div>
                     </div>
                 </div>
             </a>

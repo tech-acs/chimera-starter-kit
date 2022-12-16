@@ -22,14 +22,13 @@ class CaseStats extends Component
             ->from([])
             ->get()
             ->first();
-        $info = [
-            'total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'
-        ];
+        $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
         if (!is_null($l)) {
-            $info['total'] = number_format($l->total, 0, '', ',');
-            $info['complete'] = number_format($l->complete, 0, '', ',');
-            $info['partial'] = number_format($l->partial, 0, '', ',');
-            $info['duplicate'] = number_format($l->duplicate, 0, '', ',');
+            $nFormatter = new \NumberFormatter(app()->getLocale(), \NumberFormatter::TYPE_INT32);
+            $info['total'] = $nFormatter->format(110000000);
+            $info['complete'] = $nFormatter->format($l->complete);
+            $info['partial'] = $nFormatter->format($l->partial);
+            $info['duplicate'] = $nFormatter->format($l->duplicate);
         }
         return $info;
     }

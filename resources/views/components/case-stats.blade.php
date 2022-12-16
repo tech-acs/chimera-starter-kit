@@ -5,7 +5,7 @@
             <div class="p-4 sm:p-5">
                 <div class="flex justify-end">
                     <dt class="text-sm font-normal text-gray-900 text-right">
-                        {{ ucfirst($name) }}
+                        {{ ucfirst(__($name)) }}
                     </dt>
                 </div>
                 <dd class="mt-1 flex justify-end items-center md:block lg:flex">

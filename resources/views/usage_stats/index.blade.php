@@ -52,7 +52,7 @@
                                         <a href="?filter=event:{{$record->event}}" class="text-blue-600 cursor-pointer">{{$record->event}}</a>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        {{$record->created_at->toDayDateTimeString()}}
+                                        {{$record->created_at->locale(app()->getLocale())->isoFormat('llll')}}
                                     </td>
                                 </tr>
                             @empty

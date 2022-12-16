@@ -19,7 +19,7 @@ class AreaRestrictionManager extends AreaFilter
     {
         $areaTree = new AreaTree(removeLastNLevels: 1);
         $subject = null;
-        $previousRestrictions = $this->user->areaFilter();
+        $previousRestrictions = $this->user->areaRestrictionAsFilter();
         $this->dropdowns = array_map(function ($level) use ($previousRestrictions, $areaTree, &$subject) {
             $dropdown = ['list' => [], 'selected' => null, 'restricted' => null];
             $levelName = $areaTree->hierarchies[$level];
