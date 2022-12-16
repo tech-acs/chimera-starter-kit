@@ -17,6 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ImportShapefileJob implements ShouldQueue
@@ -50,11 +51,14 @@ class ImportShapefileJob implements ShouldQueue
 
     public function handle()
     {
-        // Check that all areas have valid value for 'code'
+        // Check that all areas have valid value for 'code' and unique within the level
         $featuresWithInvalidCode = array_filter($this->features, function ($feature) {
             $codeValidator = Validator::make(
                 $feature['attribs'],
-                ['code' => ['required', 'max:255', 'regex:/[A-Za-z0-9_]+/i', 'unique:areas,code']]
+                ['code' => [
+                    'required', 'max:255', 'regex:/[A-Za-z0-9_]+/i',
+                    Rule::unique('areas', 'code')->where(fn ($query) => $query->where('level', $this->level))
+                ]]
             );
             if ($codeValidator->fails()) {
                 logger('Shapefile validation error', ['Error' => $codeValidator->errors()->all()]);
