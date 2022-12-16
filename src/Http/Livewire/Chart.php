@@ -108,7 +108,7 @@ abstract class Chart extends Component
                 $key = Caching::makeIndicatorCacheKey($this->indicator, $filter);
                 //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
                 return Cache::tags([$this->indicator->slug, 'indicators'])
-                    ->rememberForever($key, function () use ($filter) {
+                    ->rememberForever($key, function () use ($filter, $key) {
                         $data = $this->getData($filter);
                         Cache::tags([$this->indicator->slug, 'timestamps'])->put("$key|timestamp", time());
                         return $data;

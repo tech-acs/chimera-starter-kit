@@ -25,8 +25,6 @@ class ColumnMapper extends Component
         $this->validate();
 
         foreach ($this->areaHierarchies as $areaHierarchy) {
-            //$areaHierarchy->select_column = "'{$areaHierarchy->select_column}'";
-            //$areaHierarchy->where_column = "'{$areaHierarchy->where_column}'";
             $areaHierarchy->save();
         }
         $this->emit('saved');

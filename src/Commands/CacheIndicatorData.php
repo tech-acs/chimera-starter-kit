@@ -39,7 +39,7 @@ class CacheIndicatorData extends Command
             }
             $endTime = time();
 
-            $this->info("Took " . ($endTime - $startTime) . " seconds to update $indicator->slug");
+            $this->info("Took " . ($endTime - $startTime) . " seconds to update $indicator->name");
         }
 
         return Command::SUCCESS;
