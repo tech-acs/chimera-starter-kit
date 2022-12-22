@@ -2,19 +2,17 @@
 
 namespace Uneca\Chimera\Jobs;
 
+use Illuminate\Bus\Batchable;
 use Uneca\Chimera\Models\Area;
-use Uneca\Chimera\Notifications\TaskCompletedNotification;
-use Uneca\Chimera\Notifications\TaskFailedNotification;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Auth\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelReader;
 
@@ -22,17 +20,25 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 600;
+    public int $timeout = 1200;
 
-    public function __construct(private string $filePath, private array $areaLevels, private array $columnMapping, private User $user)
-    {
-    }
+    public function __construct(
+        private string $filePath,
+        private int $start,
+        private int $chunkSize,
+        private array $areaLevels,
+        private array $columnMapping,
+        private Authenticatable $user)
+    {}
 
     public function handle()
     {
         DB::transaction(function() {
             $insertedCount = 0;
-            SimpleExcelReader::create($this->filePath)->getRows()
+            SimpleExcelReader::create($this->filePath)
+                ->skip($this->start)
+                ->take($this->chunkSize + 1)
+                ->getRows()
                 ->each(function($row) use (&$insertedCount) {
                     $areas = [];
                     $path = '';
@@ -53,19 +59,19 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                     $insertedCount += Area::insertOrIgnore($areas);
                 });
 
-            Notification::sendNow($this->user, new TaskCompletedNotification(
+            /*Notification::sendNow($this->user, new TaskCompletedNotification(
                 'Task completed',
                 "$insertedCount areas have been imported."
-            ));
-        });
+            ));*/
+        }, 3);
     }
 
-    public function failed(\Throwable $exception)
+    /*public function failed(\Throwable $exception)
     {
         logger('ImportAreaSpreadsheet Job Failed', ['Exception: ' => $exception->getMessage()]);
         Notification::sendNow($this->user, new TaskFailedNotification(
             'Task failed',
             $exception->getMessage()
         ));
-    }
+    }*/
 }

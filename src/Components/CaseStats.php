@@ -25,7 +25,7 @@ class CaseStats extends Component
         $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
         if (!is_null($l)) {
             $nFormatter = new \NumberFormatter(app()->getLocale(), \NumberFormatter::TYPE_INT32);
-            $info['total'] = $nFormatter->format(110000000);
+            $info['total'] = $nFormatter->format($l->total);
             $info['complete'] = $nFormatter->format($l->complete);
             $info['partial'] = $nFormatter->format($l->partial);
             $info['duplicate'] = $nFormatter->format($l->duplicate);

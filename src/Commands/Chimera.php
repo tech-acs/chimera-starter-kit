@@ -156,6 +156,9 @@ class Chimera extends Command
         $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);
         $this->comment('Published stubs');
 
+        /*$this->callSilent('queue:batches-table');
+        $this->comment('Job batches migration generated');*/
+
         copy(__DIR__.'/../../deploy/web.php', base_path('routes/web.php'));
         $this->comment('Copied empty route file (web.php)');
 

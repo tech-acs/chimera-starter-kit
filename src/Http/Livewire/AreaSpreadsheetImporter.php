@@ -2,7 +2,13 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Jobs\ImportAreaSpreadsheetJob;
+use Uneca\Chimera\Notifications\TaskCompletedNotification;
+use Uneca\Chimera\Notifications\TaskFailedNotification;
 use Uneca\Chimera\Services\AreaTree;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
@@ -20,8 +26,9 @@ class AreaSpreadsheetImporter extends Component
     public array $areaLevels = [];
     public array $columnHeaders = [];
     public array $columnMapping = [];
-    public $filePath = '';
+    public string $filePath = '';
     public string $message = '';
+    const CHUNK_SIZE = 4000;
 
     protected function rules()
     {
@@ -77,7 +84,51 @@ class AreaSpreadsheetImporter extends Component
     public function import()
     {
         $this->validate();
-        ImportAreaSpreadsheetJob::dispatch($this->filePath, $this->areaLevels, $this->columnMapping, auth()->user());
+
+        $fileHandle = fopen($this->filePath, "r");
+        $user = auth()->user();
+        $jobs = [];
+        $line = 0;
+        $start = 0;
+        $notProcessed = true;
+        while (($fileLine = fgets($fileHandle)) !== false) {
+            $line++;
+            $notProcessed = true;
+            if ($line % $this::CHUNK_SIZE === 0) {
+                array_push(
+                    $jobs,
+                    new ImportAreaSpreadsheetJob($this->filePath, $start, $this::CHUNK_SIZE, $this->areaLevels, $this->columnMapping, $user)
+                );
+                $start = $line;
+                $notProcessed = false;
+            }
+        }
+        if ($notProcessed) {
+            array_push(
+                $jobs,
+                new ImportAreaSpreadsheetJob($this->filePath, $start, $this::CHUNK_SIZE, $this->areaLevels, $this->columnMapping, $user)
+            );
+        }
+        fclose($fileHandle);
+
+        Bus::chain(array_merge(
+                $jobs,
+                [function () use ($line, $user) {
+                    Notification::send($user, new TaskCompletedNotification(
+                        'Task completed',
+                        "The file has been processed for import."
+                    ));
+                }]
+            ))
+            ->catch(function (\Throwable $e) use ($user) {
+                logger('ImportAreaSpreadsheet Job Failed', ['Exception: ' => $e->getMessage()]);
+                Notification::send($user, new TaskFailedNotification(
+                    'Error encountered importing areas',
+                    $e->getMessage()
+                ));
+            })
+            ->dispatch();
+
         $this->message = "The file is being imported. You will receive a notification when the process is complete.";
     }
 
