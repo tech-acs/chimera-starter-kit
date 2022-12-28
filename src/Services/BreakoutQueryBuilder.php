@@ -6,7 +6,7 @@ use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class QueryBuilder
+class BreakoutQueryBuilder
 {
     private ConnectionInterface $dbConnection;
     private string $partialCaseIdentifyingCondition;
