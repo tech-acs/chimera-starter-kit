@@ -2,29 +2,9 @@
 
 namespace DummyNamespace;
 
-use Uneca\Chimera\Models\Scorecard;
-use Uneca\Chimera\Services\Theme;
-use Illuminate\View\Component;
+use Uneca\Chimera\Http\Livewire\ScorecardComponent;
 
-class {{ class }} extends Component
+class {{ class }} extends ScorecardComponent
 {
-    public Scorecard $scorecard;
-    public string $title;
-    public $value;
-    public $bgColor;
-    public int $diff = 0;
-
-    public function __construct(Scorecard $scorecard, $index)
-    {
-        $this->scorecard = $scorecard;
-        $this->title = $this->scorecard->title;
-        $this->bgColor = Theme::colors()[$index];
-
-        $this->value = 'NA';
-    }
-
-    public function render()
-    {
-        return view('chimera::components.scorecard');
-    }
+    //
 }

@@ -20,7 +20,7 @@ class MakeScorecard extends GeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\View\Components\Home';
+        return $rootNamespace . '\Http\Livewire\Scorecard';
     }
 
     protected function getStub()

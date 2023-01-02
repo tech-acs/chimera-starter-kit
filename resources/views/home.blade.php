@@ -4,8 +4,7 @@
         @forelse($questionnaires as $questionnaire)
             <x-chimera-summary :questionnaire="$questionnaire">
                 @forelse($questionnaire->scorecards as $scorecard)
-                    <x-dynamic-component component="home.{{$scorecard->slug}}" :scorecard="$scorecard" :index="$loop->index" />
-                    {{--@livewire($indicator->component, ['indicator' => $indicator])--}}
+                    @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index])
                 @empty
                     {{ __('There are no scorecards to display.') }}
                 @endforelse
