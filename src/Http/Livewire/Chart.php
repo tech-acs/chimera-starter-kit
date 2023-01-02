@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Livewire;
 
 use Uneca\Chimera\Models\Indicator;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\Caching;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -71,12 +72,12 @@ abstract class Chart extends Component
         return collect([]);
     }
 
-    protected function getTraces(Collection $data, array $filter): array
+    protected function getTraces(Collection $data, string $filterPath): array
     {
         return [];
     }
 
-    protected function getLayout(array $filter): array
+    protected function getLayout(string $filterPath): array
     {
         return self::DEFAULT_LAYOUT;
     }
@@ -123,8 +124,9 @@ abstract class Chart extends Component
 
     private function updateDataAndLayout(array $filter): void
     {
-        $this->data = $this->getTraces($this->getDataAndCacheIt($filter), $filter);
-        $this->layout = $this->getLayout($filter);
+        $filterPath = AreaTree::getFinestResolutionFilterPath($filter);
+        $this->data = $this->getTraces($this->getDataAndCacheIt(AreaTree::translatePathToCode($filter)), $filterPath);
+        $this->layout = $this->getLayout($filterPath);
 
         if ($this->isDataEmpty()) {
             $this->layout = array_merge(self::DEFAULT_LAYOUT, self::EMPTY_CHART_LAYOUT_DIFF);

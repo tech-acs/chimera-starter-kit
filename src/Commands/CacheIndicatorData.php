@@ -14,7 +14,7 @@ class CacheIndicatorData extends Command
 {
     protected $signature = 'chimera:cache {--max-level=0}';
 
-    protected $description = "Calculate and cache indicator data";
+    protected $description = "Calculate and cache indicator (all published) data";
 
     public function __construct()
     {

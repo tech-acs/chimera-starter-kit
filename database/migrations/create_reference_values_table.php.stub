@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -16,15 +17,17 @@ return new class extends Migration
         Schema::create('reference_values', function (Blueprint $table) {
             $table->id();
 
-            $table->string('code', 50)->index();
+            $table->string('code')->index();
             $table->tinyInteger('level')->index();
             $table->string('indicator', 100)->index();
             $table->decimal('value', 12, 2);
 
-            $table->unique(['code', 'level', 'indicator']);
-
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE reference_values ADD COLUMN path ltree");
+        DB::statement("ALTER TABLE reference_values ADD CONSTRAINT reference_values_path_unique UNIQUE(path)");
+        DB::statement("CREATE INDEX reference_values_path_gist_idx ON reference_values USING gist(path)");
     }
 
     /**

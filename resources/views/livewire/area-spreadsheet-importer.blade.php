@@ -57,7 +57,7 @@
                 </p>
                 <p class="mt-2 text-sm text-gray-500">
                     You can specify the desired (including the padded 0s) length of your
-                    code column in the 'Zero pad code to length' column.
+                    code columns in the 'Zero pad code to length' column.
                 </p>
                 <p class="mt-2 text-sm text-gray-500">
                     Leaving it with the default value of 0 means no padding will occur.

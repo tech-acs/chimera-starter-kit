@@ -7,8 +7,9 @@
         <div class="relative z-0">
             <div
                 id="map"
-                data-map-options='@json($mapOptions)'
+                data-map-options='@json($leafletMapOptions)'
                 data-indicators='@json($indicators)'
+                data-level-zoom-mapping='@json($levelToZoomMapping)'
                 wire:ignore
                 style="height: 75vh;"
             ></div>

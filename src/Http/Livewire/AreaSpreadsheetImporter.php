@@ -81,6 +81,15 @@ class AreaSpreadsheetImporter extends Component
         $this->fileAccepted = true;
     }
 
+    private function makePathFormulaForExcel()
+    {
+        // TEXTJOIN(".", 0, TEXT(C2,"00"), TEXT(E2, "0000"), TEXT(L2, "0"))
+        $paddedColumns = collect($this->columnMapping)->map(function ($column) {
+            return 'TEXT(' . $column['code'] . ', "' . sprintf("%0{$column['zeroPadding']}s", 0) . '")';
+        })->join(',');
+        return '=TEXTJOIN(".", 0, ' . $paddedColumns . ')';
+    }
+
     public function import()
     {
         $this->validate();
@@ -111,12 +120,15 @@ class AreaSpreadsheetImporter extends Component
         }
         fclose($fileHandle);
 
+        $pathFormula = $this->makePathFormulaForExcel();
         Bus::chain(array_merge(
                 $jobs,
-                [function () use ($line, $user) {
+                [function () use ($line, $user, $pathFormula) {
                     Notification::send($user, new TaskCompletedNotification(
                         'Task completed',
-                        "The file has been processed for import."
+                        "The file has been processed for import. Please use this formula to populate
+                                a new 'path' column on your spreadsheet, which is required for reference value importing. $pathFormula
+                                [replace with the respective code columns for your spreadsheet]"
                     ));
                 }]
             ))

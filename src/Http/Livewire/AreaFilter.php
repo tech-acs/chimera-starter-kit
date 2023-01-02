@@ -14,6 +14,7 @@ class AreaFilter extends Component
 
     public function mount()
     {
+        //session()->forget('area-filter');
         $areaTree = new AreaTree(removeLastNLevels: 1);
         $selectionsFromSession = session()->get('area-filter', []);
         $restrictions = auth()->user()->areaRestrictionAsFilter();

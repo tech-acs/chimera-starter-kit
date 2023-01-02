@@ -22,7 +22,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 600;
+    public $timeout = 1200;
 
     public function __construct(private string $filePath, private array $columnMapping, private User $user)
     {
@@ -32,11 +32,11 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     {
         $aggMethod = $indicatorMapping['isAdditive'] ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
         DB::insert("
-            INSERT INTO reference_values(code, level, indicator, value)
-            SELECT areas.code, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
+            INSERT INTO reference_values(path, code, level, indicator, value)
+            SELECT areas.path, areas.code, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
             FROM (
                 SELECT $aggMethod, subpath(areas.path, 0, $level) AS path, reference_values.indicator
-                FROM reference_values INNER JOIN areas ON reference_values.code = areas.code
+                FROM reference_values INNER JOIN areas ON reference_values.path = areas.path
                 WHERE reference_values.indicator = '{$indicatorMapping['name']}' AND reference_values.level = $level
                 GROUP BY indicator, subpath(areas.path, 0, $level)
             ) AS agg INNER JOIN areas ON agg.path = areas.path
@@ -50,6 +50,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
                 $code = Str::padLeft($row[$indicatorMapping['code']], $indicatorMapping['zeroPadding'] ?? 0, '0');
                 return [
                     'code' => $code,
+                    'path' => $row[$indicatorMapping['path']],
                     'level' => $indicatorMapping['level'],
                     'indicator' => $indicatorMapping['name'],
                     'value' => $row[$indicatorMapping['name']],
@@ -76,7 +77,8 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 
         Notification::sendNow($this->user, new TaskCompletedNotification(
             'Task completed',
-            "$insertedCount reference values have been imported across " . count($this->columnMapping) . ' ' . str('indicator')->plural(count($this->columnMapping))
+            "$insertedCount reference values have been imported across " . count($this->columnMapping) . ' ' .
+                str('indicator')->plural(count($this->columnMapping))
         ));
     }
 

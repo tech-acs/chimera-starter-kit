@@ -65,11 +65,12 @@ class AreaController extends Controller
             $file->storeAs('/shapefiles', $filenameWithExt, 'imports');
         }
         $shpFile = collect([$filename, 'shp'])->join('.');
-        $importer = new ShapefileImporter();
-        $features = $importer->import(Storage::disk('imports')->path('shapefiles/' . $shpFile));
-        $this->validateShapefile($features);
+        $filePath = Storage::disk('imports')->path('shapefiles/' . $shpFile);
+        /*$importer = new ShapefileImporter();
+        $features = $importer->import($filePath);
+        $this->validateShapefile($features);*/
 
-        ImportShapefileJob::dispatch($features, $level, auth()->user());
+        ImportShapefileJob::dispatch($filePath, $level, auth()->user());
 
         return redirect()->route('developer.area.index')
             ->withMessage("Importing is in progress. You will be notified when it is complete.");

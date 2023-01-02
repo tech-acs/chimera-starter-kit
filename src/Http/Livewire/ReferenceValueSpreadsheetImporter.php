@@ -31,6 +31,7 @@ class ReferenceValueSpreadsheetImporter extends Component
             Collection::times($this->indicatorsToImport, function ($number) {
                 return [
                     'name' => 'required',
+                    'path' => 'required',
                     'code' => 'required',
                 ];
             })->all()
@@ -44,6 +45,7 @@ class ReferenceValueSpreadsheetImporter extends Component
             Collection::times($this->indicatorsToImport, function ($number) {
                 return [
                     'name' => 'required',
+                    'path' => 'required',
                     'code' => 'required',
                 ];
             })->all()
@@ -54,7 +56,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     {
         $this->levels = (new AreaTree)->hierarchies;
         $this->columnMapping = Collection::times($this->indicatorsToImport, function () {
-            return ['name' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
+            return ['name' => '', 'path' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
         })->all();
     }
 
@@ -71,7 +73,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     public function add()
     {
         $this->indicatorsToImport++;
-        $this->columnMapping[] = ['name' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
+        $this->columnMapping[] = ['name' => '', 'path' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
     }
 
     public function import()

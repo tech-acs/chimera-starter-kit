@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Notifications\TaskCompletedNotification;
 use Uneca\Chimera\Notifications\TaskFailedNotification;
+use Uneca\Chimera\Services\ShapefileImporter;
 use Uneca\Chimera\Traits\Geospatial;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -25,9 +26,9 @@ class ImportShapefileJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use Geospatial;
 
-    public $timeout = 600;
+    public $timeout = 1200;
 
-    public function __construct(private array $features, private int $level, private User $user)
+    public function __construct(private string $filePath, private int $level, private User $user)
     {
     }
 
@@ -49,15 +50,36 @@ class ImportShapefileJob implements ShouldQueue
         return is_null($ancestor) ? $code : $ancestor->path . '.' . $code;
     }
 
+    private function validateShapefile(array $features)
+    {
+        // Check for empty shapefiles?
+        if (empty($features)) {
+            throw ValidationException::withMessages([
+                'shapefile' => ['The shapefile does not contain any valid features.'],
+            ]);
+        }
+
+        // Check that shapefile has 'name' and 'code' columns in the attribute table
+        $firstFeatureAttributes = $features[0]['attribs'];
+        if (! (array_key_exists('name', $firstFeatureAttributes) && array_key_exists('code', $firstFeatureAttributes))) {
+            throw ValidationException::withMessages([
+                'shapefile' => ["The shapefile needs to have 'name' and 'code' among its attributes"],
+            ]);
+        }
+    }
+
     public function handle()
     {
+        $importer = new ShapefileImporter();
+        $features = $importer->import($this->filePath);
+        $this->validateShapefile($features);
         // Check that all areas have valid value for 'code' and unique within the level
-        $featuresWithInvalidCode = array_filter($this->features, function ($feature) {
+        $featuresWithInvalidCode = array_filter($features, function ($feature) {
             $codeValidator = Validator::make(
                 $feature['attribs'],
                 ['code' => [
                     'required', 'max:255', 'regex:/[A-Za-z0-9_]+/i',
-                    Rule::unique('areas', 'code')->where(fn ($query) => $query->where('level', $this->level))
+                    // Rule::unique('areas', 'code')->where(fn ($query) => $query->where('level', $this->level))
                 ]]
             );
             if ($codeValidator->fails()) {
@@ -72,11 +94,11 @@ class ImportShapefileJob implements ShouldQueue
         }
 
         // Find and add parent info for all areas (unless root level)
-        $augmentedFeatures = $this->augumentData($this->features, $this->level);
+        $augmentedFeatures = $this->augumentData($features, $this->level);
 
         // Check that there are no "orphan" areas
         $orphanFeatures = array_filter($augmentedFeatures, fn ($feature) => empty($feature['path']));
-        if (! empty($orphanFeatures)) {
+        if (! config('chimera.area.map.ignore_orphan_areas') && ! empty($orphanFeatures)) {
             $orphans = collect($orphanFeatures)->pluck('attribs.code')->join(', ', ' and ');
             throw ValidationException::withMessages([
                 'shapefile' => [count($orphanFeatures) . " orphan area(s) found [code: $orphans]. All areas require a containing parent area."],

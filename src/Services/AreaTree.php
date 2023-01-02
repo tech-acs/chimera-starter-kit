@@ -15,6 +15,34 @@ class AreaTree
         $this->hierarchies = array_slice($hierarchies, 0, count($hierarchies) - $removeLastNLevels);
     }
 
+    public static function getFinestResolutionFilterPath(array $filter): string
+    {
+        return array_reduce($filter, function ($carriedLongest, $path) {
+            return strlen($path) >= strlen($carriedLongest) ? $path : $carriedLongest;
+        }, '');
+    }
+
+    public static function translatePathToCode(array $filter): array
+    {
+        $filterAreas = Area::whereIn('path', array_values($filter))->pluck('code', 'path')->all();
+        return array_map(function ($path) use ($filterAreas) {
+            return $filterAreas[$path];
+        }, $filter);
+    }
+
+    public static function translateCodeToPath(array $filter): array
+    {
+        $filterAreas = Area::whereIn('code', array_values($filter))->pluck('code', 'path')->all();
+        return array_map(function ($path) use ($filterAreas) {
+            return $filterAreas[$path];
+        }, $filter);
+    }
+
+    public static function levelFromPath(string $path)
+    {
+        return str($path)->explode('.')->count() - 1;
+    }
+
     public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)
     {
         $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";
@@ -29,10 +57,5 @@ class AreaTree
         return Area::select('path', 'code', 'name', 'level')
             ->whereRaw("path ~ '{$path}'")
             ->first();
-    }
-
-    public static function levelFromPath(string $path)
-    {
-        return str($path)->explode('.')->count() - 1;
     }
 }

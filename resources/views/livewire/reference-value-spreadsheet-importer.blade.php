@@ -19,7 +19,7 @@
         <div class="md:grid md:grid-cols-3 md:gap-6">
             <div class="md:col-span-1">
                 <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Spreadsheet') }}</h3>
-                <p class="mt-2 text-sm text-gray-500">{{ __('Your spreadsheet must be formatted in such a way that it includes all your areas') }}</p>
+                <p class="mt-2 text-sm text-gray-500">{{ __('Your spreadsheet must contain columns for all your area codes and additionally must have a calculated path column') }}</p>
             </div>
             <div class="mt-5 md:col-span-2 md:mt-0">
                 <div>
@@ -52,7 +52,7 @@
             <div class="md:col-span-1 pt-4 md:pt-0">
                 <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Column mapping') }}</h3>
                 <p class="mt-2 text-sm text-gray-500">
-                    {{ __('For each reference value you are importing, please indicate which of your spreadsheet columns hold the indicator values and which one holds the corresponding area codes.') }}
+                    {{ __('For each reference value you are importing, please indicate which of your spreadsheet columns hold the indicator values and which one holds the corresponding area path.') }}
                 </p>
                 <p class="mt-2 text-sm text-gray-500">
                     If <b>Is additive</b> is not checked, the same value will be assigned to all higher level areas.
@@ -65,9 +65,9 @@
                         <thead>
                         <tr>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Reference value for indicator') }}</th>
-                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Corresponding area code') }}</th>
+                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Corresponding area path') }}</th>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Area type') }}</th>
-                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center w-24">{{ __('Zero pad code to length') }}</th>
+                            {{--<th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center w-24">{{ __('Zero pad code to length') }}</th>--}}
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Is additive') }}</th>
                         </tr>
                         </thead>
@@ -91,6 +91,15 @@
                                         @endforeach
                                     </select>
                                     <x-jet-input-error for="columnMapping.{{ $i }}.code" class="text-xs" />
+                                </td>
+                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                                    <select wire:model="columnMapping.{{ $i }}.path" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                        <option value="">{{ __('Select column') }}</option>
+                                        @foreach($columnHeaders as $column)
+                                            <option value="{{ $column }}">{{ $column }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-jet-input-error for="columnMapping.{{ $i }}.path" class="text-xs" />
                                 </td>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $i }}.level" class="rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">

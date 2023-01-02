@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Components;
 
 use Uneca\Chimera\Models\Questionnaire;
-use Uneca\Chimera\Services\QueryBuilder;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\View\Component;
 
@@ -34,15 +34,14 @@ class Summary extends Component
         } elseif ($now->isAfter($e)) {
             $progress = __('Ended :diff days ago', ['diff' => $now->diffInDays($e)]);
         } else {
-            // Jan 21 to Jan 30
-            $progress = $s->format('M d') . " to " . $e->format('M d');
+            $progress = $s->format('M d') . " to " . $e->format('M d'); // E.g. Jan 21 to Feb 08
         }
         return $progress;
     }
 
     private function getLastUpdated()
     {
-        $result = (new QueryBuilder($this->questionnaire->name))
+        $result = (new BreakoutQueryBuilder($this->questionnaire->name))
             ->get("SELECT modified_time FROM cspro_jobs ORDER BY modified_time DESC LIMIT 1")
             ->first();
         return is_null($result) ? '-' : Carbon::parse($result->modified_time)->locale(app()->getLocale())->isoFormat('llll');

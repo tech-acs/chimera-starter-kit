@@ -1,18 +1,31 @@
 <?php
 
-namespace Uneca\Chimera\Components;
+namespace Uneca\Chimera\Http\Livewire;
 
-use Illuminate\View\Component;
-use Uneca\Chimera\Services\QueryBuilder;
+use Livewire\Component;
+use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
 
 class CaseStats extends Component
 {
     public $questionnaire;
-    public $stats;
+    public $stats = [];
 
-    public function getCollection(array $filter)
+    public function mount(Questionnaire $questionnaire)
     {
-        $l = (new QueryBuilder($this->questionnaire->name, false))
+        $this->questionnaire = $questionnaire;
+        //$this->stats = $this->getData([]);
+    }
+
+    public function setStats()
+    {
+        $this->stats = $this->getData([]);
+    }
+
+    public function getData(array $filter)
+    {
+        //sleep(3);
+        $l = (new BreakoutQueryBuilder($this->questionnaire->name, false))
             ->select([
                 "COUNT(*) AS total",
                 "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete",
@@ -33,14 +46,8 @@ class CaseStats extends Component
         return $info;
     }
 
-    public function __construct($questionnaire)
-    {
-        $this->questionnaire = $questionnaire;
-        $this->stats = $this->getCollection([]);
-    }
-
     public function render()
     {
-        return view('chimera::components.case-stats');
+        return view('chimera::livewire.case-stats');
     }
 }

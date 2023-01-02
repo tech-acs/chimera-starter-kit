@@ -18,7 +18,7 @@ class {{ class }} extends Chart
             ->map(fn ($pair) => (object)['eas' => $pair[0]->format('Y-m-d'), 'households' => $pair[1]/10]);
     }
 
-    protected function getTraces(Collection $data, array $filter): array
+    protected function getTraces(Collection $data, string $filterPath): array
     {
         $trace1 = [
             'x' => $data->pluck('eas')->all(),
@@ -28,9 +28,9 @@ class {{ class }} extends Chart
         return [$trace1];
     }
 
-    protected function getLayout(array $filter = []): array
+    protected function getLayout(string $filterPath): array
     {
-        $layout = parent::getLayout($filter);
+        $layout = parent::getLayout($filterPath);
         $layout['xaxis']['type'] = 'date';
         $layout['yaxis']['title']['text'] = __('No. of observations (cumulative)');
         $layout['annotations'] = [[

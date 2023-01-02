@@ -50,7 +50,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasViewComponents(
                 'chimera',
-                \Uneca\Chimera\Components\CaseStats::class,
                 \Uneca\Chimera\Components\ChartCard::class,
                 \Uneca\Chimera\Components\SimpleCard::class,
                 \Uneca\Chimera\Components\Summary::class
@@ -94,6 +93,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('notification-inbox', \Uneca\Chimera\Http\Livewire\NotificationInbox::class);
         Livewire::component('reference-value-spreadsheet-importer', \Uneca\Chimera\Http\Livewire\ReferenceValueSpreadsheetImporter::class);
         Livewire::component('role-manager', \Uneca\Chimera\Http\Livewire\RoleManager::class);
+        Livewire::component('case-stats', \Uneca\Chimera\Http\Livewire\CaseStats::class);
     }
 
     public function boot()

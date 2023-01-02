@@ -148,7 +148,7 @@ abstract class MapIndicatorBaseClass
         return 'default';
     }
 
-    public function getData(int $level, Collection $paths = null): array
+    public function getData(int $level, array $paths): array
     {
         return [];
     }

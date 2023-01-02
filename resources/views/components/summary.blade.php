@@ -25,7 +25,7 @@
             <h3 class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider pb-6">
                 {{ __('Interview stats') }}
             </h3>
-            <x-chimera-case-stats :questionnaire="$questionnaire" />
+            <livewire:case-stats :questionnaire="$questionnaire" />
         </div>
 
         <div>

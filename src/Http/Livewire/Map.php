@@ -10,8 +10,9 @@ use Livewire\Component;
 
 class Map extends Component
 {
-    public array $mapOptions;
+    public array $leafletMapOptions;
     public array $indicators = [];
+    public array $levelToZoomMapping;
     public string $selectedIndicator;
     public array $previouslySentPaths = [];
 
@@ -51,7 +52,7 @@ class Map extends Component
                 "]::lquery[]";
         }*/
         $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
-        $whereClause = empty($paths) ? "level = 0" : "path ?? $lqueryArray";
+        $whereClause = $derivedPaths->isEmpty() ? "level = 0" : "path ?? $lqueryArray";
         $sql = "
             SELECT json_build_object(
                 'type', 'FeatureCollection',
@@ -89,7 +90,7 @@ class Map extends Component
     {
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
-        $this->emit('indicatorSwitched', $selectedIndicator->getData($level), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
+        $this->emit('indicatorSwitched', $selectedIndicator->getData($level, []), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
     }
 
     final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
@@ -106,12 +107,13 @@ class Map extends Component
         $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
         $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
         $geojson->features = $filtered->values()->all();
-        $this->emit('geojsonUpdated', $geojson, $level, $currentIndicator?->getData($level, $derivedPaths) ?? []);
+        //dump($geojson, $filteredPaths, $this->previouslySentPaths);
+        $this->emit('geojsonUpdated', $geojson, $level, $currentIndicator?->getData($level, $derivedPaths->all()) ?? []);
     }
 
     final public function mount()
     {
-        $this->mapOptions = [
+        $this->leafletMapOptions = [
             'center' => config('chimera.area.map.center'),
             'zoom' => 6,
             'zoomControl' => false,
@@ -123,6 +125,7 @@ class Map extends Component
             ->get()
             ->mapWithKeys(fn ($indicator) => [$indicator->fully_qualified_classname => $indicator->title])
             ->all();
+        $this->levelToZoomMapping = config('chimera.area.map.level_to_zoom_mapping');
     }
 
     public function render()
