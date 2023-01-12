@@ -135,9 +135,8 @@ class Chimera extends Command
             'ext-zip:*',
             'ext-pgsql:*',
             'spatie/laravel-permission:^5.7',
-            'spatie/simple-excel:^2.4',
+            'spatie/simple-excel:^2.5',
             'spatie/laravel-translatable:^6.1',
-            'spatie/db-dumper:^3.3',
             'gasparesganga/php-shapefile:^3.4'
         ]);
 
@@ -170,9 +169,9 @@ class Chimera extends Command
 
         $this->updateNodePackages(function ($packages) {
             return [
-                "leaflet" => "^1.9.2",
-                "plotly.js-basic-dist-min" => "^2.16.1",
-                "plotly.js-locales" => "^2.16.1",
+                "leaflet" => "^1.9.3",
+                "plotly.js-basic-dist-min" => "^2.17.1",
+                "plotly.js-locales" => "^2.17.1",
                 "@alpinejs/focus" => "3.10.5",
                 "@tailwindcss/line-clamp" => "^0.4.2"
             ] + $packages;

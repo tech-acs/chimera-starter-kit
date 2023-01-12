@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
-use Uneca\Chimera\Services\IndicatorFactory;
+use Uneca\Chimera\Services\DashboardComponentFactory;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Spatie\SimpleExcel\SimpleExcelWriter;
@@ -30,7 +30,7 @@ class Exporter extends Component
 
     public function export()
     {
-        $indicatorInstance = IndicatorFactory::make($this->questionnaire, $this->chart);
+        $indicatorInstance = DashboardComponentFactory::make($this->questionnaire, $this->chart);
         $data = $indicatorInstance->getData($this->filter);
 
         $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->chart) . '.csv';

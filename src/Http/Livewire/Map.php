@@ -2,11 +2,14 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
+use Illuminate\Support\Facades\Cache;
+use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
 use Uneca\Chimera\Models\MapIndicator;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Uneca\Chimera\Services\MapIndicatorCaching;
 
 class Map extends Component
 {
@@ -40,17 +43,6 @@ class Map extends Component
 
     protected function getGeoJson(Collection $derivedPaths)
     {
-        /*if ($zoomDirection >= 0) {
-            $lqueryArray = "ARRAY[" . collect($paths)->map(fn ($path) => "'{$path}.*{1}'")->join(', ') . "]::lquery[]";
-        } else {
-            $lqueryArray = "ARRAY[" .
-                collect($paths)
-                    ->map(fn ($path) => str($path)->beforeLast('.')->toString())
-                    ->unique()
-                    ->map(fn ($x) => "'{$x}'")
-                    ->join(', ') .
-                "]::lquery[]";
-        }*/
         $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
         $whereClause = $derivedPaths->isEmpty() ? "level = 0" : "path ?? $lqueryArray";
         $sql = "
@@ -86,11 +78,26 @@ class Map extends Component
         return $result[0]->feature_collection;
     }
 
+    private function getDataAndCacheIt(?MapIndicatorBaseClass $mapIndicator, int $level, array $paths): array
+    {
+        if (config('chimera.cache.enabled')) {
+            $key = 'map-indicator|' . $mapIndicator->model->slug . implode('-', array_filter($paths));
+            //$this->dataTimestamp = $caching->getTimestamp();
+            //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
+            return Cache::tags([$mapIndicator->model->questionnaire, 'map-indicators'])
+                ->rememberForever($key, function () use ($mapIndicator, $level, $paths) {
+                    //$caching->stamp();
+                    return $mapIndicator->getData($level, $paths);
+                });
+        }
+        return $mapIndicator->getData($level, $paths);
+    }
+
     public function setSelectedIndicator(string $mapIndicator, int $level)
     {
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
-        $this->emit('indicatorSwitched', $selectedIndicator->getData($level, []), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
+        $this->emit('indicatorSwitched', $this->getDataAndCacheIt($selectedIndicator, $level, []), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
     }
 
     final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
@@ -108,7 +115,7 @@ class Map extends Component
         $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
         $geojson->features = $filtered->values()->all();
         //dump($geojson, $filteredPaths, $this->previouslySentPaths);
-        $this->emit('geojsonUpdated', $geojson, $level, $currentIndicator?->getData($level, $derivedPaths->all()) ?? []);
+        $this->emit('geojsonUpdated', $geojson, $level, $this->getDataAndCacheIt($currentIndicator, $level, $derivedPaths->all()) ?? []);
     }
 
     final public function mount()

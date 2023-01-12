@@ -16,11 +16,13 @@ return [
         'map' => [
             'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],
             'ignore_orphan_areas' => env('IGNORE_ORPHAN_AREAS', false),
+            'level_to_zoom_mapping' => [
+                [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+            ],
         ],
     ],
 
     'cache' => [
         'enabled' => env('CACHE_ENABLED', false),
-        'ttl' => env('CACHE_TTL', 300)
     ],
 ];

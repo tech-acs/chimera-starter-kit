@@ -17,7 +17,10 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
 
+use Uneca\Chimera\Http\Livewire\Chart;
+use Uneca\Chimera\Services\CachingInterface;
 use Uneca\Chimera\Services\ConnectionLoader;
+use Uneca\Chimera\Services\IndicatorCaching;
 use Uneca\Chimera\Services\PageBuilder;
 
 class ChimeraServiceProvider extends PackageServiceProvider
@@ -59,7 +62,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->hasRoute('web')
             ->hasMigrations($migrations)
             ->hasCommands([
-                \Uneca\Chimera\Commands\CacheIndicatorData::class,
+                \Uneca\Chimera\Commands\CacheData::class,
+                \Uneca\Chimera\Commands\ClearCacheData::class,
                 \Uneca\Chimera\Commands\Chimera::class,
                 \Uneca\Chimera\Commands\DataExport::class,
                 \Uneca\Chimera\Commands\DataImport::class,
@@ -158,6 +162,10 @@ class ChimeraServiceProvider extends PackageServiceProvider
     public function register()
     {
         parent::register();
+
+        /*$this->app->when(Chart::class)
+            ->needs(CachingInterface::class)
+            ->give(IndicatorCaching::class);*/
 
         /*$this->app->bind('chimera', function($app) {
             return new AreaTree();

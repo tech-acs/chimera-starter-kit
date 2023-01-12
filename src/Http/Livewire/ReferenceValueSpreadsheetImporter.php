@@ -32,7 +32,7 @@ class ReferenceValueSpreadsheetImporter extends Component
                 return [
                     'name' => 'required',
                     'path' => 'required',
-                    'code' => 'required',
+                    //'code' => 'required',
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v]);
@@ -46,7 +46,7 @@ class ReferenceValueSpreadsheetImporter extends Component
                 return [
                     'name' => 'required',
                     'path' => 'required',
-                    'code' => 'required',
+                    //'code' => 'required',
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v])->all();
@@ -56,7 +56,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     {
         $this->levels = (new AreaTree)->hierarchies;
         $this->columnMapping = Collection::times($this->indicatorsToImport, function () {
-            return ['name' => '', 'path' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
+            return ['name' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true]; // 'code' => '', 'zeroPadding' => 0,
         })->all();
     }
 
@@ -73,7 +73,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     public function add()
     {
         $this->indicatorsToImport++;
-        $this->columnMapping[] = ['name' => '', 'path' => '', 'code' => '', 'level' => array_key_last($this->levels), 'zeroPadding' => 0, 'isAdditive' => true];
+        $this->columnMapping[] = ['name' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true]; // 'code' => '', 'zeroPadding' => 0,
     }
 
     public function import()

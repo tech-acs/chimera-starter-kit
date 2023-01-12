@@ -4,10 +4,10 @@ namespace Uneca\Chimera\Http\Livewire;
 
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Services\AreaTree;
-use Uneca\Chimera\Services\Caching;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Uneca\Chimera\Services\IndicatorCaching;
 
 abstract class Chart extends Component
 {
@@ -16,6 +16,7 @@ abstract class Chart extends Component
     public array $data;
     public array $layout;
     public array $config;
+    public int $dataTimestamp;
 
     const DEFAULT_CONFIG = [
         'responsive' => true,
@@ -67,7 +68,7 @@ abstract class Chart extends Component
         return array_merge(self::DEFAULT_CONFIG, $dynamicOptions);
     }
 
-    protected function getData(array $filter): Collection
+    public function getData(array $filter): Collection
     {
         return collect([]);
     }
@@ -104,20 +105,21 @@ abstract class Chart extends Component
 
     private function getDataAndCacheIt(array $filter): Collection
     {
+        $this->dataTimestamp = time();
         try {
             if (config('chimera.cache.enabled')) {
-                $key = Caching::makeIndicatorCacheKey($this->indicator, $filter);
-                //$this->dataTimestamp = Cache::tags([$this->connection, 'timestamp'])->get($key, 'Unknown');
-                return Cache::tags([$this->indicator->slug, 'indicators'])
-                    ->rememberForever($key, function () use ($filter, $key) {
-                        $data = $this->getData($filter);
-                        Cache::tags([$this->indicator->slug, 'timestamps'])->put("$key|timestamp", time());
-                        return $data;
+                $caching = new IndicatorCaching($this->indicator, $filter);
+                $this->dataTimestamp = $caching->getTimestamp();
+                //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
+                return Cache::tags($caching->tags())
+                    ->rememberForever($caching->key, function () use ($caching) {
+                        $caching->stamp();
+                        return $this->getData($caching->filter);
                     });
             }
             return $this->getData($filter);
         } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache", ['Exception: ' => $exception]);
+            logger("Exception occurred while trying to cache (in Chart.php)", ['Exception: ' => $exception]);
             return $this->getData($filter);
         }
     }

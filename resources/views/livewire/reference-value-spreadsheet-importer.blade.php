@@ -66,7 +66,7 @@
                         <tr>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Reference value for indicator') }}</th>
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Corresponding area path') }}</th>
-                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Area type') }}</th>
+                            <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900">{{ __('Area type') }}</th>
                             {{--<th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center w-24">{{ __('Zero pad code to length') }}</th>--}}
                             <th scope="col" class="py-2 px-3 text-left text-sm font-semibold text-gray-900 text-center">{{ __('Is additive') }}</th>
                         </tr>
@@ -83,7 +83,7 @@
                                     </select>
                                     <x-jet-input-error for="columnMapping.{{ $i }}.name" class="text-xs" />
                                 </td>
-                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                                {{--<td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $i }}.code" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                         <option value="">{{ __('Select column') }}</option>
                                         @foreach($columnHeaders as $column)
@@ -91,7 +91,7 @@
                                         @endforeach
                                     </select>
                                     <x-jet-input-error for="columnMapping.{{ $i }}.code" class="text-xs" />
-                                </td>
+                                </td>--}}
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $i }}.path" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                         <option value="">{{ __('Select column') }}</option>
@@ -101,6 +101,7 @@
                                     </select>
                                     <x-jet-input-error for="columnMapping.{{ $i }}.path" class="text-xs" />
                                 </td>
+
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $i }}.level" class="rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                         @foreach($levels as $level => $name)
@@ -108,10 +109,11 @@
                                         @endforeach
                                     </select>
                                 </td>
-                                <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+
+                                {{--<td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <input wire:model="columnMapping.{{ $i }}.zeroPadding" type="number" min="0" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     <x-jet-input-error for="columnMapping.{{ $i }}.zeroPadding" class="text-xs" />
-                                </td>
+                                </td>--}}
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500 text-center">
                                     <input wire:model="columnMapping.{{ $i }}.isAdditive" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                 </td>

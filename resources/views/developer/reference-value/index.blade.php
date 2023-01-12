@@ -75,9 +75,6 @@
                                     {{ __('Area Path') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Area Code') }}
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Level') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -95,9 +92,6 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{$record->path}}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->code}}
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{$record->level}}
                                 </td>
@@ -112,7 +106,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
+                                <td colspan="5" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
                                     {{ __('There are no records to display') }}
                                 </td>
                             </tr>

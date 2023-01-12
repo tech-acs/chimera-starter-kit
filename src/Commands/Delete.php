@@ -14,7 +14,7 @@ class Delete extends Command
 
     protected array $elementsMenu = [
         'Indicator' => "App\Http\Livewire",
-        'Scorecard' => "",
+        'Scorecard' => "App\Http\Livewire\Scorecard",
         'Report' => "App\Reports",
         'MapIndicator' => "App\MapIndicators",
     ];

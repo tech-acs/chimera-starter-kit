@@ -8,6 +8,7 @@ import keyBy from 'lodash/keyBy';
 export default class LeafletMap {
     map;
     mapOptions;
+    levelZoomMapping;
     styles;
     geojsonLayerGroup;
     options;
@@ -21,7 +22,7 @@ export default class LeafletMap {
         this.collectDataPassedViaDataAttributes(mapContainer);
         this.initializeMap(mapContainer, options.basemaps);
         this.addControls();
-        this.initializeGeojsonLayer(options.levelToZoomMapping);
+        this.initializeGeojsonLayer(this.levelZoomMapping);
         this.registerDomEventListeners();
         this.registerLivewireEventListeners();
         // ToDo: for debugging purposes only. Remove when done!
@@ -40,6 +41,7 @@ export default class LeafletMap {
     collectDataPassedViaDataAttributes(el) {
         this.mapOptions = this.extractDataAttributeSafely(el, 'mapOptions');
         this.indicators = this.extractDataAttributeSafely(el, 'indicators');
+        this.levelZoomMapping = this.extractDataAttributeSafely(el,'levelZoomMapping');
     }
 
     initializeMap(mapContainer, basemaps) {
@@ -174,7 +176,7 @@ export default class LeafletMap {
     }
 
     inferLevelFromZoom(zoom) {
-        return this.options.levelToZoomMapping.findIndex((zoomLevelGroup) => zoomLevelGroup.includes(zoom));
+        return this.levelZoomMapping.findIndex((zoomLevelGroup) => zoomLevelGroup.includes(zoom));
     }
 
     registerDomEventListeners() {
@@ -217,6 +219,7 @@ export default class LeafletMap {
 
             this.movementWasZoom = false;
             Livewire.emit('mapMoved', currentLevel, currentLevel - previousLevel, withinBoundsLtreePaths);
+            console.log({emitted:'mapMoved', currentLevel, direction: currentLevel-previousLevel, withinBoundsLtreePaths})
         });
     }
 
@@ -226,7 +229,7 @@ export default class LeafletMap {
         const areaKeyedData = keyBy(data, 'area_code');
         currentLayer.getLayers().forEach(feature => {
             let d = areaKeyedData[feature.feature.properties.code];
-            console.log({data, areaKeyedData, code: feature.feature.properties.code, d})
+            //console.log({data, areaKeyedData, code: feature.feature.properties.code, d})
             if (! isUndefined(d)) {
                 feature.setStyle(this.styles[d.style]);
                 feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + d.value);
@@ -245,7 +248,7 @@ export default class LeafletMap {
         });
 
         Livewire.on('indicatorSwitched', (data, styles, legend) => {
-            console.log({data, styles, legend});
+            //console.log({data, styles, legend});
             this.styles = styles;
             this.setLegend(legend);
 

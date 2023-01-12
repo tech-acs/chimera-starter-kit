@@ -43,13 +43,21 @@ class AreaTree
         return str($path)->explode('.')->count() - 1;
     }
 
-    public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true)
+    public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = true, ?string $nameOfReferenceValueToInclude = null)
     {
         $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";
-        return Area::selectRaw($checksumSafe ? "CONCAT('*', path) AS path, code, name" : 'path, code, name')
-            ->whereRaw("path ~ '{$lquery}'")
-            ->orderBy($orderBy)
-            ->get();
+        if (is_null($nameOfReferenceValueToInclude)) {
+            return Area::selectRaw($checksumSafe ? "CONCAT('*', path) AS path, code, name" : 'path, code, name')
+                ->whereRaw("path ~ '{$lquery}'")
+                ->orderBy($orderBy)
+                ->get();
+        } else {
+            return Area::selectRaw($checksumSafe ? "CONCAT('*', areas.path) AS path, code, name, value" : 'path, code, name, value')
+                ->leftJoin('reference_values', 'areas.path', 'reference_values.path')
+                ->whereRaw("areas.path ~ '{$lquery}' AND reference_values.indicator = '{$nameOfReferenceValueToInclude}'")
+                ->orderBy($orderBy)
+                ->get();
+        }
     }
 
     public function getArea(string $path)

@@ -32,8 +32,8 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     {
         $aggMethod = $indicatorMapping['isAdditive'] ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
         DB::insert("
-            INSERT INTO reference_values(path, code, level, indicator, value)
-            SELECT areas.path, areas.code, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
+            INSERT INTO reference_values(path, level, indicator, value)
+            SELECT areas.path, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
             FROM (
                 SELECT $aggMethod, subpath(areas.path, 0, $level) AS path, reference_values.indicator
                 FROM reference_values INNER JOIN areas ON reference_values.path = areas.path
@@ -47,9 +47,9 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     {
         SimpleExcelReader::create($this->filePath)->getRows()
             ->map(function($row) use ($indicatorMapping) {
-                $code = Str::padLeft($row[$indicatorMapping['code']], $indicatorMapping['zeroPadding'] ?? 0, '0');
+                //$code = Str::padLeft($row[$indicatorMapping['code']], $indicatorMapping['zeroPadding'] ?? 0, '0');
                 return [
-                    'code' => $code,
+                    //'code' => $code,
                     'path' => $row[$indicatorMapping['path']],
                     'level' => $indicatorMapping['level'],
                     'indicator' => $indicatorMapping['name'],

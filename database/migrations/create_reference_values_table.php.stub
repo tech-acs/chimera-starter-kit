@@ -26,7 +26,7 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE reference_values ADD COLUMN path ltree");
-        DB::statement("ALTER TABLE reference_values ADD CONSTRAINT reference_values_path_unique UNIQUE(path)");
+        //DB::statement("ALTER TABLE reference_values ADD CONSTRAINT reference_values_path_unique UNIQUE(path)");
         DB::statement("CREATE INDEX reference_values_path_gist_idx ON reference_values USING gist(path)");
     }
 
