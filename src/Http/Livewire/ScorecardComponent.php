@@ -14,7 +14,7 @@ class ScorecardComponent extends Component
     public string $title;
     public int|float|string $value;
     public string $bgColor;
-    public int $diff = 0;
+    public ?int $diff = null;
     public string $unit = '%';
     public int $dataTimestamp;
 

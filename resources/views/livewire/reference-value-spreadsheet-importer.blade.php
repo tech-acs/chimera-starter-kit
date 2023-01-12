@@ -44,7 +44,7 @@
                     <x-jet-input-error for="spreadsheet" />
                 @else
                     <div class="text-xs text-gray-500 mt-1">
-                        {{ __('You must upload a spreadsheet (.xlsx or .csv)') }}
+                        {{ __('You must upload a spreadsheet (.csv)') }}
                     </div>
                 @endif
             </div>

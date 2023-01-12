@@ -36,7 +36,7 @@ class ReferenceValueSpreadsheetImporter extends Component
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v]);
-        return array_merge(['spreadsheet' => 'required|file|mimes:csv,xlsx'], $columnMappingRules->all());
+        return array_merge(['spreadsheet' => 'required|file|mimes:csv'], $columnMappingRules->all());
     }
 
     protected function messages()

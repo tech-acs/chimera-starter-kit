@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class {{ class }} extends Chart
 {
-    protected function getData(array $filter = []): Collection
+    public function getData(array $filter = []): Collection
     {
         return collect(new \DatePeriod(
             new \DateTime('2010-04-01'),

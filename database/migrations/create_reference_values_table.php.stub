@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('reference_values', function (Blueprint $table) {
             $table->id();
 
-            $table->string('code')->index();
+            //$table->string('code')->index();
             $table->tinyInteger('level')->index();
             $table->string('indicator', 100)->index();
             $table->decimal('value', 12, 2);

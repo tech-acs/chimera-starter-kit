@@ -44,7 +44,7 @@ class AreaSpreadsheetImporter extends Component
                 })
                 ->all()
         );
-        return array_merge(['spreadsheet' => 'required|file|mimes:csv,xlsx'], $columnMappingRules);
+        return array_merge(['spreadsheet' => 'required|file|mimes:csv'], $columnMappingRules);
     }
 
     protected function messages()

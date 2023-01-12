@@ -23,10 +23,10 @@ class AreaFilter extends Component
             $dropdown = ['list' => [], 'selected' => null, 'restricted' => null];
             $levelName = $areaTree->hierarchies[$level];
             if ($level === 0) {
-                $dropdown['list'] = $areaTree->areas()->pluck('name', 'path')->all();
+                $dropdown['list'] = $areaTree->areas(checksumSafe: true)->pluck('name', 'path')->all();
             }
             if ($subject) {
-                $dropdown['list'] = $areaTree->areas($subject)->pluck('name', 'path')->all();
+                $dropdown['list'] = $areaTree->areas($subject, checksumSafe: true)->pluck('name', 'path')->all();
                 $subject = null;
             }
             if (array_key_exists($levelName, $selectionsFromSession)) {
@@ -54,7 +54,7 @@ class AreaFilter extends Component
             }
             if ($shouldUpdate) {
                 $this->dropdowns[$levelName]['list'] = $areaTree
-                    ->areas($this->removeChecksumSafety($selectedPath))
+                    ->areas($this->removeChecksumSafety($selectedPath), checksumSafe: true)
                     ->pluck('name', 'path')
                     ->all();
                 $this->dropdowns[$levelName]['selected'] = null;

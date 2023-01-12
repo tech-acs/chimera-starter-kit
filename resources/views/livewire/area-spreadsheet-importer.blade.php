@@ -45,7 +45,7 @@
                     <x-jet-input-error for="spreadsheet" />
                 @else
                     <div class="text-xs text-gray-500 mt-1">
-                        You must upload a spreadsheet (.xlsx or .csv)
+                        You must upload a spreadsheet (.csv)
                     </div>
                 @endif
             </div>
