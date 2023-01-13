@@ -18,13 +18,14 @@ class IndicatorController extends Controller
     public function edit(Indicator $indicator)
     {
         $pages = Page::pluck('title', 'id');
-        return view('chimera::indicator.edit', compact('indicator', 'pages'));
+        $tags = config('chimera.cache.tags', []);
+        return view('chimera::indicator.edit', compact('indicator', 'pages', 'tags'));
     }
 
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
         $indicator->pages()->sync($request->get('pages', []));
-        $indicator->update($request->only(['title', 'description', 'help', 'published']));
+        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

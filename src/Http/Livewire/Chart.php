@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
+use Carbon\Carbon;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Services\AreaTree;
 use Illuminate\Support\Collection;
@@ -16,7 +17,7 @@ abstract class Chart extends Component
     public array $data;
     public array $layout;
     public array $config;
-    public int $dataTimestamp;
+    public Carbon $dataTimestamp;
 
     const DEFAULT_CONFIG = [
         'responsive' => true,
@@ -105,15 +106,16 @@ abstract class Chart extends Component
 
     private function getDataAndCacheIt(array $filter): Collection
     {
-        $this->dataTimestamp = time();
+        $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
                 $caching = new IndicatorCaching($this->indicator, $filter);
                 $this->dataTimestamp = $caching->getTimestamp();
                 //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
                 return Cache::tags($caching->tags())
-                    ->rememberForever($caching->key, function () use ($caching) {
+                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching) {
                         $caching->stamp();
+                        $this->dataTimestamp = Carbon::now();
                         return $this->getData($caching->filter);
                     });
             }

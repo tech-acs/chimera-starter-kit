@@ -62,8 +62,10 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->hasRoute('web')
             ->hasMigrations($migrations)
             ->hasCommands([
-                \Uneca\Chimera\Commands\CacheData::class,
-                \Uneca\Chimera\Commands\ClearCacheData::class,
+                \Uneca\Chimera\Commands\CacheIndicators::class,
+                \Uneca\Chimera\Commands\CacheScorecards::class,
+                \Uneca\Chimera\Commands\CacheMapIndicators::class,
+                \Uneca\Chimera\Commands\CacheClear::class,
                 \Uneca\Chimera\Commands\Chimera::class,
                 \Uneca\Chimera\Commands\DataExport::class,
                 \Uneca\Chimera\Commands\DataImport::class,

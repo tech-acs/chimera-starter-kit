@@ -27,7 +27,7 @@ class DashboardComponentFactory
         $classPath = "App\Http\Livewire\\Scorecard\\" . str_replace('/', '\\', $scorecard->name);
         try {
             $instance = new $classPath;
-            $instance->indicator = $scorecard;
+            $instance->scorecard = $scorecard;
             return $instance;
         } catch (\Exception $exception) {
             logger("Exception in DashboardComponentFactory", ['exception' => $exception->getMessage()]);

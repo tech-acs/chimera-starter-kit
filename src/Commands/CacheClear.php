@@ -10,11 +10,11 @@ use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\Caching;
 
-class ClearCacheData extends Command
+class CacheClear extends Command
 {
-    protected $signature = 'chimera:cache-clear {--questionnaire=}';
+    protected $signature = 'chimera:cache-clear {--questionnaire=} {--type=}';
 
-    protected $description = "Clear all cached data";
+    protected $description = "Clear cached data";
 
     public function __construct()
     {
@@ -24,9 +24,11 @@ class ClearCacheData extends Command
     public function handle()
     {
         if ($this->option('questionnaire')) {
-            Cache::tags([$this->option('questionnaire'), 'map-indicators'])->flush();
+            Cache::tags([$this->option('questionnaire')])->flush();
+        } elseif ($this->option('type')) { // indicators|scorecards|casestats|mapindicators
+            Cache::tags([$this->option('type')])->flush();
         } else {
-            Cache::tags(['indicators', 'scorecards', 'map-indicators'])->flush();
+            Cache::flush();
         }
 
         $this->newLine()->info("The cache has been cleared");

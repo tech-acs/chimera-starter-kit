@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Uneca\Chimera\Models\Scorecard;
@@ -16,12 +17,13 @@ class ScorecardComponent extends Component
     public string $bgColor;
     public ?int $diff = null;
     public string $unit = '%';
-    public int $dataTimestamp;
+    public Carbon $dataTimestamp;
 
     public function mount(Scorecard $scorecard, $index)
     {
         $this->scorecard = $scorecard;
         $this->title = $this->scorecard->title;
+        $index = $index % count(Theme::colors());
         $this->bgColor = Theme::colors()[$index];
     }
 
@@ -32,7 +34,7 @@ class ScorecardComponent extends Component
 
     final public function setValue()
     {
-        $this->dataTimestamp = time();
+        $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
                 $caching = new ScorecardCaching($this->scorecard, []);
@@ -41,6 +43,7 @@ class ScorecardComponent extends Component
                 $this->value = Cache::tags($caching->tags())
                     ->rememberForever($caching->key, function () use ($caching) {
                         $caching->stamp();
+                        $this->dataTimestamp = Carbon::now();
                         return $this->getData($caching->filter);;
                     });
             } else {

@@ -65,7 +65,7 @@
                                     {{ __('Questionnaire') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Type') }}
+                                    {{ __('Tag') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Page') }}
@@ -86,7 +86,7 @@
                                     {{$record->questionnaire}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-                                    {{$record->type}}
+                                    {{$record->tag ?? '-'}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{$record->pages->isEmpty() ? 'Not assigned' : $record->pages->pluck('title')->join(', ')}}

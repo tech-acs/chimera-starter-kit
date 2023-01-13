@@ -21,7 +21,8 @@ class Page extends Model
     {
         return $this->belongsToMany(Indicator::class)
             ->withPivot('rank')
-            ->orderByPivot('rank');
+            ->orderByPivot('rank')
+            ->withTimestamps();
     }
 
     protected function permissionName(): Attribute

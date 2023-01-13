@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": "^8.0",
+        "ext-intl": "*",
         "spatie/laravel-package-tools": "^1.9.2",
         "illuminate/contracts": "^9.0",
         "laravel/jetstream": "^2.6",
@@ -49,7 +50,8 @@
     "scripts": {
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest coverage"
+        "test-coverage": "vendor/bin/pest coverage",
+        "post-install-cmd": "echo '.data-export-stamp'>>.gitignore",
     },
     "config": {
         "sort-packages": true

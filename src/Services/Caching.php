@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Services;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Indicator;
@@ -28,11 +29,11 @@ abstract class Caching
 
     public function stamp(): bool
     {
-        return Cache::tags(['timestamps'])->put("$this->key|timestamp", time());
+        return Cache::tags(['timestamps'])->put("$this->key|timestamp", Carbon::now());
     }
 
-    public function getTimestamp(): int
+    public function getTimestamp(): Carbon
     {
-        return Cache::tags(['timestamps'])->get("$this->key|timestamp", time());
+        return Cache::tags(['timestamps'])->get("$this->key|timestamp", Carbon::now());
     }
 }

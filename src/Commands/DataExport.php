@@ -79,9 +79,7 @@ class DataExport extends Command
         $fileHandle = fopen($outputFile, 'w');
         foreach ($this->tables as $table) {
             $result = $this->getChagnedRows($table, $lastExport);
-            //dump($result);
             $sql = $this->rowsToSql($table, $result);
-            //dump($sql);
             fwrite($fileHandle, $sql . PHP_EOL);
         }
         fclose($fileHandle);

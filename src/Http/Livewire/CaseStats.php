@@ -2,29 +2,50 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
+use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Questionnaire;
 use Uneca\Chimera\Services\BreakoutQueryBuilder;
 
 class CaseStats extends Component
 {
-    public $questionnaire;
-    public $stats = [];
+    public Questionnaire $questionnaire;
+    public array $stats = [];
+    public Carbon $dataTimestamp;
 
     public function mount(Questionnaire $questionnaire)
     {
         $this->questionnaire = $questionnaire;
-        //$this->stats = $this->getData([]);
     }
 
     public function setStats()
     {
-        $this->stats = $this->getData([]);
+        $filter = []; // Area Restriction?
+        $this->dataTimestamp = Carbon::now();
+        try {
+            if (config('chimera.cache.enabled')) {
+                $key = 'casestat|' . $this->questionnaire->name . implode('-', array_filter($filter));
+                $tags = [$this->questionnaire->name, 'casestats'];
+                $this->dataTimestamp = Cache::tags(['timestamps'])->get("$key|timestamp", Carbon::now());
+                //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
+                $this->stats = Cache::tags($tags)
+                    ->remember($key, config('chimera.cache.ttl'), function () use ($key, $filter) {
+                        Cache::tags(['timestamps'])->put("$key|timestamp", Carbon::now());
+                        $this->dataTimestamp = Carbon::now();
+                        return $this->getData($filter);
+                    });
+            } else {
+                $this->stats = $this->getData($filter);
+            }
+        } catch (\Exception $exception) {
+            logger("Exception occurred while trying to cache (in CaseStats.php)", ['Exception: ' => $exception]);
+            $this->stats = $this->getData($filter);
+        }
     }
 
     public function getData(array $filter)
     {
-        //sleep(3);
         $l = (new BreakoutQueryBuilder($this->questionnaire->name, false))
             ->select([
                 "COUNT(*) AS total",

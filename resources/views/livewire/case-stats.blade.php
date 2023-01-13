@@ -1,4 +1,7 @@
-<dl wire:init="setStats" class="grid grid-cols-1 content-center rounded-md border bg-white divide-y divide-gray-200 md:grid-cols-4 md:divide-y-0 md:divide-x">
+<dl wire:init="setStats" class="relative grid grid-cols-1 content-center rounded-md border bg-white divide-y divide-gray-200 md:grid-cols-4 md:divide-y-0 md:divide-x">
+    <div class="absolute z-50 left-2 bottom-2 opacity-25 cursor-pointer" title="{{ $dataTimestamp?->toDayDateTimeString() }}">
+        <x-chimera::icon.stamp class="text-gray-800" />
+    </div>
     <div wire:loading class="h-24 col-span-4">
         <div class="flex justify-center h-full items-center text-lg text-gray-400"><div>Fetching data . . . </div></div>
     </div>

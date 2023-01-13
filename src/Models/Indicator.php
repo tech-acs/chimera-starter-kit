@@ -21,7 +21,8 @@ class Indicator extends Model
     public function pages()
     {
         return $this->belongsToMany(Page::class)
-            ->withPivot('rank');
+            ->withPivot('rank')
+            ->withTimestamps();
     }
 
     protected function permissionName(): Attribute
@@ -54,6 +55,16 @@ class Indicator extends Model
     public function scopeOfQuestionnaire(Builder $query, $questionnaire)
     {
         return $query->where('questionnaire', $questionnaire);
+    }
+
+    public function scopeOfTag(Builder $query, $tag)
+    {
+        return $query->where('tag', $tag);
+    }
+
+    public function scopeUntagged(Builder $query)
+    {
+        return $query->where('tag', null);
     }
 
     protected static function booted()

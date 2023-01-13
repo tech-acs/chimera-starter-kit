@@ -81,16 +81,18 @@ class Map extends Component
     private function getDataAndCacheIt(?MapIndicatorBaseClass $mapIndicator, int $level, array $paths): array
     {
         if (config('chimera.cache.enabled')) {
-            $key = 'map-indicator|' . $mapIndicator->model->slug . implode('-', array_filter($paths));
+            return $mapIndicator?->getData($level, $paths) ?? [];
+
+            /*$key = 'map-indicator|' . $mapIndicator->model->slug . implode('-', array_filter($paths));
             //$this->dataTimestamp = $caching->getTimestamp();
             //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
             return Cache::tags([$mapIndicator->model->questionnaire, 'map-indicators'])
                 ->rememberForever($key, function () use ($mapIndicator, $level, $paths) {
                     //$caching->stamp();
                     return $mapIndicator->getData($level, $paths);
-                });
+                });*/
         }
-        return $mapIndicator->getData($level, $paths);
+        return $mapIndicator?->getData($level, $paths) ?? [];
     }
 
     public function setSelectedIndicator(string $mapIndicator, int $level)

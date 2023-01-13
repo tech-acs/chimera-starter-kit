@@ -24,5 +24,6 @@ return [
 
     'cache' => [
         'enabled' => env('CACHE_ENABLED', false),
+        'tags' => [],
     ],
 ];

@@ -32,6 +32,16 @@
                 <x-jet-input-error for="page_id" class="mt-2" />
             </div>
             <div>
+                <x-jet-label for="tag" value="{{ __('Cache Tag') }}" />
+                <select name="tag" class="space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                    <option value="">{{ __('Assign a cache tag') }}</option>
+                    @foreach($tags as $tag)
+                        <option class="p-2 rounded-md" value="{{ $tag }}" @selected($tag == $indicator->tag)>{{ $tag }}</option>
+                    @endforeach
+                </select>
+                <x-jet-input-error for="tag" class="mt-2" />
+            </div>
+            <div>
                 <x-jet-label for="page" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($indicator->published ?? false) }">
                     <label for="status">
