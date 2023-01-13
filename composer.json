@@ -51,7 +51,7 @@
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest coverage",
-        "post-install-cmd": "echo '.data-export-stamp'>>.gitignore",
+        "post-install-cmd": "echo '.data-export-stamp'>>.gitignore"
     },
     "config": {
         "sort-packages": true

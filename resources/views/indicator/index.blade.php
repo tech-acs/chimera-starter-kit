@@ -95,7 +95,8 @@
                                     <x-chimera::yes-no value="{{$record->published}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{route('indicator.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                    <a href="{{route('indicator.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
+                                    <a href="#" class="inline text-green-700"><x-chimera::icon.performance /></a>
                                 </td>
                             </tr>
                         @empty
