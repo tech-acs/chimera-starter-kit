@@ -12,6 +12,11 @@
                 <x-jet-input-error for="description" class="mt-2" />
             </div>
             <div>
+                <x-jet-label for="rank" value="{{ __('Rank') }}" />
+                <x-jet-input id="rank" name="rank" type="number" class="w-20" value="{{ old('rank', $page->rank) }}" />
+                <x-jet-input-error for="rank" class="mt-2" />
+            </div>
+            <div>
                 <x-jet-label for="published" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($page->published ?? false) }" x-cloak>
                     <label for="status">

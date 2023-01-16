@@ -11,6 +11,7 @@ class PageBuilder
         try {
             $pages = Page::select('title', 'slug', 'description')
                 ->published()
+                ->orderBy('rank')
                 ->get()
                 ->keyBy('slug')
                 ->map(fn($model) => $model)

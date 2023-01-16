@@ -20,7 +20,7 @@ abstract class ReportBaseClass
         $this->file = "{$report->slug}.{$this->fileType}";
     }
 
-    abstract public function getData(): Collection;
+    abstract public function getData(array $filter): Collection;
 
     public function writeFile($data)
     {
@@ -34,7 +34,8 @@ abstract class ReportBaseClass
 
     public function generate()
     {
-        $data = $this->getData();
+        $filter = []; // Area Restriction?
+        $data = $this->getData($filter);
         if (empty($data)) {
             throw new Exception('There is no data to export');
         }

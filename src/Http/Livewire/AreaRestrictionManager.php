@@ -24,10 +24,10 @@ class AreaRestrictionManager extends AreaFilter
             $dropdown = ['list' => [], 'selected' => null, 'restricted' => null];
             $levelName = $areaTree->hierarchies[$level];
             if ($level === 0) {
-                $dropdown['list'] = $areaTree->areas()->pluck('name', 'path')->all();
+                $dropdown['list'] = $areaTree->areas(checksumSafe: true)->pluck('name', 'path')->all();
             }
             if ($subject) {
-                $dropdown['list'] = $areaTree->areas($subject)->pluck('name', 'path')->all();
+                $dropdown['list'] = $areaTree->areas($subject, checksumSafe: true)->pluck('name', 'path')->all();
                 $subject = null;
             }
             if (array_key_exists($levelName, $previousRestrictions)) {
@@ -41,7 +41,7 @@ class AreaRestrictionManager extends AreaFilter
     public function filter()
     {
         $areaRestrictions = collect($this->dropdowns)
-            ->reject(fn ($dropdown) => is_null($dropdown['selected']))
+            ->reject(fn ($dropdown) => empty($dropdown['selected']))
             ->mapWithKeys(fn ($dropdown, $key) => [$key => ['level' => AreaTree::levelFromPath($dropdown['selected']), 'path' => $this->removeChecksumSafety($dropdown['selected'])]]);
         $this->user->areaRestrictions()->delete();
         $this->user->areaRestrictions()->createMany($areaRestrictions->values());

@@ -20,6 +20,7 @@ class Questionnaire extends Model
     {
         return Scorecard::published()
             ->whereQuestionnaire($this->name)
+            ->orderBy('rank')
             ->get();
     }
 

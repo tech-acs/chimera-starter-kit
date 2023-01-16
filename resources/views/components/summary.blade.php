@@ -2,7 +2,7 @@
     <div class="flex justify-between p-4 border-b border-gray-200 sm:px-6">
         <div>
             <dt>
-                <p class="text-2xl font-semibold text-gray-700">{{ $title }}</p>
+                <p class="text-2xl font-semibold text-gray-700">{{ $title }} @if (! is_null($area)) ({{ $area->name }}) @endif</p>
             </dt>
             <dd class="flex items-baseline">
                 <p class="flex items-baseline text-sm font-semibold">

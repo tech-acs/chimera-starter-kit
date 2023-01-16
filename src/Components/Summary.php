@@ -2,7 +2,9 @@
 
 namespace Uneca\Chimera\Components;
 
+use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\BreakoutQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\View\Component;
@@ -13,6 +15,7 @@ class Summary extends Component
     public string $title;
     public array $dates = [];
     public string $lastUpdated;
+    public ?Area $area = null;
 
     public function __construct(Questionnaire $questionnaire)
     {
@@ -23,6 +26,10 @@ class Summary extends Component
         $this->lastUpdated = $this->getLastUpdated();
         $this->title = $questionnaire->title;
         $this->color = 'text-black';
+        $areaRestrictions = auth()->user()->areaRestrictions;
+        if ($areaRestrictions->isNotEmpty()) {
+            $this->area = (new AreaTree())->getArea($areaRestrictions->first()->path);
+        }
     }
 
     private function makeProgressStatement(Carbon $s, Carbon $e, Carbon $now)

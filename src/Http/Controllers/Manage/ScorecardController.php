@@ -11,7 +11,7 @@ class ScorecardController extends Controller
 {
     public function index()
     {
-        $records = Scorecard::orderBy('title')->get();
+        $records = Scorecard::orderBy('rank')->get();
         return view('chimera::scorecard.index', compact('records'));
     }
 
@@ -23,7 +23,7 @@ class ScorecardController extends Controller
 
     public function update(Scorecard $scorecard, StatRequest $request)
     {
-        $scorecard->update($request->only(['title', 'description', 'linked_indicator', 'published']));
+        $scorecard->update($request->only(['title', 'description', 'linked_indicator', 'published', 'rank']));
         return redirect()->route('scorecard.index')->withMessage('Record updated');
     }
 }

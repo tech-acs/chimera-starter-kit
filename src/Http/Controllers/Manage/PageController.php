@@ -12,7 +12,7 @@ class PageController extends Controller
 {
     public function index()
     {
-        $records = Page::withCount('indicators')->get();
+        $records = Page::withCount('indicators')->orderBy('rank')->get();
         return view('chimera::page.index', compact('records'));
     }
 
@@ -23,7 +23,7 @@ class PageController extends Controller
 
     public function store(PageRequest $request)
     {
-        Page::create($request->only(['title',  'description', 'published']));
+        Page::create($request->only(['title',  'description', 'published', 'rank']));
         return redirect()->route('page.index')->withMessage('Page created');
     }
 
@@ -37,11 +37,11 @@ class PageController extends Controller
 
     public function update(Page $page, PageRequest $request)
     {
-        $page->update($request->only(['title', 'description', 'published']));
-        foreach ($request->get('indicators', []) as $rank => $indicatorId) {
+        $page->update($request->only(['title', 'description', 'published', 'rank']));
+        foreach ($request->get('indicators', []) as $indicatorRank => $indicatorId) {
             $page->indicators()->updateExistingPivot(
                 $indicatorId,
-                ['rank' => $rank]
+                ['rank' => $indicatorRank]
             );
         }
         return redirect()->route('page.index')->withMessage('Page updated');

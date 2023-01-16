@@ -2,7 +2,6 @@
 
 namespace Uneca\Chimera\Models;
 
-
 use Spatie\Permission\Traits\HasRoles;
 use Uneca\Chimera\Services\AreaTree;
 

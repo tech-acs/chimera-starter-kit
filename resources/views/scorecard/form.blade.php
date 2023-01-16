@@ -6,46 +6,32 @@
     </div>--}}
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
         <div class="grid grid-cols-1 gap-6">
-            <div class="">
+            <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input disabled type="text" name="name" class="mt-1 block w-full bg-gray-100" value="{{ $scorecard->name }}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
-            <div class="">
+            <div>
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
-                <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $scorecard->title ?? null)}}" />
+                <x-chimera::multi-lang-input id="title" name="title" value="{{ old('title', $scorecard->title ?? null) }}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
-            <div class="">
+            <div>
+                <x-jet-label for="rank" value="{{ __('Rank') }}" />
+                <x-jet-input id="rank" name="rank" type="number" class="w-20" value="{{ old('rank', $scorecard->rank) }}" />
+                <x-jet-input-error for="rank" class="mt-2" />
+            </div>
+            <div>
                 <x-jet-label for="linked_indicator" value="{{ __('Linked Indicator') }}" />
                 <select name="linked_indicator" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="">None</option>
+                    <option value="">{{ __('None') }}</option>
                     @foreach($indicators as $slug => $title)
                         <option value="{{ $slug }}" {{old('linked_indicator', $scorecard->linked_indicator ?? null) === $slug ? 'selected' : ''}}>{{ $title }}</option>
                     @endforeach
                 </select>
                 <x-jet-input-error for="linked_indicator" class="mt-2" />
             </div>
-            {{--<div class="">
-                <x-jet-label for="description" value="{{ __('Description') }}" />
-                <textarea name="description" rows="3" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $stat->description ?? null)}}</textarea>
-                <x-jet-input-error for="description" class="mt-2" />
-            </div>
-            <div class="">
-                <x-jet-label for="help" value="{{ __('Contextual Help Text') }}" />
-                <textarea name="help" rows="5" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $indicator->help ?? null)}}</textarea>
-                <x-jet-input-error for="help" class="mt-2" />
-            </div>
-            <div class="">
-                <x-jet-label for="page_id" value="{{ __('Page') }}" />
-                <select name="page_id" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    @foreach($pages as $id => $pageTitle)
-                        <option value="{{ $id }}" {{old('page_id', $indicator->page_id ?? null) === $id ? 'selected' : ''}}>{{ $pageTitle }}</option>
-                    @endforeach
-                </select>
-                <x-jet-input-error for="page_id" class="mt-2" />
-            </div>--}}
-            <div class="">
+            <div>
                 <x-jet-label for="page" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($scorecard->published ?? false) }">
                     <label for="status">

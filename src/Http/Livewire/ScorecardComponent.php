@@ -13,10 +13,10 @@ class ScorecardComponent extends Component
 {
     public Scorecard $scorecard;
     public string $title;
-    public int|float|string $value;
-    public string $bgColor;
+    public int|float|string $value = '';
     public ?int $diff = null;
     public string $unit = '%';
+    public string $bgColor;
     public Carbon $dataTimestamp;
 
     public function mount(Scorecard $scorecard, $index)
@@ -27,31 +27,32 @@ class ScorecardComponent extends Component
         $this->bgColor = Theme::colors()[$index];
     }
 
-    public function getData(array $filter): int|float|string
+    public function getData(array $filter): array
     {
-        return 'N/A';
+        return [$this->value, $this->diff];
     }
 
     final public function setValue()
     {
+        $user = auth()->user();
+        $filter = $user->areaRestrictionAsFilter();;
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
                 $caching = new ScorecardCaching($this->scorecard, []);
                 $this->dataTimestamp = $caching->getTimestamp();
-                logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
-                $this->value = Cache::tags($caching->tags())
+                list($this->value, $this->diff) = Cache::tags($caching->tags())
                     ->rememberForever($caching->key, function () use ($caching) {
                         $caching->stamp();
                         $this->dataTimestamp = Carbon::now();
-                        return $this->getData($caching->filter);;
+                        return $this->getData($caching->filter);
                     });
             } else {
-                $this->value = $this->getData([]);
+                list($this->value, $this->diff) = $this->getData($filter);
             }
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception]);
-            $this->value = $this->getData([]);
+            list($this->value, $this->diff) = $this->getData([]);
         }
     }
 

@@ -7,6 +7,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Questionnaire;
 use Uneca\Chimera\Services\BreakoutQueryBuilder;
+use Uneca\Chimera\Services\QueryFragmentFactory;
 
 class CaseStats extends Component
 {
@@ -21,7 +22,8 @@ class CaseStats extends Component
 
     public function setStats()
     {
-        $filter = []; // Area Restriction?
+        $user = auth()->user();
+        $filter = $user->areaRestrictionAsFilter();;
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
@@ -46,6 +48,7 @@ class CaseStats extends Component
 
     public function getData(array $filter)
     {
+        list($selectColumns, $whereConditions) = QueryFragmentFactory::make($this->questionnaire->name)->getSqlFragments($filter);
         $l = (new BreakoutQueryBuilder($this->questionnaire->name, false))
             ->select([
                 "COUNT(*) AS total",
@@ -54,6 +57,7 @@ class CaseStats extends Component
                 "COUNT(*) - COUNT(DISTINCT `key`) AS duplicate"
             ])
             ->from([])
+            ->where($whereConditions)
             ->get()
             ->first();
         $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
