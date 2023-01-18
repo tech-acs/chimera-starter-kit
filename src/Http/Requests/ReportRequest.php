@@ -21,12 +21,16 @@ class ReportRequest extends FormRequest
         return [
             'title' => 'required',
             'description' => 'required',
-            'schedule' => 'required_if:enabled,true'
+            'run_at' => 'required_if:enabled,true',
+            'run_every' => 'required_if:enabled,true'
         ];
     }
 
     public function messages()
     {
-        return ['schedule.required_if' => 'The schedule field is required when the report is enabled.'];
+        return [
+            'run_at.required_if' => 'The run at field is required when scheduling is enabled.',
+            'run_every.required_if' => 'The run every field is required when scheduling is enabled.'
+        ];
     }
 }

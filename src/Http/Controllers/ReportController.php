@@ -16,9 +16,15 @@ class ReportController extends Controller
             })
             ->orderBy('title')
             ->paginate(config('chimera.records_per_page'));*/
-        $records = Report::enabled()
+        $records = Report::published()
             ->orderBy('title')
             ->paginate(config('chimera.records_per_page'));
+
+        $records->setCollection(
+            $records->getCollection()->filter(function ($report) {
+                return Gate::allows($report->permission_name);
+            })
+        );
         return view('chimera::report.index', compact('records'));
     }
 

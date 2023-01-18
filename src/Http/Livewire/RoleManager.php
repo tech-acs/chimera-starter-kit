@@ -7,6 +7,7 @@ use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Models\Report;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
+use Uneca\Chimera\Models\Scorecard;
 
 class RoleManager extends Component
 {
@@ -55,6 +56,24 @@ class RoleManager extends Component
             ]
         ];
         $groups = $groups->merge($reports);
+
+        Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'scorecards']);
+        $scorecards = [
+            [
+                'title' => 'Scorecards',
+                'description' => 'This is the scorecards section',
+                'permission_name' => 'scorecards',
+                'permissionables' => Scorecard::all()->map(function ($scorecard) {
+                    return [
+                        'title' => $scorecard->title,
+                        'description' => '',
+                        'permission_name' => $scorecard->permission_name,
+                    ];
+                }),
+                'count' => Scorecard::all()->count(),
+            ]
+        ];
+        $groups = $groups->merge($scorecards);
 
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'maps']);
         $maps = [

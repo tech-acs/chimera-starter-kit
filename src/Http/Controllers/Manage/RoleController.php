@@ -11,7 +11,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $records = Role::all();
+        $records = Role::with('permissions')->get();
         return view('chimera::role.index', compact('records'));
     }
 

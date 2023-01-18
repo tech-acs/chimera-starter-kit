@@ -25,6 +25,9 @@ class DataExport extends Command
         'scorecards',
         'reports',
         'map_indicators',
+        'roles',
+        'permissions',
+        'role_has_permissions'
     ];
 
     protected array $maskedColumns = [

@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('questionnaire')->nullable();
             $table->boolean('enabled')->default(false);
             $table->timestamp('last_generated_at')->nullable();
-            $table->time('schedule')->nullable();
+            $table->time('run_at')->nullable();
+            $table->tinyInteger('run_every')->default(24);
+            $table->boolean('published')->default(false);
             $table->timestamps();
         });
     }

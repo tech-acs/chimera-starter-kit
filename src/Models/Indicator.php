@@ -25,6 +25,11 @@ class Indicator extends Model
             ->withTimestamps();
     }
 
+    public function analytics()
+    {
+        return $this->hasMany(IndicatorAnalytics::class)->orderBy('completed_at');
+    }
+
     protected function permissionName(): Attribute
     {
         return new Attribute(

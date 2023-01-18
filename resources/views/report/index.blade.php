@@ -35,63 +35,76 @@
                 </div>
             </div>
         @endif
-        <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
-                @forelse($records ?? [] as $report)
-                    @can($report->permission_name)
-                    <li>
-                        <div class="flex items-center px-4 py-4 sm:px-6">
-                            <div class="min-w-0 flex-1 flex items-center">
-                                <div class="min-w-0 flex-1 md:grid md:grid-cols-2 md:gap-4">
-                                    <div>
-                                        <p class="text-sm font-medium text-indigo-600 truncate">{{ $report->title }}</p>
-                                        <p class="mt-2 flex items-center text-sm text-gray-500">{{ $report->name }}</p>
-                                        <p title="Questionnaire" class="mt-2 flex items-center italic text-sm text-gray-500">{{ $report->questionnaire }} questionnaire</p>
-                                    </div>
-                                    <div class="hidden md:block">
-                                        <div>
-                                            <div class="flex items-center">
-                                                {{--<x-yes-no :value="$report->enabled" true-label="Enabled" false-label="Not enabled" />--}}
-                                                <p class="ml-2 text-sm text-gray-500">
-                                                    {{ $report->schedule ? "Generates daily at {$report->schedule}" : 'Not scheduled' }}
-                                                </p>
+            <div class="mt-2 flex flex-col">
+                <div class="inline-block min-w-full py-2 align-middle">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Report</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Generation Schedule</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Current Version</th>
+                                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Download</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                            @forelse($records ?? [] as $report)
+                                @can($report->permission_name)
+                            <tr>
+                                <td class="py-4 pl-4 pr-3 text-sm sm:pl-6 w-1/2">
+                                    <div class="flex items-center">
+                                        {{--<div class="h-10 w-10 flex-shrink-0">
+                                            <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                                        </div>--}}
+                                        <div class="w-full">
+                                            <div class="font-medium text-gray-900">
+                                                <span class="text-base">{{ $report->title }}</span>
+                                                <span class="ml-2 inline-flex rounded-full bg-purple-100 px-2 leading-5 text-purple-800">{{ $report->questionnaire }}</span>
                                             </div>
-                                            <p class="mt-2 ml-2 text-sm text-gray-600">
-                                                Last generated at: <span class="font-medium">{{ $report->last_generated_at?->toDayDateTimeString() ?? ' NA ' }}</span>
-                                            </p>
+                                            <div class="text-gray-500 mt-2 text-xs">{{ $report->description }}</div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                {{--<a href="{{ route('report.generate', $report) }}" title="Generate now" type="button" class="inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                </a>--}}
-                                @if(Storage::disk('reports')->exists($report->blueprintInstance->file))
-                                <a href="{{ route('report.download', $report) }}" title="Download" type="button" class="inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                </a>
-                                @else
-                                <button disabled title="Download" type="button" class="disabled:opacity-25 inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                </button>
-                                @endif
-                            </div>
-                        </div>
-                    </li>
-                    @endcan
-                @empty
-                    <div class="p-6">
-                    {{ __('There are no records to display') }}
+                                </td>
+                                <td class="px-3 py-4 text-sm text-gray-800 w-1/5">
+                                    {{ $report->schedule_for_humans }}
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {{ $report->last_generated_at?->toDayDateTimeString() ?? ' NA ' }}
+                                </td>
+                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                    @if(Storage::disk('reports')->exists($report->blueprintInstance->file))
+                                        <a href="{{ route('report.download', $report) }}" title="Download" type="button" class="inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        </a>
+                                    @else
+                                        <button disabled title="Download" type="button" class="disabled:opacity-25 inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        </button>
+                                    @endif
+                                </td>
+                            </tr>
+                                @endcan
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-4 pl-3 pr-4 text-center text-gray-500">{{ __('There are no records to display') }}</td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                            @if ($records->hasPages())
+                                <tfoot>
+                                    <tr>
+                                        <td>
+                                            <div class="px-6 text-left text-xs text-gray-500 tracking-wider">{{ $records->appends(request()->all())->links() }}</div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            @endif
+                        </table>
                     </div>
-                @endforelse
-            </ul>
-        </div>
-        @if ($records->hasPages())
-        <div>
-            <div class="px-6 text-left text-xs text-gray-500 tracking-wider">{{ $records->appends(request()->all())->links() }}</div>
-        </div>
-        @endif
+                </div>
+            </div>
+
+
     </div>
 
 </x-app-layout>

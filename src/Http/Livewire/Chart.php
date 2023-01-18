@@ -106,23 +106,28 @@ abstract class Chart extends Component
 
     private function getDataAndCacheIt(array $filter): Collection
     {
+        $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : count($filter), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
                 $caching = new IndicatorCaching($this->indicator, $filter);
                 $this->dataTimestamp = $caching->getTimestamp();
-                //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
                 return Cache::tags($caching->tags())
-                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching) {
+                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
                         $caching->stamp();
                         $this->dataTimestamp = Carbon::now();
+                        $analytics['source'] = 'Query, caching';
                         return $this->getData($caching->filter);
                     });
             }
+            $analytics['source'] = 'Query, not caching';
             return $this->getData($filter);
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in Chart.php)", ['Exception: ' => $exception]);
-            return $this->getData($filter);
+            return collect([]);
+        } finally {
+            $analytics['completed_at'] = time();
+            $this->indicator->analytics()->create($analytics);
         }
     }
 

@@ -7,12 +7,10 @@ use Uneca\Chimera\Http\Requests\MapRequest;
 use Uneca\Chimera\Jobs\ImportShapefileJob;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Services\AreaTree;
-use Uneca\Chimera\Services\ShapefileImporter;
 use Uneca\Chimera\Traits\Geospatial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -25,8 +23,12 @@ class AreaController extends Controller
         $records = Area::orderBy('level')->orderBy('path')->paginate(config('chimera.records_per_page'));
         $levelCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get();
         $hierarchies = (new AreaTree())->hierarchies;
-        $summary = $levelCounts->map(function ($item) use ($hierarchies) {
+        /*$summary = $levelCounts->map(function ($item) use ($hierarchies) {
             return $item->count . ' ' . str($hierarchies[$item->level] ?? 'unknown')->plural($item->count);
+        })->join(', ', ' and ');*/
+        $areaCounts = $levelCounts->keyBy('level');
+        $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
+            return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
         })->join(', ', ' and ');
         return view('chimera::developer.area.index', compact('records', 'summary'));
     }

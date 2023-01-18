@@ -22,20 +22,20 @@ class AreaTree
         }, '');
     }
 
-    public static function translatePathToCode(array $filter): array
+    public static function translatePathToCode(array $paths): array
     {
-        $filterAreas = Area::whereIn('path', array_values($filter))->pluck('code', 'path')->all();
-        return array_map(function ($path) use ($filterAreas) {
-            return $filterAreas[$path];
-        }, $filter);
+        $areas = Area::whereIn('path', array_values($paths))->pluck('code', 'path')->all();
+        return array_map(function ($path) use ($areas) {
+            return $areas[$path];
+        }, $paths);
     }
 
-    public static function translateCodeToPath(array $filter): array
+    public static function translateCodeToPath(array $codes): array
     {
-        $filterAreas = Area::whereIn('code', array_values($filter))->pluck('code', 'path')->all();
-        return array_map(function ($path) use ($filterAreas) {
-            return $filterAreas[$path];
-        }, $filter);
+        $areas = Area::whereIn('code', array_values($codes))->pluck('path', 'code')->all();
+        return array_map(function ($code) use ($areas) {
+            return $areas[$code];
+        }, $codes);
     }
 
     public static function levelFromPath(string $path)

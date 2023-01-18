@@ -24,12 +24,14 @@ class ReportManagementController extends Controller
     public function edit(Report $report)
     {
         $hourOptions = $this->getHourOptions();
-        return view('chimera::report.manage.edit', compact('report', 'hourOptions'));
+        $frequencyOptions = [24, 12, 6, 3];
+        return view('chimera::report.manage.edit', compact('report', 'hourOptions', 'frequencyOptions'));
     }
 
     public function update(ReportRequest $request, Report $report)
     {
-        $report->update($request->only(['title', 'description', 'schedule', 'enabled']));
+        //dump($request->all());
+        $report->update($request->only(['title', 'description', 'run_at', 'run_every', 'enabled', 'published']));
         return redirect()->route('manage.report.index')
             ->withMessage('The report has been updated');
     }

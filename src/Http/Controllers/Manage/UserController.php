@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         $search = $request->get('search');
         $sortColumn = $request->get('sort') ?? 'name';
-        $records = User::query()
+        $records = User::with('roles')
             ->when(! empty($search), function ($query) use ($search) {
                 $query->where('name', 'ilike', "%$search%")
                     ->orWhere('email', 'ilike', "$search%");

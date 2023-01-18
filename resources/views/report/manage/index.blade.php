@@ -59,13 +59,13 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Name') }}
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Title') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Questionnaire') }}
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{ __('Published') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Enabled') }}
@@ -79,20 +79,22 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($records as $record)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{$record->name}}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->title}}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <div class="font-medium py-2">{{$record->title}}</div>
+                                    <div class="text-gray-500">{{$record->name}}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{$record->questionnaire}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                    <x-chimera::yes-no value="{{$record->published}}" />
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     <x-chimera::yes-no value="{{$record->enabled}}" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{ $record->schedule }}
+                                    At {{ $record->run_at }} <br />
+                                    @if($record->run_every) then every {{ $record->run_every }} hours @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{route('manage.report.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>

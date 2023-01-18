@@ -5,6 +5,7 @@ namespace Uneca\Chimera\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Translatable\HasTranslations;
 
 class Questionnaire extends Model
@@ -21,7 +22,10 @@ class Questionnaire extends Model
         return Scorecard::published()
             ->whereQuestionnaire($this->name)
             ->orderBy('rank')
-            ->get();
+            ->get()
+            ->filter(function ($scorecard) {
+                return Gate::allows($scorecard->permission_name);
+            });
     }
 
     public function scopeActive($query)

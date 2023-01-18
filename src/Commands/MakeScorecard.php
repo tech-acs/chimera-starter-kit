@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Commands;
 
+use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\Models\Questionnaire;
 use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Traits\InteractiveCommand;
@@ -37,6 +38,11 @@ class MakeScorecard extends GeneratorCommand
         return $this->files->put($path, $content);
     }
 
+    private function ensureScorecardsPermissionExists()
+    {
+        Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'scorecards']);
+    }
+
     public function handle()
     {
         if (Questionnaire::all()->isEmpty()) {
@@ -61,6 +67,8 @@ class MakeScorecard extends GeneratorCommand
             'title',
             ['nullable', ]
         );
+
+        $this->ensureScorecardsPermissionExists();
 
         DB::transaction(function () use ($name, $title, $questionnaire) {
 

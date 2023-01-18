@@ -47,14 +47,29 @@ class CacheIndicators extends Command
         foreach ($indicatorsToCache as $indicator) {
             $this->newLine()->info($indicator->name);
             $startTime = time();
-            (new IndicatorCaching($indicator, []))->update(); // National level - no filters (non-level)
+
+            $analytics = ['source' => 'Query, caching (command)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
+            (new IndicatorCaching($indicator, []))->update(); // National level - no filters (non-level/null level)
+            $analytics['completed_at'] = time();
+            $indicator->analytics()->create($analytics);
+
+            $hierarchies = (new AreaTree())->hierarchies;
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
-                $levelName = (new AreaTree(removeLastNLevels: 1))->hierarchies[$level];
-                $areaCodes = Area::ofLevel($level)->pluck('code');
-                foreach ($areaCodes as $code) {
-                    (new IndicatorCaching($indicator, [$levelName => $code]))->update();
+                $paths = Area::ofLevel($level)->pluck('path');
+                foreach ($paths as $path) {
+                    $codes = explode('.', $path);
+                    $filter = [];
+                    for ($i = 0; $i < count($codes); $i++) {
+                        $filter[$hierarchies[$i]] = $codes[$i];
+                    }
+
+                    $analytics = ['source' => 'Query, caching (command)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
+                    (new IndicatorCaching($indicator, $filter))->update(); // Sub-national level
+                    $analytics['completed_at'] = time();
+                    $indicator->analytics()->create($analytics);
+
                 }
-                $this->info(" - cached $levelName level");
+                $this->info(" - cached {$hierarchies[$level]} level");
             }
             $endTime = time();
             $this->info("Completed in " . ($endTime - $startTime) . " seconds");

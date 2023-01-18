@@ -17,10 +17,7 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
 
-use Uneca\Chimera\Http\Livewire\Chart;
-use Uneca\Chimera\Services\CachingInterface;
 use Uneca\Chimera\Services\ConnectionLoader;
-use Uneca\Chimera\Services\IndicatorCaching;
 use Uneca\Chimera\Services\PageBuilder;
 
 class ChimeraServiceProvider extends PackageServiceProvider
@@ -47,6 +44,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'create_reference_values_table',
             'create_area_hierarchies_table',
             'create_map_indicators_table',
+            'create_indicator_analytics_table',
         ];
         $package
             ->name('chimera')

@@ -3,9 +3,11 @@
 namespace Uneca\Chimera\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 
 class Scorecard extends Model
@@ -15,6 +17,16 @@ class Scorecard extends Model
 
     protected $guarded = ['id'];
     public $translatable = ['title'];
+
+    protected function permissionName(): Attribute
+    {
+        return new Attribute(
+            get: fn () => str($this->slug)
+                ->replace('.', ':')
+                ->append(':scorecard')
+                ->toString(),
+        );
+    }
 
     public function scopePublished($query)
     {
@@ -28,22 +40,25 @@ class Scorecard extends Model
 
     protected static function booted()
     {
-        static::creating(function ($page) {
-            $className = Str::of($page->name)->afterLast('/')->kebab();
-            if (Str::contains($page->name, '/')) {
-                $path = Str::of($page->name)
+        static::creating(function ($scorecard) {
+            $className = Str::of($scorecard->name)->afterLast('/')->kebab();
+            if (Str::contains($scorecard->name, '/')) {
+                $path = Str::of($scorecard->name)
                     ->beforeLast('/')
                     ->explode('/')
                     ->map(fn ($x) => Str::of($x)->kebab())
                     ->join('.');
-                $page->slug = $path . '.' . $className;
+                $scorecard->slug = $path . '.' . $className;
             } else {
-                $page->slug = (string)$className;
+                $scorecard->slug = (string)$className;
             }
         });
 
-        /*static::created(function ($indicator) {
-            Permission::create(['guard_name' => 'web', 'name' => $indicator->permission_name]);
-        });*/
+        static::created(function ($scorecard) {
+            Permission::create(['guard_name' => 'web', 'name' => $scorecard->permission_name]);
+        });
+        static::deleted(function ($scorecard) {
+            Permission::whereName($scorecard->permission_name)->delete();
+        });
     }
 }
