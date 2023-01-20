@@ -110,7 +110,7 @@ abstract class MapIndicatorBaseClass
     ];
     const DEFAULT_STYLE = 'nephritis';
 
-    public MapIndicator $model;
+    public MapIndicator $mapIndicator;
     //public string $questionnaire;
     public array $bins = [];
     public array $ranges = [];
@@ -119,8 +119,7 @@ abstract class MapIndicatorBaseClass
     public function __construct()
     {
         $modelName = str($this::class)->after("App\MapIndicators" . '\\')->replace('\\', '/')->toString();
-        $this->model = MapIndicator::where('name', $modelName)->first();
-        //$this->questionnaire = $this->mapIndicator->questionnaire;
+        $this->mapIndicator = MapIndicator::where('name', $modelName)->first();
         if (isset($this->bins)) {
             $this->ranges = $this->generateRanges($this->bins);
         }

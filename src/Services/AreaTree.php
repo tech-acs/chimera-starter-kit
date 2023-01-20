@@ -22,7 +22,7 @@ class AreaTree
         }, '');
     }
 
-    public static function translatePathToCode(array $paths): array
+    public static function translateFilterContainingPathToCode(array $paths): array
     {
         $areas = Area::whereIn('path', array_values($paths))->pluck('code', 'path')->all();
         return array_map(function ($path) use ($areas) {
@@ -30,12 +30,33 @@ class AreaTree
         }, $paths);
     }
 
-    public static function translateCodeToPath(array $codes): array
+    public static function translateFilterContainingCodeToPath(array $codes): array
     {
         $areas = Area::whereIn('code', array_values($codes))->pluck('path', 'code')->all();
         return array_map(function ($code) use ($areas) {
             return $areas[$code];
         }, $codes);
+    }
+
+    public static function pathAsFilter(string $path): array
+    {
+        $ancestorsInclusive = [$path];
+        $keepMovingUp = true;
+        $path = str($path);
+        while ($keepMovingUp) {
+            if ($path->contains('.')) {
+                $remainingPath = $path->beforeLast('.');
+                array_push($ancestorsInclusive, $remainingPath->toString());
+                $path = $remainingPath;
+            } else {
+                $keepMovingUp = false;
+            }
+        }
+        $areas = Area::whereIn('path', $ancestorsInclusive)->get(['code', 'level']);
+        $hierarchies = (new AreaTree())->hierarchies;
+        return $areas->mapWithKeys(function ($area) use ($hierarchies) {
+            return [$hierarchies[$area->level] => $area->code];
+        })->all();
     }
 
     public static function levelFromPath(string $path)

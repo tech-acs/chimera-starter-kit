@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="sm:col-span-2">
-                            <dt class="text-sm font-medium text-gray-500">Longest running queries</dt>
+                            <dt class="text-sm font-medium text-gray-500">Top 10 longest running queries</dt>
                             <dd class="mt-1 text-sm text-gray-900">
                                 <div class="-mx-4 mt-1 ring-1 ring-gray-300 sm:-mx-6 md:mx-0 md:rounded-lg">
                                     <table class="min-w-full divide-y divide-gray-300">
@@ -46,17 +46,17 @@
                                                 <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Started At</th>
                                                 <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Level</th>
                                                 <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Source</th>
-                                                <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Query Time</th>
+                                                <th scope="col" class="px-3 py-3 text-center text-sm font-semibold text-gray-900 lg:table-cell">Query Time (seconds)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse([] as $record)
+                                            @forelse($longestRunningQueries as $record)
                                                 <tr>
-                                                    <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->user->name }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200"> - </td>
+                                                    <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->user?->name }}</td>
+                                                    <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->started_at?->toDayDateTimeString() }}</td>
                                                     <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->level }}</td>
                                                     <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->source }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->query_time }}</td>
+                                                    <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200 text-center">{{ $record->query_time }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>

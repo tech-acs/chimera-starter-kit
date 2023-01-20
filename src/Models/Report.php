@@ -33,7 +33,6 @@ class Report extends Model
 
     public function schedule(): array
     {
-
         $runAt = $this->run_at;
         $runEvery = $this->run_every;
         $loop = 24 / $runEvery;
@@ -42,7 +41,7 @@ class Report extends Model
             array_push($schedule, ((int)$runAt + $i * $runEvery) % 24);
         }
         return collect($schedule)
-            ->map(fn ($hour) => str($hour)->padLeft(2, '0') . ':00')
+            ->map(fn ($hour) => str($hour)->padLeft(2, '0') . ':00:00')
             ->all();
     }
 
@@ -53,17 +52,9 @@ class Report extends Model
                 if (! $this->enabled) {
                     return 'N/A';
                 }
-                return collect($this->schedule())->join(', ', ' and ');
-            },
-        );
-    }
-
-    protected function blueprintInstance(): Attribute
-    {
-        return new Attribute(
-            get: function () {
-                $blueprintClass = "App\Reports\\" . str($this->name)->replace('/', '\\');
-                return new $blueprintClass($this);
+                return collect($this->schedule())
+                    ->map(fn($time) => str($time)->beforeLast(':'))
+                    ->join(', ', ' and ');
             },
         );
     }
@@ -83,10 +74,10 @@ class Report extends Model
         return $query->where('published', true);
     }
 
-    public function scopeDueThisHour($query)
+    /*public function scopeDueThisHour($query)
     {
         return $query->whereTime('schedule', now()->format('H:00:00'));
-    }
+    }*/
 
     protected static function booted()
     {

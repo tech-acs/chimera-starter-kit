@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class IndicatorAnalytics extends Model
 {
@@ -13,6 +14,18 @@ class IndicatorAnalytics extends Model
     public function indicator()
     {
         return $this->belongsTo(Indicator::class);
+    }
+
+    protected function startedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => Carbon::createFromTimestamp($value),
+        );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function queryTime(): string

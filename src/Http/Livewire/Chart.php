@@ -134,7 +134,7 @@ abstract class Chart extends Component
     private function updateDataAndLayout(array $filter): void
     {
         $filterPath = AreaTree::getFinestResolutionFilterPath($filter);
-        $this->data = $this->getTraces($this->getDataAndCacheIt(AreaTree::translatePathToCode($filter)), $filterPath);
+        $this->data = $this->getTraces($this->getDataAndCacheIt(AreaTree::translateFilterContainingPathToCode($filter)), $filterPath);
         $this->layout = $this->getLayout($filterPath);
 
         if ($this->isDataEmpty()) {

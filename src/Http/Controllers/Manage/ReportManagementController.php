@@ -17,7 +17,7 @@ class ReportManagementController extends Controller
 
     public function index()
     {
-        $records = Report::all();
+        $records = Report::orderBy('rank')->get();
         return view('chimera::report.manage.index', compact('records'));
     }
 
@@ -31,7 +31,7 @@ class ReportManagementController extends Controller
     public function update(ReportRequest $request, Report $report)
     {
         //dump($request->all());
-        $report->update($request->only(['title', 'description', 'run_at', 'run_every', 'enabled', 'published']));
+        $report->update($request->only(['title', 'description', 'run_at', 'run_every', 'rank', 'enabled', 'published']));
         return redirect()->route('manage.report.index')
             ->withMessage('The report has been updated');
     }

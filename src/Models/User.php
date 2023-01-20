@@ -28,9 +28,14 @@ class User extends \App\Models\User
         return $this->hasMany(Announcement::class);
     }
 
+    public function indicatorAnalytics()
+    {
+        return $this->hasMany(IndicatorAnalytics::class);
+    }
+
     public function areaRestrictionAsFilter()
     {
-        $areaTree = new AreaTree(removeLastNLevels: 1);
+        $areaTree = new AreaTree();
         return $this->areaRestrictions->mapWithKeys(function ($areaRestriction) use ($areaTree) {
             return [$areaTree->hierarchies[$areaRestriction->level] => $areaRestriction->path];
         })->all();

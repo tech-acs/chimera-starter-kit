@@ -96,7 +96,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-between items-center">
                                     <a href="{{route('indicator.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
-                                    <a href="{{ route('indicator.analytics', $record->id) }}" target="_blank" class="inline text-orange-600" title="Indicator analytics"><x-chimera::icon.analytics /></a>
+                                    <a href="{{ route('indicator.analytics', $record->id) }}" class="inline text-orange-600" title="Indicator analytics"><x-chimera::icon.analytics /></a>
                                 </td>
                             </tr>
                         @empty

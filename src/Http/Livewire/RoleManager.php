@@ -95,8 +95,10 @@ class RoleManager extends Component
 
         $this->permissionGroups = $groups;
         foreach (($this->permissionGroups ?? []) as $permissionGroup) {
+            Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionGroup['permission_name']]);
             $this->permissions[$permissionGroup['permission_name']] = $this->role->hasPermissionTo($permissionGroup['permission_name']);
             foreach ($permissionGroup['permissionables'] as $permissionable) {
+                Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionable['permission_name']]);
                 $this->permissions[$permissionable['permission_name']] = $this->role->hasPermissionTo($permissionable['permission_name']);
             }
         }

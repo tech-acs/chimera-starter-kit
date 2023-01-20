@@ -19,9 +19,9 @@ class ScorecardComponent extends Component
     public string $bgColor;
     public Carbon $dataTimestamp;
 
-    public function mount(Scorecard $scorecard, $index)
+    public function mount($index)
     {
-        $this->scorecard = $scorecard;
+        //$this->scorecard = $scorecard;
         $this->title = $this->scorecard->title;
         $index = $index % count(Theme::colors());
         $this->bgColor = Theme::colors()[$index];
@@ -35,7 +35,7 @@ class ScorecardComponent extends Component
     final public function setValue()
     {
         $user = auth()->user();
-        $filter = $user->areaRestrictionAsFilter();;
+        $filter = $user->areaRestrictionAsFilter();
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {

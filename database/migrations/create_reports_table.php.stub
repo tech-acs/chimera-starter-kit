@@ -25,6 +25,7 @@ return new class extends Migration
             $table->time('run_at')->nullable();
             $table->tinyInteger('run_every')->default(24);
             $table->boolean('published')->default(false);
+            $table->unsignedTinyInteger('rank')->nullable();
             $table->timestamps();
         });
     }

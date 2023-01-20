@@ -22,6 +22,11 @@
                 <x-jet-input-error for="description" class="mt-2" />
             </div>
             <div>
+                <x-jet-label for="rank" value="{{ __('Rank') }}" />
+                <x-jet-input id="rank" name="rank" type="number" class="w-20" value="{{ old('rank', $report->rank) }}" />
+                <x-jet-input-error for="rank" class="mt-2" />
+            </div>
+            <div>
                 <x-jet-label value="{{ __('Published') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{published: @json(json_decode(old('published', $report)) ?? false) }">
                     <span>
@@ -43,7 +48,7 @@
                 </div>
             </div>
             <div>
-                <x-jet-label value="{{ __('Scheduled') }}" />
+                <x-jet-label value="{{ __('Enabled') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json(json_decode(old('enabled', $report)) ?? false) }">
                     <span>
                         <span class="text-sm text-gray-500">{{ __('No') }}</span>

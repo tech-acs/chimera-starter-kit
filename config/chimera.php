@@ -2,6 +2,10 @@
 // config for Uneca/census-dashboard-starter-kit
 
 return [
+    'owner' => [
+        'name' => env('APP_OWNER_NAME', 'ECA'),
+        'url' => env('APP_OWNER_URL', '#'),
+    ],
     'secure' => env('SECURE', false),
     'indicators_per_page' => env('INDICATORS_PER_PAGE', 2),
     'records_per_page' => env('RECORDS_PER_PAGE', 20),
@@ -24,6 +28,7 @@ return [
 
     'cache' => [
         'enabled' => env('CACHE_ENABLED', false),
+        'ttl' => env('CACHE_TTL_SECONDS', 60 * 60),
         'tags' => [],
     ],
 ];

@@ -2,39 +2,40 @@
 
 namespace Uneca\Chimera\Report;
 
+use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\Report;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use Uneca\Chimera\Services\AreaTree;
 
 abstract class ReportBaseClass
 {
-    public $report;
-    public $file;
+    public Report $report;
     public $fileType = 'csv';
 
     public function __construct(Report $report)
     {
+        //$classPath = "App\Reports\\" . str($report->name)->replace('/', '\\');
         $this->report = $report;
-        $this->file = "{$report->slug}.{$this->fileType}";
     }
 
     abstract public function getData(array $filter): Collection;
 
-    public function writeFile($data)
+    public function filename(array $filter): string
     {
-        $writer = SimpleExcelWriter::create(Storage::disk('reports')->path($this->file))->addRows($data);
+        $suffix = implode('-', $filter);
+        return "{$this->report->slug}$suffix.{$this->fileType}";
     }
 
-    public function download()
+    protected function writeFile(array $data, string $filename)
     {
-        return Storage::disk('reports')->download($this->file);
+        $writer = SimpleExcelWriter::create(Storage::disk('reports')->path($filename))->addRows($data);
     }
 
-    public function generate()
+    protected function generateForFilter(array $filter)
     {
-        $filter = []; // Area Restriction?
         $data = $this->getData($filter);
         if (empty($data)) {
             throw new Exception('There is no data to export');
@@ -42,7 +43,27 @@ abstract class ReportBaseClass
         $rowified = $data->map(function ($obj) {
             return (array)$obj;
         })->all();
-        $this->writeFile($rowified);
+        $this->writeFile($rowified, $this->filename($filter));
+    }
+
+    public function generate()
+    {
+        // Get all user area restrictions and loop them as filter, including [] for non-restricted users
+        $paths = AreaRestriction::distinct('path')->pluck('path');
+        $this->generateForFilter([]);
+        foreach ($paths as $path) {
+            $filter = AreaTree::pathAsFilter($path);
+            $this->generateForFilter($filter);
+        }
+        /*$filter = [];
+        $data = $this->getData($filter);
+        if (empty($data)) {
+            throw new Exception('There is no data to export');
+        }
+        $rowified = $data->map(function ($obj) {
+            return (array)$obj;
+        })->all();
+        $this->writeFile($rowified);*/
 
         $this->report->update(['last_generated_at' => now()]);
     }

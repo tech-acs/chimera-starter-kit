@@ -5,6 +5,7 @@ namespace Uneca\Chimera\Services;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\Scorecard;
+use Uneca\Chimera\Models\Report;
 
 class DashboardComponentFactory
 {
@@ -40,6 +41,18 @@ class DashboardComponentFactory
         $classPath = $mapIndicator->fully_qualified_classname;
         try {
             $instance = new $classPath;
+            return $instance;
+        } catch (\Exception $exception) {
+            logger("Exception in DashboardComponentFactory", ['exception' => $exception->getMessage()]);
+            return null;
+        }
+    }
+
+    public static function makeReport(Report $report)
+    {
+        $classPath = "App\Reports\\" . str($report->name)->replace('/', '\\');
+        try {
+            $instance = new $classPath($report);
             return $instance;
         } catch (\Exception $exception) {
             logger("Exception in DashboardComponentFactory", ['exception' => $exception->getMessage()]);
