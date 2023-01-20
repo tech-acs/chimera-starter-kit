@@ -28,9 +28,12 @@ class ImportShapefileJob implements ShouldQueue
 
     public $timeout = 1200;
 
-    public function __construct(private string $filePath, private int $level, private User $user)
-    {
-    }
+    public function __construct(
+        private string $filePath,
+        private int $level,
+        private User $user,
+        private string $locale
+    ) {}
 
     private function augumentData(array $features, int $level)
     {
@@ -109,12 +112,22 @@ class ImportShapefileJob implements ShouldQueue
             $results = [];
             foreach ($augmentedFeatures as $feature) {
                 $name = Str::of($feature['attribs']['name'])->trim()->lower()->limit(80)->title();
-                $results[] = Area::create([
+                /*$results[] = Area::create([
                     'name' => $name,
                     'code' => $feature['attribs']['code'],
                     'level' => $this->level,
                     'geom' => $feature['geom'],
                     'path' => $feature['path'],
+                ]);*/
+                $results[] = Area::updateOrCreate(
+                [
+                    'code' => $feature['attribs']['code'],
+                    'level' => $this->level,
+                    'path' => $feature['path'],
+                ],
+                [
+                    'name' => $name,
+                    'geom' => $feature['geom'],
                 ]);
             }
             $insertedCount = collect($results)->filter()->count();

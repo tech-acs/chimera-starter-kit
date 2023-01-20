@@ -72,7 +72,7 @@ class AreaController extends Controller
         $features = $importer->import($filePath);
         $this->validateShapefile($features);*/
 
-        ImportShapefileJob::dispatch($filePath, $level, auth()->user());
+        ImportShapefileJob::dispatch($filePath, $level, auth()->user(), app()->getLocale());
 
         return redirect()->route('developer.area.index')
             ->withMessage("Importing is in progress. You will be notified when it is complete.");

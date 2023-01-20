@@ -28,8 +28,9 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
         private int $chunkSize,
         private array $areaLevels,
         private array $columnMapping,
-        private Authenticatable $user)
-    {}
+        private Authenticatable $user,
+        private string $locale
+    ) {}
 
     public function handle()
     {
@@ -45,10 +46,16 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                     $timestamp = Carbon::now();
                     foreach ($this->columnMapping as $levelName => $columnMapping) {
                         $name = Str::of($row[$columnMapping['name']])->trim()->lower()->limit(80)->title();
+                        $fallbackLocale = config('app.fallback_locale');
+                        if ($this->locale !== $fallbackLocale) {
+                            $name = json_encode([$fallbackLocale => $name, $this->locale => $name]);
+                        } else {
+                            $name = json_encode([$fallbackLocale => $name]);
+                        }
                         $code = Str::padLeft($row[$columnMapping['code']], $columnMapping['zeroPadding'], '0');
                         $path = (str($path)->isEmpty() ? $path : str($path)->append('.')) . $code;
                         $areas[] = [
-                            'name' => json_encode(['en' => $name]),
+                            'name' => $name,
                             'code' => $code,
                             'level' => array_search($levelName, $this->areaLevels), // Safe?
                             'path' => $path,

@@ -106,7 +106,7 @@ class AreaSpreadsheetImporter extends Component
             if ($line % $this::CHUNK_SIZE === 0) {
                 array_push(
                     $jobs,
-                    new ImportAreaSpreadsheetJob($this->filePath, $start, $this::CHUNK_SIZE, $this->areaLevels, $this->columnMapping, $user)
+                    new ImportAreaSpreadsheetJob($this->filePath, $start, $this::CHUNK_SIZE, $this->areaLevels, $this->columnMapping, $user, app()->getLocale())
                 );
                 $start = $line;
                 $notProcessed = false;
@@ -115,7 +115,7 @@ class AreaSpreadsheetImporter extends Component
         if ($notProcessed) {
             array_push(
                 $jobs,
-                new ImportAreaSpreadsheetJob($this->filePath, $start, $this::CHUNK_SIZE, $this->areaLevels, $this->columnMapping, $user)
+                new ImportAreaSpreadsheetJob($this->filePath, $start, $this::CHUNK_SIZE, $this->areaLevels, $this->columnMapping, $user, app()->getLocale())
             );
         }
         fclose($fileHandle);

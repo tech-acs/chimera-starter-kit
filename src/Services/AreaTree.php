@@ -22,7 +22,7 @@ class AreaTree
         }, '');
     }
 
-    public static function translateFilterContainingPathToCode(array $paths): array
+    public static function translatePathToCode(array $paths): array
     {
         $areas = Area::whereIn('path', array_values($paths))->pluck('code', 'path')->all();
         return array_map(function ($path) use ($areas) {
@@ -30,7 +30,7 @@ class AreaTree
         }, $paths);
     }
 
-    public static function translateFilterContainingCodeToPath(array $codes): array
+    public static function translateCodeToPath(array $codes): array
     {
         $areas = Area::whereIn('code', array_values($codes))->pluck('path', 'code')->all();
         return array_map(function ($code) use ($areas) {
