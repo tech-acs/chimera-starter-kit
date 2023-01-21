@@ -11,19 +11,24 @@
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between">
-            <div class="bg-sky-400/20 text-sky-600 px-4 text-sm flex items-center rounded-full font-medium">
-                {{ empty($summary) ? "No reference values imported yet" : $summary }}
-            </div>
-            @if(app()->environment('local'))
-                <div x-data="confirmedDeletion">
-                    <a href="{{route('developer.reference-value.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
-
-                    <x-chimera::delete-confirmation />
-                    <a href="{{route('developer.reference-value.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
-                        <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
-                    </a>
+            <form method="get" action="{{ route('developer.reference-value.index') }}">
+                <x-jet-input type="search" name="search" placeholder="Search indicator" value="{{ request('search') }}" />
+            </form>
+            <div class="flex items-center">
+                <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium mr-4">
+                    {{ empty($summary) ? "No reference values imported yet" : $summary }}
                 </div>
-            @endif
+                @if(app()->environment('local'))
+                    <div x-data="confirmedDeletion">
+                        <a href="{{route('developer.reference-value.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
+
+                        <x-chimera::delete-confirmation />
+                        <a href="{{route('developer.reference-value.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
+                            <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
+                        </a>
+                    </div>
+                @endif
+            </div>
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">

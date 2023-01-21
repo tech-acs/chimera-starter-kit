@@ -11,20 +11,28 @@
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between">
-            <div class="bg-sky-400/20 text-sky-600 px-4 text-sm flex items-center rounded-full font-medium">
-                {{ empty($summary) ? "No areas imported yet" : $summary }}
+            <div>
+                <form method="get" action="{{ route('developer.area.index') }}">
+                    <x-jet-input type="search" name="search" placeholder="Search name or code" value="{{request('search')}}" />
+                </form>
             </div>
-            @if(app()->environment('local'))
-                <div x-data="confirmedDeletion">
-                    <a href="{{route('developer.area.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
-
-                    <x-chimera::delete-confirmation />
-                    <a href="{{route('developer.area.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
-                        <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
-                    </a>
+            <div class="flex items-center">
+                <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium mr-4">
+                    {{ empty($summary) ? "No areas imported yet" : $summary }}
                 </div>
-            @endif
+                @if(app()->environment('local'))
+                    <div x-data="confirmedDeletion">
+                        <a href="{{route('developer.area.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
+
+                        <x-chimera::delete-confirmation />
+                        <a href="{{route('developer.area.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
+                            <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
+                        </a>
+                    </div>
+                @endif
+            </div>
         </div>
+
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
                 <div class="flex">

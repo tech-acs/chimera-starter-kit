@@ -13,11 +13,11 @@ class ScorecardCaching extends Caching
         $this->model = $model;
         $this->instance = DashboardComponentFactory::makeScorecard($model);
         $this->filter = $filter;
-        $this->key = 'scorecard|' . $this->model->slug . implode('-', array_filter($filter));
+        $this->key = $this->model->slug . implode('-', array_filter($filter));
     }
 
     public function tags(): array
     {
-        return [$this->model->questionnaire, 'scorecards'];
+        return ['scorecards', $this->model->questionnaire];
     }
 }

@@ -16,8 +16,8 @@ class DataExport extends Command
 
     protected array $tables = [
         'area_hierarchies',
-        /*'areas',
-        'reference_values',*/
+        //'areas',
+        //'reference_values',
         'questionnaires',
         'pages',
         'indicators',
@@ -25,9 +25,9 @@ class DataExport extends Command
         'scorecards',
         'reports',
         'map_indicators',
-        'roles',
+        //'roles',
         'permissions',
-        'role_has_permissions'
+        //'role_has_permissions'
     ];
 
     protected array $maskedColumns = [

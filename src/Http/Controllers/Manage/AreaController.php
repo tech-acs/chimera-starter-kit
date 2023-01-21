@@ -18,15 +18,18 @@ class AreaController extends Controller
 {
     use Geospatial;
 
-    public function index()
+    public function index(Request $request)
     {
-        $records = Area::orderBy('level')->orderBy('path')->paginate(config('chimera.records_per_page'));
-        $levelCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get();
+        $search = $request->get('search');
+        $locale = app()->getLocale();
+        $records = Area::orderBy('level')->orderBy('name')
+            ->when(! empty($search), function ($query) use ($search, $locale) {
+                $query->whereRaw("name->>'{$locale}' ilike '{$search}%'")
+                    ->orWhere('code', $search);
+            })
+            ->paginate(config('chimera.records_per_page'));
+        $areaCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get()->keyBy('level');
         $hierarchies = (new AreaTree())->hierarchies;
-        /*$summary = $levelCounts->map(function ($item) use ($hierarchies) {
-            return $item->count . ' ' . str($hierarchies[$item->level] ?? 'unknown')->plural($item->count);
-        })->join(', ', ' and ');*/
-        $areaCounts = $levelCounts->keyBy('level');
         $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
             return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
         })->join(', ', ' and ');

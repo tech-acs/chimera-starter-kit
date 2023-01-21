@@ -9,9 +9,14 @@ use Illuminate\Support\Str;
 
 class ReferenceValueController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $records = ReferenceValue::orderBy('level')->paginate(config('chimera.records_per_page'));
+        $search = $request->get('search');
+        $records = ReferenceValue::orderBy('level')->orderBy('indicator')->orderBy('path')
+            ->when(! empty($search), function ($query) use ($search) {
+                $query->whereRaw("indicator ilike '{$search}%'");
+            })
+            ->paginate(config('chimera.records_per_page'));
         $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
         $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], "? reference values across ? " . Str::plural('indicator', $stats->no_of_indicators));
         return view('chimera::developer.reference-value.index', compact('records', 'summary'));

@@ -14,10 +14,10 @@ class IndicatorAnalyticsController extends Controller
         $longestRunningQueries = $indicator->analytics()
             ->selectRaw('user_id, started_at, level, source, completed_at - started_at AS query_time')
             ->orderBy('query_time', 'DESC')
-            ->take(10)
+            ->take(5)
             ->get()
             ->map(function ($record) use ($hierarchies) {
-                $record->level = is_null($record->level) ? 'National' : $hierarchies[$record->level - 1];
+                $record->level = is_null($record->level) ? 'National' : ucfirst($hierarchies[$record->level - 1]);
                 return $record;
             });
         $queryTimes = $indicator->analytics()

@@ -111,7 +111,6 @@ abstract class MapIndicatorBaseClass
     const DEFAULT_STYLE = 'nephritis';
 
     public MapIndicator $mapIndicator;
-    //public string $questionnaire;
     public array $bins = [];
     public array $ranges = [];
     public array $currentStyle = [];

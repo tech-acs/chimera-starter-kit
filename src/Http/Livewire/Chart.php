@@ -123,11 +123,13 @@ abstract class Chart extends Component
             $analytics['source'] = 'Query, not caching';
             return $this->getData($filter);
         } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache (in Chart.php)", ['Exception: ' => $exception]);
+            logger("Exception occurred while trying to cache (in Chart.php, getDataAndCacheIt method)", ['Exception: ' => $exception]);
             return collect([]);
         } finally {
-            $analytics['completed_at'] = time();
-            $this->indicator->analytics()->create($analytics);
+            if ($analytics['source'] !== 'Cache') {
+                $analytics['completed_at'] = time();
+                $this->indicator->analytics()->create($analytics);
+            }
         }
     }
 

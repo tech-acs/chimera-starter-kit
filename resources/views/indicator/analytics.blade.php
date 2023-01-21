@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="sm:col-span-2">
-                            <dt class="text-sm font-medium text-gray-500">Top 10 longest running queries</dt>
+                            <dt class="text-sm font-medium text-gray-500">Top 5 longest running queries</dt>
                             <dd class="mt-1 text-sm text-gray-900">
                                 <div class="-mx-4 mt-1 ring-1 ring-gray-300 sm:-mx-6 md:mx-0 md:rounded-lg">
                                     <table class="min-w-full divide-y divide-gray-300">
@@ -67,7 +67,7 @@
                                     </table>
                                 </div>
                             </dd>
-                            <dt class="text-sm font-medium text-gray-500 mt-6">All query times (in seconds). Oldest to most recent.</dt>
+                            <dt class="text-sm font-medium text-gray-500 mt-8">All query times (in seconds). Oldest to most recent.</dt>
                             <dd class="mt-1 text-sm text-gray-900">
                                 <div class="divide-y divide-gray-200 rounded-md border border-gray-200 py-3 pl-3 pr-4 text-sm">
                                     {{ $queryTimes->join(', ') }}
