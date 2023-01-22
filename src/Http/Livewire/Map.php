@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\MapIndicatorCaching;
 
 class Map extends Component
@@ -39,6 +40,14 @@ class Map extends Component
                 ->unique()
                 ->map(fn ($path) => "'{$path}'");
         }
+    }
+
+    private function derivedPathsToCodes(Collection $derivedPaths): Collection
+    {
+        $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
+        $whereClause = $derivedPaths->isEmpty() ? "level = 0" : "path ?? $lqueryArray";
+        $sql = "SELECT code FROM areas WHERE $whereClause";
+        return collect(DB::select($sql))->pluck('code');
     }
 
     protected function getGeoJson(Collection $derivedPaths)
@@ -78,28 +87,29 @@ class Map extends Component
         return $result[0]->feature_collection;
     }
 
-    private function getDataAndCacheIt(?MapIndicatorBaseClass $mapIndicator, int $level, array $paths): array
+    private function getDataAndCacheIt(?MapIndicatorBaseClass $mapIndicator, int $level, Collection $derivedPaths): array
     {
-        if (config('chimera.cache.enabled')) {
-            return $mapIndicator?->getData($level, $paths) ?? [];
+        $hierarchies = (new AreaTree())->hierarchies;
+        $codes = $this->derivedPathsToCodes($derivedPaths)->all();
+        $filter = empty($codes) ? [] : [$hierarchies[$level] => $codes];
+        $data = $mapIndicator?->getData($filter) ?? collect([]);
+        return $data->map(function ($row) use ($mapIndicator) {
+            $row->value = $row->{$mapIndicator->valueColumn};
+            $row->style = $mapIndicator->assignStyle($row->value);
+            return $row;
+        })->all();
 
-            /*$key = 'map-indicator|' . $mapIndicator->model->slug . implode('-', array_filter($paths));
-            //$this->dataTimestamp = $caching->getTimestamp();
-            //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
-            return Cache::tags([$mapIndicator->model->questionnaire, 'map-indicators'])
-                ->rememberForever($key, function () use ($mapIndicator, $level, $paths) {
-                    //$caching->stamp();
-                    return $mapIndicator->getData($level, $paths);
-                });*/
+        /*if (config('chimera.cache.enabled')) {
+
         }
-        return $mapIndicator?->getData($level, $paths) ?? [];
+        return $mapIndicator?->getData($level, $paths) ?? [];*/
     }
 
     public function setSelectedIndicator(string $mapIndicator, int $level)
     {
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
-        $this->emit('indicatorSwitched', $this->getDataAndCacheIt($selectedIndicator, $level, []), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
+        $this->emit('indicatorSwitched', $this->getDataAndCacheIt($selectedIndicator, $level, collect([])), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
     }
 
     final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
@@ -108,16 +118,15 @@ class Map extends Component
         $currentIndicator = null;
         if (! isset($this->selectedIndicator) && ! empty($this->indicators)) {
             $this->setSelectedIndicator(array_key_first($this->indicators), $level);
-            $currentIndicator = new $this->selectedIndicator;
         }
+        $currentIndicator = new $this->selectedIndicator;
 
         $geojson = json_decode($this->getGeoJson($derivedPaths));
         $filtered = collect($geojson->features)->filter(fn ($feature) => ! in_array($feature->properties->path, $this->previouslySentPaths));
         $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
         $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
         $geojson->features = $filtered->values()->all();
-        //dump($geojson, $filteredPaths, $this->previouslySentPaths);
-        $this->emit('geojsonUpdated', $geojson, $level, $this->getDataAndCacheIt($currentIndicator, $level, $derivedPaths->all()) ?? []);
+        $this->emit('geojsonUpdated', $geojson, $level, $this->getDataAndCacheIt($currentIndicator, $level, $derivedPaths) ?? []);
     }
 
     final public function mount()

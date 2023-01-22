@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\MapIndicator;
 
+use Illuminate\Support\Collection;
 use Uneca\Chimera\Models\MapIndicator;
 
 abstract class MapIndicatorBaseClass
@@ -106,14 +107,15 @@ abstract class MapIndicatorBaseClass
             '#797d7f',
             '#626567',
         ],
-        'rag' => ['red', 'amber', 'green'],
+        'rag' => ['red', 'orange', 'green'],
     ];
-    const DEFAULT_STYLE = 'nephritis';
+    const SELECTED_COLOR_CHART = 'nephritis';
 
     public MapIndicator $mapIndicator;
     public array $bins = [];
     public array $ranges = [];
     public array $currentStyle = [];
+    public string $valueColumn = 'total';
 
     public function __construct()
     {
@@ -123,9 +125,13 @@ abstract class MapIndicatorBaseClass
             $this->ranges = $this->generateRanges($this->bins);
         }
 
+        if (empty($this->ranges)) {
+            dd('In ' . $this::class . ', you have not provided bins (to make ranges).');
+        }
+
         $this->currentStyle = $this->getStyles();
         if (count($this->ranges) > count($this->currentStyle)) {
-            dd('In ' . $this::class . ', you have more ranges than you have styles. You need to have enough styles defined for you ranges.');
+            dd('In ' . $this::class . ', you have more ranges (' . count($this->ranges) . ') than you have styles (' . count($this->currentStyle) . '). You need to have enough styles defined for your ranges.');
         }
     }
 
@@ -138,26 +144,26 @@ abstract class MapIndicatorBaseClass
         return $ranges;
     }
 
-    protected function assignedStyle($value)
+    public function assignStyle($value)
     {
         $styles = array_keys($this->currentStyle);
-        if ($value < $this->ranges[0][0]) {
+        if ($value < $this->ranges[0][0]) { // Below range -> first style
             return array_key_first($this->currentStyle);
         }
-        foreach ($this->ranges as $index => $range) {
+        foreach ($this->ranges as $index => $range) { // Within range -> corrosponding style
             if (($value >= $range[0]) && ($value < $range[1])) {
                 return $styles[$index];
             }
         }
-        if ($value >= end($this->ranges)[1]) {
+        if ($value >= end($this->ranges)[1]) { // Above range -> last style
             return array_key_last($this->currentStyle);
         }
         return 'default';
     }
 
-    public function getData(int $level, array $paths): array
+    public function getData(array $filter): Collection
     {
-        return [];
+        return collect([]);
     }
 
     public function getLegend(): array
@@ -182,6 +188,6 @@ abstract class MapIndicatorBaseClass
                 })->all();
             })
             ->all();
-         return $styles[$this::DEFAULT_STYLE];
+         return $styles[$this::SELECTED_COLOR_CHART];
     }
 }
