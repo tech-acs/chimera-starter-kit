@@ -94,6 +94,8 @@ class Chimera extends Command
         copy(__DIR__.'/../../deploy/jetstream-modifications/views/app.blade.php', resource_path('views/layouts/app.blade.php'));
         copy(__DIR__.'/../../deploy/jetstream-modifications/views/guest.blade.php', resource_path('views/layouts/guest.blade.php'));
         copy(__DIR__.'/../../deploy/jetstream-modifications/views/navigation-menu.blade.php', resource_path('views/navigation-menu.blade.php'));
+        copy(__DIR__.'/../../deploy/jetstream-modifications/views/show.blade.php', resource_path('views/profile/show.blade.php'));
+        copy(__DIR__.'/../../deploy/jetstream-modifications/views/area-restriction.blade.php', resource_path('views/profile/area-restriction.blade.php'));
     }
 
     private function publishResources()

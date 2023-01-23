@@ -91,7 +91,9 @@ class Map extends Component
     {
         $hierarchies = (new AreaTree())->hierarchies;
         $codes = $this->derivedPathsToCodes($derivedPaths)->all();
+        //dump($level);
         $filter = empty($codes) ? [] : [$hierarchies[$level] => $codes];
+        //dump($level, $codes, $filter);
         $data = $mapIndicator?->getData($filter) ?? collect([]);
         return $data->map(function ($row) use ($mapIndicator) {
             $row->value = $row->{$mapIndicator->valueColumn};

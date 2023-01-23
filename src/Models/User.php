@@ -40,4 +40,14 @@ class User extends \App\Models\User
             return [$areaTree->hierarchies[$areaRestriction->level] => $areaRestriction->path];
         })->all();
     }
+
+    public function areaRestrictionAsString()
+    {
+        $areaTree = new AreaTree();
+        $restrictionAsString = $this->areaRestrictions->mapWithKeys(function ($areaRestriction) use ($areaTree) {
+            $area = $areaTree->getArea($areaRestriction->path);
+            return [$areaTree->hierarchies[$areaRestriction->level] => $area?->name];
+        })->mapWithKeys(fn ($areaName, $levelName) => ["$areaName $levelName"])->join(', ');
+        return empty($restrictionAsString) ? "No restriction (national)" : $restrictionAsString;
+    }
 }
