@@ -139,6 +139,7 @@ class Chimera extends Command
             'spatie/laravel-permission:^5.7',
             'spatie/simple-excel:^2.5',
             'spatie/laravel-translatable:^6.1',
+            'spatie/db-dumper:^3.3',
             'gasparesganga/php-shapefile:^3.4'
         ]);
 

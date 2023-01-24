@@ -9,7 +9,7 @@ abstract class MapIndicatorBaseClass
 {
     const DRAWING_OPTIONS = [ // https://leafletjs.com/reference.html#polyline-option
         'stroke'                => true,
-        'color'	                => '#3388ff',
+        'color'	                => '#ccc',
         'weight'                => 1,
         'opacity'	            => 1,
         'lineCap'	            => 'round',
@@ -17,7 +17,7 @@ abstract class MapIndicatorBaseClass
         'dashArray'	            => null,
         'dashOffset'            => null,
         'fill'	                => true,
-        'fillColor'	            => '#3388ff',
+        'fillColor'	            => '#ccc',
         'fillOpacity'           => 0.2,
         'fillRule'	            => 'evenodd',
         'bubblingMouseEvents'   => false,

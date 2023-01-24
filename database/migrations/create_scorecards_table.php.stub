@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('questionnaire')->nullable();
             $table->boolean('published')->default(false);
             $table->string('linked_indicator')->nullable();
-            $table->unsignedTinyInteger('rank')->default(0);
+            $table->unsignedTinyInteger('rank')->nullable();
             $table->timestamps();
         });
     }

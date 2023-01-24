@@ -6,6 +6,7 @@ interface BarChart
 {
     public const BarTraceTemplate = [
         'hoverinfo' => 'x+y',
+        'texttemplate' => "%{value}",
         'textposition' => 'auto',
         'type' => 'bar'
     ];
@@ -20,7 +21,7 @@ interface BarChart
     public const PercentageBarTraceTemplate = [
         'textposition' => 'auto',
         'texttemplate' => "%{value} %",
-        'hovertemplate' => "%{value} %",
+        'hovertemplate' => "%{x}: %{value}%",
         'type' => 'bar',
     ];
 }

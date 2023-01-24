@@ -121,7 +121,9 @@ class Map extends Component
         if (! isset($this->selectedIndicator) && ! empty($this->indicators)) {
             $this->setSelectedIndicator(array_key_first($this->indicators), $level);
         }
-        $currentIndicator = new $this->selectedIndicator;
+        if (isset($this->selectedIndicator)) {
+            $currentIndicator = new $this->selectedIndicator;
+        }
 
         $geojson = json_decode($this->getGeoJson($derivedPaths));
         $filtered = collect($geojson->features)->filter(fn ($feature) => ! in_array($feature->properties->path, $this->previouslySentPaths));

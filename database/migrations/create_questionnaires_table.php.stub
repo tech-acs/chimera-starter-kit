@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->boolean('show_on_home_page')->default(false);
+            $table->unsignedTinyInteger('rank')->nullable();
 
             $table->string('host');
             $table->string('port', 10);

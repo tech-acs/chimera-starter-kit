@@ -21,6 +21,7 @@ return new class extends Migration
             $table->jsonb('description')->nullable();
             $table->string('questionnaire')->nullable();
             $table->boolean('published')->default(false);
+            $table->unsignedTinyInteger('rank')->nullable();
             $table->timestamps();
         });
     }

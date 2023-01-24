@@ -3,29 +3,34 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Storage;
 
 class DataImport extends Command
 {
     protected $signature = 'chimera:data-import';
 
-    protected $description = 'Import production destined data from file';
+    protected $description = 'Restore postgres data (some tables) from file';
 
     public function handle()
     {
-        $dataExportFile = base_path() . '/data-export.sql';
-        $fileHandle = fopen($dataExportFile, 'r');
-        $insertedRecords = 0;
-        if ($fileHandle) {
-            while (($line = fgets($fileHandle)) !== false) {
-                if (trim($line) && DB::insert($line)) {
-                    $insertedRecords++;
-                }
-            }
-            fclose($fileHandle);
+        $dumpFile = base_path() . '/data-export.sql';
+        if (! file_exists($dumpFile)) {
+            $this->newLine()->error('No data-export.sql file found to import');
+            $this->newLine();
+            return 1;
         }
-        $this->newLine()->info("$insertedRecords records have been imported.");
-        $this->newLine();
+        $pgsqlConfig = config('database.connections.pgsql');
+        (new Process(
+                ['psql', $pgsqlConfig['database'], "--username={$pgsqlConfig['username']}", "--host={$pgsqlConfig['host']}", "--port={$pgsqlConfig['port']}", "--file={$dumpFile}"],
+                base_path(),
+                ['PGPASSWORD' => $pgsqlConfig['password']]
+            ))
+            ->setTimeout(null)
+            ->run(function ($type, $output) {
+                $this->output->write($output);
+            });
+
         return Command::SUCCESS;
     }
 }

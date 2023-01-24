@@ -14,7 +14,6 @@ class GenerateReports extends Command
 
     public function handle()
     {
-        //$dueReports = Report::enabled()->dueThisHour()->get();
         $dueReports = Report::enabled()
             ->get()
             ->filter(function ($report) {

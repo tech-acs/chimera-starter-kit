@@ -57,7 +57,7 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                         $areas[] = [
                             'name' => $name,
                             'code' => $code,
-                            'level' => array_search($levelName, $this->areaLevels), // Safe?
+                            'level' => array_search($levelName, $this->areaLevels), // Is this safe?
                             'path' => $path,
                             'created_at' => $timestamp,
                             'updated_at' => $timestamp,

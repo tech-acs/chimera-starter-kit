@@ -10,9 +10,9 @@ class QueryFragmentFactory
     public static function make(string $connection)
     {
         $className = "App\Services\QueryFragments\\" . Str::studly($connection) . "QueryFragments";
-        try {
+        if (class_exists($className)) {
             return new $className;
-        } catch (Exception $exception) {
+        } else {
             return null;
         }
     }

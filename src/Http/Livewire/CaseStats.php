@@ -48,7 +48,12 @@ class CaseStats extends Component
 
     public function getData(array $filter)
     {
-        list($selectColumns, $whereConditions) = QueryFragmentFactory::make($this->questionnaire->name)->getSqlFragments($filter);
+        $queryFragmentFactory = QueryFragmentFactory::make($this->questionnaire->name);
+        if (is_null($queryFragmentFactory)) {
+            $whereConditions = [];
+        } else {
+            list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filter);
+        }
         $l = (new BreakoutQueryBuilder($this->questionnaire->name, false))
             ->select([
                 "COUNT(*) AS total",

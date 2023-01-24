@@ -17,7 +17,6 @@ abstract class ReportBaseClass
 
     public function __construct(Report $report)
     {
-        //$classPath = "App\Reports\\" . str($report->name)->replace('/', '\\');
         $this->report = $report;
     }
 
@@ -31,7 +30,9 @@ abstract class ReportBaseClass
 
     protected function writeFile(array $data, string $filename)
     {
-        $writer = SimpleExcelWriter::create(Storage::disk('reports')->path($filename))->addRows($data);
+        SimpleExcelWriter::create(Storage::disk('reports')
+            ->path($filename))
+            ->addRows($data);
     }
 
     protected function generateForFilter(array $filter)
@@ -55,16 +56,6 @@ abstract class ReportBaseClass
             $filter = AreaTree::pathAsFilter($path);
             $this->generateForFilter($filter);
         }
-        /*$filter = [];
-        $data = $this->getData($filter);
-        if (empty($data)) {
-            throw new Exception('There is no data to export');
-        }
-        $rowified = $data->map(function ($obj) {
-            return (array)$obj;
-        })->all();
-        $this->writeFile($rowified);*/
-
         $this->report->update(['last_generated_at' => now()]);
     }
 }
