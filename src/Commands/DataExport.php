@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
+use Uneca\Chimera\Models\Questionnaire;
 
 class DataExport extends Command
 {
@@ -29,6 +30,9 @@ class DataExport extends Command
     public function handle()
     {
         $pgsqlConfig = config('database.connections.pgsql');
+        $tmpFile = base_path() . '/data-export.tmp';
+        $dumpFile = base_path() . '/data-export.sql';
+
         \Spatie\DbDumper\Databases\PostgreSql::create()
             ->setDbName($pgsqlConfig['database'])
             ->setUserName($pgsqlConfig['username'])
@@ -37,10 +41,30 @@ class DataExport extends Command
             ->doNotCreateTables()
             ->addExtraOption('--inserts')
             ->addExtraOption('--on-conflict-do-nothing')
-            ->dumpToFile(base_path() . '/data-export.sql');
+            ->dumpToFile($tmpFile);
 
-        $this->newLine()->info('The postgres data has been dumped to file');
+        if (! file_exists($dumpFile)) {
+            $tmpFileHandle = fopen($tmpFile, 'r');
+            $dumpFileHandle = fopen($dumpFile, 'w');
+            $databasePasswords = Questionnaire::pluck('password')->all();
+            while (($line = fgets($tmpFileHandle)) !== false) {
+                if (! empty(trim($line))) {
+                    if (str_contains($line, 'INSERT INTO public.questionnaires')) {
+                        $line = str_replace($databasePasswords, '*****', $line);
+                    }
+                    fwrite($dumpFile, $line);
+                }
+            }
+            fclose($dumpFileHandle);
+            fclose($tmpFileHandle);
+            unlink($tmpFile);
+
+            $this->newLine()->info('The postgres data has been dumped to file');
+            $this->newLine();
+            return Command::SUCCESS;
+        }
+        $this->newLine()->error('There was a problem dumping the postgres database');
         $this->newLine();
-        return Command::SUCCESS;
+        return Command::FAILURE;
     }
 }

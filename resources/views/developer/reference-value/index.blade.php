@@ -98,7 +98,7 @@
                                     {{$record->path}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-                                    {{$record->level}}
+                                    {{ ucfirst($hierarchies[$record->level] ?? $record->level) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{$record->value}}

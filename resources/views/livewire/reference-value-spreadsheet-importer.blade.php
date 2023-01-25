@@ -10,7 +10,7 @@
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 md:flex md:justify-between">
-                        <p class="text-sm text-blue-700">{{ $message }}</p>
+                        <p class="text-sm text-blue-700">{!! $message !!}</p>
                         <p class="mt-3 text-sm md:mt-0 md:ml-6"></p>
                     </div>
                 </div>

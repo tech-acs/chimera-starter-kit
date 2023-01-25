@@ -1,6 +1,6 @@
 <div x-data="commandPalette()" x-cloak>
     <!-- Trigger -->
-    <a class="cursor-pointer text-indigo-400" x-on:click="ready = true" title="{{ __('Search') }}">
+    <a class="cursor-pointer text-indigo-400" x-on:click="ready = true" title="{{ __('Search indicators') }}">
         <svg class="w-7 h-7 mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
     </a>
 

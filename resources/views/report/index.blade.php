@@ -44,14 +44,15 @@
                                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Report</th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Generation Schedule</th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Current Version</th>
-                                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Download</th>
+                                <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">Notify Me</th>
+                                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900"></th>
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                             @forelse($records ?? [] as $report)
                                 @can($report->permission_name)
                             <tr>
-                                <td class="py-4 pl-4 pr-3 text-sm sm:pl-6 w-1/2">
+                                <td class="py-4 pl-4 pr-3 text-sm sm:pl-6 w-5/12">
                                     <div class="flex items-center">
                                         {{--<div class="h-10 w-10 flex-shrink-0">
                                             <img class="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
@@ -70,6 +71,10 @@
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     {{ $report->last_generated_at?->toDayDateTimeString() ?? ' NA ' }}
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
+                                    <livewire:subscribe-to-report-notification :report="$report"/>
+                                    {{--<x-chimera::toggle-button name="subscribed-to-{{ $report->id }}" :value="$report->subscribed" />--}}
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                     @if($report->fileExists)

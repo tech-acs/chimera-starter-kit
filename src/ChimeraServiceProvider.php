@@ -45,6 +45,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'create_area_hierarchies_table',
             'create_map_indicators_table',
             'create_indicator_analytics_table',
+            'create_report_user_table',
         ];
         $package
             ->name('chimera')
@@ -98,6 +99,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('reference-value-spreadsheet-importer', \Uneca\Chimera\Http\Livewire\ReferenceValueSpreadsheetImporter::class);
         Livewire::component('role-manager', \Uneca\Chimera\Http\Livewire\RoleManager::class);
         Livewire::component('case-stats', \Uneca\Chimera\Http\Livewire\CaseStats::class);
+        Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Http\Livewire\SubscribeToReportNotification::class);
     }
 
     public function boot()

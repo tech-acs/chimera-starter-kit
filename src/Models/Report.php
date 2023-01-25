@@ -5,7 +5,6 @@ namespace Uneca\Chimera\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
@@ -20,6 +19,11 @@ class Report extends Model
 
     protected $dates = ['last_generated_at'];
     protected $appends = ['permission_name'];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
 
     protected function permissionName(): Attribute
     {

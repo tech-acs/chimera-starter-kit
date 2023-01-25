@@ -58,6 +58,17 @@ class ReferenceValueSpreadsheetImporter extends Component
         $this->columnMapping = Collection::times($this->indicatorsToImport, function () {
             return ['name' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true]; // 'code' => '', 'zeroPadding' => 0,
         })->all();
+
+        // TEXTJOIN(".", 0, TEXT(C2,"00"), TEXT(E2, "0000"), TEXT(L2, "0"))
+        $paddedColumns = collect($this->levels)->map(function ($level) {
+            return 'TEXT(' . $level . '_code' . ', "' . sprintf("%03s", 0) . '")';
+        })->join(',');
+        $this->message = '
+            Remember that you need to add a path column to your csv file. You can use the formula below to generate its values.<br>
+            For each of the (level, "000") sections, replace with the appropriate code column name and adjust the number of 0s to match its size.<br>
+            <br>
+            =TEXTJOIN(".", 0, ' . $paddedColumns . ')
+        ';
     }
 
     public function updatedSpreadsheet()

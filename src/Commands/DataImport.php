@@ -24,7 +24,7 @@ class DataImport extends Command
         (new Process(
                 ['psql', $pgsqlConfig['database'], "--username={$pgsqlConfig['username']}", "--host={$pgsqlConfig['host']}", "--port={$pgsqlConfig['port']}", "--file={$dumpFile}"],
                 base_path(),
-                ['PGPASSWORD' => $pgsqlConfig['password']]
+                ['PGPASSWORD' => "{$pgsqlConfig['password']}"]
             ))
             ->setTimeout(null)
             ->run(function ($type, $output) {

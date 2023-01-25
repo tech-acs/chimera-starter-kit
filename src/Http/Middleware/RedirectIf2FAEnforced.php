@@ -19,7 +19,7 @@ class RedirectIf2FAEnforced
     {
         if (config('chimera.enforce_2fa') && is_null(Auth::user()->two_factor_secret)) {
             return to_route('profile.show')
-                ->dangerBanner("Before proceeding any further you are required to enable two factor authentication. Please do so <a class='text-blue-200 underline' href='#2fa'>below</a>!");;
+                ->dangerBanner("Before proceeding any further you are required to enable two factor authentication. Please do so below!");;
         }
 
         return $next($request);

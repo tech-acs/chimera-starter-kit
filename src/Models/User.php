@@ -33,6 +33,11 @@ class User extends \App\Models\User
         return $this->hasMany(IndicatorAnalytics::class);
     }
 
+    public function reports()
+    {
+        return $this->belongsToMany(Report::class)->withTimestamps();
+    }
+
     public function areaRestrictionAsFilter()
     {
         $areaTree = new AreaTree();

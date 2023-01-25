@@ -33,7 +33,7 @@ class AreaController extends Controller
         $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
             return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
         })->join(', ', ' and ');
-        return view('chimera::developer.area.index', compact('records', 'summary'));
+        return view('chimera::developer.area.index', compact('records', 'summary', 'hierarchies'));
     }
 
     public function create()

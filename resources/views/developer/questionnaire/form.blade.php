@@ -36,13 +36,20 @@
                     <x-jet-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($questionnaire ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
                     <x-jet-input-error for="end_date" class="mt-2" />
                 </div>
-                <div>
-                    <x-jet-label for="show_on_home_page" value="{!! __('Show on home page') !!}" />
-                    <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
-                        <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
-                    </select>
+                <div class="flex justify-around">
+                    <div>
+                        <x-jet-label for="show_on_home_page" value="{!! __('Show on home page') !!}" />
+                        <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
+                            <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <x-jet-label for="rank" value="{!! __('Rank') !!}" />
+                        <x-jet-input name="rank" type="number" class="w-20" value="{{ old('rank', $questionnaire->rank ?? null) }}" />
+                    </div>
                 </div>
+
             </div>
         </div>
 

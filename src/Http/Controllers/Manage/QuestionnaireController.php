@@ -10,7 +10,7 @@ class QuestionnaireController extends Controller
 {
     public function index()
     {
-        $records = Questionnaire::orderBy('name')->get();
+        $records = Questionnaire::orderBy('rank')->get();
         return view('chimera::developer.questionnaire.index', compact('records'));
     }
 
@@ -21,7 +21,7 @@ class QuestionnaireController extends Controller
 
     public function store(QuestionnaireRequest $request)
     {
-        Questionnaire::create($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'host', 'port', 'database', 'username', 'password', 'connection_active']));
+        Questionnaire::create($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active']));
         return redirect()->route('developer.questionnaire.index')->withMessage('Record created');
     }
 
@@ -32,7 +32,7 @@ class QuestionnaireController extends Controller
 
     public function update(Questionnaire $questionnaire, QuestionnaireRequest $request)
     {
-        $questionnaire->update($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'host', 'port', 'database', 'username', 'password', 'connection_active']));
+        $questionnaire->update($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active']));
         return redirect()->route('developer.questionnaire.index')->withMessage('Record updated');
     }
 

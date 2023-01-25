@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Uneca\Chimera\Models\ReferenceValue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Uneca\Chimera\Services\AreaTree;
 
 class ReferenceValueController extends Controller
 {
@@ -19,7 +20,8 @@ class ReferenceValueController extends Controller
             ->paginate(config('chimera.records_per_page'));
         $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
         $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], "? reference values across ? " . Str::plural('indicator', $stats->no_of_indicators));
-        return view('chimera::developer.reference-value.index', compact('records', 'summary'));
+        $hierarchies = (new AreaTree())->hierarchies;
+        return view('chimera::developer.reference-value.index', compact('records', 'summary', 'hierarchies'));
     }
 
     public function create()
