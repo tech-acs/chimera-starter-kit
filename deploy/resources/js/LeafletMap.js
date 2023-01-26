@@ -99,7 +99,7 @@ export default class LeafletMap {
                 span.innerText = indicatorName;
                 input.onchange = e => {
                     let selectedIndicator = e.target.value
-                    Livewire.emit('indicatorSelected', selectedIndicator, this.map.getZoom())
+                    Livewire.emit('indicatorSelected', selectedIndicator, this.inferLevelFromZoom(this.map.getZoom()))
                 };
             }
             L.DomEvent.disableClickPropagation(menuContainer);

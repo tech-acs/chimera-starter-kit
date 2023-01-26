@@ -45,7 +45,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'create_reference_values_table',
             'create_area_hierarchies_table',
             'create_map_indicators_table',
-            'create_indicator_analytics_table',
+            'create_analytics_table',
             'create_report_user_table',
         ];
         $package

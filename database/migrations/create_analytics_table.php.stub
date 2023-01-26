@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('indicator_analytics', function (Blueprint $table) {
+        Schema::create('analytics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('indicator_id')->constrained();
+            $table->unsignedBigInteger('analyzable_id');
+            $table->string('analyzable_type');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('source')->nullable();
             $table->tinyInteger('level')->nullable();
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('indicator_analytics');
+        Schema::dropIfExists('analytics');
     }
 };

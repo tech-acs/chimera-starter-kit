@@ -182,6 +182,7 @@ class Chimera extends Command
         $this->comment('Updated package.json with required npm packages');
 
         copy(__DIR__.'/../../deploy/.env.example', base_path('.env'));
+        $this->comment('Copied .env.example to .env');
 
         $this->info('All done');
         $this->newLine();

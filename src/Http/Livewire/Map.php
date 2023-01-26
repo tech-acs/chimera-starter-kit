@@ -91,9 +91,7 @@ class Map extends Component
     {
         $hierarchies = (new AreaTree())->hierarchies;
         $codes = $this->derivedPathsToCodes($derivedPaths)->all();
-        //dump($level);
         $filter = empty($codes) ? [] : [$hierarchies[$level] => $codes];
-        //dump($level, $codes, $filter);
         $data = $mapIndicator?->getData($filter) ?? collect([]);
         return $data->map(function ($row) use ($mapIndicator) {
             $row->value = $row->{$mapIndicator->valueColumn};
@@ -109,6 +107,7 @@ class Map extends Component
 
     public function setSelectedIndicator(string $mapIndicator, int $level)
     {
+        logger('setSelectedIndicator', ['level' => $level]);
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
         $this->emit('indicatorSwitched', $this->getDataAndCacheIt($selectedIndicator, $level, collect([])), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
