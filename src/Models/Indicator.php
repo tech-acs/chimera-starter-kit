@@ -27,7 +27,7 @@ class Indicator extends Model
 
     public function analytics()
     {
-        return $this->hasMany(IndicatorAnalytics::class)->orderBy('completed_at');
+        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
     }
 
     protected function permissionName(): Attribute

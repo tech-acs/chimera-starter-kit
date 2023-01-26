@@ -19,6 +19,7 @@ use Livewire\Livewire;
 
 use Uneca\Chimera\Services\ConnectionLoader;
 use Uneca\Chimera\Services\PageBuilder;
+use Uneca\Chimera\Services\Helpers;
 
 class ChimeraServiceProvider extends PackageServiceProvider
 {
@@ -169,8 +170,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->needs(CachingInterface::class)
             ->give(IndicatorCaching::class);*/
 
-        /*$this->app->bind('chimera', function($app) {
-            return new AreaTree();
-        });*/
+        $this->app->bind('helpers', function($app) {
+            return new Helpers();
+        });
     }
 }

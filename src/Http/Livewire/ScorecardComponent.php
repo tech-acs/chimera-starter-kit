@@ -21,7 +21,6 @@ class ScorecardComponent extends Component
 
     public function mount($index)
     {
-        //$this->scorecard = $scorecard;
         $this->title = $this->scorecard->title;
         $index = $index % count(Theme::colors());
         $this->bgColor = Theme::colors()[$index];
@@ -36,6 +35,7 @@ class ScorecardComponent extends Component
     {
         $user = auth()->user();
         $filter = $user->areaRestrictionAsFilter();
+        $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : count($filter), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
@@ -45,14 +45,20 @@ class ScorecardComponent extends Component
                     ->rememberForever($caching->key, function () use ($caching) {
                         $caching->stamp();
                         $this->dataTimestamp = Carbon::now();
+                        $analytics['source'] = 'Caching';
                         return $this->getData($caching->filter);
                     });
-            } else {
-                list($this->value, $this->diff) = $this->getData($filter);
             }
+            $analytics['source'] = 'Not caching';
+            list($this->value, $this->diff) = $this->getData($filter);
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception]);
-            list($this->value, $this->diff) = $this->getData([]);
+            list($this->value, $this->diff) = ['Err', null];
+        } finally {
+            if ($analytics['source'] !== 'Cache') {
+                $analytics['completed_at'] = time();
+                $this->scorecard->analytics()->create($analytics);
+            }
         }
     }
 

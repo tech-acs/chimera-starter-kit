@@ -11,7 +11,7 @@ use Uneca\Chimera\Http\Controllers\Manage\AreaHierarchyController;
 use Uneca\Chimera\Http\Controllers\Manage\ConnectionTestController;
 use Uneca\Chimera\Http\Controllers\Manage\FaqManagementController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorController;
-use Uneca\Chimera\Http\Controllers\Manage\IndicatorAnalyticsController;
+use Uneca\Chimera\Http\Controllers\Manage\AnalyticsController;
 use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\PageController;
 use Uneca\Chimera\Http\Controllers\Manage\QuestionnaireController;
@@ -63,10 +63,13 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             }
         });
 
+        Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+        //Route::get('analyzable/{analyzable}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('page', PageController::class)->except(['show']);
         Route::resource('indicator', IndicatorController::class)->except(['show', 'create', 'store', 'destroy']);
-        Route::get('indicator/{indicator}/analytics', IndicatorAnalyticsController::class)->name('indicator.analytics');
+        //Route::get('indicator/{indicator}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
+        //Route::get('scorecard/{scorecard}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::name('manage.')->group(function () {
             Route::resource('report', ReportManagementController::class)->except(['show']);
             Route::resource('map_indicator', MapIndicatorController::class)->except(['show']);

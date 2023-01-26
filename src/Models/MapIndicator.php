@@ -17,6 +17,11 @@ class MapIndicator extends Model
     protected $guarded = ['id'];
     public $translatable = ['title', 'description'];
 
+    public function analytics()
+    {
+        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
+    }
+
     protected function permissionName(): Attribute
     {
         return new Attribute(

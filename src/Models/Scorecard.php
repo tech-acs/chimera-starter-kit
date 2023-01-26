@@ -18,6 +18,11 @@ class Scorecard extends Model
     protected $guarded = ['id'];
     public $translatable = ['title'];
 
+    public function analytics()
+    {
+        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
+    }
+
     protected function permissionName(): Attribute
     {
         return new Attribute(

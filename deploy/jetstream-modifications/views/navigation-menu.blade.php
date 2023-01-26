@@ -87,6 +87,7 @@
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('announcement.index')}}">{{ __('Announcements') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link href="{{route('analytics.index')}}">{{ __('Query Analytics') }}</x-jet-dropdown-link>
                                     {{--<x-jet-dropdown-link href="{{route('manage.faq.index')}}">{{ __('FAQs') }}</x-jet-dropdown-link>--}}
                                 </div>
                             </x-slot>

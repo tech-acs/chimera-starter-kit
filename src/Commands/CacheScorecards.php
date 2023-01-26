@@ -34,7 +34,12 @@ class CacheScorecards extends Command
         foreach ($scorecardsToCache as $scorecard) {
             $this->newLine()->info($scorecard->name);
             $startTime = time();
+
+            $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
             (new ScorecardCaching($scorecard, []))->update();
+            $analytics['completed_at'] = time();
+            $scorecard->analytics()->create($analytics);
+
             $endTime = time();
             $this->info("Completed in " . ($endTime - $startTime) . " seconds");
         }

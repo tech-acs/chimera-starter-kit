@@ -6,14 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
-class IndicatorAnalytics extends Model
+class Analytics extends Model
 {
     protected $guarded = ['id'];
     public $timestamps = false;
 
-    public function indicator()
+    public function analyzable()
     {
-        return $this->belongsTo(Indicator::class);
+        return $this->morphTo();
     }
 
     protected function startedAt(): Attribute

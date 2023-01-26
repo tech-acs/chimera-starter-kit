@@ -48,7 +48,7 @@ class CacheIndicators extends Command
             $this->newLine()->info($indicator->name);
             $startTime = time();
 
-            $analytics = ['source' => 'Query, caching (command)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
+            $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
             (new IndicatorCaching($indicator, []))->update(); // National level - no filters (non-level/null level)
             $analytics['completed_at'] = time();
             $indicator->analytics()->create($analytics);
@@ -63,7 +63,7 @@ class CacheIndicators extends Command
                         $filter[$hierarchies[$i]] = $codes[$i];
                     }
 
-                    $analytics = ['source' => 'Query, caching (command)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
+                    $analytics = ['source' => 'Caching (cmd)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
                     (new IndicatorCaching($indicator, $filter))->update(); // Sub-national level
                     $analytics['completed_at'] = time();
                     $indicator->analytics()->create($analytics);

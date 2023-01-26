@@ -60,7 +60,7 @@ class MakeMapIndicator extends GeneratorCommand
 
         $questionnaires = Questionnaire::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
-        $questionnaire = $this->choice("Which questionnaire does this report belong to?", $questionnaireMenu);
+        $questionnaire = $this->choice("Which questionnaire does this map indicator belong to?", $questionnaireMenu);
 
         /*$chartTypeMenu = array_combine(range(1, count($this->chartTypes)), array_keys($this->chartTypes));
         $chosenChartType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);

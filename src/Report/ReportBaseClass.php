@@ -2,12 +2,14 @@
 
 namespace Uneca\Chimera\Report;
 
+use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\Report;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use Uneca\Chimera\Notifications\ReportGeneratedNotification;
 use Uneca\Chimera\Services\AreaTree;
 
 abstract class ReportBaseClass
@@ -57,5 +59,7 @@ abstract class ReportBaseClass
             $this->generateForFilter($filter);
         }
         $this->report->update(['last_generated_at' => now()]);
+
+        Notification::send($this->report->users, new ReportGeneratedNotification($this->report));
     }
 }

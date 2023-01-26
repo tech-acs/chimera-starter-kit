@@ -158,8 +158,8 @@ class Chimera extends Command
         $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);
         $this->comment('Published stubs');
 
-        /*$this->callSilent('queue:batches-table');
-        $this->comment('Job batches migration generated');*/
+        // $this->callSilent('queue:batches-table');
+        // $this->comment('Job batches migration generated');
 
         copy(__DIR__.'/../../deploy/web.php', base_path('routes/web.php'));
         $this->comment('Copied empty route file (web.php)');
@@ -180,6 +180,8 @@ class Chimera extends Command
             ] + $packages;
         });
         $this->comment('Updated package.json with required npm packages');
+
+        copy(__DIR__.'/../../deploy/.env.example', base_path('.env'));
 
         $this->info('All done');
         $this->newLine();
