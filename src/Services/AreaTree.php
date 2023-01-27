@@ -75,7 +75,7 @@ class AreaTree
         } else {
             return Area::selectRaw($checksumSafe ? "CONCAT('*', areas.path) AS path, code, name, value" : 'areas.path, code, name, value')
                 ->leftJoin('reference_values', 'areas.path', 'reference_values.path')
-                ->whereRaw("areas.path ~ '{$lquery}' AND reference_values.indicator = '{$nameOfReferenceValueToInclude}'")
+                ->whereRaw("areas.path ~ '{$lquery}' AND COALESCE(reference_values.indicator, '{$nameOfReferenceValueToInclude}') = '{$nameOfReferenceValueToInclude}'")
                 ->orderBy($orderBy)
                 ->get();
         }
