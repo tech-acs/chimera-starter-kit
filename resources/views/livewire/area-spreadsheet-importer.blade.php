@@ -98,8 +98,8 @@
                                     <x-jet-input-error for="columnMapping.{{ $areaLevel }}.code" class="text-xs" />
                                 </td>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500 align-top">
-                                    <input wire:model="columnMapping.{{ $areaLevel }}.zeroPadding" type="number" min="0" class="w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <x-jet-input-error for="columnMapping.{{ $areaLevel }}.zeroPadding" class="text-xs" />
+                                    <input wire:model="columnMapping.{{ $areaLevel }}.zeroPadding" type="number" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                    {{--<x-jet-input-error for="columnMapping.{{ $areaLevel }}.zeroPadding" class="text-xs" />--}}
                                 </td>
                             </tr>
                         @empty

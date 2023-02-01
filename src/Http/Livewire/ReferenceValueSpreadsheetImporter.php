@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Livewire;
 
 use Uneca\Chimera\Jobs\ImportReferenceValueSpreadsheetJob;
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Services\AreaTree;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -60,9 +61,10 @@ class ReferenceValueSpreadsheetImporter extends Component
         })->all();
 
         // TEXTJOIN(".", 0, TEXT(C2,"00"), TEXT(E2, "0000"), TEXT(L2, "0"))
-        $paddedColumns = collect($this->levels)->map(function ($level) {
-            return 'TEXT(' . $level . '_code' . ', "' . sprintf("%03s", 0) . '")';
+        $paddedColumns = AreaHierarchy::orderBy('index')->get()->map(function ($level) {
+            return 'TEXT(' . $level->name . '_code' . ', "' . sprintf("%0{$level->zero_pad_length}s", 0) . '")';
         })->join(',');
+
         $this->message = '
             Remember that you need to add a path column to your csv file. You can use the formula below to generate its values.<br>
             For each of the (level, "000") sections, replace with the appropriate code column name and adjust the number of 0s to match its size.<br>

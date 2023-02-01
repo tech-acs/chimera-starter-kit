@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Jobs\ImportAreaSpreadsheetJob;
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Notifications\TaskCompletedNotification;
 use Uneca\Chimera\Notifications\TaskFailedNotification;
 use Uneca\Chimera\Services\AreaTree;
@@ -66,8 +67,8 @@ class AreaSpreadsheetImporter extends Component
     public function mount()
     {
         $this->areaLevels = (new AreaTree())->hierarchies;
-        $this->columnMapping = collect($this->areaLevels)->mapWithKeys(function ($levelName) {
-            return [$levelName => ['name' => '', 'code' => '', 'zeroPadding' => 0]];
+        $this->columnMapping = AreaHierarchy::orderBy('index')->get()->mapWithKeys(function ($areaHierarchy) {
+            return [$areaHierarchy->name => ['name' => '', 'code' => '', 'zeroPadding' => $areaHierarchy->zero_pad_length]];
         })->all();
     }
 

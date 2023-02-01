@@ -4,8 +4,10 @@ namespace Uneca\Chimera\Jobs;
 
 use Illuminate\Support\Str;
 use Uneca\Chimera\Models\Area;
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Notifications\TaskCompletedNotification;
 use Uneca\Chimera\Notifications\TaskFailedNotification;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\ShapefileImporter;
 use Uneca\Chimera\Traits\Geospatial;
 use Illuminate\Bus\Queueable;
@@ -37,13 +39,16 @@ class ImportShapefileJob implements ShouldQueue
 
     private function augumentData(array $features, int $level)
     {
-        return array_map(function ($feature) use ($level) {
+        $hierarchies = (new AreaTree())->hierarchies; $locale = app()->getLocale();
+        $thisAreaHierarchy = AreaHierarchy::whereRaw("name->>'{$locale}' = '{$hierarchies[$level]}'")->first();
+        return array_map(function ($feature) use ($level, $thisAreaHierarchy) {
             if ($level > 0) {
                 $ancestor = self::findContainingGeometry($level - 1, $feature['geom']);
                 $feature['path'] = empty($ancestor) ? null : $this->makePath($ancestor, $feature['attribs']['code']);
             } else {
                 $feature['path'] = $this->makePath(null, $feature['attribs']['code']);
             }
+            $feature['zero_padded_code'] = Str::padLeft($feature['attribs']['code'], $thisAreaHierarchy->zero_pad_length, '0');
             return $feature;
         }, $features);
     }
@@ -55,7 +60,7 @@ class ImportShapefileJob implements ShouldQueue
 
     private function validateShapefile(array $features)
     {
-        // Check for empty shapefiles?
+        // Check for empty shapefiles
         if (empty($features)) {
             throw ValidationException::withMessages([
                 'shapefile' => ['The shapefile does not contain any valid features.'],
@@ -76,14 +81,11 @@ class ImportShapefileJob implements ShouldQueue
         $importer = new ShapefileImporter();
         $features = $importer->import($this->filePath);
         $this->validateShapefile($features);
-        // Check that all areas have valid value for 'code' and unique within the level
+        // Check that all areas have valid value for 'code'
         $featuresWithInvalidCode = array_filter($features, function ($feature) {
             $codeValidator = Validator::make(
                 $feature['attribs'],
-                ['code' => [
-                    'required', 'max:255', 'regex:/[A-Za-z0-9_]+/i',
-                    // Rule::unique('areas', 'code')->where(fn ($query) => $query->where('level', $this->level))
-                ]]
+                ['code' => ['required', 'max:255', 'regex:/[A-Za-z0-9_]+/i',]]
             );
             if ($codeValidator->fails()) {
                 logger('Shapefile validation error', ['Error' => $codeValidator->errors()->all()]);
@@ -112,16 +114,9 @@ class ImportShapefileJob implements ShouldQueue
             $results = [];
             foreach ($augmentedFeatures as $feature) {
                 $name = Str::of($feature['attribs']['name'])->trim()->lower()->limit(80)->title();
-                /*$results[] = Area::create([
-                    'name' => $name,
-                    'code' => $feature['attribs']['code'],
-                    'level' => $this->level,
-                    'geom' => $feature['geom'],
-                    'path' => $feature['path'],
-                ]);*/
                 $results[] = Area::updateOrCreate(
                 [
-                    'code' => $feature['attribs']['code'],
+                    'code' => $feature['zero_padded_code'],
                     'level' => $this->level,
                     'path' => $feature['path'],
                 ],

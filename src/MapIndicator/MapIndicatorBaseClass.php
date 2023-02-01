@@ -150,7 +150,7 @@ abstract class MapIndicatorBaseClass
         if ($value < $this->ranges[0][0]) { // Below range -> first style
             return array_key_first($this->currentStyle);
         }
-        foreach ($this->ranges as $index => $range) { // Within range -> corrosponding style
+        foreach ($this->ranges as $index => $range) { // Within range -> corresponding style
             if (($value >= $range[0]) && ($value < $range[1])) {
                 return $styles[$index];
             }

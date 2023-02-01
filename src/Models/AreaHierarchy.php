@@ -13,4 +13,5 @@ class AreaHierarchy extends Model
 
     protected $guarded = ['id'];
     public $translatable = ['name'];
+    protected $casts = ['map_zoom_levels' => 'array'];
 }

@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Jobs;
 
 use Illuminate\Bus\Batchable;
+use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Models\Area;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -15,6 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Uneca\Chimera\Notifications\TaskFailedNotification;
 
 class ImportAreaSpreadsheetJob implements ShouldQueue
 {

@@ -68,7 +68,7 @@ export default class LeafletMap {
         }
         L.DomUtil.empty(legend);
         for (const [color, label] of Object.entries(legendData)) {
-            legend.innerHTML += `<i style="background-color: ${color};"></i> ${label}<br>`;
+            legend.innerHTML += `<i style="background-color: ${color}; opacity: 40%;"></i> ${label}<br>`;
         }
     }
 

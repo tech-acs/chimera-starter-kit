@@ -13,18 +13,16 @@ class DataExport extends Command
 
     protected array $tables = [
         'area_hierarchies',
-        //'areas',
-        //'reference_values',
-        'questionnaires',
-        'pages',
+        'areas',
         'indicators',
         'indicator_page',
-        'scorecards',
-        'reports',
         'map_indicators',
-        //'roles',
-        'permissions',
-        //'role_has_permissions'
+        'pages',
+        'permissions', // ???
+        'questionnaires',
+        'reports',
+        'reference_values',
+        'scorecards',
     ];
 
     public function handle()
@@ -52,7 +50,7 @@ class DataExport extends Command
                     if (str_contains($line, 'INSERT INTO public.questionnaires')) {
                         $line = str_replace($databasePasswords, '*****', $line);
                     }
-                    fwrite($dumpFile, $line);
+                    fwrite($dumpFileHandle, $line);
                 }
             }
             fclose($dumpFileHandle);

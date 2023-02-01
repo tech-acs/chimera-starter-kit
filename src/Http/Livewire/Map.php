@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Http\Livewire;
 
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\MapIndicator;
 use Exception;
 use Illuminate\Support\Collection;
@@ -19,6 +20,7 @@ class Map extends Component
     public array $levelToZoomMapping;
     public string $selectedIndicator;
     public array $previouslySentPaths = [];
+    public array $simplification;
 
     protected function getListeners()
     {
@@ -50,17 +52,18 @@ class Map extends Component
         return collect(DB::select($sql))->pluck('code');
     }
 
-    protected function getGeoJson(Collection $derivedPaths)
+    protected function getGeoJson(Collection $derivedPaths, int $level = 0)
     {
         $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
         $whereClause = $derivedPaths->isEmpty() ? "level = 0" : "path ?? $lqueryArray";
+        $simplificationTolerance = $this->simplification[$level];
         $sql = "
             SELECT json_build_object(
                 'type', 'FeatureCollection',
                 'features', json_agg(
                     json_build_object(
                         'type',       'Feature',
-                        'geometry',   ST_AsGeoJSON(ST_GeomFromWKB(filtered_areas.geom))::json,
+                        'geometry',   ST_AsGeoJSON(filtered_areas.geom)::json,
                         'properties', json_build_object(
                             'code', code,
                             'name', name,
@@ -73,7 +76,7 @@ class Map extends Component
             ) AS feature_collection
             FROM
             (
-                SELECT name, code, level, path, geom
+                SELECT name, code, level, path, ST_SimplifyPreserveTopology(ST_GeomFromWKB(geom), $simplificationTolerance) AS geom
                 FROM areas
                 WHERE $whereClause
             ) AS filtered_areas
@@ -107,7 +110,6 @@ class Map extends Component
 
     public function setSelectedIndicator(string $mapIndicator, int $level)
     {
-        logger('setSelectedIndicator', ['level' => $level]);
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
         $this->emit('indicatorSwitched', $this->getDataAndCacheIt($selectedIndicator, $level, collect([])), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
@@ -124,7 +126,7 @@ class Map extends Component
             $currentIndicator = new $this->selectedIndicator;
         }
 
-        $geojson = json_decode($this->getGeoJson($derivedPaths));
+        $geojson = json_decode($this->getGeoJson($derivedPaths, $level));
         $filtered = collect($geojson->features)->filter(fn ($feature) => ! in_array($feature->properties->path, $this->previouslySentPaths));
         $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
         $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
@@ -146,7 +148,10 @@ class Map extends Component
             ->get()
             ->mapWithKeys(fn ($indicator) => [$indicator->fully_qualified_classname => $indicator->title])
             ->all();
-        $this->levelToZoomMapping = config('chimera.area.map.level_to_zoom_mapping');
+        $areaHierarchies = AreaHierarchy::orderBy('index')->get();
+        $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
+        //$this->levelToZoomMapping = config('chimera.area.map.level_to_zoom_mapping');
+        $this->levelToZoomMapping = AreaHierarchy::orderBy('index')->pluck('map_zoom_levels')->all();
     }
 
     public function render()
