@@ -37,8 +37,9 @@ class DataExport extends Command
             ->setPassword($pgsqlConfig['password'])
             ->includeTables($this->tables)
             ->doNotCreateTables()
-            ->addExtraOption('--inserts')
+            ->addExtraOption('--inserts') // Dump data as INSERT commands (rather than COPY)
             ->addExtraOption('--on-conflict-do-nothing')
+            ->addExtraOption('--attribute-inserts') // INSERT commands with explicit column names
             ->dumpToFile($tmpFile);
 
         if (! file_exists($dumpFile)) {

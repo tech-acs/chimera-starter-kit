@@ -70,7 +70,7 @@
                                     {{ __('Simplification tolerance') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Corrosponding map zoom levels') }}
+                                    {{ __('Corresponding map zoom levels') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>

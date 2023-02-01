@@ -14,7 +14,7 @@ class ScorecardComponent extends Component
     public Scorecard $scorecard;
     public string $title;
     public int|float|string $value = '';
-    public ?int $diff = null;
+    public int|float|null $diff = null;
     public string $unit = '%';
     public string $bgColor;
     public Carbon $dataTimestamp;
@@ -42,7 +42,7 @@ class ScorecardComponent extends Component
                 $caching = new ScorecardCaching($this->scorecard, []);
                 $this->dataTimestamp = $caching->getTimestamp();
                 list($this->value, $this->diff) = Cache::tags($caching->tags())
-                    ->rememberForever($caching->key, function () use ($caching) {
+                    ->rememberForever($caching->key, function () use ($caching, &$analytics) {
                         $caching->stamp();
                         $this->dataTimestamp = Carbon::now();
                         $analytics['source'] = 'Caching';
