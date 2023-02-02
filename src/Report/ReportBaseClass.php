@@ -34,6 +34,9 @@ abstract class ReportBaseClass
     {
         SimpleExcelWriter::create(Storage::disk('reports')
             ->path($filename))
+            ->addHeader([$this->report->title])
+            ->addHeader(["As of " . now()->toDayDateTimeString()])
+            ->addHeader(array_keys(reset($data))) // Actual headers (get from the first row)
             ->addRows($data);
     }
 

@@ -62,7 +62,7 @@
                            @keyup.down.prevent="move('down')"
                            @keyup.up.prevent="move('up')"
                            @keyup.enter="a"
-                           class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="{{ __('Search') }}..." role="combobox" aria-expanded="false" aria-controls="options">
+                           class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder-gray-400 focus:ring-0 sm:text-sm" placeholder="{{ __('Search indicators') }}..." role="combobox" aria-expanded="false" aria-controls="options">
                 </div>
 
                 <div class="py-14 px-6 text-center text-sm sm:px-14 self-center" wire:loading.block wire:loading.delay>

@@ -32,9 +32,6 @@
                         {{ __('Reports') }}
                     </x-jet-nav-link>
                 @endcan
-                    {{--<x-jet-nav-link href="{{ route('help') }}" :active="request()->routeIs('help')">
-                        {{ __('Help') }}
-                    </x-jet-nav-link>--}}
                 @if(\Uneca\Chimera\Models\Faq::count())
                     <x-jet-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
                         {{ __('FAQ') }}
@@ -83,7 +80,7 @@
                                     <x-jet-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('manage.report.index') }}">{{ __('Reports') }}</x-jet-dropdown-link>
-                                    <x-jet-dropdown-link class="px-6" href="{{ route('manage.map_indicator.index') }}">{{ __('Map indicators') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{ route('manage.map_indicator.index') }}">{{ __('Map Indicators') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <x-jet-dropdown-link href="{{route('announcement.index')}}">{{ __('Announcements') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-jet-dropdown-link>
@@ -205,6 +202,11 @@
 
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
+                <div class="mr-4 flex items-center space-x-4">
+                    <div class="-mt-2"><livewire:command-palette /></div>
+                    <a href="{{ route('notification.index') }}"><livewire:notification-bell /></a>
+                    <livewire:language-switcher />
+                </div>
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -216,43 +218,52 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden h-96 overflow-y-auto">
         <div class="pt-2 pb-3 space-y-1">
             <x-jet-responsive-nav-link href="{{ route('home') }}" :active="request()->routeIs('home')">
                 {{ __('Home') }}
             </x-jet-responsive-nav-link>
             @foreach($pages as $route => $page)
                 @can($page->slug)
-                    <x-jet-responsive-nav-link href="{{ route('page', $route) }}" :active="request()->is('page/*')">
+                    <x-jet-responsive-nav-link href="{{ route('page', $route) }}" :active='str(request()->path())->exactly("page/{$page->slug}")'>
                         {{$page->title}}
                     </x-jet-responsive-nav-link>
                 @endcan
             @endforeach
-
-            <x-jet-responsive-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
-                {{ __('Map') }}
-            </x-jet-responsive-nav-link>
+            @can('maps')
+                <x-jet-responsive-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
+                    {{ __('Map') }}
+                </x-jet-responsive-nav-link>
+            @endcan
             @can('reports')
                 <x-jet-responsive-nav-link href="{{ route('report') }}" :active="request()->routeIs('report')">
                     {{ __('Reports') }}
                 </x-jet-responsive-nav-link>
             @endcan
-
-            <x-jet-responsive-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
-                {{ __('FAQ') }}
-            </x-jet-responsive-nav-link>
+            @if(\Uneca\Chimera\Models\Faq::count())
+                <x-jet-responsive-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
+                    {{ __('FAQ') }}
+                </x-jet-responsive-nav-link>
+            @endif
             @can('Super User')
                 <div class="border-t border-gray-200"></div>
-                <x-jet-responsive-nav-link href="{{ route('user.index') }}" :active="request()->routeIs('user.*')">{{ __('Users') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('role.index') }}" :active="request()->routeIs('role.*')">{{ __('Roles') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('developer.questionnaire.index') }}" :active="request()->routeIs('questionnaire.*')">{{ __('Questionnaires') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('page.index') }}" :active="request()->routeIs('page.*')">{{ __('Pages') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('indicator.index') }}" :active="request()->routeIs('indicator.*')">{{ __('Indicators') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('scorecard.index') }}" :active="request()->routeIs('scorecard.*')">{{ __('Scorecards') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('manage.report.index') }}" :active="request()->routeIs('manage.report.*')">{{ __('Reports') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="" :active="request()->routeIs('map.*')">{{ __('Maps') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('usage_stats') }}" :active="request()->routeIs('usage_stats')">{{ __('Usage Stats') }}</x-jet-responsive-nav-link>
-                <x-jet-responsive-nav-link href="{{ route('manage.faq.index') }}" :active="request()->routeIs('manage.faq.*')">{{ __('FAQs') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('user.index') }}">{{ __('Users') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('role.index') }}">{{ __('Roles') }}</x-jet-responsive-nav-link>
+                <div class="border-t border-gray-200 border-dotted mx-4"></div>
+                <x-jet-responsive-nav-link href="{{ route('developer.questionnaire.index') }}">{{ __('Questionnaires') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('developer.area-hierarchy.index') }}" >{{ __('Area Hierarchy') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-jet-responsive-nav-link>
+                <div class="border-t border-gray-200 border-dotted mx-4"></div>
+                <x-jet-responsive-nav-link href="{{ route('page.index') }}">{{ __('Pages') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('manage.report.index') }}">{{ __('Reports') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('manage.map_indicator.index') }}">{{ __('Map Indicators') }}</x-jet-responsive-nav-link>
+                <div class="border-t border-gray-200 border-dotted mx-4"></div>
+                <x-jet-responsive-nav-link href="{{ route('announcement.index') }}">{{ __('Announcements') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('usage_stats') }}">{{ __('Usage Stats') }}</x-jet-responsive-nav-link>
+                <x-jet-responsive-nav-link href="{{ route('analytics.index') }}">{{ __('Query Analytics') }}</x-jet-responsive-nav-link>
             @endcan
         </div>
 
