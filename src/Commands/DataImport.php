@@ -52,7 +52,7 @@ class DataImport extends Command
         }
 
         (new Process(
-                ['psql', $pgsqlConfig['database'], "--username={$pgsqlConfig['username']}", "--host={$pgsqlConfig['host']}", "--port={$pgsqlConfig['port']}", "--file={$dumpFile}"],
+                ['psql', "--dbname={$pgsqlConfig['database']}", "--username={$pgsqlConfig['username']}", "--host={$pgsqlConfig['host']}", "--port={$pgsqlConfig['port']}", "--file={$dumpFile}"],
                 base_path(),
                 ['PGPASSWORD' => "{$pgsqlConfig['password']}"]
             ))
