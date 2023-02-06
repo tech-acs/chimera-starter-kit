@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Livewire;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\MapIndicator;
@@ -11,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Uneca\Chimera\Services\AreaTree;
+use Uneca\Chimera\Services\DashboardComponentFactory;
 use Uneca\Chimera\Services\MapIndicatorCaching;
 
 class Map extends Component
@@ -21,6 +23,8 @@ class Map extends Component
     public string $selectedIndicator;
     public array $previouslySentPaths = [];
     public array $simplification;
+    public array $allStyles;
+    public array $levelNames;
 
     protected function getListeners()
     {
@@ -95,7 +99,7 @@ class Map extends Component
         $hierarchies = (new AreaTree())->hierarchies;
         $codes = $this->derivedPathsToCodes($derivedPaths)->all();
         $filter = empty($codes) ? [] : [$hierarchies[$level] => $codes];
-        $data = $mapIndicator?->getData($filter) ?? collect([]);
+        $data = $mapIndicator?->getData($filter, auth()->user()->areaRestrictionAsFilter()) ?? collect([]);
         return $data->map(function ($row) use ($mapIndicator) {
             $row->value = $row->{$mapIndicator->valueColumn};
             $row->style = $mapIndicator->assignStyle($row->value);
@@ -112,7 +116,12 @@ class Map extends Component
     {
         $this->selectedIndicator = $mapIndicator;
         $selectedIndicator = new $this->selectedIndicator;
-        $this->emit('indicatorSwitched', $this->getDataAndCacheIt($selectedIndicator, $level, collect([])), $selectedIndicator->getStyles(), $selectedIndicator->getLegend());
+        $this->emit(
+            'indicatorSwitched',
+            $this->getDataAndCacheIt($selectedIndicator, $level, collect([])),
+            $selectedIndicator::SELECTED_COLOR_CHART,
+            $selectedIndicator->getLegend()
+        );
     }
 
     final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
@@ -139,19 +148,29 @@ class Map extends Component
         $this->leafletMapOptions = [
             'center' => config('chimera.area.map.center'),
             'zoom' => 6,
+            'minZoom' => 6,
             'zoomControl' => false,
             'attributionControl' => false,
             'preferCanvas' => true,
             'locale' => app()->getLocale(),
         ];
+        $allStyles['default'] = MapIndicatorBaseClass::DEFAULT_STYLE;
         $this->indicators = MapIndicator::published()
             ->get()
-            ->mapWithKeys(fn ($indicator) => [$indicator->fully_qualified_classname => $indicator->title])
+            ->filter(function ($mapIndicator) {
+                return Gate::allows($mapIndicator->permission_name);
+            })
+            ->mapWithKeys(function ($mapIndicator) use (&$allStyles) {
+                $implementation = DashboardComponentFactory::makeMapIndicator($mapIndicator);
+                $allStyles[$implementation::SELECTED_COLOR_CHART] = $implementation->getStyles();
+                return [$mapIndicator->fully_qualified_classname => $mapIndicator->title];
+            })
             ->all();
         $areaHierarchies = AreaHierarchy::orderBy('index')->get();
         $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
-        //$this->levelToZoomMapping = config('chimera.area.map.level_to_zoom_mapping');
         $this->levelToZoomMapping = AreaHierarchy::orderBy('index')->pluck('map_zoom_levels')->all();
+        $this->allStyles = $allStyles;
+        $this->levelNames = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
     }
 
     public function render()

@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Uneca\Chimera\Models\Report;
 
-class ReportGeneratedNotification extends Notification
+class ReportGeneratedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 

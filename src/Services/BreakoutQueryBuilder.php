@@ -94,6 +94,7 @@ class BreakoutQueryBuilder
         try {
             return collect($this->dbConnection->select($sql ?? $this->toSql()));
         } catch (\Exception $exception) {
+            logger('In BreakoutQueryBuilder', ['Exception' => $exception->getMessage()]);
             return collect([]);
         }
     }

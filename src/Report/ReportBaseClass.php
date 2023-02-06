@@ -22,10 +22,11 @@ abstract class ReportBaseClass
         $this->report = $report;
     }
 
-    abstract public function getData(array $filter): Collection;
+    abstract public function getData(string $path): Collection;
 
-    public function filename(array $filter): string
+    public function filename(string $path): string
     {
+        $filter = AreaTree::pathAsFilter($path);
         $suffix = implode('-', $filter);
         return "{$this->report->slug}$suffix.{$this->fileType}";
     }
@@ -40,29 +41,34 @@ abstract class ReportBaseClass
             ->addRows($data);
     }
 
-    protected function generateForFilter(array $filter)
+    protected function generateForPath(string $path)
     {
-        $data = $this->getData($filter);
-        if (empty($data)) {
-            throw new Exception('There is no data to export');
+        $data = $this->getData($path);
+        if ($data->isEmpty()) {
+            //dump("There is no data to export for path: $path");
+            return;
         }
         $rowified = $data->map(function ($obj) {
             return (array)$obj;
         })->all();
-        $this->writeFile($rowified, $this->filename($filter));
+        $this->writeFile($rowified, $this->filename($path));
     }
 
     public function generate()
     {
         // Get all user area restrictions and loop them as filter, including [] for non-restricted users
         $paths = AreaRestriction::distinct('path')->pluck('path');
-        $this->generateForFilter([]);
+        $this->generateForPath(''); // '' means no restriction or national level view
         foreach ($paths as $path) {
-            $filter = AreaTree::pathAsFilter($path);
-            $this->generateForFilter($filter);
+            //$filter = AreaTree::pathAsFilter($path);
+            $this->generateForPath($path);
         }
         $this->report->update(['last_generated_at' => now()]);
 
-        Notification::send($this->report->users, new ReportGeneratedNotification($this->report));
+        try {
+            Notification::send($this->report->users, new ReportGeneratedNotification($this->report));
+        } catch (\Exception $exception) {
+            logger('Trying to notify', ['Exception' => $exception->getMessage()]);
+        }
     }
 }

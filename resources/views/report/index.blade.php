@@ -44,7 +44,14 @@
                                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Report</th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Generation Schedule</th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Current Version</th>
-                                <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">Notify Me</th>
+                                <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900 items-center">
+                                    Notify Me
+                                    <a title="You will be notified via email and in-app message">
+                                        <svg class="inline w-5 h-5 text-blue-700 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"></path>
+                                        </svg>
+                                    </a>
+                                </th>
                                 <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900"></th>
                             </tr>
                             </thead>

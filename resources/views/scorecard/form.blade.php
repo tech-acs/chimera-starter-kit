@@ -18,7 +18,7 @@
             </div>
             <div>
                 <x-jet-label for="rank" value="{{ __('Rank') }}" />
-                <x-jet-input id="rank" name="rank" type="number" class="w-20" value="{{ old('rank', $scorecard->rank) }}" />
+                <x-jet-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $scorecard->rank) }}" />
                 <x-jet-input-error for="rank" class="mt-2" />
             </div>
             <div>

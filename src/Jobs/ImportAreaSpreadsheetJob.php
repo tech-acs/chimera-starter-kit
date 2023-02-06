@@ -72,15 +72,15 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                 'Task completed',
                 "$insertedCount areas have been imported."
             ));*/
-        }, 3);
+        });
     }
 
-    public function failed(\Throwable $exception)
+    /*public function failed(\Throwable $exception)
     {
         logger('ImportAreaSpreadsheet Job Failed', ['Exception: ' => $exception->getMessage()]);
         Notification::sendNow($this->user, new TaskFailedNotification(
             'Task failed',
             $exception->getMessage()
         ));
-    }
+    }*/
 }

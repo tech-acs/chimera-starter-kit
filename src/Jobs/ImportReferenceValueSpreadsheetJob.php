@@ -47,9 +47,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     {
         SimpleExcelReader::create($this->filePath)->getRows()
             ->map(function($row) use ($indicatorMapping) {
-                //$code = Str::padLeft($row[$indicatorMapping['code']], $indicatorMapping['zeroPadding'] ?? 0, '0');
                 return [
-                    //'code' => $code,
                     'path' => $row[$indicatorMapping['path']],
                     'level' => $indicatorMapping['level'],
                     'indicator' => $indicatorMapping['name'],

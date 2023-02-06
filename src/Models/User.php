@@ -30,7 +30,7 @@ class User extends \App\Models\User
 
     public function indicatorAnalytics()
     {
-        return $this->hasMany(IndicatorAnalytics::class);
+        return $this->hasMany(Analytics::class);
     }
 
     public function reports()

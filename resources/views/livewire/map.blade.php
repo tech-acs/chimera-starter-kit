@@ -10,6 +10,8 @@
                 data-map-options='@json($leafletMapOptions)'
                 data-indicators='@json($indicators)'
                 data-level-zoom-mapping='@json($levelToZoomMapping)'
+                data-styles='@json($allStyles)'
+                data-level-names='@json($levelNames)'
                 wire:ignore
                 style="height: 75vh;"
             ></div>

@@ -1,29 +1,24 @@
 <div class="shadow sm:rounded-md sm:overflow-hidden">
-    {{--<div class="px-4 py-2 sm:px-6 bg-gray-50 border-b border-gray-200">
-        <span class="text-xs text-gray-500 uppercase">
-            {{ __('Create a new database connection') }}
-        </span>
-    </div>--}}
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
         <div class="grid grid-cols-1 gap-6">
-            <div class="">
+            <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $report->name }}" />
                 <x-jet-input-error for="name" class="mt-2" />
             </div>
-            <div class="">
+            <div>
                 <x-jet-label for="title" value="{{ __('Title') }} *" />
                 <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $report->title ?? null)}}" />
                 <x-jet-input-error for="title" class="mt-2" />
             </div>
-            <div class="">
+            <div>
                 <x-jet-label for="description" value="{{ __('Description') }} *" class="inline" /><x-chimera::locale-display />
                 <textarea id="description" name="description" rows="3" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $report->description ?? null)}}</textarea>
                 <x-jet-input-error for="description" class="mt-2" />
             </div>
             <div>
                 <x-jet-label for="rank" value="{{ __('Rank') }}" />
-                <x-jet-input id="rank" name="rank" type="number" class="w-20" value="{{ old('rank', $report->rank) }}" />
+                <x-jet-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $report->rank) }}" />
                 <x-jet-input-error for="rank" class="mt-2" />
             </div>
             <div>
@@ -78,13 +73,11 @@
                         <option value="{{ $hour }}" {{old('schedule', $report->run_at ?? null) === $hour ? 'selected' : ''}}>{{ $hour }}</option>
                     @endforeach
                 </select>
-                {{--<x-jet-input id="schedule" name="schedule" type="time" step="300" class="mt-1 block w-full" value="{{old('schedule', $report->schedule ?? null)}}" />--}}
                 <x-jet-input-error for="run_at" class="mt-2" />
             </div>
             <div>
                 <div class="flex justify-between">
                     <x-jet-label for="run_every" value="{{ __('Run every') }}" />
-                    {{--<label class="text-sm text-gray-400">Server time now: {{ now()->toTimeString() }}</label>--}}
                 </div>
                 <select name="run_every" class="mt-1 inline pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     @foreach($frequencyOptions as $hours)

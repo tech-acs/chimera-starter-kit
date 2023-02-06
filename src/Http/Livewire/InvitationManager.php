@@ -23,6 +23,9 @@ class InvitationManager extends Component
     public $role;
     public $sendEmail = true;
     public $showSingleInviteForm = false;
+    public $showResult = false;
+    public $resultTitle;
+    public $resultBody;
 
     protected $rules = [
         'email' => 'required|email|unique:Uneca\Chimera\Models\Invitation,email|unique:Uneca\Chimera\Models\User,email',
@@ -31,6 +34,21 @@ class InvitationManager extends Component
     protected $messages = [
         'email.unique' => 'The email address is already in use',
     ];
+
+    public function resendEmail(Invitation $invitation)
+    {
+        try {
+            $this->sendEmail($invitation);
+            $this->resultTitle = 'Email sent';
+            $this->resultBody = "The invitation email has been resent to {$this->email}";
+        } catch (\Exception $exception) {
+            $this->resultTitle = 'Error occurred';
+            $this->resultBody = "The invitation email was not sent. Please make sure mail sending has been properly configured. " .
+                "Please refer to the error message below:<br><br>" .
+                "<span style='color: #a93131;'>" . $exception->getMessage() . "</span>";
+        }
+        $this->showResult = true;
+    }
 
     public function sendEmail(Invitation $invitation)
     {

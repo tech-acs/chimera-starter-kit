@@ -22,8 +22,8 @@ class ReportController extends Controller
             })
             ->map(function ($report) {
                 $implementedReport = DashboardComponentFactory::makeReport($report);
-                $filter = auth()->user()->areaRestrictionAsFilter();
-                $report->fileExists = Storage::disk('reports')->exists($implementedReport->filename($filter));
+                $path = auth()->user()->areaRestrictions->first()?->path ?? '';
+                $report->fileExists = Storage::disk('reports')->exists($implementedReport->filename($path));
                 return $report;
             })
         );

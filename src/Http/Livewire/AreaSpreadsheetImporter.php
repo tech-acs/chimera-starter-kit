@@ -2,11 +2,10 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
-use Illuminate\Bus\Batch;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Jobs\ImportAreaSpreadsheetJob;
+use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Notifications\TaskCompletedNotification;
 use Uneca\Chimera\Notifications\TaskFailedNotification;
@@ -82,14 +81,14 @@ class AreaSpreadsheetImporter extends Component
         $this->fileAccepted = true;
     }
 
-    private function makePathFormulaForExcel()
+    /*private function makePathFormulaForExcel()
     {
         // TEXTJOIN(".", 0, TEXT(C2,"00"), TEXT(E2, "0000"), TEXT(L2, "0"))
         $paddedColumns = collect($this->columnMapping)->map(function ($column) {
             return 'TEXT(' . $column['code'] . ', "' . sprintf("%0{$column['zeroPadding']}s", 0) . '")';
         })->join(',');
         return '=TEXTJOIN(".", 0, ' . $paddedColumns . ')';
-    }
+    }*/
 
     public function import()
     {
@@ -101,6 +100,7 @@ class AreaSpreadsheetImporter extends Component
         $line = 0;
         $start = 0;
         $notProcessed = true;
+        $areasTotalPreImport = Area::count();
         while (($fileLine = fgets($fileHandle)) !== false) {
             $line++;
             $notProcessed = true;
@@ -121,17 +121,18 @@ class AreaSpreadsheetImporter extends Component
         }
         fclose($fileHandle);
 
-        $pathFormula = $this->makePathFormulaForExcel();
+        //$pathFormula = $this->makePathFormulaForExcel();
         Bus::chain(array_merge(
                 $jobs,
-                [function () use ($line, $user, $pathFormula) {
-                    Notification::send($user, new TaskCompletedNotification(
-                        'Task completed',
-                        "The file has been processed for import. Please use this formula to populate
-                                a new 'path' column on your spreadsheet, which is required for reference value importing. $pathFormula
-                                [replace with the respective code columns for your spreadsheet]"
-                    ));
-                }]
+                [
+                    function () use ($line, $user, $areasTotalPreImport) {
+                        $insertedCount = Area::count() - $areasTotalPreImport;
+                        Notification::send($user, new TaskCompletedNotification(
+                            'Task completed',
+                            "$insertedCount areas have been imported."
+                        ));
+                    }
+                ]
             ))
             ->catch(function (\Throwable $e) use ($user) {
                 logger('ImportAreaSpreadsheet Job Failed', ['Exception: ' => $e->getMessage()]);

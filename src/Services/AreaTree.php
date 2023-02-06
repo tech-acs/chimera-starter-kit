@@ -30,13 +30,13 @@ class AreaTree
         }, $paths);
     }
 
-    public static function translateCodeToPath(array $codes): array
+    /*public static function translateCodeToPath(array $codes): array
     {
         $areas = Area::whereIn('code', array_values($codes))->pluck('path', 'code')->all();
         return array_map(function ($code) use ($areas) {
             return $areas[$code];
         }, $codes);
-    }
+    }*/
 
     public static function pathAsFilter(string $path): array
     {

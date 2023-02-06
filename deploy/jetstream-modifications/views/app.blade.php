@@ -97,6 +97,17 @@
 
         @livewireScripts
 
+        <script>
+            Livewire.onError((statusCode, response) => {
+                if (statusCode === 504) {
+                    // Handle the timeout here, then return false
+                    alert('The data took too long to fetch. Make sure caching is enabled!');
+                    console.log({statusCode, response});
+                    return false;
+                }
+            });
+        </script>
+
         @stack('late-scripts')
     </body>
 </html>

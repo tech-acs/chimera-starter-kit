@@ -7,7 +7,7 @@ use Uneca\Chimera\Models\MapIndicator;
 
 abstract class MapIndicatorBaseClass
 {
-    const DRAWING_OPTIONS = [ // https://leafletjs.com/reference.html#polyline-option
+    const LEAFLET_POLYLINE_OPTIONS = [ // https://leafletjs.com/reference.html#polyline-option
         'stroke'                => true,
         'color'	                => '#ccc',
         'weight'                => 1,
@@ -21,6 +21,12 @@ abstract class MapIndicatorBaseClass
         'fillOpacity'           => 0.2,
         'fillRule'	            => 'evenodd',
         'bubblingMouseEvents'   => false,
+    ];
+    const DEFAULT_STYLE = [
+        ...self::LEAFLET_POLYLINE_OPTIONS,
+        'color' => 'dimgrey',
+        'fillColor' => 'dimgrey',
+        'fillOpacity' => 0.65,
     ];
     const COLOR_CHARTS = [
         'alizarin' => [
@@ -161,7 +167,7 @@ abstract class MapIndicatorBaseClass
         return 'default';
     }
 
-    public function getData(array $filter): Collection
+    public function getData(array $filter, array $areaRestriction): Collection
     {
         return collect([]);
     }
@@ -174,6 +180,7 @@ abstract class MapIndicatorBaseClass
                 ->map(fn ($style) => $style['fillColor'])
                 ->combine($this->ranges)
                 ->map(fn ($rangeArray) => implode(' - ', $rangeArray))
+                ->merge(['dimgray' => __('No data')])
                 ->all();
         }
         return [];
@@ -184,7 +191,7 @@ abstract class MapIndicatorBaseClass
          $styles = collect($this::COLOR_CHARTS)
             ->map(function ($chart, $name) {
                 return collect($chart)->mapWithKeys(function ($color, $index) use ($name) {
-                    return ["$name-$index" => array_merge(self::DRAWING_OPTIONS, ['fillColor' => $color])];
+                    return ["$name-$index" => array_merge(self::DEFAULT_STYLE, ['fillColor' => $color])];
                 })->all();
             })
             ->all();

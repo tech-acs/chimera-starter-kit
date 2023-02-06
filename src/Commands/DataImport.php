@@ -31,18 +31,18 @@ class DataImport extends Command
         $pgsqlConfig = config('database.connections.pgsql');
         $dumpFile = base_path() . '/data-export.sql';
 
-        if (! $this->option('do-not-truncate')) {
-            foreach ($this->tables as $table) {
-                DB::table($table)->truncate();
-            }
-        }
-
         if ($this->option('command')) {
-            $command = "psql --host={$pgsqlConfig['host']} --port={$pgsqlConfig['port']} --username={$pgsqlConfig['username']} $dumpFile {$pgsqlConfig['database']}";
+            $command = "psql --host={$pgsqlConfig['host']} --port={$pgsqlConfig['port']} --username={$pgsqlConfig['username']} --file=\"{$dumpFile}\" {$pgsqlConfig['database']}";
             $this->newLine()->line("You can use the command below to manually import the data using the psql tool (enter password when prompted)");
             $this->info($command);
             $this->newLine();
             return Command::SUCCESS;
+        }
+
+        if (! $this->option('do-not-truncate')) {
+            foreach ($this->tables as $table) {
+                DB::table($table)->truncate();
+            }
         }
 
         if (! file_exists($dumpFile)) {

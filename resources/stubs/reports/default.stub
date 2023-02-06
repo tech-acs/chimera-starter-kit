@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class {{ class }} extends ReportBaseClass
 {
-    public function getData(array $filter): Collection
+    public function getData(string $path): Collection
     {
         return collect([]);
     }

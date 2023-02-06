@@ -42,7 +42,10 @@ class DataExport extends Command
             ->addExtraOption('--attribute-inserts') // INSERT commands with explicit column names
             ->dumpToFile($tmpFile);
 
-        if (! file_exists($dumpFile)) {
+        try {
+            if (! file_exists($dumpFile)) {
+                unlink($dumpFile);
+            }
             $tmpFileHandle = fopen($tmpFile, 'r');
             $dumpFileHandle = fopen($dumpFile, 'w');
             $databasePasswords = Questionnaire::pluck('password')->all();
@@ -61,9 +64,11 @@ class DataExport extends Command
             $this->newLine()->info('The postgres data has been dumped to file');
             $this->newLine();
             return Command::SUCCESS;
+        } catch (\Exception $exception) {
+            $this->newLine()->error('There was a problem dumping the postgres database');
+            $this->error($exception->getMessage());
+            $this->newLine();
+            return Command::FAILURE;
         }
-        $this->newLine()->error('There was a problem dumping the postgres database');
-        $this->newLine();
-        return Command::FAILURE;
     }
 }

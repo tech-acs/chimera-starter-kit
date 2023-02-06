@@ -46,7 +46,11 @@ class AnnouncementController extends Controller
             $announcement = auth()->user()
                 ->announcements()
                 ->create(array_merge($request->safe()->all(), ['recipients' => $recipientsList[$recipients]]));
-            Notification::sendNow($recipientUsers, new BroadcastMessageNotification($announcement));
+            try {
+                Notification::sendNow($recipientUsers, new BroadcastMessageNotification($announcement));
+            } catch (\Exception $exception) {
+                //
+            }
             return redirect()->route('announcement.index')->withMessage('The announcement has been sent to the specified recipients group.');
         }
         return redirect()->route('announcement.index')->withMessage('No users found for specified recipients group.');

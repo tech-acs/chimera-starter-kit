@@ -44,7 +44,7 @@
                             @else
                                 <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="showLink({{$record->id}})">{{ __('Show link') }}</a>
                                 |
-                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="sendEmail({{$record->id}})">{{ __('Resend email') }}</a>
+                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="resendEmail({{$record->id}})">{{ __('Resend email') }}</a>
                             @endif
                              |
                             <a class="text-red-600 hover:text-red-800 cursor-pointer" wire:click.prevent="delete({{$record->id}})">{{ __('Delete') }}</a>
@@ -172,6 +172,24 @@
 
         <x-slot name="footer">
             <x-jet-secondary-button wire:click="$toggle('showLink')" wire:loading.attr="disabled">
+                {{ __('Ok') }}
+            </x-jet-secondary-button>
+        </x-slot>
+    </x-jet-dialog-modal>
+
+    <x-jet-dialog-modal wire:model="showResult">
+        <x-slot name="title">
+            {{ __($resultTitle) }}
+        </x-slot>
+
+        <x-slot name="content">
+            <div class="text-sm text-gray-500 flex-wrap">
+                {!! __($resultBody) !!}
+            </div>
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-jet-secondary-button wire:click="$toggle('showResult')" wire:loading.attr="disabled">
                 {{ __('Ok') }}
             </x-jet-secondary-button>
         </x-slot>
