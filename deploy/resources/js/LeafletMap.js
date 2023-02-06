@@ -10,12 +10,15 @@ export default class LeafletMap {
     mapOptions;
     levelZoomMapping;
     styles;
+    selectedStyle;
     geojsonLayerGroup;
     options;
     startingZoom;
     movementWasZoom = false;
     indicators = {};
     locale;
+    levelNames;
+    levelDisplayControl;
 
     constructor(mapContainer, options) {
         this.options = options;
@@ -42,6 +45,8 @@ export default class LeafletMap {
         this.mapOptions = this.extractDataAttributeSafely(el, 'mapOptions');
         this.indicators = this.extractDataAttributeSafely(el, 'indicators');
         this.levelZoomMapping = this.extractDataAttributeSafely(el,'levelZoomMapping');
+        this.styles = this.extractDataAttributeSafely(el, 'styles');
+        this.levelNames = this.extractDataAttributeSafely(el, 'levelNames');
     }
 
     initializeMap(mapContainer, basemaps) {
@@ -68,12 +73,26 @@ export default class LeafletMap {
         }
         L.DomUtil.empty(legend);
         for (const [color, label] of Object.entries(legendData)) {
-            legend.innerHTML += `<i style="background-color: ${color}; opacity: 40%;"></i> ${label}<br>`;
+            legend.innerHTML += `<i style="background-color: ${color};"></i> ${label}<br>`;
         }
     }
 
     addControls() {
         this.map.addControl(L.control.zoom({position: 'bottomright'}));
+
+        this.levelDisplayControl = L.control({position: 'bottomright'});
+        this.levelDisplayControl.onAdd = () => {
+            const levelDisplayContainer = L.DomUtil.create('div', 'leaflet-control info');
+            let span = L.DomUtil.create('span', 'font-medium text-base font-medium', levelDisplayContainer);
+            span.innerText = this.levelNames[0];
+            L.DomEvent.disableClickPropagation(levelDisplayContainer);
+            L.DomEvent.disableScrollPropagation(levelDisplayContainer);
+            return levelDisplayContainer;
+        }
+        this.levelDisplayControl.update = function (levelName) {
+            this._container.firstChild.innerText = levelName;
+        }
+        this.levelDisplayControl.addTo(this.map);
 
         let indicatorMenu = L.control({position: 'topleft'});
         indicatorMenu.onAdd = () => {
@@ -142,7 +161,8 @@ export default class LeafletMap {
                 pane: paneName,
                 level: i,
                 style: () => {
-                    return {weight: 1};
+                    //return {weight: 1};
+                    return this.styles.default;
                 },
                 show: () => this.map.getPane(paneName).style.display = '',
                 hide: () => this.map.getPane(paneName).style.display = 'none',
@@ -211,15 +231,17 @@ export default class LeafletMap {
                 dictatingLevel = previousLevel;
                 levelLayers[currentLevel].options.show();
                 levelLayers[previousLevel].options.hide();
+                this.levelDisplayControl.update(this.levelNames[currentLevel]);
             }
             const bounds = this.map.getBounds();
             const withinBoundsFeatures = this.getFeaturesIntersectingBounds(levelLayers[dictatingLevel], bounds);
             const withinBoundsLtreePaths = map(withinBoundsFeatures, property('properties.path'));
-            //console.log({dictatingLevel, withinBoundsLtreePaths})
-
-            this.movementWasZoom = false;
-            Livewire.emit('mapMoved', currentLevel, currentLevel - previousLevel, withinBoundsLtreePaths);
-            console.log({emitted:'mapMoved', currentLevel, direction: currentLevel-previousLevel, withinBoundsLtreePaths})
+            if (withinBoundsLtreePaths.length) {
+                console.log({dictatingLevel, withinBoundsLtreePaths})
+                this.movementWasZoom = false;
+                Livewire.emit('mapMoved', currentLevel, currentLevel - previousLevel, withinBoundsLtreePaths);
+                console.log({emitted:'mapMoved', currentLevel, direction: currentLevel-previousLevel, withinBoundsLtreePaths})
+            }
         });
     }
 
@@ -228,11 +250,11 @@ export default class LeafletMap {
         currentLayer.resetStyle();
         const areaKeyedData = keyBy(data, 'area_code');
         currentLayer.getLayers().forEach(feature => {
-            let d = areaKeyedData[feature.feature.properties.code];
-            //console.log({data, areaKeyedData, code: feature.feature.properties.code, d})
-            if (! isUndefined(d)) {
-                feature.setStyle(this.styles[d.style]);
-                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + d.value);
+            let data = areaKeyedData[feature.feature.properties.code];
+            //console.log({data, areaKeyedData, code: feature.feature.properties.code, data})
+            if (! isUndefined(data)) {
+                feature.setStyle(this.styles[this.selectedStyle][data.style]);
+                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + data.value);
             } else {
                 feature.setTooltipContent(feature.feature.properties.name[this.locale]);
             }
@@ -247,9 +269,8 @@ export default class LeafletMap {
             this.applyIndicatorDataToMap(level, data);
         });
 
-        Livewire.on('indicatorSwitched', (data, styles, legend) => {
-            //console.log({data, styles, legend});
-            this.styles = styles;
+        Livewire.on('indicatorSwitched', (data, style, legend) => {
+            this.selectedStyle = style;
             this.setLegend(legend);
 
             const level = this.inferLevelFromZoom(this.map.getZoom());
