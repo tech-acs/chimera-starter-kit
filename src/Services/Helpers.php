@@ -10,4 +10,10 @@ class Helpers
         }
         return 0;
     }
+
+    public static function livewireComponentExistsInDashboardNamespace(string $component)
+    {
+        $components = app(\Livewire\LivewireComponentsFinder::class)->getManifest();
+        return in_array($component, array_keys($components));
+    }
 }
