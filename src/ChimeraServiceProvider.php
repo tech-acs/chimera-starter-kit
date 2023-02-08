@@ -78,6 +78,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeMapIndicator::class,
                 \Uneca\Chimera\Commands\MakeReport::class,
                 \Uneca\Chimera\Commands\MakeScorecard::class,
+                \Uneca\Chimera\Commands\Update::class,
             ]);
     }
 

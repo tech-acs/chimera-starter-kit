@@ -56,6 +56,7 @@ class Chimera extends Command
 
         copy(__DIR__.'/../../deploy/.env.example', base_path('.env'));
         copy(__DIR__.'/../../deploy/.env.example', base_path('.env.example'));
+        config(['app.key' => '']);
         $this->call('key:generate');
         $this->comment('Copied .env.example');
 

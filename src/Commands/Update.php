@@ -7,7 +7,7 @@ use Uneca\Chimera\Traits\InstallUpdateTrait;
 
 class Update extends Command
 {
-    public $signature = 'chimera:update {--chimera-config} {--migrations} {--composer} {--jetstream} {--buildables} {--stubs} {--other-configs} {--npm} {--copy-env}';
+    public $signature = 'chimera:update {--composer=global} {--chimera-config} {--migrations} {--packages} {--jetstream-modifications} {--buildables} {--stubs} {--other-configs} {--npm} {--copy-env}';
 
     public $description = 'Update the Dashboard Starter Kit';
 
@@ -23,11 +23,11 @@ class Update extends Command
             $this->callSilent('vendor:publish', ['--tag' => 'chimera-migrations', '--force' => true]);
             $this->comment('Published migrations');
         }
-        if ($this->option('composer')) {
+        if ($this->option('packages')) {
             $this->requireComposerPackages($this->requiredComposerPackages);
             $this->comment('Updated composer.json');
         }
-        if ($this->option('jetstream')) {
+        if ($this->option('jetstream-modifications')) {
             $this->copyJetstreamModifications();
             $this->comment('Copied Jetstream customizations');
         }
@@ -52,6 +52,7 @@ class Update extends Command
         if ($this->option('copy-env')) {
             copy(__DIR__.'/../../deploy/.env.example', base_path('.env'));
             copy(__DIR__.'/../../deploy/.env.example', base_path('.env.example'));
+            config(['app.key' => '']);
             $this->call('key:generate');
             $this->comment('Copied .env.example');
         }
