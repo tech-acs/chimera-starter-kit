@@ -34,9 +34,8 @@ class ReportController extends Controller
     {
         try {
             $implementedReport = DashboardComponentFactory::makeReport($report);
-            $filter = auth()->user()->areaRestrictionAsFilter();
-            //dd($filter, $implementedReport->filename($filter));
-            return Storage::disk('reports')->download($implementedReport->filename($filter));
+            $path = auth()->user()->areaRestrictions->first()?->path ?? '';
+            return Storage::disk('reports')->download($implementedReport->filename($path));
         } catch (\Exception $exception) {
             return redirect()->back()->withErrors(new MessageBag(['Unable to download the requested report at this time']));
         }
