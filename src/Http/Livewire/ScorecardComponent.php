@@ -14,7 +14,8 @@ class ScorecardComponent extends Component
     public Scorecard $scorecard;
     public string $title;
     public int|float|string $value = '';
-    public int|float|null $diff = null;
+    public int|float|string|null $diff = null;
+    public string $diffTitle;
     public string $unit = '%';
     public string $bgColor;
     public Carbon $dataTimestamp;

@@ -19,6 +19,7 @@
         "php": "^8.1",
         "ext-intl": "*",
         "ext-zip": "*",
+        "ext-redis": "*",
         "spatie/laravel-package-tools": "^1.9.2",
         "illuminate/contracts": "^9.0",
         "laravel/jetstream": "^2.6",
