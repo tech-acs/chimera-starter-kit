@@ -49,9 +49,10 @@ class ScorecardComponent extends Component
                         $analytics['source'] = 'Caching';
                         return $this->getData($caching->filter);
                     });
+            } else {
+                $analytics['source'] = 'Not caching';
+                list($this->value, $this->diff) = $this->getData($filter);
             }
-            $analytics['source'] = 'Not caching';
-            list($this->value, $this->diff) = $this->getData($filter);
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception]);
             list($this->value, $this->diff) = ['Err', null];
