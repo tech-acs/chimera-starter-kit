@@ -14,7 +14,6 @@ trait InstallUpdateTrait
         'spatie/laravel-permission:^5.7',
         'spatie/simple-excel:^3.0',
         'spatie/laravel-translatable:^6.1',
-        'spatie/db-dumper:^3.3',
         'gasparesganga/php-shapefile:^3.4'
     ];
 

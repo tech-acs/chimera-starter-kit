@@ -16,8 +16,7 @@ class Report extends Model
 
     protected $guarded = ['id'];
     public $translatable = ['title', 'description'];
-
-    protected $dates = ['last_generated_at'];
+    protected $casts = ['last_generated_at' => 'datetime'];
     protected $appends = ['permission_name'];
 
     public function users()
