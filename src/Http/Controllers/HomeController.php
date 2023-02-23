@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
-        $questionnaires = Questionnaire::showOnHomePage()->orderBy('rank')->get();
+        $questionnaires = Questionnaire::active()->showOnHomePage()->orderBy('rank')->get();
         return view('chimera::home', compact('questionnaires'));
     }
 }
