@@ -3,13 +3,18 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
+
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Redis;
+use Symfony\Component\Process\Process;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Questionnaire;
 use Uneca\Chimera\Models\ReferenceValue;
+use Uneca\Chimera\Models\User;
 
 class Production extends Command
 {
@@ -33,48 +38,63 @@ class Production extends Command
         });
 
         $this->components->task('Check foundational data presence (area hierarchies, areas and reference values)', function () {
-            $counts = [AreaHierarchy::count(), Area::count(), ReferenceValue::count()];
-            return collect($counts)
-                ->reduce(function ($carry, $item) {
-                    return $carry && ($item > 0);
-                }, true);
+            try {
+                $counts = [AreaHierarchy::count(), Area::count(), ReferenceValue::count()];
+                return collect($counts)
+                    ->reduce(function ($carry, $item) {
+                        return $carry && ($item > 0);
+                    }, true);
+            } catch (\Exception $exception) {
+                return false;
+            }
         });
 
         $this->components->task('Check caching is functional and enabled (CACHE_DRIVER=redis, redis is reachable & CACHE_ENABLED=true)', function () {
-            $productionEnvValues = ['cache.default' => 'redis', 'chimera.cache.enabled' => true];
-            $redis = new Redis();
-            $redis->connect(config('database.redis.cache.host'), config('database.redis.cache.port'));
-            $redisReachable = (bool)$redis->ping();
-            return collect($productionEnvValues)
-                ->map(function ($value, $key) {
-                    return config($key) === $value;
-                })
-                ->merge(['redis.reachable' => $redisReachable])
-                ->reduce(function ($carry, $item) {
-                    return $carry && $item;
-                }, true);
+            try {
+                $productionEnvValues = ['cache.default' => 'redis', 'chimera.cache.enabled' => true];
+                $redis = new Redis();
+                $redis->connect(config('database.redis.cache.host'), config('database.redis.cache.port'));
+                $redisReachable = (bool)$redis->ping();
+                return collect($productionEnvValues)
+                    ->map(function ($value, $key) {
+                        return config($key) === $value;
+                    })
+                    ->merge(['redis.reachable' => $redisReachable])
+                    ->reduce(function ($carry, $item) {
+                        return $carry && $item;
+                    }, true);
+            } catch (\Exception $exception) {
+                return false;
+            }
         });
 
         $this->components->task('Check source databases are configured and reachable', function () {
-            $connections = Questionnaire::active()->pluck('name');
-            if ($connections->isEmpty()) {
+            try {
+                $connections = Questionnaire::active()->pluck('name');
+                if ($connections->isEmpty()) {
+                    return false;
+                }
+                return $connections
+                    ->reduce(function ($carry, $connection) {
+                        try {
+                            DB::connection($connection)->getPDO();
+                            $connectible = true;
+                        } catch (\Exception $exception) {
+                            $connectible = false;
+                        }
+                        return $carry && $connectible;
+                    }, true);
+            } catch (\Exception $exception) {
                 return false;
             }
-            return $connections
-                ->reduce(function ($carry, $connection) {
-                    try {
-                        DB::connection($connection)->getPDO();
-                        $connectible = true;
-                    } catch (\Exception $exception) {
-                        $connectible = false;
-                    }
-                    return $carry && $connectible;
-                }, true);
         });
 
-        $this->components->task('Check email has been properly configured', function () {
+        $this->components->task('Check email has been properly configured and is sending', function () {
             try {
-                //Mail::send();
+                Mail::raw('This is a test email from the dashboard', function($msg) {
+                    $msg->to(User::first()->email ?? 'admin@example.com')
+                        ->subject('Test Email');
+                });
                 return true;
             } catch (\Exception $exception) {
                 return false;
@@ -82,27 +102,34 @@ class Production extends Command
         });
 
         $this->components->task('Check queue manager (supervisord) is running', function () {
-            $response = Http::get('http://127.0.0.1:9001');
-            return $response->ok();
+            try {
+                $response = Http::get('http://127.0.0.1:9001');
+                return $response->ok();
+            } catch (\Exception $exception) {
+                return false;
+            }
         });
 
         $this->components->task('Check public/storage has been linked to storage/app/public', function () {
-            // Check if shortcut exists?
+            try {
+                return (new Filesystem())->exists(public_path('storage'));
+            } catch (\Exception $exception) {
+                return false;
+            }
         });
 
         $this->components->task('Check dashboard is running in secure/https mode (SECURE=true)', function () {
             return config('chimera.secure');
         });
 
-        $this->components->task('Check schedules are in place (laravel cron and then for caches)', function () {
-            // Artisan::call('schedule:list');
-            // $output = trim(Artisan::output());
-        });
-
-        $this->components->task('Check storage and bootstrap/cache folders have correct permissions', function () {
-            // is_writable()
-            // substr(sprintf('%o', fileperms('storage')), -4)
-            // posix_getpwuid(fileowner('storage'));
+        $this->components->task('Check storage and bootstrap/cache folders are writable', function () {
+            try {
+                // substr(sprintf('%o', fileperms('storage')), -4);
+                // posix_getpwuid(fileowner('storage'));
+                return is_writable('storage') && is_writable('bootstrap/cache');
+            } catch (\Exception $exception) {
+                return false;
+            }
         });
 
         $this->newLine();
