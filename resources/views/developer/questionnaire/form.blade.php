@@ -7,14 +7,14 @@
                 <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-start">
-                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Questionnaire Details') }}</span>
+                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Source') }}</span>
             </div>
         </div>
 
         <div class="grid grid-cols-1 gap-6 pl-3 md:pl-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <x-jet-label for="name" value="{{ __('Dictionary name') }} *" />
+                    <x-jet-label for="name" value="{{ __('Name') }} *" />
                     <x-jet-input id="name" name="name" type="text" class="mt-1 block w-full" value="{{old('name', $questionnaire->name ?? null)}}" />
                     <x-jet-input-error for="name" class="mt-2" />
                 </div>
@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                     <x-jet-label for="start_date" value="{!! __('Exercise start date') !!} *" />
                     <x-jet-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($questionnaire ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
@@ -36,20 +36,32 @@
                     <x-jet-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($questionnaire ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
                     <x-jet-input-error for="end_date" class="mt-2" />
                 </div>
-                <div class="flex justify-around">
-                    <div>
-                        <x-jet-label for="show_on_home_page" value="{!! __('Show on home page') !!}" />
-                        <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
-                            <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <x-jet-label for="rank" value="{!! __('Rank') !!}" />
-                        <x-jet-input name="rank" type="number" class="w-20" value="{{ old('rank', $questionnaire->rank ?? null) }}" />
-                    </div>
+                <div>
+                    <x-jet-label for="case_stats_component" value="{!! __('Case stats component') !!}" class="inline" />
+                    <a title="Overriding livewire components need to have 'CaseStats' in their names">
+                        <svg class="inline w-5 h-5 text-blue-700 cursor-pointer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"></path>
+                        </svg>
+                    </a>
+                    <select name="case_stats_component" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        @foreach($components ?? [] as $slug => $component)
+                            <option value="{{ $slug }}" @selected(old('case_stats_component', $questionnaire->case_stats_component ?? 'case-stats') == $slug)>{{ $component }}</option>
+                        @endforeach
+                    </select>
                 </div>
-
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <x-jet-label for="show_on_home_page" value="{!! __('Show on home page') !!}" />
+                    <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
+                        <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
+                    </select>
+                </div>
+                <div>
+                    <x-jet-label for="rank" value="{!! __('Rank (home page listing order)') !!}" />
+                    <x-jet-input name="rank" type="number" class="w-20" value="{{ old('rank', $questionnaire->rank ?? null) }}" />
+                </div>
             </div>
         </div>
 
@@ -58,7 +70,7 @@
                 <div class="w-full border-t border-gray-300"></div>
             </div>
             <div class="relative flex justify-start">
-                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Database') }} </span>
+                <span class="pr-3 bg-white text-sm uppercase tracking-wide text-gray-500">{{ __('Connection') }} </span>
             </div>
         </div>
 

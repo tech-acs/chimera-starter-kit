@@ -14,25 +14,36 @@ class QuestionnaireController extends Controller
         return view('chimera::developer.questionnaire.index', compact('records'));
     }
 
+    private function getCaseStatComponentsList()
+    {
+        return collect(app(\Livewire\LivewireComponentsFinder::class)->getManifest())->filter(function($component) {
+                return str($component)->contains('CaseStats');
+            })
+            ->merge(['case-stats' => 'Uneca\Chimera\Http\Livewire\CaseStats (default)'])
+            ->reverse();
+    }
+
     public function create()
     {
-        return view('chimera::developer.questionnaire.create');
+        $components = $this->getCaseStatComponentsList();
+        return view('chimera::developer.questionnaire.create', compact('components'));
     }
 
     public function store(QuestionnaireRequest $request)
     {
-        Questionnaire::create($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active']));
+        Questionnaire::create($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active', 'case_stats_component']));
         return redirect()->route('developer.questionnaire.index')->withMessage('Record created');
     }
 
     public function edit(Questionnaire $questionnaire)
     {
-        return view('chimera::developer.questionnaire.edit', compact('questionnaire'));
+        $components = $this->getCaseStatComponentsList();
+        return view('chimera::developer.questionnaire.edit', compact('questionnaire', 'components'));
     }
 
     public function update(Questionnaire $questionnaire, QuestionnaireRequest $request)
     {
-        $questionnaire->update($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active']));
+        $questionnaire->update($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active', 'case_stats_component']));
         return redirect()->route('developer.questionnaire.index')->withMessage('Record updated');
     }
 

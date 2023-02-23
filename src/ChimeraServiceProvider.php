@@ -47,6 +47,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'create_map_indicators_table',
             'create_analytics_table',
             'create_report_user_table',
+            'add_case_stats_component_column_to_questionnaires_table',
         ];
         $package
             ->name('chimera')

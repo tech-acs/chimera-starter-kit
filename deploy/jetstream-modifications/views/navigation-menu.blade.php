@@ -70,7 +70,7 @@
                                     <x-jet-dropdown-link class="px-6" href="{{ route('role.index') }}">{{ __('Roles') }}</x-jet-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Core Configuration') }}</div>
-                                    <x-jet-dropdown-link class="px-6" href="{{route('developer.questionnaire.index')}}">{{ __('Questionnaires') }}</x-jet-dropdown-link>
+                                    <x-jet-dropdown-link class="px-6" href="{{route('developer.questionnaire.index')}}">{{ __('Sources') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{route('developer.area-hierarchy.index')}}">{{ __('Area Hierarchy') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-jet-dropdown-link>
                                     <x-jet-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-jet-dropdown-link>

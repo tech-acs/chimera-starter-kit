@@ -25,11 +25,7 @@
             <h3 class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider pb-6">
                 {{ __('Interview stats') }}
             </h3>
-            @if (\Uneca\Chimera\Services\Helpers::livewireComponentExistsInDashboardNamespace('case-stats-override'))
-                <livewire:case-stats-override :questionnaire="$questionnaire" />
-            @else
-                <livewire:case-stats :questionnaire="$questionnaire" />
-            @endif
+            @livewire($questionnaire->case_stats_component, ['questionnaire' => $questionnaire])
         </div>
 
         <div>
