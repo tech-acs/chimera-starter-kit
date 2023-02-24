@@ -43,7 +43,7 @@ class ScorecardComponent extends Component
                 $caching = new ScorecardCaching($this->scorecard, []);
                 $this->dataTimestamp = $caching->getTimestamp();
                 list($this->value, $this->diff) = Cache::tags($caching->tags())
-                    ->rememberForever($caching->key, function () use ($caching, &$analytics) {
+                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
                         $caching->stamp();
                         $this->dataTimestamp = Carbon::now();
                         $analytics['source'] = 'Caching';

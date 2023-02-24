@@ -45,7 +45,7 @@
                                                 <tr>
                                                     <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->user?->name }}</td>
                                                     <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">
-                                                        <x-dynamic-component :component="$record->icon_component" class="inline w-5 h-5 text-blue-500 mr-2" />
+                                                        <a title="{{ $record->type }}"><x-dynamic-component :component="$record->icon_component" class="inline w-5 h-5 text-blue-500 mr-2" /></a>
                                                         {{ $record->analyzable->title }}
                                                     </td>
                                                     <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->level }}</td>

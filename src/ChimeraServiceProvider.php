@@ -65,6 +65,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,
                 \Uneca\Chimera\Commands\CacheScorecards::class,
+                \Uneca\Chimera\Commands\CacheCaseStats::class,
                 \Uneca\Chimera\Commands\CacheMapIndicators::class,
                 \Uneca\Chimera\Commands\CacheClear::class,
                 \Uneca\Chimera\Commands\Chimera::class,

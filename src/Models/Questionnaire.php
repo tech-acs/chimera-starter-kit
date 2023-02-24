@@ -20,6 +20,11 @@ class Questionnaire extends Model
     ];
     public $translatable = ['title'];
 
+    public function analytics()
+    {
+        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
+    }
+
     public function getScorecardsAttribute()
     {
         return Scorecard::published()

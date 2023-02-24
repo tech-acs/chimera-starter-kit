@@ -7,21 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
+use Uneca\Chimera\Models\Questionnaire;
 use Uneca\Chimera\Models\Scorecard;
 
 abstract class Caching
 {
     public Model $model;
-    public Object $instance;
+    public ?Object $instance;
     public array $filter;
     public string $key;
 
-    abstract public function __construct(Scorecard|MapIndicator|Indicator $model, array $filter);
+    abstract public function __construct(Scorecard|MapIndicator|Indicator|Questionnaire $model, array $filter);
 
     abstract public function tags(): array;
 
     public function update(): bool
     {
+        if (is_null($this->instance)) {
+            return false;
+        }
         $freshData = $this->instance->getData($this->filter);
         $this->stamp();
         return Cache::tags($this->tags())->put($this->key, $freshData);

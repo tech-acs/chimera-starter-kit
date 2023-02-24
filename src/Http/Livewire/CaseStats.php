@@ -7,6 +7,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Questionnaire;
 use Uneca\Chimera\Services\BreakoutQueryBuilder;
+use Uneca\Chimera\Services\CaseStatsCaching;
 use Uneca\Chimera\Services\QueryFragmentFactory;
 
 class CaseStats extends Component
@@ -24,25 +25,31 @@ class CaseStats extends Component
     {
         $user = auth()->user();
         $filter = $user->areaRestrictionAsFilter();;
+        $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
-                $key = 'casestat|' . $this->questionnaire->name . implode('-', array_filter($filter));
-                $tags = [$this->questionnaire->name, 'casestats'];
-                $this->dataTimestamp = Cache::tags(['timestamps'])->get("$key|timestamp", Carbon::now());
-                //logger($caching->key, ['Is cached?' => Cache::tags($caching->tags())->has($caching->key)]);
-                $this->stats = Cache::tags($tags)
-                    ->remember($key, config('chimera.cache.ttl'), function () use ($key, $filter) {
-                        Cache::tags(['timestamps'])->put("$key|timestamp", Carbon::now());
+                $caching = new CaseStatsCaching($this->questionnaire, $filter);
+                $this->dataTimestamp = $caching->getTimestamp();
+                $this->stats = Cache::tags($caching->tags())
+                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
+                        $caching->stamp();
                         $this->dataTimestamp = Carbon::now();
-                        return $this->getData($filter);
+                        $analytics['source'] = 'Caching';
+                        return $this->getData($caching->filter);
                     });
             } else {
+                $analytics['source'] = 'Not caching';
                 $this->stats = $this->getData($filter);
             }
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in CaseStats.php)", ['Exception: ' => $exception]);
-            $this->stats = $this->getData($filter);
+            $this->stats = [];
+        } finally {
+            if ($analytics['source'] !== 'Cache') {
+                $analytics['completed_at'] = time();
+                $this->questionnaire->analytics()->create($analytics);
+            }
         }
     }
 

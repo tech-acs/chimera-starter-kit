@@ -10,11 +10,6 @@ use Uneca\Chimera\Services\AreaTree;
 
 class AnalyticsController extends Controller
 {
-    private function setIcon()
-    {
-
-    }
-
     public function index()
     {
         $hierarchies = (new AreaTree())->hierarchies;
@@ -24,11 +19,14 @@ class AnalyticsController extends Controller
             ->paginate(config('chimera.records_per_page'));
         $records->setCollection(
             $records->getCollection()->map(function ($record) use ($hierarchies) {
+                $class = class_basename($record->analyzable_type);
                 $record->level = is_null($record->level) ? 'National' : ucfirst($hierarchies[$record->level] ?? $record->level);
-                $record->icon_component = match(class_basename($record->analyzable_type)) {
+                $record->type = $class == 'Questionnaire' ? 'CaseStats' : $class;
+                $record->icon_component = match($class) {
                     'Indicator' => 'chimera::icon.indicator',
                     'Scorecard' => 'chimera::icon.scorecard',
                     'MapIndicator' => 'chimera::icon.map-indicator',
+                    'Questionnaire' => 'chimera::icon.case-stats',
                     default => 'chimera::icon.indicator'
                 };
                 return $record;
