@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Questionnaire;
@@ -15,6 +16,7 @@ class CaseStats extends Component
     public Questionnaire $questionnaire;
     public array $stats = [];
     public Carbon $dataTimestamp;
+
 
     public function mount(Questionnaire $questionnaire)
     {
@@ -61,24 +63,23 @@ class CaseStats extends Component
         } else {
             list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filter);
         }
-        $l = (new BreakoutQueryBuilder($this->questionnaire->name, false))
-            ->select([
-                "COUNT(*) AS total",
-                "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete",
-                "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 0 ELSE 1 END) AS partial",
-                "COUNT(*) - COUNT(DISTINCT `key`) AS duplicate"
-            ])
-            ->from([])
-            ->where($whereConditions)
-            ->get()
-            ->first();
+        $sql = "
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete,
+                SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 0 ELSE 1 END) AS partial,
+                COUNT(*) - COUNT(DISTINCT `key`) AS duplicate
+            FROM cases
+            WHERE
+        ";
+        $l = DB::connection($this->questionnaire->name)
+            ->select($sql . implode(' AND ', array_merge(["cases.key != ''", "cases.deleted = 0"], $whereConditions)))[0];
         $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
         if (!is_null($l)) {
-            $nFormatter = new \NumberFormatter(app()->getLocale(), \NumberFormatter::TYPE_INT32);
-            $info['total'] = $nFormatter->format($l->total);
-            $info['complete'] = $nFormatter->format($l->complete);
-            $info['partial'] = $nFormatter->format($l->partial);
-            $info['duplicate'] = $nFormatter->format($l->duplicate);
+            $info['total'] = $l->total;
+            $info['complete'] = $l->complete;
+            $info['partial'] = $l->partial;
+            $info['duplicate'] = $l->duplicate;
         }
         return $info;
     }

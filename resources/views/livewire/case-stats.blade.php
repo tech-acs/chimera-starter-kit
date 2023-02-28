@@ -16,7 +16,7 @@
                 </div>
                 <dd class="mt-1 flex justify-end items-center md:block lg:flex">
                     <div class="flex items-baseline ml-2 text-2xl font-semibold">
-                        {{ $value }}
+                        {{ (new \NumberFormatter(app()->getLocale(), \NumberFormatter::TYPE_INT32))->format($value) }}
                     </div>
                 </dd>
             </div>

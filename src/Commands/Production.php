@@ -44,7 +44,7 @@ class Production extends Command
                     ->reduce(function ($carry, $item) {
                         return $carry && ($item > 0);
                     }, true);
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
@@ -63,7 +63,7 @@ class Production extends Command
                     ->reduce(function ($carry, $item) {
                         return $carry && $item;
                     }, true);
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
@@ -79,12 +79,12 @@ class Production extends Command
                         try {
                             DB::connection($connection)->getPDO();
                             $connectible = true;
-                        } catch (\Exception $exception) {
+                        } catch (\Throwable $throwable) {
                             $connectible = false;
                         }
                         return $carry && $connectible;
                     }, true);
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
@@ -96,7 +96,7 @@ class Production extends Command
                         ->subject('Test Email');
                 });
                 return true;
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
@@ -105,7 +105,7 @@ class Production extends Command
             try {
                 $response = Http::get('http://127.0.0.1:9001');
                 return $response->ok();
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
@@ -113,7 +113,7 @@ class Production extends Command
         $this->components->task('Check public/storage has been linked to storage/app/public', function () {
             try {
                 return (new Filesystem())->exists(public_path('storage'));
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
@@ -127,7 +127,7 @@ class Production extends Command
                 // substr(sprintf('%o', fileperms('storage')), -4);
                 // posix_getpwuid(fileowner('storage'));
                 return is_writable('storage') && is_writable('bootstrap/cache');
-            } catch (\Exception $exception) {
+            } catch (\Throwable $throwable) {
                 return false;
             }
         });
