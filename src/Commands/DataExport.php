@@ -35,6 +35,7 @@ class DataExport extends Command
             ->setDbName($pgsqlConfig['database'])
             ->setUserName($pgsqlConfig['username'])
             ->setPassword($pgsqlConfig['password'])
+            ->setPort($pgsqlConfig['port'])
             ->includeTables($this->tables)
             ->doNotCreateTables()
             ->addExtraOption('--inserts') // Dump data as INSERT commands (rather than COPY)
