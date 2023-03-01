@@ -1,38 +1,42 @@
 import L from 'leaflet';
+import map from 'lodash/map';
+import property from 'lodash/property';
 import isUndefined from 'lodash/isUndefined';
 import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
-import { DoublyLinkedList } from './DataStructures';
 
 export default class LeafletMap {
     map;
     mapOptions;
+    levelZoomMapping;
     styles;
     selectedStyle;
     geojsonLayerGroup;
     options;
+    startingZoom;
+    movementWasZoom = false;
     indicators = {};
     locale;
-    levels = [];
-    nav;
+    levelNames;
     levelDisplayControl;
-    infoBox;
 
     constructor(mapContainer, options) {
         this.options = options;
         this.collectDataPassedViaDataAttributes(mapContainer);
         this.initializeMap(mapContainer, options.basemaps);
         this.addControls();
-        this.initializeGeojsonLayer(this.levels);
+        this.initializeGeojsonLayer(this.levelZoomMapping);
         this.registerDomEventListeners();
         this.registerLivewireEventListeners();
+        // ToDo: for debugging purposes only. Remove when done!
+        window.peek = this;
     }
 
     extractDataAttributeSafely(el, attribute) {
         try {
             return JSON.parse(el.dataset[attribute]);
         } catch (e) {
-            console.log(`Please set all the required data-* attributes on the element (${attribute} missing)`);
+            console.log('Please set all the required data-* attributes on the element');
         }
         return undefined;
     }
@@ -40,8 +44,9 @@ export default class LeafletMap {
     collectDataPassedViaDataAttributes(el) {
         this.mapOptions = this.extractDataAttributeSafely(el, 'mapOptions');
         this.indicators = this.extractDataAttributeSafely(el, 'indicators');
-        this.levels = this.extractDataAttributeSafely(el,'levels');
+        this.levelZoomMapping = this.extractDataAttributeSafely(el,'levelZoomMapping');
         this.styles = this.extractDataAttributeSafely(el, 'styles');
+        this.levelNames = this.extractDataAttributeSafely(el, 'levelNames');
     }
 
     initializeMap(mapContainer, basemaps) {
@@ -57,78 +62,29 @@ export default class LeafletMap {
             basemapLayers[basemap.name] = basemapLayer;
         });
         L.control.layers(basemapLayers).addTo(this.map);
-        this.nav = new DoublyLinkedList(this.levels);
     }
 
-    switchLayers() {
-        const levelLayers = this.geojsonLayerGroup.getLayers();
-        levelLayers[this.nav.position].options.show();
-        if (this.nav.fitTo !== null) {
-            this.map.fitBounds(this.nav.fitTo);
+    setLegend(legendData) {
+        let legend = L.DomUtil.get('legend');
+        if (isEmpty(legendData)) {
+            L.DomUtil.addClass(legend,'hidden');
+        } else {
+            L.DomUtil.removeClass(legend,'hidden');
         }
-        if (this.nav.prevPos !== this.nav.position) {
-            levelLayers[this.nav.prevPos].options.hide();
+        L.DomUtil.empty(legend);
+        for (const [color, label] of Object.entries(legendData)) {
+            legend.innerHTML += `<i style="background-color: ${color};"></i> ${label}<br>`;
         }
-        this.levelDisplayControl.update(this.nav.current());
     }
 
     addControls() {
-        //this.map.addControl(L.control.zoom({position: 'bottomright'}));
-        let zoomOut = L.control({position: 'bottomright'});
-        zoomOut.onAdd = () => {
-            const container = L.DomUtil.create('div', 'leaflet-control info');
-            let span = L.DomUtil.create('span', 'font-medium text-base cursor-pointer', container);
-            span.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-zoom-out" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">\n' +
-                '   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>\n' +
-                '   <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>\n' +
-                '   <path d="M7 10l6 0"></path>\n' +
-                '   <path d="M21 21l-6 -6"></path>\n' +
-                '</svg>';
-            span.title = 'Zoom out';
-            span.onclick = () => {
-                if (this.nav.moveBackward()) {
-                    const levelLayers = this.geojsonLayerGroup.getLayers();
-                    this.nav.fitTo = levelLayers[this.nav.position].getBounds();
-                    this.switchLayers();
-                    this.infoBox.hide();
-                }
-            }
-            L.DomEvent.disableClickPropagation(container);
-            L.DomEvent.disableScrollPropagation(container);
-            return container;
-        }
-        zoomOut.addTo(this.map);
+        this.map.addControl(L.control.zoom({position: 'bottomright'}));
 
-        this.infoBox = L.control({position: 'bottomright'});
-        this.infoBox.onAdd = () => {
-            const container = L.DomUtil.create('div', 'info legend leaflet-bar hidden');
-            container.id = 'info-box';
-            L.DomUtil.create('span', 'font-medium text-sm', container);
-            L.DomEvent.disableClickPropagation(container);
-            L.DomEvent.disableScrollPropagation(container);
-            return container;
-        };
-        this.infoBox.update = (infoHtml, ephemeral = false) => {
-            let infoBox = L.DomUtil.get('info-box');
-            infoBox.innerHTML = infoHtml;
-            L.DomUtil.removeClass(infoBox,'hidden');
-            if (ephemeral) {
-                setTimeout(() => {
-                    L.DomUtil.addClass(infoBox,'hidden');
-                }, 5000);
-            }
-        };
-        this.infoBox.hide = () => {
-            let infoBox = L.DomUtil.get('info-box');
-            L.DomUtil.addClass(infoBox,'hidden');
-        };
-        this.infoBox.addTo(this.map);
-
-        this.levelDisplayControl = L.control({position: 'topright'});
+        this.levelDisplayControl = L.control({position: 'bottomright'});
         this.levelDisplayControl.onAdd = () => {
             const levelDisplayContainer = L.DomUtil.create('div', 'leaflet-control info');
             let span = L.DomUtil.create('span', 'font-medium text-base font-medium', levelDisplayContainer);
-            span.innerText = this.nav.current();
+            span.innerText = this.levelNames[0];
             L.DomEvent.disableClickPropagation(levelDisplayContainer);
             L.DomEvent.disableScrollPropagation(levelDisplayContainer);
             return levelDisplayContainer;
@@ -157,11 +113,12 @@ export default class LeafletMap {
                     input.checked = true;
                     index++;
                 }
+
                 let span = L.DomUtil.create('span', 'ml-3 font-medium text-xs', label);
                 span.innerText = indicatorName;
                 input.onchange = e => {
                     let selectedIndicator = e.target.value
-                    Livewire.emit('indicatorSelected', selectedIndicator)
+                    Livewire.emit('indicatorSelected', selectedIndicator, this.inferLevelFromZoom(this.map.getZoom()))
                 };
             }
             L.DomEvent.disableClickPropagation(menuContainer);
@@ -179,19 +136,6 @@ export default class LeafletMap {
         legend.addTo(this.map);
     }
 
-    setLegend(legendData) {
-        let legend = L.DomUtil.get('legend');
-        if (isEmpty(legendData)) {
-            L.DomUtil.addClass(legend,'hidden');
-        } else {
-            L.DomUtil.removeClass(legend,'hidden');
-        }
-        L.DomUtil.empty(legend);
-        for (const [color, label] of Object.entries(legendData)) {
-            legend.innerHTML += `<i style="background-color: ${color};"></i> ${label}<br>`;
-        }
-    }
-
     highlightFeature(e) {
         const layer = e.target;
         layer.setStyle({weight: 3});
@@ -199,7 +143,8 @@ export default class LeafletMap {
     }
 
     resetHighlight(e) {
-        this.geojsonLayerGroup.getLayers()[this.nav.position].setStyle({weight: 1});
+        const currentLevel = this.inferLevelFromZoom(this.map.getZoom());
+        this.geojsonLayerGroup.getLayers()[currentLevel].setStyle({weight: 1});
     }
 
     initializeGeojsonLayer(levels) {
@@ -216,6 +161,7 @@ export default class LeafletMap {
                 pane: paneName,
                 level: i,
                 style: () => {
+                    //return {weight: 1};
                     return this.styles.default;
                 },
                 show: () => this.map.getPane(paneName).style.display = '',
@@ -225,17 +171,11 @@ export default class LeafletMap {
                     layer.on({
                         mouseover: (e) => this.highlightFeature(e),
                         mouseout: (e) => this.resetHighlight(e),
-                        click: (e) => {
-                            this.nav.fitTo = e.target.getBounds();
+                        /*click: (e) => {
+                            this.map.fitBounds(e.target.getBounds());
                             let feature = e.target.feature;
-                            Livewire.emit('mapClicked', feature.properties.path);
-                            if ((feature.properties.info !== undefined) && (feature.properties.info !== null)) {
-                                this.infoBox.update(feature.properties.info);
-                            } else {
-                                this.infoBox.hide();
-                            }
-                            //console.log({trigger: 'map click', action: 'about to emit (mapClicked) to livewire (updateMap method) path:' + feature.properties.path})
-                        }
+                            Livewire.emit('mapClicked', [feature.properties.path]);
+                        }*/
                     });
                 }
             }));
@@ -243,41 +183,65 @@ export default class LeafletMap {
         this.geojsonLayerGroup.addTo(this.map);
     }
 
-    registerDomEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            Livewire.emit('mapReady', this.nav.position);
+    getFeaturesIntersectingBounds(layer, bounds) {
+        const features = layer.getLayers();
+        let intersectingFeatures = [];
+        features.forEach(feature => {
+            if (bounds.intersects(feature.getBounds())) {
+                //console.log(feature.feature.properties.name);
+                intersectingFeatures.push(feature.feature);
+            }
         });
+        return intersectingFeatures;
     }
 
-    registerLivewireEventListeners() {
-        Livewire.on('backendResponse', (geojson, level, data) => {
-            //console.log({geojson, data})
-            if (geojson !== null) {
-                if (level > this.nav.position) {
-                    this.nav.moveForward();
-                }
-                this.render(geojson, level);
-                this.switchLayers();
-                this.applyIndicatorDataToMap(level, data);
-            } else {
-                console.log('No sub-maps found');
-            }
+    inferLevelFromZoom(zoom) {
+        return this.levelZoomMapping.findIndex((zoomLevelGroup) => zoomLevelGroup.includes(zoom));
+    }
+
+    registerDomEventListeners() {
+        document.addEventListener('DOMContentLoaded', () => {
+            Livewire.emit('mapReady', this.inferLevelFromZoom(this.map.getZoom()));
         });
 
-        Livewire.on('indicatorSwitched', (data, style, legend) => {
-            //console.log({data})
-            this.selectedStyle = style;
-            this.setLegend(legend);
+        this.map.addEventListener('zoomstart', () => {
+            this.movementWasZoom = true;
+        });
+
+        this.map.addEventListener('movestart', () => {
+            this.startingZoom = this.map.getZoom();
+        });
+
+        this.map.addEventListener('moveend', () => {
+            const previousLevel = this.inferLevelFromZoom(this.startingZoom);
+            const currentLevel = this.inferLevelFromZoom(this.map.getZoom());
+            //console.log({previousLevel, currentLevel})
+
+            if ( // Do nothing if:
+                (this.movementWasZoom && (previousLevel === currentLevel)) ||
+                (! this.movementWasZoom && (currentLevel === 0))
+            ) {
+                this.movementWasZoom = false;
+                return;
+            }
 
             const levelLayers = this.geojsonLayerGroup.getLayers();
-            const bounds = levelLayers[0].getBounds();
-            if (bounds.isValid()) {
-                this.nav.reset();
-                this.nav.fitTo = bounds;
-                this.switchLayers();
-                this.infoBox.hide();
+            let dictatingLevel = currentLevel - 1;
+            if (previousLevel !== currentLevel) {
+                dictatingLevel = previousLevel;
+                levelLayers[currentLevel].options.show();
+                levelLayers[previousLevel].options.hide();
+                this.levelDisplayControl.update(this.levelNames[currentLevel]);
             }
-            this.applyIndicatorDataToMap(0, data);
+            const bounds = this.map.getBounds();
+            const withinBoundsFeatures = this.getFeaturesIntersectingBounds(levelLayers[dictatingLevel], bounds);
+            const withinBoundsLtreePaths = map(withinBoundsFeatures, property('properties.path'));
+            if (withinBoundsLtreePaths.length) {
+                console.log({dictatingLevel, withinBoundsLtreePaths})
+                this.movementWasZoom = false;
+                Livewire.emit('mapMoved', currentLevel, currentLevel - previousLevel, withinBoundsLtreePaths);
+                console.log({emitted:'mapMoved', currentLevel, direction: currentLevel-previousLevel, withinBoundsLtreePaths})
+            }
         });
     }
 
@@ -291,16 +255,31 @@ export default class LeafletMap {
             if (! isUndefined(data)) {
                 feature.setStyle(this.styles[this.selectedStyle][data.style]);
                 feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + data.value);
-                feature.feature.properties.info = data.info;
             } else {
                 feature.setTooltipContent(feature.feature.properties.name[this.locale]);
             }
         });
     }
 
+    registerLivewireEventListeners() {
+        Livewire.on('geojsonUpdated', (geojson, level, data) => {
+            console.log({'Received from server': geojson, level, data});
+            this.render(geojson, level);
+
+            this.applyIndicatorDataToMap(level, data);
+        });
+
+        Livewire.on('indicatorSwitched', (data, style, legend) => {
+            this.selectedStyle = style;
+            this.setLegend(legend);
+
+            const level = this.inferLevelFromZoom(this.map.getZoom());
+            this.applyIndicatorDataToMap(level, data);
+        });
+    }
+
     render(geojson, level) {
         const targetLayer = this.geojsonLayerGroup.getLayers()[level];
         targetLayer.addData(geojson);
-        //console.log({targetLayer:level, currentLevel:this.nav.current(), geojson, count:Object.keys(targetLayer._layers).length})
     };
 }

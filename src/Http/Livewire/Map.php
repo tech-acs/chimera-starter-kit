@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Http\Livewire;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
@@ -19,70 +20,52 @@ class Map extends Component
 {
     public array $leafletMapOptions;
     public array $indicators = [];
-    public array $levelToZoomMapping;
-    public string $selectedIndicator;
+    public string $currentIndicator;
     public array $previouslySentPaths = [];
     public array $simplification;
     public array $allStyles;
-    public array $levelNames;
+    public array $levels;
 
     protected function getListeners()
     {
         return [
-            'mapReady' => 'updateMap',
-            'mapMoved' => 'updateMap',
-            'indicatorSelected' => 'setSelectedIndicator'
+            'mapReady' => 'setIndicatorAndUpdateMap',
+            'mapClicked' => 'updateMap',
+            'indicatorSelected' => 'setCurrentIndicator',
         ];
     }
 
-    protected function deriveNextPathsBasedOnZoomDirection(array $previousPaths, int $zoomDirection): Collection
+    protected function getGeoJson(string $parentPath, int $level)
     {
-        if ($zoomDirection >= 0) {
-            return collect($previousPaths)
-                ->map(fn ($path) => "'{$path}.*{1}'");
-        } else {
-            return collect($previousPaths)
-                ->map(fn ($path) => str($path)->beforeLast('.')->toString())
-                ->unique()
-                ->map(fn ($path) => "'{$path}'");
-        }
-    }
-
-    private function derivedPathsToCodes(Collection $derivedPaths): Collection
-    {
-        $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
-        $whereClause = $derivedPaths->isEmpty() ? "level = 0" : "path ?? $lqueryArray";
-        $sql = "SELECT code FROM areas WHERE $whereClause";
-        return collect(DB::select($sql))->pluck('code');
-    }
-
-    protected function getGeoJson(Collection $derivedPaths, int $level = 0)
-    {
-        $lqueryArray = "ARRAY[" . $derivedPaths->join(', ') . "]::lquery[]";
-        $whereClause = $derivedPaths->isEmpty() ? "level = 0" : "path ?? $lqueryArray";
+        $whereClause = empty($parentPath) ? "level = 0" : "path ~ '$parentPath.*{1}'";
         $simplificationTolerance = $this->simplification[$level];
         $sql = "
-            SELECT json_build_object(
-                'type', 'FeatureCollection',
-                'features', json_agg(
-                    json_build_object(
-                        'type',       'Feature',
-                        'geometry',   ST_AsGeoJSON(filtered_areas.geom)::json,
-                        'properties', json_build_object(
-                            'code', code,
-                            'name', name,
-                            'level', level,
-                            'path', path,
-                            'style', 'default'
+            SELECT
+                CASE
+                    WHEN COUNT(filtered_areas.*) = 0 THEN NULL
+                    ELSE json_build_object(
+                        'type', 'FeatureCollection',
+                        'features', json_agg(
+                            json_build_object(
+                                'type',       'Feature',
+                                'geometry',   ST_AsGeoJSON(filtered_areas.geom)::json,
+                                'properties', json_build_object(
+                                    'code', code,
+                                    'name', name,
+                                    'level', level,
+                                    'path', path,
+                                    'style', 'default'
+                                )
+                            )
                         )
                     )
-                )
-            ) AS feature_collection
+                END
+            AS feature_collection
             FROM
             (
                 SELECT name, code, level, path, ST_SimplifyPreserveTopology(ST_GeomFromWKB(geom), $simplificationTolerance) AS geom
                 FROM areas
-                WHERE $whereClause
+                WHERE $whereClause AND geom IS NOT NULL
             ) AS filtered_areas
         ";
         try {
@@ -91,56 +74,92 @@ class Map extends Component
             logger('Query error in getGeoJson()', ['exception' => $exception->getMessage()]);
             return '';
         }
-        return $result[0]->feature_collection;
+        return $result[0]?->feature_collection ?? '';
     }
 
-    private function getDataAndCacheIt(?MapIndicatorBaseClass $mapIndicator, int $level, Collection $derivedPaths): array
+    private function getShapedData($mapIndicator, array $filter): Collection
     {
-        $hierarchies = (new AreaTree())->hierarchies;
-        $codes = $this->derivedPathsToCodes($derivedPaths)->all();
-        $filter = empty($codes) ? [] : [$hierarchies[$level] => $codes];
-        $data = $mapIndicator?->getData($filter, auth()->user()->areaRestrictionAsFilter()) ?? collect([]);
+        $data = $mapIndicator->getData($filter) ?? collect([]);
         return $data->map(function ($row) use ($mapIndicator) {
-            $row->value = $row->{$mapIndicator->valueColumn};
+            $row->value = $row->{$mapIndicator->valueField};
+            $row->info = $row->{$mapIndicator->infoTextField} ?? null;
             $row->style = $mapIndicator->assignStyle($row->value);
             return $row;
-        })->all();
-
-        /*if (config('chimera.cache.enabled')) {
-
-        }
-        return $mapIndicator?->getData($level, $paths) ?? [];*/
+        });
     }
 
-    public function setSelectedIndicator(string $mapIndicator, int $level)
+    private function getDataAndCacheIt(string $path): Collection
     {
-        $this->selectedIndicator = $mapIndicator;
-        $selectedIndicator = new $this->selectedIndicator;
+        if (isset($this->currentIndicator)) {
+            $currentIndicator = new $this->currentIndicator;
+            $filter = AreaTree::pathAsFilter($path);
+            $areaRestriction = auth()->user()->areaRestrictionAsFilter();
+            // Merge $filter and $areaRestriction
+
+
+            $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
+            $this->dataTimestamp = Carbon::now();
+            try {
+                if (config('chimera.cache.enabled')) {
+                    $caching = new MapIndicatorCaching($currentIndicator->mapIndicator, $filter);
+                    $this->dataTimestamp = $caching->getTimestamp();
+                    return Cache::tags($caching->tags())
+                        ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics, $currentIndicator) {
+                            $caching->stamp();
+                            $this->dataTimestamp = Carbon::now();
+                            $analytics['source'] = 'Caching';
+                            return $this->getShapedData($currentIndicator, $caching->filter);
+                        });
+                }
+                $analytics['source'] = 'Not caching';
+                return $this->getShapedData($currentIndicator, $filter);
+            } catch (\Exception $exception) {
+                logger("Exception occurred while trying to cache (in Map.php, getDataAndCacheIt method)", ['Exception: ' => $exception]);
+                return collect([]);
+            } finally {
+                if ($analytics['source'] !== 'Cache') {
+                    $analytics['completed_at'] = time();
+                    $currentIndicator->mapIndicator->analytics()->create($analytics);
+                }
+            }
+        }
+        return collect([]);
+    }
+
+    public function setCurrentIndicator(string $mapIndicator)
+    {
+        $this->currentIndicator = $mapIndicator;
+        $currentIndicator = new $this->currentIndicator;
         $this->emit(
             'indicatorSwitched',
-            $this->getDataAndCacheIt($selectedIndicator, $level, collect([])),
-            $selectedIndicator::SELECTED_COLOR_CHART,
-            $selectedIndicator->getLegend()
+            $this->getDataAndCacheIt(''),
+            $currentIndicator::SELECTED_COLOR_CHART,
+            $currentIndicator->getLegend()
         );
     }
 
-    final public function updateMap(int $level = 0, int $zoomDirection = 0, array $paths = [])
+    final public function updateMap(string $path = '')
     {
-        $derivedPaths = $this->deriveNextPathsBasedOnZoomDirection($paths, $zoomDirection);
-        $currentIndicator = null;
-        if (! isset($this->selectedIndicator) && ! empty($this->indicators)) {
-            $this->setSelectedIndicator(array_key_first($this->indicators), $level);
+        $nextLevel = empty($path) ? 0 : AreaTree::levelFromPath($path) + 1;
+        $geojson = json_decode($this->getGeoJson($path, $nextLevel));
+        if (! empty($geojson)) {
+            $filtered = collect($geojson->features)->filter(fn ($feature) => ! in_array($feature->properties->path, $this->previouslySentPaths));
+            $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
+            $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
+            $geojson->features = $filtered->values()->all();
+            $this->emit('backendResponse', $geojson, $nextLevel, $this->getDataAndCacheIt($path) ?? collect([]));
+        } else {
+            $this->emit('backendResponse', null, $nextLevel, []);
         }
-        if (isset($this->selectedIndicator)) {
-            $currentIndicator = new $this->selectedIndicator;
-        }
+    }
 
-        $geojson = json_decode($this->getGeoJson($derivedPaths, $level));
-        $filtered = collect($geojson->features)->filter(fn ($feature) => ! in_array($feature->properties->path, $this->previouslySentPaths));
-        $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
-        $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
-        $geojson->features = $filtered->values()->all();
-        $this->emit('geojsonUpdated', $geojson, $level, $this->getDataAndCacheIt($currentIndicator, $level, $derivedPaths) ?? []);
+    public function setIndicatorAndUpdateMap()
+    {
+        if (! empty($this->indicators)) {
+            $firstIndicator = array_key_first($this->indicators);
+            $this->setCurrentIndicator($firstIndicator, '');
+        }
+        $this->updateMap('');
     }
 
     final public function mount()
@@ -168,9 +187,8 @@ class Map extends Component
             ->all();
         $areaHierarchies = AreaHierarchy::orderBy('index')->get();
         $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
-        $this->levelToZoomMapping = AreaHierarchy::orderBy('index')->pluck('map_zoom_levels')->all();
         $this->allStyles = $allStyles;
-        $this->levelNames = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
+        $this->levels = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
     }
 
     public function render()

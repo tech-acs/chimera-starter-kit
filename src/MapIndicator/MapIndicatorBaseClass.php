@@ -121,7 +121,10 @@ abstract class MapIndicatorBaseClass
     public array $bins = [];
     public array $ranges = [];
     public array $currentStyle = [];
-    public string $valueColumn = 'total';
+
+    public string $valueField = 'value';
+    public string $areaCodeField = 'area_code';
+    public string $infoTextField = 'info';
 
     public function __construct()
     {
@@ -167,7 +170,7 @@ abstract class MapIndicatorBaseClass
         return 'default';
     }
 
-    public function getData(array $filter, array $areaRestriction): Collection
+    public function getData(array $filter): Collection
     {
         return collect([]);
     }
