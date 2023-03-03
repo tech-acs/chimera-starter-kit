@@ -175,6 +175,7 @@ class Map extends Component
         ];
         $allStyles['default'] = MapIndicatorBaseClass::DEFAULT_STYLE;
         $this->indicators = MapIndicator::published()
+            ->orderBy('rank')
             ->get()
             ->filter(function ($mapIndicator) {
                 return Gate::allows($mapIndicator->permission_name);
