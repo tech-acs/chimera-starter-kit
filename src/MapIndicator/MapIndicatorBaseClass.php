@@ -24,7 +24,7 @@ abstract class MapIndicatorBaseClass
     ];
     const DEFAULT_STYLE = [
         ...self::LEAFLET_POLYLINE_OPTIONS,
-        'color' => 'dimgrey',
+        'color' => 'white',
         'fillColor' => 'dimgrey',
         'fillOpacity' => 0.65,
     ];
@@ -123,6 +123,7 @@ abstract class MapIndicatorBaseClass
     public array $currentStyle = [];
 
     public string $valueField = 'value';
+    public string $displayValueField = 'display_value';
     public string $areaCodeField = 'area_code';
     public string $infoTextField = 'info';
 
@@ -178,11 +179,18 @@ abstract class MapIndicatorBaseClass
     public function getLegend(): array
     {
         if (! empty($this->ranges)) {
-            return collect($this->currentStyle)
+            $legend = collect($this->currentStyle)
                 ->take(count($this->ranges))
                 ->map(fn ($style) => $style['fillColor'])
                 ->combine($this->ranges)
-                ->map(fn ($rangeArray) => implode(' - ', $rangeArray))
+                ->map(fn ($rangeArray) => implode(' - ', $rangeArray));
+            $firstKey = $legend->keys()->first();
+            $lastKey = $legend->keys()->last();
+            $legend = $legend->replace([
+                $firstKey => str($legend[$firstKey])->after('-')->trim()->prepend('< '),
+                $lastKey => str($legend[$lastKey])->before('-')->trim()->prepend('> ')
+            ]);
+            return $legend
                 ->merge(['dimgray' => __('No data')])
                 ->all();
         }

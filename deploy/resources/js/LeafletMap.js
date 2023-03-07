@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import isUndefined from 'lodash/isUndefined';
+import isNull from 'lodash/isNull';
 import isEmpty from 'lodash/isEmpty';
 import keyBy from 'lodash/keyBy';
 import { DoublyLinkedList } from './DataStructures';
@@ -283,17 +284,16 @@ export default class LeafletMap {
 
     applyIndicatorDataToMap(level, data) {
         const currentLayer = this.geojsonLayerGroup.getLayers()[level];
-        currentLayer.resetStyle();
+        //currentLayer.resetStyle();
         const areaKeyedData = keyBy(data, 'area_code');
         currentLayer.getLayers().forEach(feature => {
             let data = areaKeyedData[feature.feature.properties.code];
             //console.log({data, areaKeyedData, code: feature.feature.properties.code, data})
             if (! isUndefined(data)) {
                 feature.setStyle(this.styles[this.selectedStyle][data.style]);
-                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + data.value);
+                const displayValue = isNull(data.display_value) ? data.value : data.display_value;
+                feature.setTooltipContent(feature.feature.properties.name[this.locale] + ': ' + displayValue);
                 feature.feature.properties.info = data.info;
-            } else {
-                feature.setTooltipContent(feature.feature.properties.name[this.locale]);
             }
         });
     }

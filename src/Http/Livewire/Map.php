@@ -82,6 +82,7 @@ class Map extends Component
         $data = $mapIndicator->getData($filter) ?? collect([]);
         return $data->map(function ($row) use ($mapIndicator) {
             $row->value = $row->{$mapIndicator->valueField};
+            $row->display_value = $row->{$mapIndicator->displayValueField} ?? null;
             $row->info = $row->{$mapIndicator->infoTextField} ?? null;
             $row->style = $mapIndicator->assignStyle($row->value);
             return $row;
