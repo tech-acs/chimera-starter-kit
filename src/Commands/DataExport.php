@@ -7,7 +7,8 @@ use Uneca\Chimera\Models\Questionnaire;
 
 class DataExport extends Command
 {
-    protected $signature = 'chimera:data-export';
+    protected $signature = 'chimera:data-export
+                            {--exclude-table=* : Tables to exclude from the export}';
 
     protected $description = 'Dump postgres data (from some tables) to file';
 
@@ -30,6 +31,13 @@ class DataExport extends Command
         $pgsqlConfig = config('database.connections.pgsql');
         $tmpFile = base_path() . '/data-export.tmp';
         $dumpFile = base_path() . '/data-export.sql';
+
+        $excludedTables = $this->option('exclude-table');
+        if ($excludedTables) {
+            $this->tables = array_values(array_filter($this->tables, function($table) use ($excludedTables) {
+                return ! in_array($table, $excludedTables);
+            }));
+        }
 
         \Spatie\DbDumper\Databases\PostgreSql::create()
             ->setDbName($pgsqlConfig['database'])
