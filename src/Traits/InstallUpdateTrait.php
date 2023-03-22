@@ -23,7 +23,9 @@ trait InstallUpdateTrait
         "plotly.js-basic-dist-min" => "^2.17.1",
         "plotly.js-locales" => "^2.17.1",
         "@alpinejs/focus" => "3.10.5",
-        "@tailwindcss/line-clamp" => "^0.4.2"
+        "@tailwindcss/line-clamp" => "^0.4.2",
+        "@tailwindcss/aspect-ratio" => "^0.4.2",
+        "lodash" => "^4.17.21",
     ];
 
     private function copyFilesInDir(string $srcDir, string $destDir, string $fileType = '*.php')
@@ -118,6 +120,7 @@ trait InstallUpdateTrait
         File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
 
         $this->copyFilesInDir(__DIR__ . '/../../deploy/assets/images', public_path('images'), '*.*');
+        File::copyDirectory(__DIR__ . '/../../deploy/assets/images/graphical-menu', public_path('images/graphical-menu'));
 
         copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
         copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
