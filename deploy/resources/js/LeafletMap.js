@@ -246,27 +246,13 @@ export default class LeafletMap {
 
     registerDomEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-            Livewire.emit('mapReady', this.nav.position);
+            Livewire.emit('mapReady');
         });
     }
 
     registerLivewireEventListeners() {
-        Livewire.on('backendResponse', (geojson, level, data) => {
-            //console.log({geojson, data})
-            if (geojson !== null) {
-                if (level > this.nav.position) {
-                    this.nav.moveForward();
-                }
-                this.render(geojson, level);
-                this.switchLayers();
-                this.applyIndicatorDataToMap(level, data);
-            } else {
-                console.log('No sub-maps found');
-            }
-        });
-
-        Livewire.on('indicatorSwitched', (data, style, legend) => {
-            //console.log({data})
+        Livewire.on('indicatorSwitched', (style, legend) => {
+            console.log({style, legend})
             this.selectedStyle = style;
             this.setLegend(legend);
 
@@ -278,7 +264,20 @@ export default class LeafletMap {
                 this.switchLayers();
                 this.infoBox.hide();
             }
-            this.applyIndicatorDataToMap(0, data);
+        });
+
+        Livewire.on('backendResponse', (geojson, level, data) => {
+            console.log({geojson, data})
+            if (geojson !== null) {
+                if (level > this.nav.position) {
+                    this.nav.moveForward();
+                }
+                this.render(geojson, level);
+                this.switchLayers();
+                this.applyIndicatorDataToMap(level, data);
+            } else {
+                console.log('No sub-maps found');
+            }
         });
     }
 

@@ -31,7 +31,7 @@ class Map extends Component
         return [
             'mapReady' => 'setIndicatorAndUpdateMap',
             'mapClicked' => 'updateMap',
-            'indicatorSelected' => 'setCurrentIndicator',
+            'indicatorSelected' => 'setIndicatorAndUpdateMap',
         ];
     }
 
@@ -89,51 +89,12 @@ class Map extends Component
         });
     }
 
-    private function getDataAndCacheIt(string $path): Collection
-    {
-        if (isset($this->currentIndicator)) {
-            $currentIndicator = new $this->currentIndicator;
-            $filter = AreaTree::pathAsFilter($path);
-            $areaRestriction = auth()->user()->areaRestrictionAsFilter();
-            // Merge $filter and $areaRestriction
-
-
-            $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
-            $this->dataTimestamp = Carbon::now();
-            try {
-                if (config('chimera.cache.enabled')) {
-                    $caching = new MapIndicatorCaching($currentIndicator->mapIndicator, $filter);
-                    $this->dataTimestamp = $caching->getTimestamp();
-                    return Cache::tags($caching->tags())
-                        ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics, $currentIndicator) {
-                            $caching->stamp();
-                            $this->dataTimestamp = Carbon::now();
-                            $analytics['source'] = 'Caching';
-                            return $this->getShapedData($currentIndicator, $caching->filter);
-                        });
-                }
-                $analytics['source'] = 'Not caching';
-                return $this->getShapedData($currentIndicator, $filter);
-            } catch (\Exception $exception) {
-                logger("Exception occurred while trying to cache (in Map.php, getDataAndCacheIt method)", ['Exception: ' => $exception]);
-                return collect([]);
-            } finally {
-                if ($analytics['source'] !== 'Cache') {
-                    $analytics['completed_at'] = time();
-                    $currentIndicator->mapIndicator->analytics()->create($analytics);
-                }
-            }
-        }
-        return collect([]);
-    }
-
     public function setCurrentIndicator(string $mapIndicator)
     {
         $this->currentIndicator = $mapIndicator;
         $currentIndicator = new $this->currentIndicator;
         $this->emit(
             'indicatorSwitched',
-            $this->getDataAndCacheIt(''),
             $currentIndicator::SELECTED_COLOR_CHART,
             $currentIndicator->getLegend()
         );
@@ -148,17 +109,20 @@ class Map extends Component
             $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
             $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
             $geojson->features = $filtered->values()->all();
-            $this->emit('backendResponse', $geojson, $nextLevel, $this->getDataAndCacheIt($path) ?? collect([]));
+            $currentIndicator = new $this->currentIndicator;
+            $this->emit('backendResponse', $geojson, $nextLevel, $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($path), $path));
         } else {
             $this->emit('backendResponse', null, $nextLevel, []);
         }
     }
 
-    public function setIndicatorAndUpdateMap()
+    public function setIndicatorAndUpdateMap(?string $mapIndicator = null)
     {
-        if (! empty($this->indicators)) {
-            $firstIndicator = array_key_first($this->indicators);
-            $this->setCurrentIndicator($firstIndicator, '');
+        if ((! empty($this->indicators)) && is_null($mapIndicator)) {
+            $mapIndicator = array_key_first($this->indicators);
+        }
+        if (! empty($mapIndicator)) {
+            $this->setCurrentIndicator($mapIndicator);
         }
         $this->updateMap('');
     }
@@ -191,6 +155,10 @@ class Map extends Component
         $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
         $this->allStyles = $allStyles;
         $this->levels = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
+
+        /*if (! empty($this->indicators)) {
+            $this->setCurrentIndicator(array_key_first($this->indicators));
+        }*/
     }
 
     public function render()

@@ -2,8 +2,12 @@
 
 namespace Uneca\Chimera\MapIndicator;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\MapIndicator;
+use Uneca\Chimera\Services\AreaTree;
+use Uneca\Chimera\Services\MapIndicatorCaching;
 
 abstract class MapIndicatorBaseClass
 {
@@ -171,9 +175,57 @@ abstract class MapIndicatorBaseClass
         return 'default';
     }
 
+    public function getDataAndCacheIt(string $path): Collection
+    {
+        //if (isset($this->currentIndicator)) {
+            //$currentIndicator = new $this->currentIndicator;
+            $filter = AreaTree::pathAsFilter($path);
+            $areaRestriction = auth()->user()->areaRestrictionAsFilter();
+            // Merge $filter and $areaRestriction
+
+            $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
+            $this->dataTimestamp = Carbon::now();
+            try {
+                if (config('chimera.cache.enabled')) {
+                    $caching = new MapIndicatorCaching($this->mapIndicator, $filter);
+                    $this->dataTimestamp = $caching->getTimestamp();
+                    return Cache::tags($caching->tags())
+                        ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
+                            $caching->stamp();
+                            $this->dataTimestamp = Carbon::now();
+                            $analytics['source'] = 'Caching';
+                            return $this->getData($caching->filter);
+                        });
+                }
+                $analytics['source'] = 'Not caching';
+                return $this->getData($filter);
+            } catch (\Exception $exception) {
+                logger("Exception occurred while trying to cache (in Map.php, getDataAndCacheIt method)", ['Exception: ' => $exception]);
+                return collect([]);
+            } finally {
+                if ($analytics['source'] !== 'Cache') {
+                    $analytics['completed_at'] = time();
+                    $this->mapIndicator->analytics()->create($analytics);
+                }
+            }
+        //}
+        //return collect([]);
+    }
+
     public function getData(array $filter): Collection
     {
         return collect([]);
+    }
+
+    public function getMappableData(Collection $data, string $filterPath): Collection
+    {
+        return $data->map(function ($row) {
+            $row->value = $row->{$this->valueField};
+            $row->display_value = $row->{$this->displayValueField} ?? null;
+            $row->info = $row->{$this->infoTextField} ?? null;
+            $row->style = $this->assignStyle($row->value);
+            return $row;
+        });
     }
 
     public function getLegend(): array
@@ -187,8 +239,8 @@ abstract class MapIndicatorBaseClass
             $firstKey = $legend->keys()->first();
             $lastKey = $legend->keys()->last();
             $legend = $legend->replace([
-                $firstKey => str($legend[$firstKey])->after('-')->trim()->prepend('< '),
-                $lastKey => str($legend[$lastKey])->before('-')->trim()->prepend('> ')
+                $firstKey => str($legend[$firstKey])->after('-')->trim()->prepend('< ')->toString(),
+                $lastKey => str($legend[$lastKey])->before('-')->trim()->prepend('> ')->toString()
             ]);
             return $legend
                 ->merge(['dimgray' => __('No data')])
