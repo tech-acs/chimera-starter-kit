@@ -82,6 +82,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeScorecard::class,
                 \Uneca\Chimera\Commands\Update::class,
                 \Uneca\Chimera\Commands\Production::class,
+                \Uneca\Chimera\Commands\UpdateIndicators::class
             ]);
     }
 
@@ -142,7 +143,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
 
         Fortify::registerView(function (Request $request) {
             if (! $request->hasValidSignature()) {
-                throw new InvalidSignatureException;
+                throw new InvalidSignatureException();
             }
             return view('auth.register')
                 ->with(['encryptedEmail' => Crypt::encryptString($request->email)]);
@@ -174,7 +175,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->needs(CachingInterface::class)
             ->give(IndicatorCaching::class);*/
 
-        $this->app->bind('helpers', function($app) {
+        $this->app->bind('helpers', function ($app) {
             return new Helpers();
         });
     }
