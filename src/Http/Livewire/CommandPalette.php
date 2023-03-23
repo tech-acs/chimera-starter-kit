@@ -17,20 +17,24 @@ class CommandPalette extends Component
     public function render()
     {
         $locale = app()->getLocale();
-        $results = Indicator::query()
-            ->published()
-            ->when(! empty($this->search), function ($builder) use ($locale) {
-                $builder->where(function ($builder) use ($locale) {
-                    $builder->whereRaw("title->>'{$locale}' ilike '%{$this->search}%'")
+        try {
+            $results = Indicator::query()
+                ->published()
+                ->when(! empty($this->search), function ($builder) use ($locale) {
+                    $builder->where(function ($builder) use ($locale) {
+                        $builder->whereRaw("title->>'{$locale}' ilike '%{$this->search}%'")
                             ->orWhereRaw("description->>'{$locale}' ilike '%{$this->search}%'");
-                });
-            })
-            ->orderByRaw("title->>'{$locale}'")
-            ->get()
-            ->filter(function ($indicator) {
-                return Gate::allows($indicator->permission_name);
-            })
-            ->take(self::MAX_RESULTS);
+                    });
+                })
+                ->orderByRaw("title->>'{$locale}'")
+                ->get()
+                ->filter(function ($indicator) {
+                    return Gate::allows($indicator->permission_name);
+                })
+                ->take(self::MAX_RESULTS);
+        } catch (\Throwable $throwable) {
+            $results = collect([]);
+        }
         $this->resultCount = $results->count();
         $this->activeResult = 0;
         return view('chimera::livewire.command-palette', compact('results'));

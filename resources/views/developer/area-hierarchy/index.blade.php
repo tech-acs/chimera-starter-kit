@@ -69,9 +69,9 @@
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Simplification tolerance') }}
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{--<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Corresponding map zoom levels') }}
-                                </th>
+                                </th>--}}
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                             </tr>
                             </thead>
@@ -97,9 +97,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{ $record->simplification_tolerance }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
+                                {{--<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{ json_encode($record->map_zoom_levels) }}
-                                </td>
+                                </td>--}}
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if (app()->isLocal())
                                         <a href="{{route('developer.area-hierarchy.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
@@ -110,7 +110,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
+                                <td colspan="4" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
                                     {{ __('There are no records to display') }}
                                 </td>
                             </tr>
