@@ -12,13 +12,18 @@ use Illuminate\Support\Facades\Storage;
 class MakeIndicator extends GeneratorCommand
 {
     use InteractiveCommand;
-    protected $signature = 'chimera:make-indicator';
-    protected $description = 'Create a new indicator component. Creates file from stub and adds entry in indicators table.';
+    protected $signature = 'chimera:make-indicator {name?} {--questionnaire=} {--type=} {--title=} {--description=} {--template=} {--package=}';
+    protected $description = 'Create a new indicator component. If no indicator name is provided, the command will ask for it.';
 
     protected $type = 'default';
     protected $includeSampleCode = '';
+    protected $directory = null;
     protected $title = null;
-    protected $template = null;
+    protected $templateName = null;
+    protected $indicatorDescription = null;
+    protected $package = null;
+    protected $chosenChartType = null;
+    protected $questionnaire = null;
 
     protected function getDefaultNamespace($rootNamespace)
     {
@@ -30,30 +35,47 @@ class MakeIndicator extends GeneratorCommand
         return resource_path("stubs/indicators/{$this->type}{$this->includeSampleCode}.stub");
     }
 
-    protected function writeIndicatorFile(string $name)
+    protected function validateDashboardSetup()
     {
-        $className = $this->qualifyClass($name);
-        $path = $this->getPath($className);
-        $this->makeDirectory($path);
-        if (empty($this->template)) {
-            $content = $this->buildClass($className);
-        } else {
-            $template_path = Storage::disk('indicator_templates')->path($this->template['Path']);
-            $destination_path = \app_path() . "/IndicatorTemplates/{$this->template['Path']}";
-            $this->makeDirectory($destination_path);
-            \copy($template_path, $destination_path);
-            $content = $this->buildClassWithTemplate($className);
+
+        //check if questionnaires exist
+        if (Questionnaire::all()->isEmpty()) {
+
+            $this->newLine();
+            $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
+            $this->error("Add questionnaires to your dashboard first.");
+            return false;
         }
-        return $this->files->put($path, $content);
-    }
-    protected function buildClassWithTemplate($className)
-    {
-        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $this->template['Path'])), $this->buildClass($className));
-        return $content;
+
+        //check if indicators is downloaded
+        if (!Storage::disk('indicator_templates')->exists('docs')) {
+            $this->newLine();
+            $this->error("You have not yet downloaded indicator templates. Please do so first.");
+            $this->error("Run `php artisan chimera:download-indicator-templates` to download indicator templates");
+            return false;
+        }
+
+        return true;
     }
 
-    protected function askForIndicatorTemplate()
+
+    protected function getQuestionnaire()
     {
+        $questionnaires = Questionnaire::pluck('name')->toArray();
+        $questionnaire = $this->option('questionnaire');
+        if(!$questionnaire || !\array_search($questionnaire, $questionnaires)) {
+            $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
+            $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
+
+        }            
+        $this->info("You have selected to use the questionnaire: {$questionnaire}");
+        $this->questionnaire = $questionnaire;
+        return $this;
+    }
+
+    protected function getIndicatorTemplate()
+    {
+        $this->type = $this->option('type') ?? 'default';
         $templates = $this->loadIndicatorTemplates();
         $templateNotFound = true;
         while ($templateNotFound) {
@@ -62,15 +84,14 @@ class MakeIndicator extends GeneratorCommand
             $this->output->table(['Name', 'Category', 'Path'], $templates);
 
             $template = $this->anticipate('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', function ($input) use ($templates) {
-                // $tableSection->output->table(['Name', 'Category', 'Path'], array_filter($templates, function ($template) use ($input) {
-                //     return str_contains($template['Name'], $input);
-                // }));
+
                 return array_map(function ($row) {
                     return $row['Name'];
                 }, array_filter($templates, function ($template) use ($input) {
                     return str_contains($template['Name'], $input);
                 }));
             }, null);
+
             $collection = \collect($templates);
             if ($selected = $collection->firstWhere('Name', $template)) {
                 $templateNotFound = false;
@@ -82,7 +103,104 @@ class MakeIndicator extends GeneratorCommand
                 $this->error('Template not found');
             }
         }
+
+        if ($this->type == 'template') {
+            $this->chosenChartType = 'Template';
+            $this->includeSampleCode = false;
+        } else {
+            $this->chosenChartType = 'Default';
+            $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
+            $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
+        }
+        return $this;
     }
+
+    protected function getIndicatorName()
+    {
+        $this->name = $this->argument('name');
+        if(!$this->name) {
+            if($this->type == 'template'){
+                $this->name = str(basename($this->template['Name']));            
+                $suggestName = $this->name ?? 'HouseholdsEnumeratedByDay';
+
+            }
+            $this->name = $this->anticipateValid(
+                "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. '{$suggestName}'\n You can also include directory to help with organization of indicator files. Eg. {$this->questionnaire}/{$suggestName}')",
+                'name',
+                ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name'],[$suggestName]
+            );
+            
+            $this->name = $this->name ?? $suggestName;
+        }
+        $this->info("You have selected to use the name: {$this->name}");
+        return $this;   
+    }
+
+    protected function getIndicatorTitle()
+    {
+        $this->title = $this->option('title');
+        if (!$this->title) {
+            if($this->type == 'template')
+                $suggestedTitle = str(basename($this->template['Name']))->snake()->replace('_', ' ')->title();
+            else
+                $suggestedTitle = str($this->name)->snake()->replace('/',':')->replace('_', ' ')->title();
+
+            $this->title = $this->askValid(
+                "Please enter a reader friendly title for the indicator (press enter to set {$suggestedTitle}) for now) ",
+                'title',
+                ['nullable',]
+            );
+            $this->title = $this->title ?? str($this->name)->snake()->replace('_', ' ')->title();
+        }
+        $this->info("You have selected to use the title: {$this->title}");
+        return $this;
+    } 
+
+    protected function getIndicatorDescription()
+    {
+        $this->indicatorDescription = $this->option('description');
+        if(!$this->indicatorDescription) {
+                $this->indicatorDescription = '';
+                $this->indicatorDescription = $this->askValid(
+                    "Please enter a description for the indicator (press enter to leave empty for now)",
+                    'description',
+                    ['nullable',]
+                );
+        }
+        $this->info("You have selected to use the description: {$this->indicatorDescription}");
+        return $this;
+    }
+
+    protected function handleMakeIndicatorFromPackages($packageName)
+    {
+        $this->info("You have selected to use indicator templates from the package: {$packageName}");
+        $this->info("The following indicator templates are available:");
+        $templateList = $this->loadIndicatorTemplatesFromPackage($packageName);
+        
+        $this->table(['Name', 'Category', 'Path'], \array_map(function ($template) {
+            return [$template['Name'], $template['Category'], $template['Path']];
+        }, $templateList));
+        
+
+        $this->directory = $this->askValid(
+            "Please enter a directory for the indicators to be placed in (press enter to leave empty)",
+            'directory',
+            ['nullable',]
+        );
+        
+        $this->type = 'template';
+        foreach ($templateList as $template) {
+            $name = $this->directory ? $this->directory . '/' . $template['Name'] : $template['Name'];
+            $this->createIndicator($name,$template['Title'],$template['Description'],$this->questionnaire,'Template',$template);
+        }
+
+        $this->newLine();
+        $this->info("Indicator templates from the package $packageName have been added to your dashboard.");
+        $this->newLine();
+
+        return true;
+    }
+
 
     protected function loadIndicatorTemplates()
     {
@@ -101,67 +219,73 @@ class MakeIndicator extends GeneratorCommand
         }, array_filter($files, function ($file) {
             return pathinfo($file, PATHINFO_EXTENSION) == 'php';
         }));
-        // dd($templates);
         return $templates;
     }
 
-    public function handle(): bool|null
+    protected function loadIndicatorTemplatesFromPackage($packageName)
     {
-        // $section = $this->output->section();
-        // $table = new Table($section);
 
-        // $table->addRow(['Love']);
-        // $table->render();
-
-        // $table->appendRow(['Symfony']);
-
-        if (Questionnaire::all()->isEmpty()) {
-            $this->newLine();
-            $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
-            $this->newLine();
+        $package = Storage::disk('indicator_templates')->get("Templates/{$packageName}.json");
+        if (!$package) {
+            $this->error("Package {$packageName} not found");
             return false;
         }
-
-        $name = $this->askValid(
-            "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. HouseholdsEnumeratedByDay\n You can also include directory to help with organization of indicator files. Eg. Household/BirthRate)",
-            'name',
-            ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']
+        $content = json_decode($package, true);
+        $packageTemplates = $content['indicators'];
+        return \array_map(
+            function ($template) {
+                $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $template['slug_id'])));
+                return 
+                $templates[] = [
+                    "Name" => $className,
+                    "Category" => $template['categories'],
+                    "Path" => $template['categories'] . '/' . $className . '.php',
+                    "Title" => $template['title'],
+                    "Description" => $template['description'],
+                ];
+            },
+            $packageTemplates
         );
+    
+    }
+    protected function buildClassWithTemplate($className, $template)
+    {
+        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $template['Path'])), $this->buildClass($className));
+        return $content;
+    }
 
-        $questionnaires = Questionnaire::pluck('name')->toArray();
-        $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
-        $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
-        $this->askForIndicatorTemplate();
+    protected function writeIndicatorToFile(string $name, $template)
+    {
+        $className = $this->qualifyClass($name);
 
-        if ($this->type == 'template') {
-            $this->type = 'template';
-            $chosenChartType = 'Template';
-            $this->includeSampleCode = false;
-            $this->title = str(basename($this->template['Name']))->snake()->replace('_', ' ')->title();
+        $path = $this->getPath($className);
+        $this->makeDirectory($path);
+
+        if (empty($template)) {
+            $content = $this->buildClass($className);
         } else {
-            $chosenChartType = 'Default';
-            $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
-            $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
+            $template_path = Storage::disk('indicator_templates')->path($template['Path']);
+            $destination_path = \app_path() . "/IndicatorTemplates/{$template['Path']}";
+            $this->makeDirectory($destination_path);
+            \copy($template_path, $destination_path);
+            $content = $this->buildClassWithTemplate($className, $template);
         }
+        return $this->files->put($path, $content);
+    }
 
+    public function buildIndicator(){
+        return $this->createIndicator($this->name, $this->title, $this->description, $this->questionnaire, $this->chosenChartType, $this->template);   
+    }
 
-        $title = $this->askValid(
-            "Please enter a reader friendly title for the indicator (press enter to set " . ($this->title ?? 'empty') . " for now) ",
-            'title',
-            ['nullable',]
-        );
+    protected function createIndicator($name, $title , 
+    $description , $questionnaire ,
+     $chosenChartType , $template)
+    {
 
-        $title = $title ?? $this->title;
-
-        $description = $this->askValid(
-            "Please enter a description for the indicator (press enter to leave empty for now)",
-            'description',
-            ['nullable',]
-        );
-        DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType) {
-            $result = $this->writeIndicatorFile($name);
+        DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType, $template) {
+            $result = $this->writeIndicatorToFile($name, $template);
             if ($result) {
-                $this->info('Indicator created successfully.');
+                $this->info("Indicator {$name} with template {$template['Name']} from {$template['Path']} created successfully.");
             } else {
                 throw new \Exception('There was a problem creating the indicator file');
             }
@@ -171,8 +295,31 @@ class MakeIndicator extends GeneratorCommand
                 'description' => $description,
                 'questionnaire' => $questionnaire,
                 'type' => $chosenChartType,
+                'published' => false,
             ]);
         });
-        return true;
+    }
+
+    public function handle()
+    {
+        $this->info("Welcome to the indicator generator.");
+        $this->package = $this->option('package');
+
+        if ($this->validateDashboardSetup()) {
+            $this->getQuestionnaire();
+
+            if ($this->package) {
+                return $this->handleMakeIndicatorFromPackages($this->package);
+            } else {
+                $this->getIndicatorTemplate()
+                     ->getIndicatorName()
+                     ->getIndicatorTitle()
+                     ->getIndicatorDescription()
+                     ->buildIndicator();
+                $this->info("Indicator {$this->title} has been added to your dashboard.");
+                return true;            
+            }
+        }
+        return false;
     }
 }

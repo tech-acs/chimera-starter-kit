@@ -16,6 +16,16 @@ trait InteractiveCommand
         return $value;
     }
 
+    protected function anticipateValid($question,$field,$rules,$options)
+    {
+        $value = $this->anticipate($question,$options);
+        if($message = $this->validateInput($rules, $field, $value)) {
+            $this->error($message);
+            return $this->anticipateValid($question, $field, $rules, $options);
+        }
+        return $value;
+    }
+
     protected function validateInput($rules, $fieldName, $value)
     {
         $validator = Validator::make([
