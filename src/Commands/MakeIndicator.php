@@ -38,18 +38,17 @@ class MakeIndicator extends GeneratorCommand
         if (empty($this->template)) {
             $content = $this->buildClass($className);
         } else {
-
-            $template_path = Storage::disk('indicator_templates')->path($this->template).'.php';
-            $destination_path = \app_path()."/IndicatorTemplates/{$this->template}.php";
+            $template_path = Storage::disk('indicator_templates')->path($this->template['Path']);
+            $destination_path = \app_path() . "/IndicatorTemplates/{$this->template['Path']}";
             $this->makeDirectory($destination_path);
-            \copy($template_path,$destination_path);
+            \copy($template_path, $destination_path);
             $content = $this->buildClassWithTemplate($className);
         }
         return $this->files->put($path, $content);
     }
-    protected function buildClassWithTemplate($className){
-
-        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/',"\\",$this->template), $this->buildClass($className));
+    protected function buildClassWithTemplate($className)
+    {
+        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $this->template['Path'])), $this->buildClass($className));
         return $content;
     }
 
@@ -58,11 +57,25 @@ class MakeIndicator extends GeneratorCommand
         $templates = $this->loadIndicatorTemplates();
         $templateNotFound = true;
         while ($templateNotFound) {
-            $template = $this->anticipate('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', $templates, null);
-            if (in_array($template, $templates)) {
+            $this->newLine();
+            $this->info('You can use a template to create your indicator');
+            $this->output->table(['Name', 'Category', 'Path'], $templates);
+
+            $template = $this->anticipate('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', function ($input) use ($templates) {
+                // $tableSection->output->table(['Name', 'Category', 'Path'], array_filter($templates, function ($template) use ($input) {
+                //     return str_contains($template['Name'], $input);
+                // }));
+                return array_map(function ($row) {
+                    return $row['Name'];
+                }, array_filter($templates, function ($template) use ($input) {
+                    return str_contains($template['Name'], $input);
+                }));
+            }, null);
+            $collection = \collect($templates);
+            if ($selected = $collection->firstWhere('Name', $template)) {
                 $templateNotFound = false;
                 $this->type = 'template';
-                $this->template = str_replace('.php', '', $template);
+                $this->template = $selected;
             } elseif (empty($template)) {
                 $templateNotFound = false;
             } else {
@@ -73,19 +86,35 @@ class MakeIndicator extends GeneratorCommand
 
     protected function loadIndicatorTemplates()
     {
+        $directories = Storage::disk('indicator_templates')->directories();
+        // filter docs directory
+        $directories = array_filter($directories, function ($directory) {
+            return $directory !== 'docs';
+        });
+        $files = [];
+        foreach ($directories as $directory) {
+            $files = array_merge($files, Storage::disk('indicator_templates')->files($directory));
+        }
 
-        $files = Storage::disk('indicator_templates')->allFiles();
         $templates = array_map(function ($file) {
-            //check if file is a php file
-            if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
-                return str_replace('.php', '', $file);
-            }
-        }, $files);
+            return ["Name" => str_replace('.php', '', \pathinfo($file, \PATHINFO_FILENAME)), "Category" => \pathinfo($file, PATHINFO_DIRNAME), "Path" => $file];
+        }, array_filter($files, function ($file) {
+            return pathinfo($file, PATHINFO_EXTENSION) == 'php';
+        }));
+        // dd($templates);
         return $templates;
     }
 
     public function handle(): bool|null
     {
+        // $section = $this->output->section();
+        // $table = new Table($section);
+
+        // $table->addRow(['Love']);
+        // $table->render();
+
+        // $table->appendRow(['Symfony']);
+
         if (Questionnaire::all()->isEmpty()) {
             $this->newLine();
             $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
@@ -108,7 +137,7 @@ class MakeIndicator extends GeneratorCommand
             $this->type = 'template';
             $chosenChartType = 'Template';
             $this->includeSampleCode = false;
-            $this->title = str(basename($this->template))->snake()->replace('_', ' ')->title();
+            $this->title = str(basename($this->template['Name']))->snake()->replace('_', ' ')->title();
         } else {
             $chosenChartType = 'Default';
             $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);

@@ -80,11 +80,14 @@ class DownloadIndicatorTemplates extends Command
         $zip->close();
         //Then, move the files to the root folder
         $files = Storage::disk('indicator_templates')->allFiles($rootFolder);
+        $progress = $this->output->createProgressBar(count($files));
         foreach ($files as $file) {
             $newFile = str_replace($rootFolder, '', $file);
             Storage::disk('indicator_templates')->move($file, $newFile);
-            $this->info('Extracted ' . $newFile);
+            $progress->advance();
         }
+        $progress->finish();
+        $this->newLine();
         //Finally, delete the root folder
         Storage::disk('indicator_templates')->deleteDirectory($rootFolder);
         $this->info('Extracted indicator templates successfully.');
