@@ -228,8 +228,11 @@ export default class LeafletMap {
                         mouseout: (e) => this.resetHighlight(e),
                         click: (e) => {
                             this.nav.fitTo = e.target.getBounds();
+                            //console.log(this.nav, this.nav.canMoveForward())
                             let feature = e.target.feature;
-                            Livewire.emit('mapClicked', feature.properties.path);
+                            if (this.nav.canMoveForward()) {
+                                Livewire.emit('mapClicked', feature.properties.path);
+                            }
                             if ((feature.properties.info !== undefined) && (feature.properties.info !== null)) {
                                 this.infoBox.update(feature.properties.info);
                             } else {

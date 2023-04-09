@@ -44,8 +44,12 @@ export class DoublyLinkedList {
         return this.items[this.position];
     }
 
+    canMoveForward() {
+        return (this.position + 1) < this.items.length;
+    }
+
     moveForward() {
-        if ((this.position + 1) < this.items.length) {
+        if (this.canMoveForward()) {
             this.prevPos = this.position;
             this.position++;
             return true;
@@ -53,8 +57,12 @@ export class DoublyLinkedList {
         return false;
     }
 
+    canMoveBackward() {
+        return (this.position - 1) >= 0;
+    }
+
     moveBackward() {
-        if ((this.position - 1) >= 0) {
+        if (this.canMoveBackward()) {
             this.prevPos = this.position;
             this.position--;
             return true;
