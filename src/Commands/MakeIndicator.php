@@ -68,7 +68,7 @@ class MakeIndicator extends GeneratorCommand
             $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
 
         }            
-        $this->info("You have selected to use the questionnaire: {$questionnaire}");
+        $this->info("You have selected to use the questionnaire: <fg=white;bg=green>{$questionnaire}</>");
         $this->questionnaire = $questionnaire;
         return $this;
     }
@@ -132,7 +132,7 @@ class MakeIndicator extends GeneratorCommand
             
             $this->name = $this->name ?? $suggestName;
         }
-        $this->info("You have selected to use the name: {$this->name}");
+        $this->info("You have selected to use the name: <fg=white;bg=green>{$this->name}</>");
         return $this;   
     }
 
@@ -152,7 +152,7 @@ class MakeIndicator extends GeneratorCommand
             );
             $this->title = $this->title ?? str($this->name)->snake()->replace('_', ' ')->title();
         }
-        $this->info("You have selected to use the title: {$this->title}");
+        $this->info("You have selected to use the title: <fg=white;bg=green>{$this->title}</>");
         return $this;
     } 
 
@@ -167,13 +167,13 @@ class MakeIndicator extends GeneratorCommand
                     ['nullable',]
                 );
         }
-        $this->info("You have selected to use the description: {$this->indicatorDescription}");
+        $this->info("You have selected to use the description: <fg=white;bg=green>{$this->indicatorDescription}</>");
         return $this;
     }
 
     protected function handleMakeIndicatorFromPackages($packageName)
     {
-        $this->info("You have selected to use indicator templates from the package: {$packageName}");
+        $this->info("You have selected to use indicator templates from the package: <fg=white;bg=green>$packageName}</>");
         $this->info("The following indicator templates are available:");
         $templateList = $this->loadIndicatorTemplatesFromPackage($packageName);
         
