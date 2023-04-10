@@ -248,10 +248,11 @@ class MakeIndicator extends GeneratorCommand
         );
     
     }
-    protected function buildClassWithTemplate($className, $template)
+    protected function buildClassWithTemplate($className, $template,$sampleContent='')
     {
-        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $template['Path'])), $this->buildClass($className));
-        return $content;
+        $file_content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $template['Path'])), $this->buildClass($className));
+        $file_content = str_replace(['{{ content }}', '{{content}}'], $sampleContent, $file_content);
+        return $file_content;
     }
 
     protected function writeIndicatorToFile(string $name, $template)
@@ -266,9 +267,15 @@ class MakeIndicator extends GeneratorCommand
         } else {
             $template_path = Storage::disk('indicator_templates')->path($template['Path']);
             $destination_path = \app_path() . "/IndicatorTemplates/{$template['Path']}";
+            $content = '';
+            foreach (\token_get_all(\file_get_contents($template_path)) as $token) {
+                if (is_array($token) && in_array($token[0],[\T_COMMENT,\T_DOC_COMMENT])) {
+                    $content .= $token[1].PHP_EOL;
+                }
+            }
             $this->makeDirectory($destination_path);
             \copy($template_path, $destination_path);
-            $content = $this->buildClassWithTemplate($className, $template);
+            $content = $this->buildClassWithTemplate($className, $template,$content);
         }
         return $this->files->put($path, $content);
     }
