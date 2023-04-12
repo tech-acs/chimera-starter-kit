@@ -8,6 +8,7 @@ use Uneca\Chimera\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Uneca\Chimera\Models\Page;
 
 class MakeIndicator extends GeneratorCommand
 {
@@ -17,6 +18,7 @@ class MakeIndicator extends GeneratorCommand
 
     protected $type = 'default';
     protected $includeSampleCode = '';
+    protected $shouldPublish = false;
     protected $directory = null;
     protected $title = null;
     protected $templateName = null;
@@ -24,6 +26,7 @@ class MakeIndicator extends GeneratorCommand
     protected $package = null;
     protected $chosenChartType = null;
     protected $questionnaire = null;
+    protected $dashboardPage = null;
 
     protected function getDefaultNamespace($rootNamespace)
     {
@@ -67,9 +70,22 @@ class MakeIndicator extends GeneratorCommand
             $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
             $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
 
-        }            
+        }
         $this->info("You have selected to use the questionnaire: <fg=white;bg=green>{$questionnaire}</>");
         $this->questionnaire = $questionnaire;
+        return $this;
+    }
+    protected function getDashboardPage()
+    {
+        $dashboardPages = Page::pluck('slug')->toArray();
+        $dashboardPage = \null;
+        if(!\array_search($dashboardPage, $dashboardPages)) {
+            $dashboardPageMenu = array_combine(range(1, count($dashboardPages)), array_values($dashboardPages));
+            $dashboardPage = $this->choice("Which dashboard page does this indicator belong to?", $dashboardPageMenu);
+
+        }
+        $this->info("You have selected to use the page: <fg=white;bg=green>{$dashboardPage}</>");
+        $this->dashboardPage = $dashboardPage;
         return $this;
     }
 
@@ -120,7 +136,7 @@ class MakeIndicator extends GeneratorCommand
         $this->name = $this->argument('name');
         if(!$this->name) {
             if($this->type == 'template'){
-                $this->name = str(basename($this->template['Name']));            
+                $this->name = str(basename($this->template['Name']));
                 $suggestName = $this->name ?? 'HouseholdsEnumeratedByDay';
 
             }
@@ -129,11 +145,11 @@ class MakeIndicator extends GeneratorCommand
                 'name',
                 ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name'],[$suggestName]
             );
-            
+
             $this->name = $this->name ?? $suggestName;
         }
         $this->info("You have selected to use the name: <fg=white;bg=green>{$this->name}</>");
-        return $this;   
+        return $this;
     }
 
     protected function getIndicatorTitle()
@@ -154,7 +170,7 @@ class MakeIndicator extends GeneratorCommand
         }
         $this->info("You have selected to use the title: <fg=white;bg=green>{$this->title}</>");
         return $this;
-    } 
+    }
 
     protected function getIndicatorDescription()
     {
@@ -173,26 +189,34 @@ class MakeIndicator extends GeneratorCommand
 
     protected function handleMakeIndicatorFromPackages($packageName)
     {
-        $this->info("You have selected to use indicator templates from the package: <fg=white;bg=green>$packageName}</>");
+        $this->info("You have selected to use indicator templates from the package: <fg=white;bg=green>$packageName</>");
         $this->info("The following indicator templates are available:");
         $templateList = $this->loadIndicatorTemplatesFromPackage($packageName);
-        
+
         $this->table(['Name', 'Category', 'Path'], \array_map(function ($template) {
             return [$template['Name'], $template['Category'], $template['Path']];
         }, $templateList));
-        
+
 
         $this->directory = $this->askValid(
             "Please enter a directory for the indicators to be placed in (press enter to leave empty)",
             'directory',
             ['nullable',]
         );
-        
+
+       $this->shouldPublish = $this->choice(
+            "Do you want to publish the indicator templates from the package $packageName to your dashboard? (yes/no)",[1=>'yes',2=>'no'],2)=='yes';
+
+        if($this->shouldPublish){
+            $this->getDashboardPage();
+        }
+
         $this->type = 'template';
         foreach ($templateList as $template) {
             $name = $this->directory ? $this->directory . '/' . $template['Name'] : $template['Name'];
-            $this->createIndicator($name,$template['Title'],$template['Description'],$this->questionnaire,'Template',$template);
+            $this->createIndicator($name,$template['Title'],$template['Description'],$this->questionnaire,'Template',$template,$this->shouldPublish,$this->dashboardPage);
         }
+
 
         $this->newLine();
         $this->info("Indicator templates from the package $packageName have been added to your dashboard.");
@@ -225,7 +249,7 @@ class MakeIndicator extends GeneratorCommand
     protected function loadIndicatorTemplatesFromPackage($packageName)
     {
 
-        $package = Storage::disk('indicator_templates')->get("Templates/{$packageName}.json");
+        $package = Storage::disk('indicator_templates')->get("__packages/{$packageName}.json");
         if (!$package) {
             $this->error("Package {$packageName} not found");
             return false;
@@ -235,7 +259,7 @@ class MakeIndicator extends GeneratorCommand
         return \array_map(
             function ($template) {
                 $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $template['slug_id'])));
-                return 
+                return
                 $templates[] = [
                     "Name" => $className,
                     "Category" => $template['categories'],
@@ -246,7 +270,7 @@ class MakeIndicator extends GeneratorCommand
             },
             $packageTemplates
         );
-    
+
     }
     protected function buildClassWithTemplate($className, $template,$sampleContent='')
     {
@@ -281,29 +305,35 @@ class MakeIndicator extends GeneratorCommand
     }
 
     public function buildIndicator(){
-        return $this->createIndicator($this->name, $this->title, $this->description, $this->questionnaire, $this->chosenChartType, $this->template);   
+        return $this->createIndicator($this->name, $this->title, $this->description, $this->questionnaire, $this->chosenChartType, $this->template);
     }
 
-    protected function createIndicator($name, $title , 
+    protected function createIndicator($name, $title ,
     $description , $questionnaire ,
-     $chosenChartType , $template)
+     $chosenChartType , $template,$publish=false,$page=null)
     {
 
-        DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType, $template) {
+        DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType, $template,$publish,$page) {
             $result = $this->writeIndicatorToFile($name, $template);
             if ($result) {
                 $this->info("Indicator {$name} with template {$template['Name']} from {$template['Path']} created successfully.");
             } else {
                 throw new \Exception('There was a problem creating the indicator file');
             }
-            Indicator::create([
+
+            $indicator = Indicator::create([
                 'name' => $name,
                 'title' => $title,
                 'description' => $description,
                 'questionnaire' => $questionnaire,
                 'type' => $chosenChartType,
-                'published' => false,
+                'published' => $publish,
             ]);
+
+            if($page){
+                $dashboardPage = Page::where('slug',$page)->first()->id;
+                $indicator->pages()->sync([$dashboardPage]);
+            }
         });
     }
 
@@ -324,7 +354,7 @@ class MakeIndicator extends GeneratorCommand
                      ->getIndicatorDescription()
                      ->buildIndicator();
                 $this->info("Indicator {$this->title} has been added to your dashboard.");
-                return true;            
+                return true;
             }
         }
         return false;
