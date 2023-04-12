@@ -14,7 +14,7 @@ class HomeController extends Controller
         if (empty($groupMembers)) {
             return 'https://via.placeholder.com/640x427.jpg?text=Image+missing.+Please+fix!';
         }
-        return str($groupMembers[array_rand($groupMembers)])->after('public/');
+        return str($groupMembers[array_rand($groupMembers)])->after('public'.DIRECTORY_SEPARATOR);
     }
 
     public function __invoke()
