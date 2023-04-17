@@ -54,6 +54,11 @@ class Production extends Command
                 $productionEnvValues = ['cache.default' => 'redis', 'chimera.cache.enabled' => true];
                 $redis = new Redis();
                 $redis->connect(config('database.redis.cache.host'), config('database.redis.cache.port'));
+                $username = config('database.redis.cache.username');
+                $password = config('database.redis.cache.password');
+                if (isset($username) && isset($password)) {
+                    $redis->auth([$username, $password]);
+                }
                 $redisReachable = (bool)$redis->ping();
                 return collect($productionEnvValues)
                     ->map(function ($value, $key) {
