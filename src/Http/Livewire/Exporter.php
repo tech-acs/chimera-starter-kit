@@ -11,8 +11,7 @@ class Exporter extends Component
 {
     protected $listeners = ['updateChart' => 'update'];
 
-    public $questionnaire;
-    public $chart;
+    public $indicator;
     public $filter = [];
 
     public function mount()
@@ -30,10 +29,10 @@ class Exporter extends Component
 
     public function export()
     {
-        $indicatorInstance = DashboardComponentFactory::make($this->questionnaire, $this->chart);
+        $indicatorInstance = DashboardComponentFactory::makeIndicator($this->indicator);
         $data = $indicatorInstance->getData($this->filter);
 
-        $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->chart) . '.csv';
+        $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->indicator->slug) . '.csv';
         $writer = SimpleExcelWriter::create($file);
         foreach ($data as $record) {
             $writer->addRow((array)$record);

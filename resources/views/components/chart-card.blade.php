@@ -24,7 +24,7 @@
                 </div>
             @endif
 
-            <livewire:exporter :chart="$indicator->component" :questionnaire="$indicator->questionnaire" />
+            <livewire:exporter :indicator="$indicator" />
 
             <div class="self-center ml-2">
                 <a @click="show_help = !show_help" title="Help" type="button" class="cursor-pointer inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-indigo-400 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
