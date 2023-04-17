@@ -40,6 +40,9 @@ class Chimera extends Command
         $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);
         $this->comment('Published stubs');
 
+        $this->callSilent('vendor:publish', ['--tag' => 'livewire:config']);
+        $this->comment('Published livewire config');
+
         copy(__DIR__.'/../../deploy/web.php', base_path('routes/web.php'));
         $this->comment('Copied empty route file (web.php)');
 
