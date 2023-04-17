@@ -36,12 +36,15 @@ class CacheScorecards extends Command
             $startTime = time();
 
             $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            (new ScorecardCaching($scorecard, []))->update();
-            $analytics['completed_at'] = time();
-            $scorecard->analytics()->create($analytics);
-
-            $endTime = time();
-            $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+            $updated = (new ScorecardCaching($scorecard, []))->update();
+            if ($updated) {
+                $analytics['completed_at'] = time();
+                $scorecard->analytics()->create($analytics);
+                $endTime = time();
+                $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+            } else {
+                $this->error("Could not update cache!");
+            }
         }
         $this->newLine();
         return Command::SUCCESS;

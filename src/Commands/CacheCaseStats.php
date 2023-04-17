@@ -37,12 +37,15 @@ class CacheCaseStats extends Command
             $startTime = time();
 
             $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            (new CaseStatsCaching($questionnaire, []))->update();
-            $analytics['completed_at'] = time();
-            $questionnaire->analytics()->create($analytics);
-
-            $endTime = time();
-            $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+            $updated = (new CaseStatsCaching($questionnaire, []))->update();
+            if ($updated) {
+                $analytics['completed_at'] = time();
+                $questionnaire->analytics()->create($analytics);
+                $endTime = time();
+                $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+            } else {
+                $this->error("Could not update cache!");
+            }
         }
         $this->newLine();
         return Command::SUCCESS;
