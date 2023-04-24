@@ -1,5 +1,5 @@
-<div class="relative z-0 px-4 py-5 sm:px-6">
-    <div class="opacity-25 absolute z-50 cursor-pointer" title="{{ $dataTimestamp->toDayDateTimeString() }}">
+<div wire:init="deferredLoading" class="relative z-0 px-4 py-5 sm:px-6">
+    <div class="opacity-25 absolute z-50 cursor-pointer" title="{{ $dataTimestamp?->toDayDateTimeString() }}">
         <x-chimera::icon.stamp class="w-4 h-4" />
     </div>
     <div
