@@ -26,9 +26,13 @@ abstract class Caching
         if (is_null($this->instance)) {
             return false;
         }
-        $freshData = $this->instance->getData($this->filter);
-        $this->stamp();
-        return Cache::tags($this->tags())->put($this->key, $freshData);
+        try {
+            $freshData = $this->instance->getData($this->filter);
+            $this->stamp();
+            return Cache::tags($this->tags())->put($this->key, $freshData);
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 
     public function stamp(): bool

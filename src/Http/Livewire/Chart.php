@@ -150,17 +150,20 @@ abstract class Chart extends Component
         $this->emit("redrawChart-{$this->graphDiv}", $this->data, $this->layout);
     }
 
-    final public function mount()
+    public function deferredLoading()
     {
-        $this->graphDiv = $this->indicator->component;
-
         $filtersToApply = array_merge(
             auth()->user()->areaRestrictionAsFilter(),
             session()->get('area-filter', [])
         );
+        $this->updateChart($filtersToApply);
+    }
 
+    final public function mount()
+    {
+        $this->graphDiv = $this->indicator->component;
         $this->config = $this->getConfig();
-        $this->updateDataAndLayout($filtersToApply);
+        $this->data = [];
 
         $this->mounted();
     }

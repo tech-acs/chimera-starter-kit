@@ -8,6 +8,13 @@ use Uneca\Chimera\Models\Questionnaire;
 
 class QuestionnaireController extends Controller
 {
+    private array $databases = [
+        'MySQL 5.7+/MariaDB 10.3+' => 'mysql',
+        'PostgreSQL 10.0+' => 'pgsql',
+        'SQLite 3.8.8+' => 'sqlite',
+        'SQL Server 2017+' => 'sqlsrv',
+    ];
+
     public function index()
     {
         $records = Questionnaire::orderBy('rank')->get();
@@ -26,24 +33,32 @@ class QuestionnaireController extends Controller
     public function create()
     {
         $components = $this->getCaseStatComponentsList();
-        return view('chimera::developer.questionnaire.create', compact('components'));
+        return view('chimera::developer.questionnaire.create', compact('components'))
+            ->with(['databases' => $this->databases]);
     }
 
     public function store(QuestionnaireRequest $request)
     {
-        Questionnaire::create($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active', 'case_stats_component']));
+        Questionnaire::create($request->only([
+            'name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database',
+            'username', 'password', 'connection_active', 'case_stats_component', 'driver'
+        ]));
         return redirect()->route('developer.questionnaire.index')->withMessage('Record created');
     }
 
     public function edit(Questionnaire $questionnaire)
     {
         $components = $this->getCaseStatComponentsList();
-        return view('chimera::developer.questionnaire.edit', compact('questionnaire', 'components'));
+        return view('chimera::developer.questionnaire.edit', compact('questionnaire', 'components'))
+            ->with(['databases' => $this->databases]);
     }
 
     public function update(Questionnaire $questionnaire, QuestionnaireRequest $request)
     {
-        $questionnaire->update($request->only(['name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database', 'username', 'password', 'connection_active', 'case_stats_component']));
+        $questionnaire->update($request->only([
+            'name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database',
+            'username', 'password', 'connection_active', 'case_stats_component', 'driver'
+        ]));
         return redirect()->route('developer.questionnaire.index')->withMessage('Record updated');
     }
 

@@ -27,7 +27,7 @@ class QuestionnaireRequest extends FormRequest
         return [
             'name' => ['required', Rule::unique('questionnaires', 'name')->ignore($this->questionnaire)],
             'title' => 'required',
-
+            'driver' => 'required',
             'host' => 'required',
             'port' => 'required',
             'database' => 'required',

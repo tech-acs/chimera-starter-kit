@@ -53,18 +53,26 @@ class CacheMapIndicators extends Command
             $startTime = time();
 
             $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            (new MapIndicatorCaching($indicator, []))->update(); // National level - no filters (non-level)
-            $analytics['completed_at'] = time();
-            $indicator->analytics()->create($analytics);
+            $updated = (new MapIndicatorCaching($indicator, []))->update(); // National level - no filters (non-level)
+            if ($updated) {
+                $analytics['completed_at'] = time();
+                $indicator->analytics()->create($analytics);
+            } else {
+                $this->error("Could not update cache!");
+            }
 
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
                 $levelName = (new AreaTree())->hierarchies[$level];
                 $areaCodes = Area::ofLevel($level)->pluck('code');
                 foreach ($areaCodes as $code) {
                     $analytics = ['source' => 'Caching (cmd)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
-                    (new MapIndicatorCaching($indicator, [$levelName => $code]))->update();
-                    $analytics['completed_at'] = time();
-                    $indicator->analytics()->create($analytics);
+                    $updated = (new MapIndicatorCaching($indicator, [$levelName => $code]))->update();
+                    if ($updated) {
+                        $analytics['completed_at'] = time();
+                        $indicator->analytics()->create($analytics);
+                    } else {
+                        $this->error("Could not update cache!");
+                    }
                 }
                 $this->info(" - cached $levelName level");
             }

@@ -17,7 +17,6 @@ class CaseStats extends Component
     public array $stats = [];
     public Carbon $dataTimestamp;
 
-
     public function mount(Questionnaire $questionnaire)
     {
         $this->questionnaire = $questionnaire;

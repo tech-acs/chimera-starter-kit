@@ -49,9 +49,13 @@ class CacheIndicators extends Command
             $startTime = time();
 
             $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            (new IndicatorCaching($indicator, []))->update(); // National level - no filters (non-level/null level)
-            $analytics['completed_at'] = time();
-            $indicator->analytics()->create($analytics);
+            $updated = (new IndicatorCaching($indicator, []))->update(); // National level - no filters (non-level/null level)
+            if ($updated) {
+                $analytics['completed_at'] = time();
+                $indicator->analytics()->create($analytics);
+            } else {
+                $this->error("Could not update cache!");
+            }
 
             $hierarchies = (new AreaTree())->hierarchies;
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
@@ -62,12 +66,14 @@ class CacheIndicators extends Command
                     for ($i = 0; $i < count($codes); $i++) {
                         $filter[$hierarchies[$i]] = $codes[$i];
                     }
-
                     $analytics = ['source' => 'Caching (cmd)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
-                    (new IndicatorCaching($indicator, $filter))->update(); // Sub-national level
-                    $analytics['completed_at'] = time();
-                    $indicator->analytics()->create($analytics);
-
+                    $updated = (new IndicatorCaching($indicator, $filter))->update(); // Sub-national level
+                    if ($updated) {
+                        $analytics['completed_at'] = time();
+                        $indicator->analytics()->create($analytics);
+                    } else {
+                        $this->error("Could not update cache!");
+                    }
                 }
                 $this->info(" - cached {$hierarchies[$level]} level");
             }
