@@ -17,6 +17,18 @@ class ConnectionLoader
         }
         $keyedConnections = $connections->mapWithKeys(function ($item) {
             $defaultConfig = config('database.connections')[$item['driver']] ?? [];
+            if ($item['driver'] === 'mysql') {
+                $defaultConfig = [
+                    ...$defaultConfig,
+                    'modes' => [
+                        'NO_ENGINE_SUBSTITUTION'
+                    ],
+                    'options' => extension_loaded('pdo_mysql') ? array_filter([
+                        PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                        PDO::ATTR_PERSISTENT => true,
+                    ]) : [],
+                ];
+            }
             $config = [
                 ...$defaultConfig,
                 'host' => $item['host'],
