@@ -15,7 +15,7 @@ class MakeIndicator extends GeneratorCommand
     use InteractiveCommand;
     protected $signature = 'chimera:make-indicator {name?} {--questionnaire=} {--type=} {--title=} {--description=} {--template=} {--package=}';
     protected $description = 'Create a new indicator component. If no indicator name is provided, the command will ask for it.';
-
+    protected $template = null;
     protected $type = 'default';
     protected $includeSampleCode = '';
     protected $shouldPublish = false;
@@ -121,10 +121,10 @@ class MakeIndicator extends GeneratorCommand
         }
 
         if ($this->type == 'template') {
-            $this->chosenChartType = 'Template';
+            $this->chosenChartType = 'template';
             $this->includeSampleCode = false;
         } else {
-            $this->chosenChartType = 'Default';
+            $this->chosenChartType = 'default';
             $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
             $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
         }
@@ -135,16 +135,23 @@ class MakeIndicator extends GeneratorCommand
     {
         $this->name = $this->argument('name');
         if(!$this->name) {
+            $suggestName = '';
             if($this->type == 'template'){
                 $this->name = str(basename($this->template['Name']));
                 $suggestName = $this->name ?? 'HouseholdsEnumeratedByDay';
-
+                $this->name = $this->anticipateValid(
+                    "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. '{$suggestName}'\n You can also include directory to help with organization of indicator files. Eg. {$this->questionnaire}/{$suggestName}')",
+                    'name',
+                    ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name'],[$suggestName]
+                );
             }
-            $this->name = $this->anticipateValid(
-                "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. '{$suggestName}'\n You can also include directory to help with organization of indicator files. Eg. {$this->questionnaire}/{$suggestName}')",
-                'name',
-                ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name'],[$suggestName]
-            );
+            else{
+
+                $this->name = $this->askValid(
+                    "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. 'HouseholdsEnumeratedByDay'\n You can also include directory to help with organization of indicator files. Eg. {$this->questionnaire}/HouseholdsEnumeratedByDay')",
+                    'name', ['required', 'string', 'regex:/^[A-Za-z][A-Za-z\/]*$/', 'unique:indicators,name']
+                );
+            }
 
             $this->name = $this->name ?? $suggestName;
         }
@@ -192,7 +199,6 @@ class MakeIndicator extends GeneratorCommand
         $this->info("You have selected to use indicator templates from the package: <fg=white;bg=green>$packageName</>");
         $this->info("The following indicator templates are available:");
         $templateList = $this->loadIndicatorTemplatesFromPackage($packageName);
-
         $this->table(['Name', 'Category', 'Path'], \array_map(function ($template) {
             return [$template['Name'], $template['Category'], $template['Path']];
         }, $templateList));
@@ -254,7 +260,10 @@ class MakeIndicator extends GeneratorCommand
             $this->error("Package {$packageName} not found");
             return false;
         }
+        $this->info($package);
+
         $content = json_decode($package, true);
+
         $packageTemplates = $content['indicators'];
         return \array_map(
             function ($template) {
@@ -310,13 +319,17 @@ class MakeIndicator extends GeneratorCommand
 
     protected function createIndicator($name, $title ,
     $description , $questionnaire ,
-     $chosenChartType , $template,$publish=false,$page=null)
+     $chosenChartType , $template=null,$publish=false,$page=null)
     {
 
         DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType, $template,$publish,$page) {
             $result = $this->writeIndicatorToFile($name, $template);
-            if ($result) {
+
+            if ($result && $chosenChartType == 'Template') {
                 $this->info("Indicator {$name} with template {$template['Name']} from {$template['Path']} created successfully.");
+            }
+            else if($result){
+                $this->info("Indicator {$name} created successfully.");
             } else {
                 throw new \Exception('There was a problem creating the indicator file');
             }
