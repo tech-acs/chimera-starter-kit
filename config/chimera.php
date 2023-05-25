@@ -19,6 +19,8 @@ return [
     'area' => [
         'map' => [
             'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],
+            'zoom' => env('MAP_ZOOM', 6),
+            'minZoom' => env('MAP_MIN_ZOOM', 6),
             'ignore_orphan_areas' => env('IGNORE_ORPHAN_AREAS', false),
         ],
     ],

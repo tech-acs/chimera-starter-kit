@@ -131,8 +131,8 @@ class Map extends Component
     {
         $this->leafletMapOptions = [
             'center' => config('chimera.area.map.center'),
-            'zoom' => 6,
-            'minZoom' => 6,
+            'zoom' => config('chimera.area.map.zoom',6),
+            'minZoom' => config('chimera.area.map.minZoom',6),
             'zoomControl' => false,
             'attributionControl' => false,
             'preferCanvas' => true,
