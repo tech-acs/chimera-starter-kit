@@ -32,20 +32,20 @@ class HomeController extends Controller
             ->all();
         $graphicalMenu = [
             [
-                'title' => 'Reports',
-                'description' => 'Download various types of csv reports for further analysis',
+                'title' => __('Reports'),
+                'description' => __('Download various types of csv reports for further analysis'),
                 'link' => route('report'),
                 'image' => asset($this->pickImage('report')),
             ],[
-                'title' => 'Maps',
-                'description' => 'View key indicators conveniently visualized on a map',
+                'title' => __('Maps'),
+                'description' => __('View key indicators conveniently visualized on a map'),
                 'link' => route('map'),
                 'image' => asset($this->pickImage('map')),
             ],
             ...$pages,
             [
-                'title' => 'Account Settings',
-                'description' => 'Tweak and adjust various aspects of your account',
+                'title' => __('Account Settings'),
+                'description' => __('Tweak and adjust various aspects of your account'),
                 'link' => route('profile.show'),
                 'image' => asset($this->pickImage('profile')),
             ]

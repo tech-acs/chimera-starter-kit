@@ -15,7 +15,11 @@ trait FilterBasedAxisTitle
         $title = str($levelName)->plural()->title();
         if ($depth > 0) {
             $previousLevel = $areaTree->getArea($filterPath);
-            $title .= " of " . $previousLevel->name . ' ' . $areaTree->hierarchies[$previousLevel->level];
+            $title = __(':title of :prevname :heirarchy', [
+                'title'=>$title,
+                'prevname' => $previousLevel->name,
+                'heirarchy'=>$areaTree->hierarchies[$previousLevel->level]]);
+
         }
         return $title;
     }
