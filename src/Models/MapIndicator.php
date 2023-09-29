@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,6 +48,11 @@ class MapIndicator extends Model
     public function scopePublished($query)
     {
         return $query->where('published', true);
+    }
+
+    public function scopeOfQuestionnaire(Builder $query, $questionnaire)
+    {
+        return $query->where('questionnaire', $questionnaire);
     }
 
     protected static function booted()
