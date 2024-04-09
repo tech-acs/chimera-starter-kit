@@ -43,13 +43,16 @@ class AreaHierarchyController extends Controller
     {
         $this->validateZoomRange($request);
         $zoomLevels = range($request->integer('zoom_start'), $request->integer('zoom_end'));
-        AreaHierarchy::create([
-            'index' => AreaHierarchy::count(),
-            'name' => $request->get('name'),
-            'zero_pad_length' => $request->get('zero_pad_length'),
-            'simplification_tolerance' => $request->get('simplification_tolerance'),
-            'map_zoom_levels' => $zoomLevels,
-        ]);
+        try {
+            AreaHierarchy::create([
+                'index' => AreaHierarchy::count(),
+                'name' => $request->get('name'),
+                'zero_pad_length' => $request->get('zero_pad_length'),
+                'simplification_tolerance' => $request->get('simplification_tolerance'),
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('developer.area-hierarchy.index')->withError('There was a problem creating the area hierarchy');
+        }
         return redirect()->route('developer.area-hierarchy.index')->withMessage('Area hierarchy created');
     }
 

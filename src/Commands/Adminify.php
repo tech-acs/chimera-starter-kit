@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\note;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\password;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\alert;
+
 class Adminify extends Command
 {
     protected $signature = 'adminify';
@@ -28,25 +36,40 @@ class Adminify extends Command
 
     public function handle()
     {
-        $this->newLine();
-        $this->line('This command will create/retrieve the user account and will assign it the ' . self::ROLE . ' role');
+        note("This command will create a super admin account for you to use. If the account's email address already exists then the account will be updated with the name and password you provide. It will also assign the account the " . self::ROLE . ' role');
 
-        $email = $this->askValid(
-            "What is the email address of the account you want to assign the role?",
-            'email',
-            ['required', 'email']
+        $email = text(
+            label: 'Email address',
+            placeholder: 'E.g. admin@example.com',
+            required: true,
+            validate: fn (string $value) => match (true) {
+                (filter_var($value, FILTER_VALIDATE_EMAIL) === false) => 'The value you entered is not a valid email address',
+                default => null
+            },
+            //hint: 'This can not be changed later',
         );
-        $name = $this->askValid(
-            'What is the name of the user?',
-            'name',
-            ['required', 'min:3']
+        $name = text(
+            label: 'Name',
+            default: 'Administrator',
+            required: true,
+            validate: fn (string $value) => match (true) {
+                strlen($value) < 3 => 'The name must be at least 3 characters.',
+                strlen($value) > 255 => 'The name must not exceed 255 characters.',
+                default => null
+            },
+            hint: 'Minimum 3 characters. You can also change it later',
         );
-        $password = $this->askValid(
-            'Please enter a password for the account',
-            'password',
-            ['required', 'min:8']
+        $password = password(
+            label: 'Password',
+            required: true,
+            validate: fn (string $value) => match (true) {
+                strlen($value) < 7 => 'The password must be at least 8 characters.',
+                strlen($value) > 255 => 'The password must not exceed 255 characters.',
+                default => null
+            },
+            hint: 'Minimum 8 characters.',
         );
-        $user = User::firstOrCreate(
+        $user = User::updateOrCreate(
             ['email' => $email],
             ['name' => $name, 'password' => Hash::make($password)]
         );
@@ -57,40 +80,23 @@ class Adminify extends Command
                 'guard_name' => 'web'
             ]);
             if ($user->hasRole(self::ROLE)) {
-                $this->info("The user account, with email address $email, is already assigned the '" . self::ROLE . "' role\n");
-                $response = $this->choice("Do you want to remove the role from the user?", [1 => 'yes', 2 => 'no'], 2);
-                if ($response === 'yes') {
+                info("The user account, with email address $email, is already assigned the '" . self::ROLE . "' role\n");
+                $response = select(
+                    label: "Do you want to remove the role from the user?", 
+                    options: ['Yes', 'No'],
+                    default: 'No'
+                );
+                if ($response === 'Yes') {
                     $user->removeRole(self::ROLE);
+                    info("The '" . self::ROLE . "' role has been removed from the user account");
                 }
             } else {
                 $user->assignRole(self::ROLE);
-                $this->info("The user account, with email address $email, has been assigned the '" . self::ROLE . "' role\n");
+                info("The user account has been assigned the '" . self::ROLE . "' role");
             }
         } else {
-            $this->info("Ensured that the user account with email address $email exists\n");
-            $this->alert('Since the permissions package has not been installed, the role has not been assigned');
+            info("Ensured that the user account with email address $email exists");
+            alert('Since the permissions package has not been installed, the role has not been assigned');
         }
-    }
-
-    protected function askValid($question, $field, $rules)
-    {
-        $value = $field == 'password' ? $this->secret($question) : $this->ask($question);
-        if($message = $this->validateInput($rules, $field, $value)) {
-            $this->error($message);
-            return $this->askValid($question, $field, $rules);
-        }
-        return $value;
-    }
-
-    protected function validateInput($rules, $fieldName, $value)
-    {
-        $validator = Validator::make([
-            $fieldName => $value
-        ], [
-            $fieldName => $rules
-        ]);
-        return $validator->fails()
-            ? $validator->errors()->first($fieldName)
-            : null;
     }
 }

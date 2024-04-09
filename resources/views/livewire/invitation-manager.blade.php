@@ -42,7 +42,7 @@
                             @if($record->is_expired)
                                 <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="renew({{$record->id}})">{{ __('Renew') }}</a>
                             @else
-                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="showLink({{$record->id}})">{{ __('Show link') }}</a>
+                                <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="showLinkModal({{$record->id}})">{{ __('Show link') }}</a>
                                 |
                                 <a class="text-indigo-600 hover:text-indigo-900 cursor-pointer" wire:click.prevent="resendEmail({{$record->id}})">{{ __('Resend email') }}</a>
                             @endif

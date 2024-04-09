@@ -64,14 +64,12 @@ class ShapefileImporter
                     }
 
                     $attribs = $this->castDataArray($shapefile, array_change_key_case($feature->getDataArray(), CASE_LOWER));
-                    $geom = $feature->getWKT();
-                    $geom = DB::raw(
-                        //"ST_Transform(ST_GeomFromText('{$geom}', {$this->fromSrid}), {$this->toSrid})"
-                        "ST_GeomFromText('{$geom}', 4326)"
-                    );
+                    $wkt = $feature->getWKT();
+                    //$geom = DB::raw("ST_GeomFromText('{$geom}', 4326)")->getValue(DB::connection()->getQueryGrammar());
+                    $result = DB::select("SELECT ST_GeomFromText('{$wkt}', 4326) AS geom");
                     array_push($collector, [
                         'attribs' => $attribs,
-                        'geom' => $geom,
+                        'geom' => $result[0]?->geom ?? null,
                     ]);
 
                 } catch (Throwable $e) {

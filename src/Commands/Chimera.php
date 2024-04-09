@@ -50,7 +50,7 @@ class Chimera extends Command
         $this->comment('Updated app, auth, and jetstream (enable: profile photo and terms + privacy | disable: account deletion) config files');
 
         // Exception handler (for token mismatch and invalid invitation exceptions) [??? try to not replace the file! Find a way!]
-        copy(__DIR__.'/../../deploy/Handler.php', app_path('Exceptions/Handler.php'));
+        //copy(__DIR__.'/../../deploy/Handler.php', app_path('Exceptions/Handler.php'));
 
         $this->updateNodePackages(function ($packages) {
             return $this->requiredNodePackages + $packages;

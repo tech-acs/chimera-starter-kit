@@ -11,19 +11,20 @@ trait InstallUpdateTrait
     public array $requiredComposerPackages = [
         'ext-zip:*',
         'ext-pgsql:*',
-        'spatie/laravel-permission:^5.7',
-        'spatie/simple-excel:^3.0',
+        'spatie/laravel-permission:^6.4',
+        'spatie/simple-excel:^3.5',
         'spatie/laravel-translatable:^6.1',
-        'spatie/db-dumper:^3.3',
+        'spatie/db-dumper:^3.5',
         'gasparesganga/php-shapefile:^3.4'
     ];
 
     public array $requiredNodePackages = [
-        "leaflet" => "^1.9.3",
-        "plotly.js-basic-dist-min" => "^2.17.1",
-        "plotly.js-locales" => "^2.17.1",
-        "@alpinejs/focus" => "3.10.5",
-        "@tailwindcss/line-clamp" => "^0.4.2",
+        "leaflet" => "^1.9",
+        "plotly.js-basic-dist-min" => "^2.30",
+        "plotly.js-locales" => "^2.30",
+        "alpinejs" => "3.13",
+        "@alpinejs/focus" => "3.13",
+        //"@tailwindcss/line-clamp" => "^0.4.2",
         "@tailwindcss/aspect-ratio" => "^0.4.2",
         "lodash" => "^4.17.21",
     ];
@@ -129,14 +130,8 @@ trait InstallUpdateTrait
     private function editConfigFiles()
     {
         // enable: profile photo and terms + privacy | disable: account deletion
-        $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
         $this->replaceInFile('// Features::termsAndPrivacyPolicy(),', 'Features::termsAndPrivacyPolicy(),', config_path('jetstream.php'));
+        $this->replaceInFile('// Features::profilePhotos(),', 'Features::profilePhotos(),', config_path('jetstream.php'));
         $this->replaceInFile('Features::accountDeletion(),', '// Features::accountDeletion(),', config_path('jetstream.php'));
-
-        // Make timezone setable from .env
-        $this->replaceInFile("'timezone' => 'UTC'", "'timezone' => env('APP_TIMEZONE', 'UTC')", config_path('app.php'));
-
-        // Set the User model to be used
-        $this->replaceInFile("'model' => App\Models\User::class", "'model' => Uneca\Chimera\Models\User::class", config_path('auth.php'));
     }
 }

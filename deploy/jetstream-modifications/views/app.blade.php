@@ -8,19 +8,18 @@
 
         <title>{{ config('app.name') }}</title>
 
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         @livewireStyles
-        <style>
-            [x-cloak] {
-                display: none !important;
-            }
-        </style>
 
         @stack('scripts')
     </head>
     <body class="font-sans antialiased">
-        <x-jet-banner />
+        <x-banner />
 
         <div class="flex flex-col min-h-screen">
             @livewire('navigation-menu')

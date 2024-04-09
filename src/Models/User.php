@@ -13,6 +13,8 @@ class User extends \App\Models\User
         'name', 'email', 'password', 'is_suspended'
     ];
 
+    protected $guard_name = 'web';
+
     public function usageStats()
     {
         return $this->hasMany(UsageStat::class);
@@ -28,7 +30,7 @@ class User extends \App\Models\User
         return $this->hasMany(Announcement::class);
     }
 
-    public function indicatorAnalytics()
+    /*public function indicatorAnalytics()
     {
         return $this->hasMany(Analytics::class);
     }
@@ -36,7 +38,7 @@ class User extends \App\Models\User
     public function reports()
     {
         return $this->belongsToMany(Report::class)->withTimestamps();
-    }
+    }*/
 
     public function areaRestrictionAsFilter()
     {
