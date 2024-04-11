@@ -19,7 +19,7 @@
             <div class="flex justify-between items-center py-6 md:justify-start md:space-x-10">
                 <div class="flex justify-start lg:w-0 lg:flex-1">
                     <a href="#">
-                        <x-jet-application-mark class="block h-10 w-auto" />
+                        <x-application-mark class="block h-10 w-auto" />
                     </a>
                 </div>
 
