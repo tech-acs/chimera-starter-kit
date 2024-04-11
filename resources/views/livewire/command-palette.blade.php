@@ -114,7 +114,7 @@
             return {
                 ready: false,
                 active: 0,
-                total: @entangle('resultCount'),
+                total: @entangle('resultCount').live,
                 move: function (dir) {
                     if (dir === 'up') {
                         this.active = Math.max(0, this.active - 1);

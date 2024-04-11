@@ -98,7 +98,7 @@
                                 @endcan
                             @empty
                                 <tr>
-                                    <td colspan="4" class="py-4 pl-3 pr-4 text-center text-gray-500">{{ __('There are no records to display') }}</td>
+                                    <td colspan="5" class="py-4 pl-3 pr-4 text-center text-gray-500">{{ __('There are no records to display') }}</td>
                                 </tr>
                             @endforelse
                             </tbody>
