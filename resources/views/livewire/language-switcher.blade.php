@@ -1,4 +1,4 @@
-<x-jet-dropdown align="right" width="16">
+<x-dropdown align="right" width="16">
     <x-slot name="trigger">
         <x-chimera::round-button title="{{ __('Language') }}" class="px-1.5 font-medium">
             {{ str()->upper($locale) }}
@@ -10,9 +10,9 @@
             @if($locale === $value)
                 <a class="px-4 cursor-pointer block px-4 py-2 text-sm leading-5 text-gray-700 bg-gray-200">{{ $label }}</a>
             @else
-                <x-jet-dropdown-link class="px-4 cursor-pointer" wire:click="changeHandler('{{ $value }}')">{{ $label }}</x-jet-dropdown-link>
+                <x-dropdown-link class="px-4 cursor-pointer" wire:click="changeHandler('{{ $value }}')">{{ $label }}</x-dropdown-link>
             @endif
         @endforeach
     </x-slot>
-</x-jet-dropdown>
+</x-dropdown>
 

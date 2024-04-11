@@ -1,6 +1,6 @@
 <div>
     <div class="flex justify-end py-2">
-        <x-jet-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-jet-button>
+        <x-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-button>
         <livewire:bulk-inviter />
     </div>
     <div class="py-2 align-middle inline-block min-w-full">
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <x-jet-dialog-modal wire:model="showSingleInviteForm">
+    <x-dialog-modal wire:model="showSingleInviteForm">
         <x-slot name="title">
             {{ __('Invite new user') }}
         </x-slot>
@@ -73,43 +73,43 @@
             {{ __('Using the email address of the user you want to invite, a registration link will be generated which you can then send to the prospective user.') }}
             {{ __('The link will expire in :ttl hours.', ['ttl' => config('chimera.invitation.ttl_hours')]) }}
             <div class="mt-6">
-                <x-jet-label for="email" value="{{ __('Email address') }}" />
-                <x-jet-input id="email" type="email" class="mt-1 block w-2/3" wire:model.defer="email" />
-                <x-jet-input-error for="email" class="mt-2" />
+                <x-label for="email" value="{{ __('Email address') }}" />
+                <x-input id="email" type="email" class="mt-1 block w-2/3" wire:model.defer="email" />
+                <x-input-error for="email" class="mt-2" />
                 @if(config('chimera.emailing_enabled'))
-                    <x-jet-label>
-                        <x-jet-checkbox name="send_email" class="mr-1" wire:model="sendEmail" checked /> {{ __('send invitation email') }}
-                    </x-jet-label>
+                    <x-label>
+                        <x-checkbox name="send_email" class="mr-1" wire:model="sendEmail" checked /> {{ __('send invitation email') }}
+                    </x-label>
                 @endif
             </div>
             <div class="mt-6">
-                <x-jet-label for="role" value="{{ __('Role to assign') }}" />
+                <x-label for="role" value="{{ __('Role to assign') }}" />
                 <select wire:model="role" id="location" name="location" class="mt-1 block w-2/3 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     <option value="">{{ __('Will assign later') }}</option>
                     @foreach($roles as $r)
                         <option value="{{$r->name}}">{{$r->name}}</option>
                     @endforeach
                 </select>
-                <x-jet-input-error for="role" class="mt-2" />
+                <x-input-error for="role" class="mt-2" />
             </div>
         </x-slot>
 
         <x-slot name="footer">
-            <x-jet-action-message class="mr-3 inline-flex" on="invited">
+            <x-action-message class="mr-3 inline-flex" on="invited">
                 {{ __('Invited.') }}
-            </x-jet-action-message>
+            </x-action-message>
 
-            <x-jet-secondary-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">
+            <x-secondary-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">
                 {{ __('Close') }}
-            </x-jet-secondary-button>
+            </x-secondary-button>
 
-            <x-jet-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
+            <x-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
                 {{ __('Invite') }}
-            </x-jet-button>
+            </x-button>
         </x-slot>
-    </x-jet-dialog-modal>
+    </x-dialog-modal>
 
-    <x-jet-dialog-modal wire:model="showLink">
+    <x-dialog-modal wire:model="showLink">
         <x-slot name="title">
             {{ __('User registration link') }}
         </x-slot>
@@ -171,13 +171,13 @@
         </x-slot>
 
         <x-slot name="footer">
-            <x-jet-secondary-button wire:click="$toggle('showLink')" wire:loading.attr="disabled">
+            <x-secondary-button wire:click="$toggle('showLink')" wire:loading.attr="disabled">
                 {{ __('Ok') }}
-            </x-jet-secondary-button>
+            </x-secondary-button>
         </x-slot>
-    </x-jet-dialog-modal>
+    </x-dialog-modal>
 
-    <x-jet-dialog-modal wire:model="showResult">
+    <x-dialog-modal wire:model="showResult">
         <x-slot name="title">
             {{ __($resultTitle) }}
         </x-slot>
@@ -189,9 +189,9 @@
         </x-slot>
 
         <x-slot name="footer">
-            <x-jet-secondary-button wire:click="$toggle('showResult')" wire:loading.attr="disabled">
+            <x-secondary-button wire:click="$toggle('showResult')" wire:loading.attr="disabled">
                 {{ __('Ok') }}
-            </x-jet-secondary-button>
+            </x-secondary-button>
         </x-slot>
-    </x-jet-dialog-modal>
+    </x-dialog-modal>
 </div>

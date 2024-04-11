@@ -22,16 +22,16 @@
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                     <div class="grid grid-cols-3 gap-6">
                         <div class="col-span-3 sm:col-span-2">
-                            <x-jet-label for="name" value="{{ __('Name') }}" />
-                            <x-jet-input id="name" name="name" type="text" class="mt-1 block w-full" />
-                            <x-jet-input-error for="name" class="mt-2" />
+                            <x-label for="name" value="{{ __('Name') }}" />
+                            <x-input id="name" name="name" type="text" class="mt-1 block w-full" />
+                            <x-input-error for="name" class="mt-2" />
                         </div>
                     </div>
                 </div>
                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                    <x-jet-button>
+                    <x-button>
                         {{ __('Create') }}
-                    </x-jet-button>
+                    </x-button>
                 </div>
             </div>
         </form>

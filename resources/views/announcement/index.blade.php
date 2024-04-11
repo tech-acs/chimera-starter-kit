@@ -11,7 +11,7 @@
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="text-right">
-            <a href="{{route('announcement.create')}}"><x-jet-button>{{ __('Make Announcement') }}</x-jet-button></a>
+            <a href="{{route('announcement.create')}}"><x-button>{{ __('Make Announcement') }}</x-button></a>
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">

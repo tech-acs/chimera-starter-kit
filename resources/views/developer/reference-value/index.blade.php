@@ -12,7 +12,7 @@
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between">
             <form method="get" action="{{ route('developer.reference-value.index') }}">
-                <x-jet-input type="search" name="search" placeholder="Search indicator" value="{{ request('search') }}" />
+                <x-input type="search" name="search" placeholder="Search indicator" value="{{ request('search') }}" />
             </form>
             <div class="flex items-center">
                 <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium mr-4">
@@ -20,11 +20,11 @@
                 </div>
                 @if(app()->environment('local'))
                     <div x-data="confirmedDeletion">
-                        <a href="{{route('developer.reference-value.create')}}"><x-jet-button>{{ __('Import') }}</x-jet-button></a>
+                        <a href="{{route('developer.reference-value.create')}}"><x-button>{{ __('Import') }}</x-button></a>
 
                         <x-chimera::delete-confirmation />
                         <a href="{{route('developer.reference-value.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
-                            <x-jet-danger-button class="ml-2">{{ __('Delete All') }}</x-jet-danger-button>
+                            <x-danger-button class="ml-2">{{ __('Delete All') }}</x-danger-button>
                         </a>
                     </div>
                 @endif

@@ -2,22 +2,22 @@
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
         <div class="grid grid-cols-1 gap-6">
             <div>
-                <x-jet-label for="title" value="{{ __('Title') }} *" />
+                <x-label for="title" value="{{ __('Title') }} *" />
                 <x-chimera::multi-lang-input id="title" name="title" type="text" value="{{old('title', $page->title ?? null)}}" />
-                <x-jet-input-error for="title" class="mt-2" />
+                <x-input-error for="title" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="description" value="{{ __('Description') }}" class="inline" /><x-chimera::locale-display />
+                <x-label for="description" value="{{ __('Description') }}" class="inline" /><x-chimera::locale-display />
                 <x-chimera::textarea name="description" rows="3">{{old('description', $page->description ?? null)}}</x-chimera::textarea>
-                <x-jet-input-error for="description" class="mt-2" />
+                <x-input-error for="description" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="rank" value="{{ __('Rank') }}" />
-                <x-jet-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $page->rank ?? null) }}" />
-                <x-jet-input-error for="rank" class="mt-2" />
+                <x-label for="rank" value="{{ __('Rank') }}" />
+                <x-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $page->rank ?? null) }}" />
+                <x-input-error for="rank" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="published" value="{{ __('Status') }}" />
+                <x-label for="published" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($page->published ?? false) }" x-cloak>
                     <label for="status">
                         <span class="text-sm text-gray-500">Draft</span>
@@ -40,7 +40,7 @@
             </div>
             @if (isset($page))
                 <div class="">
-                    <x-jet-label for="indicators" value="{{ __('Indicators on page') }}" />
+                    <x-label for="indicators" value="{{ __('Indicators on page') }}" />
 
                     <div class="w-1/2 mt-2 px-2 border border-gray-300 rounded-md">
                         <ul role="list" class="divide-y divide-gray-200 -mt-[1px]" x-data="indicatorOrdering()">
@@ -76,10 +76,10 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-jet-secondary-button class="mr-2"><a href="{{ route('page.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
-        <x-jet-button>
+        <x-secondary-button class="mr-2"><a href="{{ route('page.index') }}">{{ __('Cancel') }}</a></x-secondary-button>
+        <x-button>
             {{ __('Submit') }}
-        </x-jet-button>
+        </x-button>
     </div>
 </div>
 <script>

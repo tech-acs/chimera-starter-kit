@@ -25,9 +25,9 @@
             @endforeach
 
             <div class="flex items-baseline space-x-4">
-                <x-jet-button wire:click.prevent="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
+                <x-button wire:click.prevent="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
                     {{ __('Apply') }}
-                </x-jet-button>
+                </x-button>
             </div>
         </div>
     @else

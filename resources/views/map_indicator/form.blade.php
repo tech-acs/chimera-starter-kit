@@ -7,27 +7,27 @@
     <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
         <div class="grid grid-cols-1 gap-6">
             <div>
-                <x-jet-label for="name" value="{{ __('Name') }}" />
-                <x-jet-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $mapIndicator->name }}" />
-                <x-jet-input-error for="name" class="mt-2" />
+                <x-label for="name" value="{{ __('Name') }}" />
+                <x-input id="name" disabled name="name" type="text" class="mt-1 block w-full bg-gray-100" value="{{ $mapIndicator->name }}" />
+                <x-input-error for="name" class="mt-2" />
             </div>
             <div class="mt-1">
-                <x-jet-label for="title" value="{{ __('Title') }} *" />
+                <x-label for="title" value="{{ __('Title') }} *" />
                 <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $mapIndicator->title ?? null)}}" />
-                <x-jet-input-error for="title" class="mt-2" />
+                <x-input-error for="title" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="description" value="{{ __('Description') }}" class="inline" /><x-chimera::locale-display />
+                <x-label for="description" value="{{ __('Description') }}" class="inline" /><x-chimera::locale-display />
                 <textarea name="description" rows="3" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $mapIndicator->description ?? null)}}</textarea>
-                <x-jet-input-error for="description" class="mt-2" />
+                <x-input-error for="description" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="rank" value="{{ __('Rank') }}" />
-                <x-jet-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $mapIndicator->rank) }}" />
-                <x-jet-input-error for="rank" class="mt-2" />
+                <x-label for="rank" value="{{ __('Rank') }}" />
+                <x-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $mapIndicator->rank) }}" />
+                <x-input-error for="rank" class="mt-2" />
             </div>
             <div>
-                <x-jet-label for="page" value="{{ __('Status') }}" />
+                <x-label for="page" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($mapIndicator->published ?? false) }">
                     <label for="status">
                         <span class="text-sm text-gray-500">{{ __('Draft') }}</span>
@@ -52,9 +52,9 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-jet-secondary-button class="mr-2"><a href="{{ route('manage.map_indicator.index') }}">{{ __('Cancel') }}</a></x-jet-secondary-button>
-        <x-jet-button>
+        <x-secondary-button class="mr-2"><a href="{{ route('manage.map_indicator.index') }}">{{ __('Cancel') }}</a></x-secondary-button>
+        <x-button>
             {{ __('Submit') }}
-        </x-jet-button>
+        </x-button>
     </div>
 </div>

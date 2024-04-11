@@ -1,7 +1,7 @@
 <div>
-    <x-jet-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled" class="ml-3">{{ __('Bulk Invite') }}</x-jet-button>
+    <x-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled" class="ml-3">{{ __('Bulk Invite') }}</x-button>
 
-    <x-jet-dialog-modal wire:model="showBulkInviteForm">
+    <x-dialog-modal wire:model="showBulkInviteForm">
         <x-slot name="title">
             {{ __('Invite multiple users') }}
         </x-slot>
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 @if($errors->has('file'))
-                    <x-jet-input-error for="file" />
+                    <x-input-error for="file" />
                 @else
                     <div class="text-xs text-gray-500 mt-1">
                         You must upload a spreadsheet (.xlsx or .csv)
@@ -46,24 +46,24 @@
             </div>
             <div class="mt-5">
                 @if(config('chimera.emailing_enabled'))
-                    <x-jet-label>
-                        <x-jet-checkbox name="send_email" class="mr-1" wire:model="sendEmails" /> {{ __('send invitation emails') }}
-                    </x-jet-label>
+                    <x-label>
+                        <x-checkbox name="send_email" class="mr-1" wire:model="sendEmails" /> {{ __('send invitation emails') }}
+                    </x-label>
                 @endif
             </div>
         </x-slot>
         <x-slot name="footer">
-            <x-jet-action-message class="mr-3 inline-flex items-center" on="processing">
+            <x-action-message class="mr-3 inline-flex items-center" on="processing">
                 {{ __('Invites are being processed...') }}
-            </x-jet-action-message>
+            </x-action-message>
 
-            <x-jet-secondary-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled">
+            <x-secondary-button wire:click="$toggle('showBulkInviteForm')" wire:loading.attr="disabled">
                 {{ __('Close') }}
-            </x-jet-secondary-button>
+            </x-secondary-button>
 
-            <x-jet-button class="ml-2" wire:click="invite" wire:loading.attr="disabled" onclick="setTimeout(() => Livewire.emit('pleaseHideForm'), 3000);">
+            <x-button class="ml-2" wire:click="invite" wire:loading.attr="disabled" onclick="setTimeout(() => Livewire.emit('pleaseHideForm'), 3000);">
                 {{ __('Invite') }}
-            </x-jet-button>
+            </x-button>
         </x-slot>
-    </x-jet-dialog-modal>
+    </x-dialog-modal>
 </div>

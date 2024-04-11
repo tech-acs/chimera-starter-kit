@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\Cookie;
 
 class Language
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
     public function handle($request, Closure $next)
     {
         $lang = Cookie::get('locale', 'en');

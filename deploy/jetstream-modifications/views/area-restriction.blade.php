@@ -1,4 +1,4 @@
-<x-jet-form-section submit="updateProfileInformation">
+<x-form-section submit="updateProfileInformation">
     <x-slot name="title">
         {{ __('Assigned Area') }}
     </x-slot>
@@ -13,4 +13,4 @@
         </div>
     </x-slot>
 
-</x-jet-form-section>
+</x-form-section>

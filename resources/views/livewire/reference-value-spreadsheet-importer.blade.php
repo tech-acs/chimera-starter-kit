@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 @if($errors->has('spreadsheet'))
-                    <x-jet-input-error for="spreadsheet" />
+                    <x-input-error for="spreadsheet" />
                 @else
                     <div class="text-xs text-gray-500 mt-1">
                         {{ __('You must upload a spreadsheet (.csv)') }}
@@ -81,7 +81,7 @@
                                             <option value="{{ $column }}">{{ $column }}</option>
                                         @endforeach
                                     </select>
-                                    <x-jet-input-error for="columnMapping.{{ $i }}.name" class="text-xs" />
+                                    <x-input-error for="columnMapping.{{ $i }}.name" class="text-xs" />
                                 </td>
                                 {{--<td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $i }}.code" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -90,7 +90,7 @@
                                             <option value="{{ $column }}">{{ $column }}</option>
                                         @endforeach
                                     </select>
-                                    <x-jet-input-error for="columnMapping.{{ $i }}.code" class="text-xs" />
+                                    <x-input-error for="columnMapping.{{ $i }}.code" class="text-xs" />
                                 </td>--}}
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $i }}.path" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -99,7 +99,7 @@
                                             <option value="{{ $column }}">{{ $column }}</option>
                                         @endforeach
                                     </select>
-                                    <x-jet-input-error for="columnMapping.{{ $i }}.path" class="text-xs" />
+                                    <x-input-error for="columnMapping.{{ $i }}.path" class="text-xs" />
                                 </td>
 
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
@@ -112,7 +112,7 @@
 
                                 {{--<td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <input wire:model="columnMapping.{{ $i }}.zeroPadding" type="number" min="0" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <x-jet-input-error for="columnMapping.{{ $i }}.zeroPadding" class="text-xs" />
+                                    <x-input-error for="columnMapping.{{ $i }}.zeroPadding" class="text-xs" />
                                 </td>--}}
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500 text-center">
                                     <input wire:model="columnMapping.{{ $i }}.isAdditive" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
@@ -134,9 +134,9 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <a href="{{ route('developer.reference-value.index') }}"><x-jet-secondary-button class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button></a>
-        <x-jet-button wire:click.prevent="import()">
+        <a href="{{ route('developer.reference-value.index') }}"><x-secondary-button class="mr-2">{{ __('Cancel') }}</x-secondary-button></a>
+        <x-button wire:click.prevent="import()">
             {{ __('Import') }}
-        </x-jet-button>
+        </x-button>
     </div>
 </div>

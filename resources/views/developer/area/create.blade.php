@@ -119,7 +119,7 @@
                                             </div>
                                         </div>
                                         @if($errors->has('shapefile'))
-                                            <x-jet-input-error for="shapefile" />
+                                            <x-input-error for="shapefile" />
                                         @else
                                             <div class="text-xs text-gray-500 mt-1">
                                                 {{ __('You must upload three files that make up the shapefile (.shp, .shx and .dbf)') }}
@@ -140,14 +140,14 @@
                                                 <option value="">{{ __('Not configured') }}</option>
                                             @endforelse
                                         </select>
-                                        <x-jet-input-error for="level" />
+                                        <x-input-error for="level" />
                                     </div>
                                 </div>
                             </div>
 
                             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                <a href="{{ route('developer.area.index') }}"><x-jet-secondary-button class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button></a>
-                                <x-jet-button>{{ __('Import') }}</x-jet-button>
+                                <a href="{{ route('developer.area.index') }}"><x-secondary-button class="mr-2">{{ __('Cancel') }}</x-secondary-button></a>
+                                <x-button>{{ __('Import') }}</x-button>
                             </div>
 
                         </div>

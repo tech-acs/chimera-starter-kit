@@ -58,7 +58,7 @@
                         <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                             <form class="mb-4 flex justify-end" method="get" action="{{ route('user.index') }}">
                                 <div>
-                                    <x-jet-input name="search" type="search" class="mt-1 block" placeholder="Search users" value="{{request('search')}}" />
+                                    <x-input name="search" type="search" class="mt-1 block" placeholder="Search users" value="{{request('search')}}" />
                                 </div>
                             </form>
                             @if (session('message'))

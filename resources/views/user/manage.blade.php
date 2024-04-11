@@ -82,9 +82,9 @@
                     </div>
                 </div>
                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 sm:rounded-lg">
-                    <x-jet-button type="submit">
+                    <x-button type="submit">
                         {{ __('Update') }}
-                    </x-jet-button>
+                    </x-button>
                 </div>
             </form>
         </div>

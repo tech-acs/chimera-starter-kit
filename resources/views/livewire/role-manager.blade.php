@@ -57,12 +57,12 @@
     </div>
     <div class="bg-gray-50 px-4 py-4 sm:px-6">
         <div class="flex space-x-3 justify-end items-center">
-            <x-jet-action-message class="mr-3" on="roleUpdated">
+            <x-action-message class="mr-3" on="roleUpdated">
                 {{ __('Saved.') }}
-            </x-jet-action-message>
-            <x-jet-button wire:click="save" wire:loading.attr="disabled">
+            </x-action-message>
+            <x-button wire:click="save" wire:loading.attr="disabled">
                 {{ __('Save') }}
-            </x-jet-button>
+            </x-button>
         </div>
     </div>
 </div>

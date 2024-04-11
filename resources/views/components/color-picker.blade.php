@@ -2,8 +2,8 @@
     <div x-data="app()" x-cloak>
         <div class="flex items-center">
             <div>
-                <x-jet-label for="colorSelected" value="{{ __('Color') }}" />
-                <x-jet-input id="colorSelected"
+                <x-label for="colorSelected" value="{{ __('Color') }}" />
+                <x-input id="colorSelected"
                              name="color"
                              type="text"
                              placeholder="Pick a color"

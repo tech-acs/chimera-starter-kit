@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 @if($errors->has('spreadsheet'))
-                    <x-jet-input-error for="spreadsheet" />
+                    <x-input-error for="spreadsheet" />
                 @else
                     <div class="text-xs text-gray-500 mt-1">
                         You must upload a spreadsheet (.csv)
@@ -86,7 +86,7 @@
                                             <option value="{{ $column }}">{{ $column }}</option>
                                         @endforeach
                                     </select>
-                                    <x-jet-input-error for="columnMapping.{{ $areaLevel }}.name" class="text-xs" />
+                                    <x-input-error for="columnMapping.{{ $areaLevel }}.name" class="text-xs" />
                                 </td>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                                     <select wire:model="columnMapping.{{ $areaLevel }}.code" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -95,11 +95,11 @@
                                             <option value="{{ $column }}">{{ $column }}</option>
                                         @endforeach
                                     </select>
-                                    <x-jet-input-error for="columnMapping.{{ $areaLevel }}.code" class="text-xs" />
+                                    <x-input-error for="columnMapping.{{ $areaLevel }}.code" class="text-xs" />
                                 </td>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500 align-top">
                                     <input wire:model="columnMapping.{{ $areaLevel }}.zeroPadding" type="number" class="w-full rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
-                                    {{--<x-jet-input-error for="columnMapping.{{ $areaLevel }}.zeroPadding" class="text-xs" />--}}
+                                    {{--<x-input-error for="columnMapping.{{ $areaLevel }}.zeroPadding" class="text-xs" />--}}
                                 </td>
                             </tr>
                         @empty
@@ -115,10 +115,10 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <a href="{{ route('developer.area.index') }}"><x-jet-secondary-button class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button></a>
-        <x-jet-button wire:click.prevent="import()">
+        <a href="{{ route('developer.area.index') }}"><x-secondary-button class="mr-2">{{ __('Cancel') }}</x-secondary-button></a>
+        <x-button wire:click.prevent="import()">
             {{ __('Import') }}
-        </x-jet-button>
+        </x-button>
     </div>
 </div>
 

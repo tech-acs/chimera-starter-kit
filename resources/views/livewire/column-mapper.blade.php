@@ -35,12 +35,12 @@
                             <tr>
                                 <td class="whitespace-nowrap py-4 pl-4 pr-1 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0">{{ str()->ucfirst($areaHierarchy->name) }}</td>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                                    <x-jet-input type="text" wire:model="areaHierarchies.{{ $index }}.where_column" class="w-full" />
-                                    <x-jet-input-error for="areaHierarchies.{{ $index }}.where_column" class="text-xs" />
+                                    <x-input type="text" wire:model="areaHierarchies.{{ $index }}.where_column" class="w-full" />
+                                    <x-input-error for="areaHierarchies.{{ $index }}.where_column" class="text-xs" />
                                 </td>
                                 <td class="align-top whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                                    <x-jet-input type="text" wire:model="areaHierarchies.{{ $index }}.select_column" class="w-full" />
-                                    <x-jet-input-error for="areaHierarchies.{{ $index }}.select_column" class="text-xs" />
+                                    <x-input type="text" wire:model="areaHierarchies.{{ $index }}.select_column" class="w-full" />
+                                    <x-input-error for="areaHierarchies.{{ $index }}.select_column" class="text-xs" />
                                 </td>
                             </tr>
                         @endforeach
@@ -52,12 +52,12 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-end items-center">
-        <x-jet-action-message class="mr-3" on="saved">
+        <x-action-message class="mr-3" on="saved">
             {{ __('Saved.') }}
-        </x-jet-action-message>
-        <a href="{{ route('developer.questionnaire.index') }}"><x-jet-secondary-button class="mr-2">{{ __('Cancel') }}</x-jet-secondary-button></a>
-        <x-jet-button wire:click.prevent="save()">
+        </x-action-message>
+        <a href="{{ route('developer.questionnaire.index') }}"><x-secondary-button class="mr-2">{{ __('Cancel') }}</x-secondary-button></a>
+        <x-button wire:click.prevent="save()">
             {{ __('Save') }}
-        </x-jet-button>
+        </x-button>
     </div>
 </div>

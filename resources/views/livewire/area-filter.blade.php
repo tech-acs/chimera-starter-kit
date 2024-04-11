@@ -39,12 +39,12 @@
                 @endforeach
 
                 <div class="flex items-baseline space-x-4">
-                    <x-jet-button wire:click="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
+                    <x-button wire:click="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
                         {{ __('Apply') }}
-                    </x-jet-button>
-                    <x-jet-danger-button wire:click="clear" wire:loading.attr="disabled" class="">
+                    </x-button>
+                    <x-danger-button wire:click="clear" wire:loading.attr="disabled" class="">
                         {{ __('Clear') }}
-                    </x-jet-danger-button>
+                    </x-danger-button>
                 </div>
             </div>
             @else

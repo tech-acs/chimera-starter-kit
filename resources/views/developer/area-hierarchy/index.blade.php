@@ -12,7 +12,7 @@
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="text-right">
             @if (app()->isLocal())
-                <a href="{{route('developer.area-hierarchy.create')}}"><x-jet-button>{{ __('Add') }}</x-jet-button></a>
+                <a href="{{route('developer.area-hierarchy.create')}}"><x-button>{{ __('Add') }}</x-button></a>
             @endif
         </div>
         @if (session('message'))
