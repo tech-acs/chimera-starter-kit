@@ -97,14 +97,28 @@
         @livewireScripts
 
         <script>
-            Livewire.onError((statusCode, response) => {
-                if (statusCode === 504) {
-                    // Handle the timeout here, then return false
-                    alert('The data took too long to fetch. Make sure caching is enabled!');
-                    console.log({statusCode, response});
-                    return false;
-                }
-            });
+            /*document.addEventListener('livewire:init', () => {
+                // Runs after Livewire is loaded but before it's initialized on the page...
+                Livewire.on('error', (statusCode, response) => {
+                    if (statusCode === 504) {
+                        // Handle the timeout here, then return false
+                        alert('The data took too long to fetch. Make sure caching is enabled!');
+                        console.log({statusCode, response});
+                        return false;
+                    }
+                });
+            })*/
+            document.addEventListener('livewire:init', () => {
+                Livewire.hook('request', ({ fail }) => {
+                    fail(({ status, preventDefault }) => {
+                        if (status === 419) {
+                            confirm('Your custom page expiration behavior...')
+
+                            preventDefault()
+                        }
+                    })
+                })
+            })
         </script>
 
         @stack('late-scripts')

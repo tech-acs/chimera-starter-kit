@@ -3,8 +3,12 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use Livewire\Features\SupportConsoleCommands\Commands\ComponentParser;
+use Livewire\Mechanisms\ComponentRegistry;
+use ReflectionClass;
 use Uneca\Chimera\Http\Requests\QuestionnaireRequest;
 use Uneca\Chimera\Models\Questionnaire;
+use Illuminate\Support\Facades\Storage;
 
 class QuestionnaireController extends Controller
 {
@@ -23,8 +27,18 @@ class QuestionnaireController extends Controller
 
     private function getCaseStatComponentsList()
     {
-        return collect(app(\Livewire\LivewireComponentsFinder::class)->getManifest())->filter(function($component) {
-                return str($component)->contains('CaseStats');
+        $filesystem = Storage::build([
+            'driver' => 'local',
+            'root' => base_path(),
+        ]);
+        return collect($filesystem->allFiles('app/Livewire'))
+            ->filter(function($file) {
+                return str($file)->contains('CaseStats');
+            })
+            ->mapWithKeys(function($file) {
+                $componentName = str($file)->after('app/Livewire/')->before('.php')->kebab()->__toString();
+                $qualifiedName = str((new ComponentRegistry)->getClass($componentName))->ltrim("\\");
+                return [$componentName => $qualifiedName];
             })
             ->merge(['case-stats' => 'Uneca\Chimera\Http\Livewire\CaseStats (default)'])
             ->reverse();
