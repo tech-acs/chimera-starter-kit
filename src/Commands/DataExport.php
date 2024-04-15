@@ -52,9 +52,6 @@ class DataExport extends Command
             ->dumpToFile($tmpFile);
 
         try {
-            if (! file_exists($dumpFile)) {
-                unlink($dumpFile);
-            }
             $tmpFileHandle = fopen($tmpFile, 'r');
             $dumpFileHandle = fopen($dumpFile, 'w');
             $databasePasswords = Questionnaire::pluck('password')->all();
