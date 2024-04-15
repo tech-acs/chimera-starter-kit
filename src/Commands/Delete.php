@@ -4,7 +4,7 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Uneca\Chimera\Traits\InteractiveCommand;
+use function Laravel\Prompts\select;
 
 class Delete extends Command
 {
@@ -19,12 +19,10 @@ class Delete extends Command
         'MapIndicator' => "App\MapIndicators",
     ];
 
-    use InteractiveCommand;
-
     public function handle()
     {
         $menu = array_combine(range(1, count($this->elementsMenu)), array_keys($this->elementsMenu));
-        $chosenElement = $this->choice("What do you want to delete?", $menu);
+        $chosenElement = select('What do you want to delete?', $menu);
         $class = "Uneca\Chimera\Models\\" . $chosenElement;
         $list = app($class)
             ->all()
@@ -39,7 +37,7 @@ class Delete extends Command
             $this->info("No {$chosenElement}s found!");
             $this->newLine();
         } else {
-            $chosenRecord = $this->choice("Which $chosenElement do you want to delete?", $listMenu);
+            $chosenRecord = select("Which $chosenElement do you want to delete?", $listMenu);
             $recordId = $list[$chosenRecord];
             $modelToDelete = $class::find($recordId);
 

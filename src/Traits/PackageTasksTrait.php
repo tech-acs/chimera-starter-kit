@@ -35,6 +35,7 @@ trait PackageTasksTrait
         'Chimera migrations' => ['--tag' => 'chimera-migrations', '--force' => true],
         'Chimera stubs' => ['--tag' => 'chimera-stubs'],
         'Livewire config' => ['--tag' => 'livewire:config'],
+        'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force']
     ];
 
     public array $phpDependencies = [
@@ -58,8 +59,8 @@ trait PackageTasksTrait
 
     protected function installJetstream(): void
     {
-        $this->components->info("Laravel Jetstream");
-        $this->components->task('Installing', function () {
+        $this->components->info("This kit is built on top of Laravel Jetstream");
+        $this->components->task('Installing Laravel Jetstream', function () {
             return $this->callSilently('jetstream:custom-install', ['stack' => 'livewire', '--quiet' => true]);
         });
     }
@@ -189,6 +190,14 @@ trait PackageTasksTrait
         });
     }
 
+    protected function installEmptyWebRoutesFile(): void
+    {
+        $this->components->info("Install empty web routes file (web.php)");
+        $this->components->task('.env.example', function () {
+            (new Filesystem)->replace(base_path('routes/web.php'), "<?php" . PHP_EOL);
+        });
+    }
+
     protected function installJsDependencies(): void
     {
         $this->components->info("Npm packages");
@@ -217,7 +226,7 @@ trait PackageTasksTrait
     protected static function updateNodePackages(callable $callback, $dev = true): false | int
     {
         if (! file_exists(base_path('package.json'))) {
-            return;
+            return false;
         }
 
         $configurationKey = $dev ? 'devDependencies' : 'dependencies';
@@ -231,7 +240,7 @@ trait PackageTasksTrait
 
         ksort($packages[$configurationKey]);
 
-        file_put_contents(
+        return file_put_contents(
             base_path('package.json'),
             json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
         );

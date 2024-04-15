@@ -4,14 +4,18 @@ namespace Uneca\Chimera\Commands;
 
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Questionnaire;
-use Uneca\Chimera\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\textarea;
+use function Laravel\Prompts\table;
+use function Laravel\Prompts\suggest;
 
 class MakeIndicator extends GeneratorCommand
 {
-    use InteractiveCommand;
     protected $signature = 'chimera:make-indicator';
     protected $description = 'Create a new indicator component. Creates file from stub and adds entry in indicators table.';
 
@@ -46,6 +50,7 @@ class MakeIndicator extends GeneratorCommand
         }
         return $this->files->put($path, $content);
     }
+
     protected function buildClassWithTemplate($className)
     {
         $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $this->template['Path'])), $this->buildClass($className));
@@ -58,10 +63,10 @@ class MakeIndicator extends GeneratorCommand
         $templateNotFound = true;
         while ($templateNotFound) {
             $this->newLine();
-            $this->info('You can use a template to create your indicator');
-            $this->output->table(['Name', 'Category', 'Path'], $templates);
+            info('You can use a template to create your indicator');
+            table(['Name', 'Category', 'Path'], $templates);
 
-            $template = $this->anticipate('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', function ($input) use ($templates) {
+            $template = suggest('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', function ($input) use ($templates) {
                 // $tableSection->output->table(['Name', 'Category', 'Path'], array_filter($templates, function ($template) use ($input) {
                 //     return str_contains($template['Name'], $input);
                 // }));
@@ -71,7 +76,7 @@ class MakeIndicator extends GeneratorCommand
                     return str_contains($template['Name'], $input);
                 }));
             }, null);
-            $collection = \collect($templates);
+            $collection = collect($templates);
             if ($selected = $collection->firstWhere('Name', $template)) {
                 $templateNotFound = false;
                 $this->type = 'template';
@@ -79,7 +84,7 @@ class MakeIndicator extends GeneratorCommand
             } elseif (empty($template)) {
                 $templateNotFound = false;
             } else {
-                $this->error('Template not found');
+                error('Template not found');
             }
         }
     }
@@ -101,7 +106,6 @@ class MakeIndicator extends GeneratorCommand
         }, array_filter($files, function ($file) {
             return pathinfo($file, PATHINFO_EXTENSION) == 'php';
         }));
-        // dd($templates);
         return $templates;
     }
 
@@ -117,20 +121,25 @@ class MakeIndicator extends GeneratorCommand
 
         if (Questionnaire::all()->isEmpty()) {
             $this->newLine();
-            $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
+            error("You have not yet added questionnaires to your dashboard. Please do so first.");
             $this->newLine();
             return false;
         }
 
-        $name = $this->askValid(
+        /*$name = $this->askValid(
             "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. HouseholdsEnumeratedByDay\n You can also include directory to help with organization of indicator files. Eg. Household/BirthRate)",
             'name',
             ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']
+        );*/
+        $name = text(
+            label: "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. HouseholdsEnumeratedByDay\n You can also include directory to help with organization of indicator files. Eg. Household/BirthRate)",
+            placeholder: 'Household/BirthRate',
+            validate: ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']
         );
 
         $questionnaires = Questionnaire::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
-        $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
+        $questionnaire = select("Which questionnaire does this indicator belong to?", $questionnaireMenu);
         $this->askForIndicatorTemplate();
 
         if ($this->type == 'template') {
@@ -145,23 +154,22 @@ class MakeIndicator extends GeneratorCommand
         }
 
 
-        $title = $this->askValid(
-            "Please enter a reader friendly title for the indicator (press enter to set " . ($this->title ?? 'empty') . " for now) ",
-            'title',
-            ['nullable',]
+        $title = text(
+            label: "Please enter a reader friendly title for the indicator (press enter to set " . ($this->title ?? 'empty') . " for now) ",
+            default: $this->title,
+            validate: ['nullable',]
         );
 
-        $title = $title ?? $this->title;
+        //$title = $title ?? $this->title;
 
-        $description = $this->askValid(
-            "Please enter a description for the indicator (press enter to leave empty for now)",
-            'description',
-            ['nullable',]
+        $description = textarea(
+            label: "Please enter a description for the indicator (press enter to leave empty for now)",
+            validate: ['nullable',]
         );
         DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType) {
             $result = $this->writeIndicatorFile($name);
             if ($result) {
-                $this->info('Indicator created successfully.');
+                info('Indicator created successfully.');
             } else {
                 throw new \Exception('There was a problem creating the indicator file');
             }

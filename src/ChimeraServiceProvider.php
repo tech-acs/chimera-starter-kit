@@ -78,12 +78,12 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\DownloadIndicatorTemplates::class,
                 \Uneca\Chimera\Commands\GenerateReports::class,
                 \Uneca\Chimera\Commands\MakeIndicator::class,
-                \Uneca\Chimera\Commands\MakeMapIndicator::class,
-                \Uneca\Chimera\Commands\MakeReport::class,
-                \Uneca\Chimera\Commands\MakeScorecard::class,
-                \Uneca\Chimera\Commands\Update::class,
+                //\Uneca\Chimera\Commands\MakeMapIndicator::class,
+                //\Uneca\Chimera\Commands\MakeReport::class,
+                //\Uneca\Chimera\Commands\MakeScorecard::class,
+                //\Uneca\Chimera\Commands\Update::class,
                 \Uneca\Chimera\Commands\Production::class,
-                \Uneca\Chimera\Commands\UpdateIndicators::class,
+                //\Uneca\Chimera\Commands\UpdateIndicators::class,
                 \Uneca\Chimera\Commands\CustomJetstreamInstallCommand::class
             ]);
     }

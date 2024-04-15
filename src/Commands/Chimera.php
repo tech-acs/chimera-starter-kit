@@ -26,15 +26,10 @@ class Chimera extends Command
         $this->copyAssets();
         $this->customizeExceptionRendering();
         $this->installEnvFiles();
+        $this->installEmptyWebRoutesFile();
         $this->installJsDependencies();
 
         $this->newLine();
         return self::SUCCESS;
-
-        /*(new Process(['php', 'artisan', 'vendor:publish', '--provider=Spatie\Permission\PermissionServiceProvider', '--force'], base_path()))
-                ->setTimeout(null)
-                ->run(function ($type, $output) {
-                    $this->output->write($output);
-                });*/
     }
 }
