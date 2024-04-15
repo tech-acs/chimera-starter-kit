@@ -83,7 +83,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeScorecard::class,
                 \Uneca\Chimera\Commands\Update::class,
                 \Uneca\Chimera\Commands\Production::class,
-                \Uneca\Chimera\Commands\UpdateIndicators::class
+                \Uneca\Chimera\Commands\UpdateIndicators::class,
+                \Uneca\Chimera\Commands\CustomJetstreamInstallCommand::class
             ]);
     }
 
