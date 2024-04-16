@@ -2,16 +2,19 @@
 
 namespace Uneca\Chimera\Commands;
 
+use Illuminate\Support\Collection;
 use Uneca\Chimera\Models\Indicator;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\error;
+use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
 use function Laravel\Prompts\table;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
 
 class MakeIndicator extends GeneratorCommand
@@ -42,10 +45,10 @@ class MakeIndicator extends GeneratorCommand
         if (empty($this->template)) {
             $content = $this->buildClass($className);
         } else {
-            $template_path = Storage::disk('indicator_templates')->path($this->template['Path']);
-            $destination_path = \app_path() . "/IndicatorTemplates/{$this->template['Path']}";
+            $template_path = Storage::disk('indicator_templates')->path($this->template['File']);
+            $destination_path = app_path() . "/IndicatorTemplates/{$this->template['File']}";
             $this->makeDirectory($destination_path);
-            \copy($template_path, $destination_path);
+            copy($template_path, $destination_path);
             $content = $this->buildClassWithTemplate($className);
         }
         return $this->files->put($path, $content);
@@ -53,8 +56,7 @@ class MakeIndicator extends GeneratorCommand
 
     protected function buildClassWithTemplate($className)
     {
-        $content = str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $this->template['Path'])), $this->buildClass($className));
-        return $content;
+        return str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $this->template['File'])), $this->buildClass($className));
     }
 
     protected function askForIndicatorTemplate()
@@ -62,26 +64,31 @@ class MakeIndicator extends GeneratorCommand
         $templates = $this->loadIndicatorTemplates();
         $templateNotFound = true;
         while ($templateNotFound) {
-            $this->newLine();
-            info('You can use a template to create your indicator');
-            table(['Name', 'Category', 'Path'], $templates);
-
-            $template = suggest('Select template you would like to use for your indicator(use arrow ⇅ to navigate)?', function ($input) use ($templates) {
-                // $tableSection->output->table(['Name', 'Category', 'Path'], array_filter($templates, function ($template) use ($input) {
-                //     return str_contains($template['Name'], $input);
-                // }));
-                return array_map(function ($row) {
-                    return $row['Name'];
-                }, array_filter($templates, function ($template) use ($input) {
-                    return str_contains($template['Name'], $input);
-                }));
-            }, null);
+            info('The following indicator templates are available for use.');
+            table(
+                ['Name', 'Category'],
+                $templates->map(function ($template) {
+                    unset($template['File']);
+                    return $template;
+                })
+            );
+            $selectedTemplate = search(
+                label: 'Select the template you would like to use for your indicator',
+                placeholder: "Select 'Blank indicator' if you do not want to use a template",
+                options: fn (string $userInput) => strlen($userInput) > 0
+                    ? $templates->filter(function ($item, $key) use ($userInput) {
+                        return str_starts_with(strtolower($item['Name']), strtolower($userInput));
+                    })->pluck('Name')->toArray()
+                    : $templates->pluck('Name')->toArray(),
+                hint: 'Type to search and use the arrow keys to select'
+            );
+            dump($selectedTemplate);
             $collection = collect($templates);
-            if ($selected = $collection->firstWhere('Name', $template)) {
+            if ($selected = $collection->firstWhere('Name', $selectedTemplate)) {
                 $templateNotFound = false;
                 $this->type = 'template';
                 $this->template = $selected;
-            } elseif (empty($template)) {
+            } elseif (empty($selectedTemplate)) {
                 $templateNotFound = false;
             } else {
                 error('Template not found');
@@ -89,57 +96,46 @@ class MakeIndicator extends GeneratorCommand
         }
     }
 
-    protected function loadIndicatorTemplates()
+    protected function loadIndicatorTemplates(): Collection
     {
-        $directories = Storage::disk('indicator_templates')->directories();
-        // filter docs directory
-        $directories = array_filter($directories, function ($directory) {
-            return $directory !== 'docs';
-        });
+        $directories = collect(Storage::disk('indicator_templates')->directories())
+            ->filter(fn ($directory) => $directory !== 'docs');
         $files = [];
         foreach ($directories as $directory) {
             $files = array_merge($files, Storage::disk('indicator_templates')->files($directory));
         }
-
-        $templates = array_map(function ($file) {
-            return ["Name" => str_replace('.php', '', \pathinfo($file, \PATHINFO_FILENAME)), "Category" => \pathinfo($file, PATHINFO_DIRNAME), "Path" => $file];
-        }, array_filter($files, function ($file) {
-            return pathinfo($file, PATHINFO_EXTENSION) == 'php';
-        }));
-        return $templates;
+        return collect($files)
+            ->filter(fn ($file) => pathinfo($file, PATHINFO_EXTENSION) == 'php')
+            ->map(function ($file) {
+                return [
+                    "Name" => str_replace('.php', '', pathinfo($file, \PATHINFO_FILENAME)),
+                    "Category" => pathinfo($file, PATHINFO_DIRNAME),
+                    "File" => $file
+                ];
+            });
     }
 
-    public function handle(): bool|null
+    public function handle()
     {
-        // $section = $this->output->section();
-        // $table = new Table($section);
-
-        // $table->addRow(['Love']);
-        // $table->render();
-
-        // $table->appendRow(['Symfony']);
-
-        if (Questionnaire::all()->isEmpty()) {
-            $this->newLine();
-            error("You have not yet added questionnaires to your dashboard. Please do so first.");
-            $this->newLine();
-            return false;
+        if (DataSource::all()->isEmpty()) {
+            error("You have not yet added data sources to your dashboard. Please do so first.");
+            return self::FAILURE;
         }
+        $dataSources = DataSource::pluck('name')->toArray();
+        $dataSourceMenu = array_combine(range(1, count($dataSources)), array_values($questionnaires));
 
-        /*$name = $this->askValid(
-            "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. HouseholdsEnumeratedByDay\n You can also include directory to help with organization of indicator files. Eg. Household/BirthRate)",
-            'name',
-            ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']
-        );*/
         $name = text(
-            label: "Please provide a name for the indicator\n\n (This will serve as the component name and has to be in camel case. Eg. HouseholdsEnumeratedByDay\n You can also include directory to help with organization of indicator files. Eg. Household/BirthRate)",
-            placeholder: 'Household/BirthRate',
-            validate: ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']
+            label: "Indicator name",
+            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
+            hint: "This will serve as the component name and has to be in camel case",
+            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']]
         );
 
-        $questionnaires = Questionnaire::pluck('name')->toArray();
-        $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
-        $questionnaire = select("Which questionnaire does this indicator belong to?", $questionnaireMenu);
+        $dataSource = select(
+            label: "Which data source does this indicator belong to?",
+            options: $dataSourceMenu
+        );
+
         $this->askForIndicatorTemplate();
 
         if ($this->type == 'template') {
@@ -149,24 +145,21 @@ class MakeIndicator extends GeneratorCommand
             $this->title = str(basename($this->template['Name']))->snake()->replace('_', ' ')->title();
         } else {
             $chosenChartType = 'Default';
-            $choice = $this->choice("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
+            $choice = select("Do you want the generated file to include functioning sample code?", [1 => 'yes', 2 => 'no'], 1);
             $this->includeSampleCode = $choice === 'yes' ? '-with-sample-code' : '';
         }
-
-
         $title = text(
-            label: "Please enter a reader friendly title for the indicator (press enter to set " . ($this->title ?? 'empty') . " for now) ",
+            label: "Please enter a reader friendly title for the indicator",
+            placeholder: 'E.g. Households Enumerated by Day or Birth Rate',
+            hint: "You can leave this empty for now",
             default: $this->title,
-            validate: ['nullable',]
         );
-
-        //$title = $title ?? $this->title;
-
         $description = textarea(
-            label: "Please enter a description for the indicator (press enter to leave empty for now)",
-            validate: ['nullable',]
+            label: "Please enter a description for the indicator",
+            placeholder: "",
+            hint: "You can leave this empty for now"
         );
-        DB::transaction(function () use ($name, $title, $description, $questionnaire, $chosenChartType) {
+        DB::transaction(function () use ($name, $title, $description, $dataSource, $chosenChartType) {
             $result = $this->writeIndicatorFile($name);
             if ($result) {
                 info('Indicator created successfully.');
@@ -177,10 +170,10 @@ class MakeIndicator extends GeneratorCommand
                 'name' => $name,
                 'title' => $title,
                 'description' => $description,
-                'questionnaire' => $questionnaire,
+                'questionnaire' => $dataSource,
                 'type' => $chosenChartType,
             ]);
         });
-        return true;
+        return self::SUCCESS;
     }
 }

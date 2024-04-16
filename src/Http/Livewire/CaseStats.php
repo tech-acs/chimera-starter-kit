@@ -6,20 +6,20 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Cache;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Services\BreakoutQueryBuilder;
 use Uneca\Chimera\Services\CaseStatsCaching;
 use Uneca\Chimera\Services\QueryFragmentFactory;
 
 class CaseStats extends Component
 {
-    public Questionnaire $questionnaire;
+    public DataSource $dataSource;
     public array $stats = [];
     public Carbon $dataTimestamp;
 
-    public function mount(Questionnaire $questionnaire)
+    public function mount(DataSource $dataSource)
     {
-        $this->questionnaire = $questionnaire;
+        $this->dataSource = $dataSource;
     }
 
     public function setStats()
@@ -30,7 +30,7 @@ class CaseStats extends Component
         $this->dataTimestamp = Carbon::now();
         try {
             if (config('chimera.cache.enabled')) {
-                $caching = new CaseStatsCaching($this->questionnaire, $filter);
+                $caching = new CaseStatsCaching($this->dataSource, $filter);
                 $this->dataTimestamp = $caching->getTimestamp();
                 $this->stats = Cache::tags($caching->tags())
                     ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
@@ -49,14 +49,14 @@ class CaseStats extends Component
         } finally {
             if ($analytics['source'] !== 'Cache') {
                 $analytics['completed_at'] = time();
-                $this->questionnaire->analytics()->create($analytics);
+                $this->dataSource->analytics()->create($analytics);
             }
         }
     }
 
     public function getData(array $filter)
     {
-        $queryFragmentFactory = QueryFragmentFactory::make($this->questionnaire->name);
+        $queryFragmentFactory = QueryFragmentFactory::make($this->dataSource->name);
         if (is_null($queryFragmentFactory)) {
             $whereConditions = [];
         } else {
@@ -71,7 +71,7 @@ class CaseStats extends Component
             FROM cases
             WHERE
         ";
-        $l = DB::connection($this->questionnaire->name)
+        $l = DB::connection($this->dataSource->name)
             ->select($sql . implode(' AND ', array_merge(["cases.key != ''", "cases.deleted = 0"], $whereConditions)))[0];
         $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
         if (!is_null($l)) {

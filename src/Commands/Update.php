@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Uneca\Chimera\Traits\InstallUpdateTrait;
+use Uneca\Chimera\Traits\PackageTasksTrait;
 
 class Update extends Command
 {
@@ -11,7 +11,7 @@ class Update extends Command
 
     public $description = 'Update the Dashboard Starter Kit';
 
-    use InstallUpdateTrait;
+    use PackageTasksTrait;
 
     public function handle(): int
     {

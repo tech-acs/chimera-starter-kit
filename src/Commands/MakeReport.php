@@ -2,12 +2,16 @@
 
 namespace Uneca\Chimera\Commands;
 
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Report;
-use Uneca\Chimera\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\textarea;
 
 class MakeReport extends GeneratorCommand
 {
@@ -16,8 +20,6 @@ class MakeReport extends GeneratorCommand
     protected $description = 'Create a new report. Creates file from stub and adds entry in reports table.';
 
     protected $type = 'default';
-
-    use InteractiveCommand;
 
     protected function getDefaultNamespace($rootNamespace)
     {
@@ -45,47 +47,34 @@ class MakeReport extends GeneratorCommand
 
     public function handle()
     {
-        if (Questionnaire::all()->isEmpty()) {
-            $this->newLine();
-            $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
-            $this->newLine();
-            return 1;
+        if (DataSource::all()->isEmpty()) {
+            error("You have not yet added questionnaires to your dashboard. Please do so first.");
+            return self::FAILURE;
         }
-
-        $name = $this->askValid(
-            "Please provide a name for the report\n\n (This will serve as the component name and has to be in camel case. Eg. HouseholdsEnumeratedByDay\n You can also include directory to help with organization of indicator files. Eg. Household/BirthRate)",
-            'name',
-            ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:reports,name']
+        $name = text(
+            label: "Report name (this will be the component name and has to be in camel case)",
+            placeholder: 'Household/BirthRate',
+            hint: "Eg. HouseholdsEnumeratedByDay or Household/BirthRate (including directory helps organize indicator files)",
+            validate: ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:reports,name']
         );
-
-        $questionnaires = Questionnaire::pluck('name')->toArray();
+        $questionnaires = DataSource::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
-        $questionnaire = $this->choice("Which questionnaire does this report belong to?", $questionnaireMenu);
 
-        /*$chartTypeMenu = array_combine(range(1, count($this->chartTypes)), array_keys($this->chartTypes));
-        $chosenChartType = $this->choice("Please choose the type of chart you want for this indicator", $chartTypeMenu);
-        $this->type = $this->chartTypes[$chosenChartType];*/
-
-        $title = $this->askValid(
-            "Please enter a reader friendly title for the report (press enter to leave empty for now)",
-            'title',
-            ['nullable', ]
+        $questionnaire = select("Which questionnaire does this report belong to?", $questionnaireMenu);
+        $title = text(
+            label: "Please enter a reader friendly title for the report (press enter to leave empty for now) ",
+            validate: ['nullable',]
         );
-
-        $description = $this->askValid(
-            "Please enter a description for the report (press enter to leave empty for now)",
-            'description',
-            ['nullable', ]
+        $description = textarea(
+            label: "Please enter a description for the report (press enter to leave empty for now)",
+            validate: ['nullable',]
         );
-
-        // If the 'reports' (used for controlling 'Reports' page) permission does not already exist, create it!
         $this->ensureReportsPermissionExists();
 
         DB::transaction(function () use ($name, $title, $description, $questionnaire) {
-
             $result = $this->writeFile($name);
             if ($result) {
-                $this->info('Report created successfully.');
+                info('Report created successfully.');
             } else {
                 throw new \Exception('There was a problem creating the report file');
             }
@@ -98,6 +87,6 @@ class MakeReport extends GeneratorCommand
             ]);
         });
 
-        return 0;
+        return self::SUCCESS;
     }
 }

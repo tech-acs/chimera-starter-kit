@@ -8,30 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
+use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 
 class Report extends Model
 {
     use HasFactory;
     use HasTranslations;
+    use HasDashboardEntityCommonalities;
 
     protected $guarded = ['id'];
     public $translatable = ['title', 'description'];
     protected $casts = ['last_generated_at' => 'datetime'];
     protected $appends = ['permission_name'];
+    public $permissionSuffix = ':report';
 
     public function users()
     {
         return $this->belongsToMany(User::class)->withTimestamps();
-    }
-
-    protected function permissionName(): Attribute
-    {
-        return new Attribute(
-            get: fn () => str($this->slug)
-                ->replace('.', ':')
-                ->append(':report')
-                ->toString(),
-        );
     }
 
     public function schedule(): array
@@ -62,9 +55,19 @@ class Report extends Model
         );
     }
 
-    public function getQuestionnaire()
+    /*protected function permissionName(): Attribute
     {
-        return Questionnaire::where('name', $this->questionnaire)->first();
+        return new Attribute(
+            get: fn () => str($this->slug)
+                ->replace('.', ':')
+                ->append(':report')
+                ->toString(),
+        );
+    }
+
+    public function getDataSource()
+    {
+        return DataSource::where('name', $this->questionnaire)->first();
     }
 
     public function scopeEnabled($query)
@@ -76,11 +79,6 @@ class Report extends Model
     {
         return $query->where('published', true);
     }
-
-    /*public function scopeDueThisHour($query)
-    {
-        return $query->whereTime('schedule', now()->format('H:00:00'));
-    }*/
 
     protected static function booted()
     {
@@ -101,8 +99,9 @@ class Report extends Model
         static::created(function ($report) {
             Permission::create(['guard_name' => 'web', 'name' => $report->permission_name]);
         });
+
         static::deleted(function ($report) {
             Permission::whereName($report->permission_name)->delete();
         });
-    }
+    }*/
 }

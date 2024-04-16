@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('questionnaires', function (Blueprint $table) {
+        Schema::create('data_sources', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->jsonb('title')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
+            $table->string('case_stats_component')->default('case-stats');
             $table->boolean('show_on_home_page')->default(false);
             $table->unsignedTinyInteger('rank')->nullable();
 
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->string('username');
             $table->string('password');
             $table->boolean('connection_active')->default(true);
+            $table->string('driver', '25')->default('mysql');
             $table->timestamps();
         });
     }
@@ -39,6 +41,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('questionnaires');
+        Schema::dropIfExists('data_sources');
     }
 };

@@ -20,9 +20,9 @@ class BreakoutQueryBuilder
     private string $having;
     private string $orderBy;
 
-    public function __construct($questionnaire = null, $excludePartials = true, $excludeDeleted = true, $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL')
+    public function __construct($dataSource = null, $excludePartials = true, $excludeDeleted = true, $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL')
     {
-        $this->dbConnection = DB::connection($questionnaire);
+        $this->dbConnection = DB::connection($dataSource);
         $this->excludePartials = $excludePartials;
         $this->partialCaseIdentifyingCondition = $partialCaseIdentifyingCondition;
         $this->excludeDeleted = $excludeDeleted;

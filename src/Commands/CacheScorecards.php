@@ -8,7 +8,7 @@ use Uneca\Chimera\Services\ScorecardCaching;
 
 class CacheScorecards extends Command
 {
-    protected $signature = 'chimera:cache-scorecards {--questionnaire=}';
+    protected $signature = 'chimera:cache-scorecards {--data-source=}';
 
     protected $description = "Calculate and cache (published) scorecards";
 
@@ -19,8 +19,8 @@ class CacheScorecards extends Command
 
     private function cacheScorecards()
     {
-        if ($this->option('questionnaire')) {
-            $scorecardsToCache = Scorecard::ofQuestionnaire($this->option('questionnaire'))->published()->get();
+        if ($this->option('data-source')) {
+            $scorecardsToCache = Scorecard::ofDataSource($this->option('data-source'))->published()->get();
         } else {
             $scorecardsToCache = Scorecard::published()->get();
         }

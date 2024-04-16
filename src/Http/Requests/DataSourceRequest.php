@@ -5,7 +5,7 @@ namespace Uneca\Chimera\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class QuestionnaireRequest extends FormRequest
+class DataSourceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class QuestionnaireRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', Rule::unique('questionnaires', 'name')->ignore($this->questionnaire)],
+            'name' => ['required', Rule::unique('data_sources', 'name')->ignore($this->questionnaire)],
             'title' => 'required',
             'driver' => 'required',
             'host' => 'required',

@@ -14,7 +14,7 @@ use Uneca\Chimera\Http\Controllers\Manage\IndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\AnalyticsController;
 use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\PageController;
-use Uneca\Chimera\Http\Controllers\Manage\QuestionnaireController;
+use Uneca\Chimera\Http\Controllers\Manage\DataSourceController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueController;
 use Uneca\Chimera\Http\Controllers\Manage\ReportManagementController;
 use Uneca\Chimera\Http\Controllers\Manage\RoleController;
@@ -50,7 +50,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
 
         Route::prefix('developer')->name('developer.')->group(function () {
             Route::get('questionnaire/{questionnaire}/test-connection', ConnectionTestController::class)->name('questionnaire.connection.test');
-            Route::resource('questionnaire', QuestionnaireController::class);
+            Route::resource('questionnaire', DataSourceController::class);
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
             Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);

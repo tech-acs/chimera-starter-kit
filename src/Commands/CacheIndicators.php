@@ -11,7 +11,7 @@ use Uneca\Chimera\Services\IndicatorCaching;
 
 class CacheIndicators extends Command
 {
-    protected $signature = 'chimera:cache-indicators {--max-level=0} {--questionnaire=} {--tag=}';
+    protected $signature = 'chimera:cache-indicators {--max-level=0} {--data-source=} {--tag=}';
 
     protected $description = "Calculate and cache (published) indicators";
 
@@ -28,8 +28,8 @@ class CacheIndicators extends Command
             $builder = Indicator::published()->untagged();
         }
 
-        if ($this->option('questionnaire')) {
-            $indicatorsToCache = $builder->ofQuestionnaire($this->option('questionnaire'))->get();
+        if ($this->option('data-source')) {
+            $indicatorsToCache = $builder->ofDataSource($this->option('data-source'))->get();
         } else {
             $indicatorsToCache = $builder->get();
         }

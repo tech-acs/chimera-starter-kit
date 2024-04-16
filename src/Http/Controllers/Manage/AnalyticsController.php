@@ -21,12 +21,12 @@ class AnalyticsController extends Controller
             $records->getCollection()->map(function ($record) use ($hierarchies) {
                 $class = class_basename($record->analyzable_type);
                 $record->level = is_null($record->level) ? 'National' : ucfirst($hierarchies[$record->level] ?? $record->level);
-                $record->type = $class == 'Questionnaire' ? 'CaseStats' : $class;
+                $record->type = $class == 'DataSource' ? 'CaseStats' : $class;
                 $record->icon_component = match($class) {
                     'Indicator' => 'chimera::icon.indicator',
                     'Scorecard' => 'chimera::icon.scorecard',
                     'MapIndicator' => 'chimera::icon.map-indicator',
-                    'Questionnaire' => 'chimera::icon.case-stats',
+                    'DataSource' => 'chimera::icon.case-stats',
                     default => 'chimera::icon.indicator'
                 };
                 return $record;

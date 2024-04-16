@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Scorecard;
 
 abstract class Caching
@@ -17,7 +17,7 @@ abstract class Caching
     public array $filter;
     public string $key;
 
-    abstract public function __construct(Scorecard|MapIndicator|Indicator|Questionnaire $model, array $filter);
+    abstract public function __construct(Scorecard|MapIndicator|Indicator|DataSource $model, array $filter);
 
     abstract public function tags(): array;
 

@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Services\PageBuilder;
 
 class HomeController extends Controller
@@ -19,7 +19,7 @@ class HomeController extends Controller
 
     public function __invoke()
     {
-        $questionnaires = Questionnaire::active()->showOnHomePage()->orderBy('rank')->get();
+        $dataSources = DataSource::active()->showOnHomePage()->orderBy('rank')->get();
         $pages = collect(PageBuilder::pages())
             ->map(function ($page, $route) {
                 return [
@@ -51,6 +51,6 @@ class HomeController extends Controller
             ]
         ];
 
-        return view('chimera::home', compact('questionnaires', 'graphicalMenu'));
+        return view('chimera::home', compact('dataSources', 'graphicalMenu'));
     }
 }

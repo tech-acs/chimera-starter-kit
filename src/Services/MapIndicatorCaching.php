@@ -4,12 +4,12 @@ namespace Uneca\Chimera\Services;
 
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Scorecard;
 
 class MapIndicatorCaching extends Caching
 {
-    public function __construct(Scorecard|MapIndicator|Indicator|Questionnaire $model, array $filter)
+    public function __construct(Scorecard|MapIndicator|Indicator|DataSource $model, array $filter)
     {
         $this->model = $model;
         $this->instance = DashboardComponentFactory::makeMapIndicator($model);
@@ -19,6 +19,6 @@ class MapIndicatorCaching extends Caching
 
     public function tags(): array
     {
-        return ['map-indicators', $this->model->questionnaire];
+        return ['map-indicators', $this->model->dataSource];
     }
 }

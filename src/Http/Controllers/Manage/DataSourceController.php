@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use Livewire\Features\SupportConsoleCommands\Commands\ComponentParser;
 use Livewire\Mechanisms\ComponentRegistry;
 use ReflectionClass;
-use Uneca\Chimera\Http\Requests\QuestionnaireRequest;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Http\Requests\DataSourceRequest;
+use Uneca\Chimera\Models\DataSource;
 use Illuminate\Support\Facades\Storage;
 
-class QuestionnaireController extends Controller
+class DataSourceController extends Controller
 {
     private array $databases = [
         'MySQL 5.7+/MariaDB 10.3+' => 'mysql',
@@ -21,8 +21,8 @@ class QuestionnaireController extends Controller
 
     public function index()
     {
-        $records = Questionnaire::orderBy('rank')->get();
-        return view('chimera::developer.questionnaire.index', compact('records'));
+        $records = DataSource::orderBy('rank')->get();
+        return view('chimera::developer.data-source.index', compact('records'));
     }
 
     private function getCaseStatComponentsList()
@@ -47,52 +47,52 @@ class QuestionnaireController extends Controller
     public function create()
     {
         $components = $this->getCaseStatComponentsList();
-        return view('chimera::developer.questionnaire.create', compact('components'))
+        return view('chimera::developer.data-source.create', compact('components'))
             ->with(['databases' => $this->databases]);
     }
 
-    public function store(QuestionnaireRequest $request)
+    public function store(DataSourceRequest $request)
     {
-        Questionnaire::create($request->only([
+        DataSource::create($request->only([
             'name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database',
             'username', 'password', 'connection_active', 'case_stats_component', 'driver'
         ]));
-        return redirect()->route('developer.questionnaire.index')->withMessage('Record created');
+        return redirect()->route('developer.data-source.index')->withMessage('Record created');
     }
 
-    public function edit(Questionnaire $questionnaire)
+    public function edit(DataSource $dataSource)
     {
         $components = $this->getCaseStatComponentsList();
-        return view('chimera::developer.questionnaire.edit', compact('questionnaire', 'components'))
+        return view('chimera::developer.data-source.edit', compact('dataSource', 'components'))
             ->with(['databases' => $this->databases]);
     }
 
-    public function update(Questionnaire $questionnaire, QuestionnaireRequest $request)
+    public function update(DataSource $dataSource, DataSourceRequest $request)
     {
-        $questionnaire->update($request->only([
+        $dataSource->update($request->only([
             'name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database',
             'username', 'password', 'connection_active', 'case_stats_component', 'driver'
         ]));
-        return redirect()->route('developer.questionnaire.index')->withMessage('Record updated');
+        return redirect()->route('developer.data-source.index')->withMessage('Record updated');
     }
 
-    public function destroy(Questionnaire $questionnaire)
+    public function destroy(DataSource $dataSource)
     {
-        $questionnaire->delete();
-        return redirect()->route('developer.questionnaire.index')->withMessage('Record deleted');
+        $dataSource->delete();
+        return redirect()->route('developer.data-source.index')->withMessage('Record deleted');
     }
 
-    public function test(Questionnaire $questionnaire)
+    public function test(DataSource $dataSource)
     {
-        $results = $questionnaire->test();
+        $results = $dataSource->test();
         $passesTest = $results->reduce(function ($carry, $item) {
             return $carry && $item['passes'];
         }, true);
         if ($passesTest) {
-            return redirect()->route('developer.questionnaire.index')
+            return redirect()->route('developer.data-source.index')
                 ->withMessage('Connection test successful');
         } else {
-            return redirect()->route('questionnaire.index')
+            return redirect()->route('data-source.index')
                 ->withErrors($results->pluck('message')->filter()->all());
         }
     }

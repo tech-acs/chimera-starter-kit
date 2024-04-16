@@ -2,15 +2,13 @@
 
 namespace Uneca\Chimera\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Translatable\HasTranslations;
 
-class Questionnaire extends Model
+class DataSource extends Model
 {
-    use HasFactory;
     use HasTranslations;
 
     protected $guarded = ['id'];
@@ -28,7 +26,7 @@ class Questionnaire extends Model
     public function getScorecardsAttribute()
     {
         return Scorecard::published()
-            ->whereQuestionnaire($this->name)
+            ->where('data_source', $this->name)
             ->orderBy('rank')
             ->get()
             ->filter(function ($scorecard) {

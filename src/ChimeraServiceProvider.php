@@ -34,7 +34,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'create_usage_stats_table',
             'create_areas_table',
             'create_pages_table',
-            'create_questionnaires_table',
+            'create_data_sources_table',
             'create_indicators_table',
             'create_indicator_page_table',
             'create_scorecards_table',
@@ -47,8 +47,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'create_map_indicators_table',
             'create_analytics_table',
             'create_report_user_table',
-            'add_case_stats_component_column_to_questionnaires_table',
-            'add_driver_column_to_questionnaires_table',
         ];
         $package
             ->name('chimera')
@@ -78,12 +76,12 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\DownloadIndicatorTemplates::class,
                 \Uneca\Chimera\Commands\GenerateReports::class,
                 \Uneca\Chimera\Commands\MakeIndicator::class,
-                //\Uneca\Chimera\Commands\MakeMapIndicator::class,
-                //\Uneca\Chimera\Commands\MakeReport::class,
-                //\Uneca\Chimera\Commands\MakeScorecard::class,
-                //\Uneca\Chimera\Commands\Update::class,
+                \Uneca\Chimera\Commands\MakeMapIndicator::class,
+                \Uneca\Chimera\Commands\MakeReport::class,
+                \Uneca\Chimera\Commands\MakeScorecard::class,
+                \Uneca\Chimera\Commands\Update::class,
                 \Uneca\Chimera\Commands\Production::class,
-                //\Uneca\Chimera\Commands\UpdateIndicators::class,
+                \Uneca\Chimera\Commands\UpdateIndicators::class,
                 \Uneca\Chimera\Commands\CustomJetstreamInstallCommand::class
             ]);
     }

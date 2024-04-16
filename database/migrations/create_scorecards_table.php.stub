@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('slug');
             $table->jsonb('title')->nullable();
-            $table->string('questionnaire')->nullable();
+            $table->string('data_source')->nullable();
             $table->boolean('published')->default(false);
             $table->string('linked_indicator')->nullable();
             $table->unsignedTinyInteger('rank')->nullable();

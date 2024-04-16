@@ -20,7 +20,7 @@ class DataImport extends Command
         'map_indicators',
         'pages',
         'permissions', // ???
-        'questionnaires',
+        'data_sources',
         'reports',
         'reference_values',
         'scorecards',

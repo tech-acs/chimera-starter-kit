@@ -3,14 +3,14 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Services\CaseStatsCaching;
 
 class CacheCaseStats extends Command
 {
-    protected $signature = 'chimera:cache-casestats {--questionnaire=}';
+    protected $signature = 'chimera:cache-casestats {--data-source=}';
 
-    protected $description = "Calculate and cache (active and shown-on-home-page questionnaire) case stats";
+    protected $description = "Calculate and cache (active and shown-on-home-page data source) case stats";
 
     public function __construct()
     {
@@ -19,9 +19,9 @@ class CacheCaseStats extends Command
 
     private function cacheCaseStats()
     {
-        $query = Questionnaire::active()->showOnHomePage();
-        if ($this->option('questionnaire')) {
-            $toCache = $query->where('name', $this->option('questionnaire'))->get();
+        $query = DataSource::active()->showOnHomePage();
+        if ($this->option('data-source')) {
+            $toCache = $query->where('name', $this->option('data-source'))->get();
         } else {
             $toCache = $query->get();
         }
@@ -32,15 +32,15 @@ class CacheCaseStats extends Command
             return Command::FAILURE;
         }
 
-        foreach ($toCache as $questionnaire) {
-            $this->newLine()->info($questionnaire->name);
+        foreach ($toCache as $dataSource) {
+            $this->newLine()->info($dataSource->name);
             $startTime = time();
 
             $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            $updated = (new CaseStatsCaching($questionnaire, []))->update();
+            $updated = (new CaseStatsCaching($dataSource, []))->update();
             if ($updated) {
                 $analytics['completed_at'] = time();
-                $questionnaire->analytics()->create($analytics);
+                $dataSource->analytics()->create($analytics);
                 $endTime = time();
                 $this->info("Completed in " . ($endTime - $startTime) . " seconds");
             } else {

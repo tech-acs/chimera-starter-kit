@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug');
             $table->jsonb('title')->nullable();
             $table->jsonb('description')->nullable();
-            $table->string('questionnaire')->nullable();
+            $table->string('data_source')->nullable();
             $table->boolean('published')->default(false);
             $table->unsignedTinyInteger('rank')->nullable();
             $table->timestamps();

@@ -15,7 +15,7 @@ use Uneca\Chimera\Services\ScorecardCaching;
 
 class CacheMapIndicators extends Command
 {
-    protected $signature = 'chimera:cache-mapindicators {--max-level=0} {--questionnaire=}';
+    protected $signature = 'chimera:cache-mapindicators {--max-level=0} {--data-source=}';
 
     protected $description = "Calculate and cache (published) map indicators";
 
@@ -32,8 +32,8 @@ class CacheMapIndicators extends Command
             $builder = MapIndicator::published();
         //}
 
-        if ($this->option('questionnaire')) {
-            $indicatorsToCache = $builder->ofQuestionnaire($this->option('questionnaire'))->get();
+        if ($this->option('data-source')) {
+            $indicatorsToCache = $builder->ofDataSource($this->option('data-source'))->get();
         } else {
             $indicatorsToCache = $builder->get();
         }

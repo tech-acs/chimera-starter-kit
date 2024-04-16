@@ -35,7 +35,7 @@ trait PackageTasksTrait
         'Chimera migrations' => ['--tag' => 'chimera-migrations', '--force' => true],
         'Chimera stubs' => ['--tag' => 'chimera-stubs'],
         'Livewire config' => ['--tag' => 'livewire:config'],
-        'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force']
+        'Spatie permissions' => ['--provider' => 'Spatie\Permission\PermissionServiceProvider', '--force' => true]
     ];
 
     public array $phpDependencies = [
@@ -160,7 +160,7 @@ trait PackageTasksTrait
                 .PHP_EOL."        \$exceptions->render(function (\Illuminate\Routing\Exceptions\InvalidSignatureException \$e, Request \$request) {"
                 .PHP_EOL."            return response()->view('chimera::error.link-invalid', [], 403);"
                 .PHP_EOL.'        });'
-                .PHP_EOL."        \$exceptions->render(function (Throwable \$e, Request \$request) {"
+                .PHP_EOL."        \$exceptions->render(function (Throwable \$e, \Illuminate\Http\Request \$request) {"
                 .PHP_EOL."            if (\$e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException) {"
                 .PHP_EOL."                app('redirect')->setIntendedUrl(url()->previous());"
                 .PHP_EOL."                return redirect()->route('login')"

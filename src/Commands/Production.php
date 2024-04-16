@@ -12,7 +12,7 @@ use Redis;
 use Symfony\Component\Process\Process;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\AreaHierarchy;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\ReferenceValue;
 use Uneca\Chimera\Models\User;
 
@@ -75,7 +75,7 @@ class Production extends Command
 
         $this->components->task('Check source databases are configured and reachable', function () {
             try {
-                $connections = Questionnaire::active()->pluck('name');
+                $connections = DataSource::active()->pluck('name');
                 if ($connections->isEmpty()) {
                     return false;
                 }

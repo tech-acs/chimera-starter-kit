@@ -12,7 +12,7 @@ use Uneca\Chimera\Services\Caching;
 
 class CacheClear extends Command
 {
-    protected $signature = 'chimera:cache-clear {--questionnaire=} {--type=}';
+    protected $signature = 'chimera:cache-clear {--data-source=} {--type=}';
 
     protected $description = "Clear cached data";
 
@@ -23,8 +23,8 @@ class CacheClear extends Command
 
     public function handle()
     {
-        if ($this->option('questionnaire')) {
-            Cache::tags([$this->option('questionnaire')])->flush();
+        if ($this->option('data-source')) {
+            Cache::tags([$this->option('data-source')])->flush();
         } elseif ($this->option('type')) { // indicators|scorecards|casestats|mapindicators
             Cache::tags([$this->option('type')])->flush();
         } else {

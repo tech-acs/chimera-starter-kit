@@ -15,10 +15,15 @@ return [
         'ttl_hours' => env('INVITATION_TTL_HOURS', 72)
     ],
     'require_account_approval' => env('REQUIRE_ACCOUNT_APPROVAL', false),
+    'indicator_template' => [
+        'repository_url' => env('INDICATOR_TEMPLATE_REPOSITORY_URL','https://api.github.com/repos/tech-acs/chimera-indicator-templates')
+    ],
     'color_theme' => env('COLOR_THEME', 'default'),
     'area' => [
         'map' => [
             'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],
+            'starting_zoom' => env('MAP_STARTING_ZOOM', 6),
+            'min_zoom' => env('MAP_MIN_ZOOM', 6),
             'ignore_orphan_areas' => env('IGNORE_ORPHAN_AREAS', false),
         ],
     ],

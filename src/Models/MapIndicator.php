@@ -9,28 +9,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
+use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 
 class MapIndicator extends Model
 {
     use HasFactory;
     use HasTranslations;
+    use HasDashboardEntityCommonalities;
 
     protected $guarded = ['id'];
     public $translatable = ['title', 'description'];
+    public $permissionSuffix = ':map-indicator';
 
     public function analytics()
     {
         return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
-    }
-
-    protected function permissionName(): Attribute
-    {
-        return new Attribute(
-            get: fn () => str($this->slug)
-                ->replace('.', ':')
-                ->append(':map-indicator')
-                ->toString(),
-        );
     }
 
     protected function fullyQualifiedClassname(): Attribute
@@ -40,9 +33,19 @@ class MapIndicator extends Model
         );
     }
 
-    public function getQuestionnaire()
+    /*protected function permissionName(): Attribute
     {
-        return Questionnaire::where('name', $this->questionnaire)->first();
+        return new Attribute(
+            get: fn () => str($this->slug)
+                ->replace('.', ':')
+                ->append(':map-indicator')
+                ->toString(),
+        );
+    }
+
+    public function getDataSource()
+    {
+        return DataSource::where('name', $this->data_source)->first();
     }
 
     public function scopePublished($query)
@@ -50,9 +53,9 @@ class MapIndicator extends Model
         return $query->where('published', true);
     }
 
-    public function scopeOfQuestionnaire(Builder $query, $questionnaire)
+    public function scopeOfDataSource(Builder $query, string $dataSource)
     {
-        return $query->where('questionnaire', $questionnaire);
+        return $query->where('data_source', $dataSource);
     }
 
     protected static function booted()
@@ -77,5 +80,5 @@ class MapIndicator extends Model
         static::deleted(function ($indicator) {
             Permission::whereName($indicator->permission_name)->delete();
         });
-    }
+    }*/
 }

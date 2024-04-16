@@ -70,7 +70,7 @@
                                     <x-dropdown-link class="px-6" href="{{ route('role.index') }}">{{ __('Roles') }}</x-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Core Configuration') }}</div>
-                                    <x-dropdown-link class="px-6" href="{{route('developer.questionnaire.index')}}">{{ __('Sources') }}</x-dropdown-link>
+                                    <x-dropdown-link class="px-6" href="{{route('developer.data-source.index')}}">{{ __('Data Sources') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{route('developer.area-hierarchy.index')}}">{{ __('Area Hierarchy') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-dropdown-link>
@@ -248,7 +248,7 @@
                 <x-responsive-nav-link href="{{ route('user.index') }}">{{ __('Users') }}</x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('role.index') }}">{{ __('Roles') }}</x-responsive-nav-link>
                 <div class="border-t border-gray-200 border-dotted mx-4"></div>
-                <x-responsive-nav-link href="{{ route('developer.questionnaire.index') }}">{{ __('Questionnaires') }}</x-responsive-nav-link>
+                <x-responsive-nav-link href="{{ route('developer.data-source.index') }}">{{ __('Data Sources') }}</x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('developer.area-hierarchy.index') }}" >{{ __('Area Hierarchy') }}</x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-responsive-nav-link>

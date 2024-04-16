@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 
 class DataExport extends Command
 {
@@ -20,7 +20,7 @@ class DataExport extends Command
         'map_indicators',
         'pages',
         'permissions', // ???
-        'questionnaires',
+        'data_sources',
         'reports',
         'reference_values',
         'scorecards',
@@ -52,15 +52,12 @@ class DataExport extends Command
             ->dumpToFile($tmpFile);
 
         try {
-            if (! file_exists($dumpFile)) {
-                unlink($dumpFile);
-            }
             $tmpFileHandle = fopen($tmpFile, 'r');
             $dumpFileHandle = fopen($dumpFile, 'w');
-            $databasePasswords = Questionnaire::pluck('password')->all();
+            $databasePasswords = DataSource::pluck('password')->all();
             while (($line = fgets($tmpFileHandle)) !== false) {
                 if (! empty(trim($line))) {
-                    if (str_contains($line, 'INSERT INTO public.questionnaires')) {
+                    if (str_contains($line, 'INSERT INTO public.data_sources')) {
                         $line = str_replace($databasePasswords, '*****', $line);
                     }
                     fwrite($dumpFileHandle, $line);

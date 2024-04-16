@@ -3,11 +3,13 @@
 namespace Uneca\Chimera\Commands;
 
 use Spatie\Permission\Models\Permission;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Scorecard;
-use Uneca\Chimera\Traits\InteractiveCommand;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\text;
 
 class MakeScorecard extends GeneratorCommand
 {
@@ -16,8 +18,6 @@ class MakeScorecard extends GeneratorCommand
     protected $description = 'Create a new scorecard component. Creates file from stub and adds entry in scorecards table.';
 
     protected $type = 'default';
-
-    use InteractiveCommand;
 
     protected function getDefaultNamespace($rootNamespace)
     {
@@ -45,40 +45,33 @@ class MakeScorecard extends GeneratorCommand
 
     public function handle()
     {
-        if (Questionnaire::all()->isEmpty()) {
-            $this->newLine();
-            $this->error("You have not yet added questionnaires to your dashboard. Please do so first.");
-            $this->newLine();
-            return 1;
+        if (DataSource::all()->isEmpty()) {
+            error("You have not yet added questionnaires to your dashboard. Please do so first.");
+            return self::FAILURE;
         }
 
-        $name = $this->askValid(
-            "Please provide a name for the scorecard\n\n (This will serve as the component name and has to be in camel case. Eg. TotalHouseholds\n You can also include directory to help with organization of scorecard files. Eg. Household/BirthRate)",
-            'name',
-            ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:scorecards,name']
+        $name = text(
+            label: "Scorecard name (this will be the component name and has to be in camel case)",
+            placeholder: 'Household/BirthRate',
+            hint: "Eg. TotalHouseholds or Household/BirthRate (including directory helps organize indicator files)",
+            validate: ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:scorecards,name']
         );
-
-        $questionnaires = Questionnaire::pluck('name')->toArray();
+        $questionnaires = DataSource::pluck('name')->toArray();
         $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
-        $questionnaire = $this->choice("Which questionnaire does this indicator belong to?", $questionnaireMenu);
-
-        $title = $this->askValid(
-            "Please enter a reader friendly title for the indicator (press enter to leave empty for now)",
-            'title',
-            ['nullable', ]
+        $questionnaire = select("Which questionnaire does this scorecard belong to?", $questionnaireMenu);
+        $title = text(
+            label: "Please enter a reader friendly title for the scorecard (press enter to leave empty for now) ",
+            validate: ['nullable',]
         );
-
         $this->ensureScorecardsPermissionExists();
 
         DB::transaction(function () use ($name, $title, $questionnaire) {
-
             $result = $this->writeFile($name);
             if ($result) {
-                $this->info('Scorecard created successfully.');
+                info('Scorecard created successfully.');
             } else {
                 throw new \Exception('There was a problem creating the class file');
             }
-
             Scorecard::create([
                 'name' => $name,
                 'title' => $title,
@@ -86,6 +79,6 @@ class MakeScorecard extends GeneratorCommand
             ]);
         });
 
-        return 0;
+        return self::SUCCESS;
     }
 }

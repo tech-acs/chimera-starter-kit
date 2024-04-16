@@ -4,7 +4,7 @@ namespace Uneca\Chimera\Services;
 
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Models\Report;
 
@@ -37,12 +37,12 @@ class DashboardComponentFactory
         }
     }
 
-    public static function makeCaseStats(Questionnaire $questionnaire)
+    public static function makeCaseStats(DataSource $dataSource)
     {
         try {
-            $caseStatsComponentClass = app(\Livewire\LivewireManager::class)->getClass($questionnaire->case_stats_component);
+            $caseStatsComponentClass = app(\Livewire\LivewireManager::class)->getClass($dataSource->case_stats_component);
             $instance = new $caseStatsComponentClass;
-            $instance->questionnaire = $questionnaire;
+            $instance->dataSource = $dataSource;
             return $instance;
         } catch (\Exception $exception) {
             logger("Exception in DashboardComponentFactory", ['exception' => $exception->getMessage()]);

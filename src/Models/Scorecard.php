@@ -9,21 +9,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
+use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 
 class Scorecard extends Model
 {
     use HasFactory;
     use HasTranslations;
+    use HasDashboardEntityCommonalities;
 
     protected $guarded = ['id'];
     public $translatable = ['title'];
+    public $permissionSuffix = ':scorecard';
 
     public function analytics()
     {
         return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
     }
 
-    protected function permissionName(): Attribute
+    /*protected function permissionName(): Attribute
     {
         return new Attribute(
             get: fn () => str($this->slug)
@@ -65,5 +68,5 @@ class Scorecard extends Model
         static::deleted(function ($scorecard) {
             Permission::whereName($scorecard->permission_name)->delete();
         });
-    }
+    }*/
 }

@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Services;
 
-use Uneca\Chimera\Models\Questionnaire;
+use Uneca\Chimera\Models\DataSource;
 use Exception;
 use PDO;
 
@@ -11,7 +11,7 @@ class ConnectionLoader
     public function __invoke() : void
     {
         try {
-            $connections = Questionnaire::active()->get();
+            $connections = DataSource::active()->get();
         } catch (Exception $exception) {
             $connections = collect([]);
         }
