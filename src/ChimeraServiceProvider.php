@@ -29,7 +29,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
             'install_postgis_extension',
             'install_ltree_extension',
             'create_area_restrictions_table',
-            'create_faqs_table',
             'create_invitations_table',
             'create_usage_stats_table',
             'create_areas_table',

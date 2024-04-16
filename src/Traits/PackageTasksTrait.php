@@ -4,7 +4,8 @@ namespace Uneca\Chimera\Traits;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Process;
+use Symfony\Component\Process\Process as SymphonyProcess;
 
 trait PackageTasksTrait
 {
@@ -29,8 +30,18 @@ trait PackageTasksTrait
         "lodash" => "^4.17.21",
     ];
 
+    public array $phpDependencies = [
+        'ext-zip:*',
+        'ext-pgsql:*',
+        'gasparesganga/php-shapefile:^3.4',
+        'spatie/simple-excel:^3.5',
+        'spatie/laravel-translatable:^6.1',
+        'spatie/db-dumper:^3.5',
+        'spatie/laravel-permission:^6.4',
+    ];
+
     public array $vendorPublish = [
-        'Jetstream views' => ['--tag' => 'jetstream-views'],
+        //'Jetstream views' => ['--tag' => 'jetstream-views'],
         'Chimera config' => ['--tag' => 'chimera-config', '--force' => true],
         'Chimera migrations' => ['--tag' => 'chimera-migrations', '--force' => true],
         'Chimera stubs' => ['--tag' => 'chimera-stubs'],
@@ -38,24 +49,14 @@ trait PackageTasksTrait
         'Spatie permissions' => ['--provider' => 'Spatie\Permission\PermissionServiceProvider', '--force' => true]
     ];
 
-    public array $phpDependencies = [
-        'ext-zip:*',
-        'ext-pgsql:*',
-        'spatie/laravel-permission:^6.4',
-        'spatie/simple-excel:^3.5',
-        'spatie/laravel-translatable:^6.1',
-        'spatie/db-dumper:^3.5',
-        'gasparesganga/php-shapefile:^3.4'
-    ];
-
     public array $customizedJetstreamViews = [
-            'register.blade.php' => 'views/auth/register.blade.php',
-            'app.blade.php' => 'views/layouts/app.blade.php',
-            'guest.blade.php' => 'views/layouts/guest.blade.php',
-            'navigation-menu.blade.php' => 'views/navigation-menu.blade.php',
-            'show.blade.php' => 'views/profile/show.blade.php',
-            'area-restriction.blade.php' => 'views/profile/area-restriction.blade.php'
-        ];
+        'register.blade.php' => 'views/auth/register.blade.php',
+        'app.blade.php' => 'views/layouts/app.blade.php',
+        'guest.blade.php' => 'views/layouts/guest.blade.php',
+        'navigation-menu.blade.php' => 'views/navigation-menu.blade.php',
+        'show.blade.php' => 'views/profile/show.blade.php',
+        'area-restriction.blade.php' => 'views/profile/area-restriction.blade.php'
+    ];
 
     protected function installJetstream(): void
     {
@@ -63,16 +64,6 @@ trait PackageTasksTrait
         $this->components->task('Installing Laravel Jetstream', function () {
             return $this->callSilently('jetstream:custom-install', ['stack' => 'livewire', '--quiet' => true]);
         });
-    }
-
-    protected function publishVendorFiles(): void
-    {
-        $this->components->info("Publishing vendor files");
-        foreach ($this->vendorPublish as $vendorItem => $options) {
-            $this->components->task($vendorItem, function () use ($options) {
-                return $this->callSilently('vendor:publish', $options);
-            });
-        }
     }
 
     protected function installPhpDependencies(): void
@@ -85,10 +76,19 @@ trait PackageTasksTrait
                 $command = ['php', $composer, 'require'];
             }
             $command = array_merge($command ?? ['composer', 'require'], $this->phpDependencies);
-            return (new Process($command, base_path(), ['COMPOSER_MEMORY_LIMIT' => '-1']))
-                ->setTimeout(null)
-                ->run();
+            $result = Process::path(base_path())->forever()->run($command);
+            return $result->successful();
         });
+    }
+
+    protected function publishVendorFiles(): void
+    {
+        $this->components->info("Publishing vendor files");
+        foreach ($this->vendorPublish as $vendorItem => $options) {
+            $this->components->task($vendorItem, function () use ($options) {
+                return $this->callSilently('vendor:publish', $options);
+            });
+        }
     }
 
     protected function copyCustomizedJetstreamFiles(): void
@@ -157,7 +157,7 @@ trait PackageTasksTrait
             $bootstrapApp = str_replace(
                 '->withExceptions(function (Exceptions $exceptions) {',
                 '->withExceptions(function (Exceptions $exceptions) {'
-                .PHP_EOL."        \$exceptions->render(function (\Illuminate\Routing\Exceptions\InvalidSignatureException \$e, Request \$request) {"
+                .PHP_EOL."        \$exceptions->render(function (\Illuminate\Routing\Exceptions\InvalidSignatureException \$e, \Illuminate\Http\Request \$request) {"
                 .PHP_EOL."            return response()->view('chimera::error.link-invalid', [], 403);"
                 .PHP_EOL.'        });'
                 .PHP_EOL."        \$exceptions->render(function (Throwable \$e, \Illuminate\Http\Request \$request) {"
@@ -193,7 +193,7 @@ trait PackageTasksTrait
     protected function installEmptyWebRoutesFile(): void
     {
         $this->components->info("Install empty web routes file (web.php)");
-        $this->components->task('.env.example', function () {
+        $this->components->task('Writing to routes/web.php', function () {
             (new Filesystem)->replace(base_path('routes/web.php'), "<?php" . PHP_EOL);
         });
     }
@@ -209,7 +209,7 @@ trait PackageTasksTrait
         });
         $this->components->task('Running npm install & npm run build', function () {
             $commands = ['npm install', 'npm run build'];
-            $process = Process::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
+            $process = SymphonyProcess::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
             return $process->run();
         });
     }
@@ -250,28 +250,9 @@ trait PackageTasksTrait
     {
         tap(new Filesystem, function ($files) {
             $files->deleteDirectory(base_path('node_modules'));
-
             $files->delete(base_path('yarn.lock'));
             $files->delete(base_path('package-lock.json'));
         });
-    }
-
-    protected function requireComposerPackages(): int
-    {
-        $composer = $this->option('composer');
-
-        if ($composer !== 'global') {
-            $command = ['php', $composer, 'require'];
-        }
-
-        $command = array_merge(
-            $command ?? ['composer', 'require'],
-            is_array($this->requiredComposerPackages) ? $this->requiredComposerPackages : func_get_args()
-        );
-
-        return (new Process($command, base_path(), ['COMPOSER_MEMORY_LIMIT' => '-1']))
-            ->setTimeout(null)
-            ->run();
     }
 
     protected function replaceInFile($search, $replace, $path): false | int

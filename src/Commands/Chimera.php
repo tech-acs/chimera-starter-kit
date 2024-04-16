@@ -7,6 +7,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 use Uneca\Chimera\Traits\PackageTasksTrait;
+use function Laravel\Prompts\info;
 
 class Chimera extends Command
 {
@@ -29,7 +30,7 @@ class Chimera extends Command
         $this->installEmptyWebRoutesFile();
         $this->installJsDependencies();
 
-        $this->components->info("Installation complete");
+        info("Installation complete");
         return self::SUCCESS;
     }
 }
