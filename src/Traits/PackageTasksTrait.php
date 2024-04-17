@@ -4,21 +4,10 @@ namespace Uneca\Chimera\Traits;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Process;
-use Symfony\Component\Process\Process as SymphonyProcess;
+use Symfony\Component\Process\Process;
 
 trait PackageTasksTrait
 {
-    public array $requiredComposerPackages = [
-        'ext-zip:*',
-        'ext-pgsql:*',
-        'spatie/laravel-permission:^6.4',
-        'spatie/simple-excel:^3.5',
-        'spatie/laravel-translatable:^6.1',
-        'spatie/db-dumper:^3.5',
-        'gasparesganga/php-shapefile:^3.4'
-    ];
-
     public array $requiredNodePackages = [
         "leaflet" => "^1.9",
         "plotly.js-basic-dist-min" => "^2.30",
@@ -34,19 +23,18 @@ trait PackageTasksTrait
         'ext-zip:*',
         'ext-pgsql:*',
         'gasparesganga/php-shapefile:^3.4',
+        'spatie/laravel-permission:^6.4',
         'spatie/simple-excel:^3.5',
         'spatie/laravel-translatable:^6.1',
         'spatie/db-dumper:^3.5',
-        'spatie/laravel-permission:^6.4',
     ];
 
     public array $vendorPublish = [
-        //'Jetstream views' => ['--tag' => 'jetstream-views'],
-        'Chimera config' => ['--tag' => 'chimera-config', '--force' => true],
-        'Chimera migrations' => ['--tag' => 'chimera-migrations', '--force' => true],
-        'Chimera stubs' => ['--tag' => 'chimera-stubs'],
-        'Livewire config' => ['--tag' => 'livewire:config'],
-        'Spatie permissions' => ['--provider' => 'Spatie\Permission\PermissionServiceProvider', '--force' => true]
+        'Chimera config' => ['--tag=chimera-config', '--force'],
+        'Chimera migrations' => ['--tag=chimera-migrations', '--force'],
+        'Chimera stubs' => ['--tag=chimera-stubs'],
+        'Livewire config' => ['--tag=livewire:config'],
+        'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force']
     ];
 
     public array $customizedJetstreamViews = [
@@ -61,7 +49,7 @@ trait PackageTasksTrait
     protected function installJetstream(): void
     {
         $this->components->info("This kit is built on top of Laravel Jetstream");
-        $this->components->task('Installing Laravel Jetstream', function () {
+        $this->components->task('Installing Laravel Jetstream (takes time)', function () {
             return $this->callSilently('jetstream:custom-install', ['stack' => 'livewire', '--quiet' => true]);
         });
     }
@@ -70,14 +58,8 @@ trait PackageTasksTrait
     {
         $this->components->info("Php dependencies");
         $this->components->bulletList($this->phpDependencies);
-        $this->components->task('Installing composer packages', function () {
-            $composer = $this->option('composer');
-            if ($composer !== 'global') {
-                $command = ['php', $composer, 'require'];
-            }
-            $command = array_merge($command ?? ['composer', 'require'], $this->phpDependencies);
-            $result = Process::path(base_path())->forever()->run($command);
-            return $result->successful();
+        $this->components->task('Installing composer packages (takes time)', function () {
+            return $this->requireComposerPackages($this->phpDependencies);
         });
     }
 
@@ -86,7 +68,11 @@ trait PackageTasksTrait
         $this->components->info("Publishing vendor files");
         foreach ($this->vendorPublish as $vendorItem => $options) {
             $this->components->task($vendorItem, function () use ($options) {
-                return $this->callSilently('vendor:publish', $options);
+                return (new Process(array_merge(['php', 'artisan', 'vendor:publish'], $options), base_path()))
+                    ->setTimeout(null)
+                    ->run(function ($type, $output) {
+                        //$this->output->write($output);
+                    });
             });
         }
     }
@@ -207,11 +193,31 @@ trait PackageTasksTrait
             });
             return true;
         });
-        $this->components->task('Running npm install & npm run build', function () {
+        $this->components->task('Running npm install & npm run build (takes time)', function () {
             $commands = ['npm install', 'npm run build'];
-            $process = SymphonyProcess::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
+            $process = Process::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
             return $process->run();
         });
+    }
+
+    protected function requireComposerPackages(array $packages): int
+    {
+        $composer = $this->option('composer');
+
+        if ($composer !== 'global') {
+            $command = ['php', $composer, 'require'];
+        }
+
+        $command = array_merge(
+            $command ?? ['composer', 'require'],
+            is_array($packages) ? $packages : func_get_args()
+        );
+
+        return (new Process($command, base_path(), ['COMPOSER_MEMORY_LIMIT' => '-1']))
+            ->setTimeout(null)
+            ->run(function ($type, $output) {
+                //$this->output->write($output);
+            });
     }
 
     protected function copyFilesInDir(string $srcDir, string $destDir, string $fileType = '*.php'): void

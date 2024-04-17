@@ -28,9 +28,9 @@
             </div>
         @endif
 
-        <form action="{{route('developer.questionnaire.store')}}" method="POST">
+        <form action="{{route('developer.data-source.store')}}" method="POST">
             @csrf
-            @include('chimera::developer.questionnaire.form')
+            @include('chimera::developer.data-source.form')
         </form>
 
     </div>

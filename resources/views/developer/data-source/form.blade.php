@@ -15,12 +15,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <x-label for="name" value="{{ __('Name') }} *" />
-                    <x-input id="name" name="name" type="text" class="mt-1 block w-full" value="{{old('name', $questionnaire->name ?? null)}}" />
+                    <x-input id="name" name="name" type="text" class="mt-1 block w-full" value="{{old('name', $dataSource->name ?? null)}}" />
                     <x-input-error for="name" class="mt-2" />
                 </div>
                 <div>
                     <x-label for="title" value="{{ __('Display title') }} *" />
-                    <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $questionnaire->title ?? null)}}" />
+                    <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $dataSource->title ?? null)}}" />
                     <x-input-error for="title" class="mt-2" />
                 </div>
             </div>
@@ -28,12 +28,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                     <x-label for="start_date" value="{!! __('Exercise start date') !!} *" />
-                    <x-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($questionnaire ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
+                    <x-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($dataSource ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
                     <x-input-error for="start_date" class="mt-2" />
                 </div>
                 <div>
                     <x-label for="end_date" value="{!! __('Exercise end date') !!} *" />
-                    <x-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($questionnaire ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
+                    <x-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($dataSource ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
                     <x-input-error for="end_date" class="mt-2" />
                 </div>
                 <div>
@@ -45,7 +45,7 @@
                     </a>
                     <select name="case_stats_component" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         @foreach($components ?? [] as $slug => $component)
-                            <option value="{{ $slug }}" @selected(old('case_stats_component', $questionnaire->case_stats_component ?? 'case-stats') == $slug)>{{ $component }}</option>
+                            <option value="{{ $slug }}" @selected(old('case_stats_component', $dataSource->case_stats_component ?? 'case-stats') == $slug)>{{ $component }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -54,13 +54,13 @@
                 <div>
                     <x-label for="show_on_home_page" value="{!! __('Show on home page') !!}" />
                     <select name="show_on_home_page" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="1" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
-                        <option value="0" @selected(old('show_on_home_page', $questionnaire->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
+                        <option value="1" @selected(old('show_on_home_page', $dataSource->show_on_home_page ?? false) == true)>{{ __('Yes') }}</option>
+                        <option value="0" @selected(old('show_on_home_page', $dataSource->show_on_home_page ?? false) == false)>{{ __('No') }}</option>
                     </select>
                 </div>
                 <div>
                     <x-label for="rank" value="{!! __('Rank (home page listing order)') !!}" />
-                    <x-input name="rank" type="number" class="w-20" value="{{ old('rank', $questionnaire->rank ?? null) }}" />
+                    <x-input name="rank" type="number" class="w-20" value="{{ old('rank', $dataSource->rank ?? null) }}" />
                 </div>
             </div>
         </div>
@@ -80,36 +80,36 @@
                     <x-label for="active" value="{{ __('Database driver') }} *" />
                     <select name="driver" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     @foreach($databases as $name => $driver)
-                        <option value="{{$driver}}" @selected(old('driver', $questionnaire->driver ?? false) == $driver)>{{ $name }}</option>
+                        <option value="{{$driver}}" @selected(old('driver', $dataSource->driver ?? false) == $driver)>{{ $name }}</option>
                     @endforeach
                     </select>
                 </div>
                 <div>
                     <x-label for="host" value="{{ __('Host') }} *" />
-                    <x-input id="host" name="host" type="text" class="mt-1 block w-full" value="{{old('host', $questionnaire->host ?? null)}}" />
+                    <x-input id="host" name="host" type="text" class="mt-1 block w-full" value="{{old('host', $dataSource->host ?? null)}}" />
                     <x-input-error for="host" class="mt-2" />
                 </div>
                 <div>
                     <x-label for="port" value="{{ __('Port') }} *" />
-                    <x-input id="port" name="port" type="text" class="mt-1 block w-full" value="{{old('port', $questionnaire->port ?? null)}}" />
+                    <x-input id="port" name="port" type="text" class="mt-1 block w-full" value="{{old('port', $dataSource->port ?? null)}}" />
                     <x-input-error for="port" class="mt-2" />
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-6">
                 <div>
                     <x-label for="database" value="{{ __('Database') }} *" />
-                    <x-input id="database" name="database" type="text" class="mt-1 block w-full" value="{{old('database', $questionnaire->database ?? null)}}" />
+                    <x-input id="database" name="database" type="text" class="mt-1 block w-full" value="{{old('database', $dataSource->database ?? null)}}" />
                     <x-input-error for="database" class="mt-2" />
                 </div>
                 <div>
                     <x-label for="username" value="{!! __('Username') !!} *" />
-                    <x-input id="username" name="username" type="text" class="mt-1 block w-full" value="{{old('username', $questionnaire->username ?? null)}}" />
+                    <x-input id="username" name="username" type="text" class="mt-1 block w-full" value="{{old('username', $dataSource->username ?? null)}}" />
                     <x-input-error for="username" class="mt-2" />
                 </div>
                 <div>
                     <x-label for="password" value="{{ __('Password') }} *" />
                     <div class="relative mt-1 rounded-md shadow-sm" x-data="{eyeOpener: true}" x-cloak>
-                        <input id="password" name="password" x-bind:type="eyeOpener ? 'password' : 'text'" type="password" value="{{old('password', $questionnaire->password ?? null)}}" class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm block w-full">
+                        <input id="password" name="password" x-bind:type="eyeOpener ? 'password' : 'text'" type="password" value="{{old('password', $dataSource->password ?? null)}}" class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm block w-full">
                         <div class="absolute inset-y-0 right-0 flex items-center cursor-pointer">
                             <div class="mr-2 text-gray-500" x-show="eyeOpener" x-on:click="eyeOpener = false" title="{{ __('Show password') }}">
                                 {{-- eye --}}
@@ -128,14 +128,14 @@
             <div>
                 <x-label for="active" value="{{ __('Active') }}" />
                 <select name="connection_active" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="1" @selected(old('connection_active', $questionnaire->connection_active ?? false) == true)>{{ __('Yes') }}</option>
-                    <option value="0" @selected(old('connection_active', $questionnaire->connection_active ?? false) == false)>{{ __('No') }}</option>
+                    <option value="1" @selected(old('connection_active', $dataSource->connection_active ?? false) == true)>{{ __('Yes') }}</option>
+                    <option value="0" @selected(old('connection_active', $dataSource->connection_active ?? false) == false)>{{ __('No') }}</option>
                 </select>
             </div>
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-secondary-button class="mr-2"><a href="{{ route('developer.questionnaire.index') }}">{{ __('Cancel') }}</a></x-secondary-button>
+        <x-secondary-button class="mr-2"><a href="{{ route('developer.data-source.index') }}">{{ __('Cancel') }}</a></x-secondary-button>
         <x-button>
             {{ __('Submit') }}
         </x-button>

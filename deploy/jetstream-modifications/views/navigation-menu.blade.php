@@ -32,11 +32,6 @@
                         {{ __('Reports') }}
                     </x-nav-link>
                 @endcan
-                @if(\Uneca\Chimera\Models\Faq::count())
-                    <x-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
-                        {{ __('FAQ') }}
-                    </x-nav-link>
-                @endif
 
                     <livewire:command-palette />
                 </div>
@@ -238,11 +233,6 @@
                     {{ __('Reports') }}
                 </x-responsive-nav-link>
             @endcan
-            @if(\Uneca\Chimera\Models\Faq::count())
-                <x-responsive-nav-link href="{{ route('faq') }}" :active="request()->routeIs('faq')">
-                    {{ __('FAQ') }}
-                </x-responsive-nav-link>
-            @endif
             @can('Super User')
                 <div class="border-t border-gray-200"></div>
                 <x-responsive-nav-link href="{{ route('user.index') }}">{{ __('Users') }}</x-responsive-nav-link>

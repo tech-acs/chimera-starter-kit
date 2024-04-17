@@ -49,8 +49,8 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::get('user/{user}/suspension', UserSuspensionController::class)->name('user.suspension');
 
         Route::prefix('developer')->name('developer.')->group(function () {
-            Route::get('questionnaire/{questionnaire}/test-connection', ConnectionTestController::class)->name('questionnaire.connection.test');
-            Route::resource('questionnaire', DataSourceController::class);
+            Route::get('data-source/{data-source}/test-connection', ConnectionTestController::class)->name('data-source.connection.test');
+            Route::resource('data-source', DataSourceController::class);
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
             Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);

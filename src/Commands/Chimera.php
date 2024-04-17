@@ -3,9 +3,6 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
 use Uneca\Chimera\Traits\PackageTasksTrait;
 use function Laravel\Prompts\info;
 

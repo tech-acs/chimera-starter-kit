@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Sources with their connections') }}
+            {{ __('Data sources with their connections') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Editing an existing source and database connection') }}
+            {{ __('Editing an existing data source and database connection') }}
         </p>
     </x-slot>
 
@@ -65,10 +65,10 @@
 
             <div class="pt-6">
                 <section id="basics" x-show="isSelected('basics')">
-                    <form action="{{route('developer.questionnaire.update', $questionnaire->id)}}" method="POST">
+                    <form action="{{route('developer.data-source.update', $dataSource->id)}}" method="POST">
                         @csrf
                         @method('PATCH')
-                        @include('chimera::developer.questionnaire.form')
+                        @include('chimera::developer.data-source.form')
                     </form>
                 </section>
                 {{--<section id="mapper" x-show="isSelected('mapper')">

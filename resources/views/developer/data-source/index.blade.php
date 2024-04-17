@@ -2,16 +2,16 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Sources with their connections') }}
+            {{ __('Data sources with their connections') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('All your sources and their database connections should be configured here') }}
+            {{ __('All your data sources and their database connections should be configured here') }}
         </p>
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div class="text-right">
-            <a href="{{ route('developer.questionnaire.create') }}"><x-button>{{ __('Create new') }}</x-button></a>
+            <a href="{{ route('developer.data-source.create') }}"><x-button>{{ __('Create new') }}</x-button></a>
         </div>
         @if (session('message'))
             <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
@@ -96,12 +96,12 @@
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if($record->connection_active)
-                                        <a href="{{route('developer.questionnaire.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Test') }}</a>
+                                        <a href="{{route('developer.data-source.connection.test', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Test') }}</a>
                                         <span class="text-gray-400 px-1">|</span>
                                     @endif
-                                    <a href="{{route('developer.questionnaire.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                    <a href="{{route('developer.data-source.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
                                     <span class="text-gray-400 px-1">|</span>
-                                    <form action="{{route('developer.questionnaire.destroy', $record->id)}}" method="post" class="inline">
+                                    <form action="{{route('developer.data-source.destroy', $record->id)}}" method="post" class="inline">
                                         @method('delete')
                                         @csrf
                                         <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>

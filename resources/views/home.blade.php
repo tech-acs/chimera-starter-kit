@@ -1,9 +1,9 @@
 <x-app-layout>
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 space-y-6">
-        @forelse($questionnaires as $questionnaire)
-            <x-chimera-summary :questionnaire="$questionnaire">
-                @forelse($questionnaire->scorecards as $scorecard)
+        @forelse($dataSources as $dataSource)
+            <x-chimera-summary :questionnaire="$dataSource">
+                @forelse($dataSource->scorecards as $scorecard)
                     @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index])
                 @empty
                     {{ __('There are no scorecards to display.') }}
@@ -11,7 +11,7 @@
             </x-chimera-summary>
         @empty
             <x-chimera-simple-card>
-                {{ __('There are no questionnaires to display.') }}
+                {{ __('There are no data sources to display.') }}
             </x-chimera-simple-card>
         @endforelse
 
