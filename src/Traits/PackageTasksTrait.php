@@ -70,9 +70,7 @@ trait PackageTasksTrait
             $this->components->task($vendorItem, function () use ($options) {
                 return (new Process(array_merge(['php', 'artisan', 'vendor:publish'], $options), base_path()))
                     ->setTimeout(null)
-                    ->run(function ($type, $output) {
-                        //$this->output->write($output);
-                    });
+                    ->run();
             });
         }
     }
@@ -215,9 +213,7 @@ trait PackageTasksTrait
 
         return (new Process($command, base_path(), ['COMPOSER_MEMORY_LIMIT' => '-1']))
             ->setTimeout(null)
-            ->run(function ($type, $output) {
-                //$this->output->write($output);
-            });
+            ->run();
     }
 
     protected function copyFilesInDir(string $srcDir, string $destDir, string $fileType = '*.php'): void
