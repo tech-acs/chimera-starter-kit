@@ -198,6 +198,23 @@ trait PackageTasksTrait
         });
     }
 
+    protected function cleanup(): void
+    {
+        $this->components->info("Cleanup and finalization");
+        $this->components->task('Removing unused files', function () {
+            $filesToDelete = [
+                resource_path('views/welcome.blade.php'),
+                resource_path('views/dashboard.blade.php'),
+            ];
+            foreach ($filesToDelete as $file) {
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            return true;
+        });
+    }
+
     protected function requireComposerPackages(array $packages): int
     {
         $composer = $this->option('composer');

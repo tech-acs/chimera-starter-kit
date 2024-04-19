@@ -30,7 +30,6 @@ class DownloadIndicatorTemplates extends Command
             return $isDownloaded;
         });
         if ($isDownloaded) {
-            echo($this->downloadPath());
             $this->components->task('Extracting', function () {
                 return $this->extractIndicatorTemplates();
             });
@@ -93,6 +92,7 @@ class DownloadIndicatorTemplates extends Command
                 Storage::disk('indicator_templates')->move($file, str_replace($rootFolder, '', $file));
             }
             Storage::disk('indicator_templates')->deleteDirectory($rootFolder);
+            unlink($this->downloadPath());
             return true;
         } catch (\Exception $exception) {
             //

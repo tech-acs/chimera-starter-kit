@@ -26,6 +26,7 @@ class Chimera extends Command
         $this->installEnvFiles();
         $this->installEmptyWebRoutesFile();
         $this->installJsDependencies();
+        $this->cleanup();
 
         info("Installation complete");
         return self::SUCCESS;
