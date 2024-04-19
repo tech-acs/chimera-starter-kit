@@ -25,7 +25,7 @@ class BulkInvitationJob implements ShouldQueue
 
     public $timeout = 600;
 
-    public function __construct(private string $filePath, private bool $hasRoleColumn, private bool $sendEmails, private User $user)
+    public function __construct(private string $filePath, private bool $sendEmails, private User $user)
     {
     }
 
@@ -38,7 +38,7 @@ class BulkInvitationJob implements ShouldQueue
             ->each(function (array $row) use ($expiresAt, &$totalCount, &$successCount) {
                 $totalCount++;
                 $email = trim($row['email']);
-                $role = $this->hasRoleColumn ? ($row['role'] ?? null) : null;
+                $role = $row['role'] ?? null;
                 $rowValidator = Validator::make(
                     ['email' => $email, 'role' => $role],
                     [

@@ -19,7 +19,6 @@ class BulkInviter extends Component
     public $fileAccepted = false;
     public string $filePath = '';
     public bool $sendEmails = false;
-    public bool $hasRoleColumn = false;
 
     protected $rules = [
         'file' => 'required|file|mimes:csv,xlsx'
@@ -41,7 +40,6 @@ class BulkInviter extends Component
             ]);
         }
         $this->fileAccepted = true;
-        $this->hasRoleColumn = in_array('role', $columnHeaders);
     }
 
     public function resetForm()
@@ -61,7 +59,7 @@ class BulkInviter extends Component
     public function invite()
     {
         $this->validate();
-        BulkInvitationJob::dispatch($this->filePath, $this->hasRoleColumn, $this->sendEmails, auth()->user());
+        BulkInvitationJob::dispatch($this->filePath, $this->sendEmails, auth()->user());
         $this->emit('processing');
     }
 

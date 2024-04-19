@@ -39,7 +39,7 @@ class ChartsController extends Controller
             $query->where('published', true);
         }]);
         try {
-            $this->authorize($page->permission_name, Auth::user());
+            Gate::authorize($page->permission_name, Auth::user());
         } catch (AuthorizationException $authorizationException) {
             return redirect('faq');
         }
