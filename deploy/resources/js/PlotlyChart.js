@@ -47,8 +47,8 @@ export default class PlotlyChart {
     }
 
     registerLivewireEventListeners() {
-        Livewire.on(`redrawChart-${this.id}`, (newData, newLayout) => {
-            Plotly.react(this.id, newData, newLayout)
+        Livewire.on(`redrawChart-${this.id}`, (dataAndLayout) => {
+            Plotly.react(this.id, ...dataAndLayout)
         });
     }
 }

@@ -54,10 +54,9 @@ class ChartsController extends Controller
     public function indicator(Indicator $indicator)
     {
         try {
-            $this->authorize($indicator->permission_name, Auth::user());
+            Gate::authorize($indicator->permission_name, Auth::user());
         } catch (AuthorizationException $authorizationException) {
             abort(404);
-            //exit;
         }
         return view('chimera::charts.single', compact('indicator'));
     }
