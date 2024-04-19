@@ -87,24 +87,24 @@ class ChimeraServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
-        Livewire::component('area-filter', \Uneca\Chimera\Http\Livewire\AreaFilter::class);
-        Livewire::component('area-restriction-manager', \Uneca\Chimera\Http\Livewire\AreaRestrictionManager::class);
-        Livewire::component('area-spreadsheet-importer', \Uneca\Chimera\Http\Livewire\AreaSpreadsheetImporter::class);
-        Livewire::component('bulk-inviter', \Uneca\Chimera\Http\Livewire\BulkInviter::class);
-        Livewire::component('chart', \Uneca\Chimera\Http\Livewire\Chart::class);
-        Livewire::component('column-mapper', \Uneca\Chimera\Http\Livewire\ColumnMapper::class);
-        Livewire::component('command-palette', \Uneca\Chimera\Http\Livewire\CommandPalette::class);
-        Livewire::component('exporter', \Uneca\Chimera\Http\Livewire\Exporter::class);
-        Livewire::component('invitation-manager', \Uneca\Chimera\Http\Livewire\InvitationManager::class);
-        Livewire::component('language-switcher', \Uneca\Chimera\Http\Livewire\LanguageSwitcher::class);
-        Livewire::component('map', \Uneca\Chimera\Http\Livewire\Map::class);
-        Livewire::component('notification-bell', \Uneca\Chimera\Http\Livewire\NotificationBell::class);
-        Livewire::component('notification-dropdown', \Uneca\Chimera\Http\Livewire\NotificationDropdown::class);
-        Livewire::component('notification-inbox', \Uneca\Chimera\Http\Livewire\NotificationInbox::class);
-        Livewire::component('reference-value-spreadsheet-importer', \Uneca\Chimera\Http\Livewire\ReferenceValueSpreadsheetImporter::class);
-        Livewire::component('role-manager', \Uneca\Chimera\Http\Livewire\RoleManager::class);
-        Livewire::component('case-stats', \Uneca\Chimera\Http\Livewire\CaseStats::class);
-        Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Http\Livewire\SubscribeToReportNotification::class);
+        Livewire::component('area-filter', \Uneca\Chimera\Livewire\AreaFilter::class);
+        Livewire::component('area-restriction-manager', \Uneca\Chimera\Livewire\AreaRestrictionManager::class);
+        Livewire::component('area-spreadsheet-importer', \Uneca\Chimera\Livewire\AreaSpreadsheetImporter::class);
+        Livewire::component('bulk-inviter', \Uneca\Chimera\Livewire\BulkInviter::class);
+        Livewire::component('chart', \Uneca\Chimera\Livewire\Chart::class);
+        Livewire::component('column-mapper', \Uneca\Chimera\Livewire\ColumnMapper::class);
+        Livewire::component('command-palette', \Uneca\Chimera\Livewire\CommandPalette::class);
+        Livewire::component('exporter', \Uneca\Chimera\Livewire\Exporter::class);
+        Livewire::component('invitation-manager', \Uneca\Chimera\Livewire\InvitationManager::class);
+        Livewire::component('language-switcher', \Uneca\Chimera\Livewire\LanguageSwitcher::class);
+        Livewire::component('map', \Uneca\Chimera\Livewire\Map::class);
+        Livewire::component('notification-bell', \Uneca\Chimera\Livewire\NotificationBell::class);
+        Livewire::component('notification-dropdown', \Uneca\Chimera\Livewire\NotificationDropdown::class);
+        Livewire::component('notification-inbox', \Uneca\Chimera\Livewire\NotificationInbox::class);
+        Livewire::component('reference-value-spreadsheet-importer', \Uneca\Chimera\Livewire\ReferenceValueSpreadsheetImporter::class);
+        Livewire::component('role-manager', \Uneca\Chimera\Livewire\RoleManager::class);
+        Livewire::component('case-stats', \Uneca\Chimera\Livewire\CaseStats::class);
+        Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Livewire\SubscribeToReportNotification::class);
     }
 
     public function boot()

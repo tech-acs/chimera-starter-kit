@@ -1,6 +1,6 @@
 <?php
 
-namespace Uneca\Chimera\Http\Livewire;
+namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
 use Uneca\Chimera\Models\Indicator;

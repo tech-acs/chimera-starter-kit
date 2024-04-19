@@ -1,6 +1,6 @@
 <?php
 
-namespace Uneca\Chimera\Http\Livewire;
+namespace Uneca\Chimera\Livewire;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Uneca\Chimera\Http\Livewire;
+namespace Uneca\Chimera\Livewire;
 
 use Uneca\Chimera\Jobs\ImportReferenceValueSpreadsheetJob;
 use Uneca\Chimera\Models\AreaHierarchy;
