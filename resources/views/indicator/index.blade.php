@@ -62,7 +62,7 @@
                                     {{ __('Name') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Questionnaire') }}
+                                    {{ __('Data Source') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     {{ __('Tag') }}
@@ -83,7 +83,7 @@
                                     {{$record->name}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {{$record->questionnaire}}
+                                    {{$record->data_source}}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
                                     {{$record->tag ?? '-'}}

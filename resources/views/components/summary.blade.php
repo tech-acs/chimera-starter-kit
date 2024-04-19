@@ -25,7 +25,7 @@
             <h3 class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider pb-6">
                 {{ __('Interview stats') }}
             </h3>
-            @livewire($questionnaire->case_stats_component, ['questionnaire' => $questionnaire])
+            @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource])
         </div>
 
         <div>

@@ -2,7 +2,7 @@
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 space-y-6">
         @forelse($dataSources as $dataSource)
-            <x-chimera-summary :questionnaire="$dataSource">
+            <x-chimera-summary :data-source="$dataSource">
                 @forelse($dataSource->scorecards as $scorecard)
                     @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index])
                 @empty
