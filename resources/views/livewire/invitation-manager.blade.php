@@ -121,22 +121,12 @@
                     if (navigator.clipboard && window.isSecureContext) {
                         return navigator.clipboard.writeText(textToCopy);
                     } else {
-                        // text area method
-                        let textArea = document.createElement("textarea");
-                        textArea.value = textToCopy;
-                        // make the textarea out of viewport
-                        textArea.style.position = "fixed";
-                        textArea.style.left = "-999999px";
-                        textArea.style.top = "-999999px";
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                        document.execCommand('copy')
-                        return new Promise((res, rej) => {
-                            // here the magic happens
-                            document.execCommand('copy') ? res() : rej();
-                            textArea.remove();
-                        });
+                        const temp = document.createElement("input")
+                        temp.value = textToCopy
+                        document.body.appendChild(temp)
+                        temp.select()
+                        document.execCommand("Copy")
+                        document.body.removeChild(temp)
                     }
                 }
             </script>
@@ -146,7 +136,7 @@
             </div>
             <div class="flex items-center mt-4" x-data="{copied: false, initialized: false}">
                 <input type="text" id="invite_link" readonly class="w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md" value="{{$link}}">
-                <button class="hidden sm:flex sm:items-center sm:justify-center relative w-9 h-9 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 text-gray-400 hover:text-gray-600 group ml-1.5" :style="copied ? 'color:#06B6D4' : ''" @click="copyToClipboard(document.getElementById('invite_link').value).then(()=>{copied=true;copyTimeout=setTimeout(()=>{copied=false},1500)})" style="">
+                <button @click="copyToClipboard(document.getElementById('invite_link').value); copied=true; setTimeout(()=>{copied=false}, 2000);" class="hidden sm:flex sm:items-center sm:justify-center relative w-9 h-9 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 text-gray-400 hover:text-gray-600 group ml-1.5" :style="copied ? 'color:#06B6D4' : ''">
                     <div x-show="copied" style="display:none" class="absolute inset-x-0 bottom-full mb-2.5 flex justify-center" x-transition:enter="transform ease-out duration-200 transition origin-bottom" x-transition:enter-start="scale-95 translate-y-0.5 opacity-0" x-transition:enter-end="scale-100 translate-y-0 opacity-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
                       <div class="bg-gray-900 text-white rounded-md text-xs leading-4 tracking-wide font-semibold uppercase py-1 px-3 filter drop-shadow-md">
                         <svg width="16" height="6" viewBox="0 0 16 6" class="text-gray-900 absolute top-full left-1/2 -mt-px -ml-2">
