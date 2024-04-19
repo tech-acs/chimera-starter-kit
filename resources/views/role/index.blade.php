@@ -55,7 +55,10 @@
         <div class="mt-5 flex flex-col">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
+
+                        <x-chimera::delete-confirmation />
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                             <tr>
@@ -88,13 +91,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     @if ($record->name !== 'Super Admin')
-                                    <a href="{{route('role.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                    <span class="text-gray-400 px-1">|</span>
-                                    <form action="{{route('role.destroy', $record->id)}}" method="post" class="inline">
-                                        @method('delete')
-                                        @csrf
-                                        <a onclick="this.parentNode.submit()" role="button" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
-                                    </form>
+                                        <a href="{{route('role.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                        <span class="text-gray-400 px-1">|</span>
+                                        <a href="{{route('role.destroy', $record->id)}}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                     @endif
                                 </td>
                             </tr>
