@@ -249,7 +249,7 @@ export default class LeafletMap {
 
     registerDomEventListeners() {
         document.addEventListener('DOMContentLoaded', () => {
-            Livewire.emit('mapReady');
+            Livewire.dispatch('mapReady');
         });
     }
 

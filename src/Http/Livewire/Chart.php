@@ -147,7 +147,7 @@ abstract class Chart extends Component
     final public function updateChart(array $filter): void
     {
         $this->updateDataAndLayout($filter);
-        $this->emit("redrawChart-{$this->graphDiv}", $this->data, $this->layout);
+        $this->dispatch("redrawChart-{$this->graphDiv}", $this->data, $this->layout);
     }
 
     public function deferredLoading()

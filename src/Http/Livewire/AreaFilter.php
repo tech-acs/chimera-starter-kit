@@ -75,14 +75,14 @@ class AreaFilter extends Component
             array_filter($this->dropdowns, fn ($dropdown) => $dropdown['selected'])
         );
         session()->put('area-filter', $filter);
-        $this->emit('filterChanged', $filter);
+        $this->dispatch('filterChanged', $filter);
     }
 
     public function clear()
     {
         session()->forget('area-filter');
         $this->mount();
-        $this->emit('filterChanged', []);
+        $this->dispatch('filterChanged', []);
     }
 
     public function render()

@@ -42,7 +42,7 @@ export default class PlotlyChart {
         document.getElementById(this.id).on('plotly_click', function(data){
             let payload = pick(data.points[0], ['x', 'y', 'pointIndex', 'pointNumber']); // 0 here might grow per trace???
             // Also include the id in the payload so that the correct indicator can pick it up
-            Livewire.emit('chartClicked', payload);
+            Livewire.dispatch('chartClicked', payload);
         });
     }
 
