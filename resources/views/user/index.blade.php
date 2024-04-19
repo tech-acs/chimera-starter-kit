@@ -13,9 +13,9 @@
                 selectedId: null,
                 init() {
                     // Set the first available tab on the page on page load.
-                    this.$nextTick(() => this.select('users'))
+                    this.$nextTick(() => this.tabTo('users'))
                 },
-                select(id) {
+                tabTo(id) {
                     this.selectedId = id
                 },
                 isSelected(id) {
@@ -27,9 +27,9 @@
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <a
-                            @click="select('users')"
+                            @click="tabTo('users')"
                             :class="isSelected('users') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
-                            class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
+                            class="cursor-pointer text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             Users
                             <span
@@ -39,9 +39,9 @@
                         </a>
 
                         <a
-                            @click="select('invitations')"
+                            @click="tabTo('invitations')"
                             :class="isSelected('invitations') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
-                            class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
+                            class="cursor-pointer text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             Invitations
                             <span
