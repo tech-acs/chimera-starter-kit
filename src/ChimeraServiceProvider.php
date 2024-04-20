@@ -25,30 +25,9 @@ class ChimeraServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
-        $migrations = [
-            'install_postgis_extension',
-            'install_ltree_extension',
-            'create_area_restrictions_table',
-            'create_invitations_table',
-            'create_usage_stats_table',
-            'create_areas_table',
-            'create_pages_table',
-            'create_data_sources_table',
-            'create_indicators_table',
-            'create_indicator_page_table',
-            'create_scorecards_table',
-            'create_reports_table',
-            'add_is_suspended_column_to_users_table',
-            'create_notifications_table',
-            'create_announcements_table',
-            'create_reference_values_table',
-            'create_area_hierarchies_table',
-            'create_map_indicators_table',
-            'create_analytics_table',
-            'create_report_user_table',
-        ];
         $package
             ->name('chimera')
+            ->hasConfigFile(['chimera', 'languages', 'filesystems'])
             ->hasViews()
             ->hasViewComponents(
                 'chimera',
@@ -56,10 +35,30 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Components\SimpleCard::class,
                 \Uneca\Chimera\Components\Summary::class
             )
-            ->hasConfigFile(['chimera', 'languages', 'filesystems'])
             ->hasTranslations()
             ->hasRoute('web')
-            ->hasMigrations($migrations)
+            ->hasMigrations([
+                'install_postgis_extension',
+                'install_ltree_extension',
+                'create_area_restrictions_table',
+                'create_invitations_table',
+                'create_usage_stats_table',
+                'create_areas_table',
+                'create_pages_table',
+                'create_data_sources_table',
+                'create_indicators_table',
+                'create_indicator_page_table',
+                'create_scorecards_table',
+                'create_reports_table',
+                'add_is_suspended_column_to_users_table',
+                'create_notifications_table',
+                'create_announcements_table',
+                'create_reference_values_table',
+                'create_area_hierarchies_table',
+                'create_map_indicators_table',
+                'create_analytics_table',
+                'create_report_user_table',
+            ])
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,
                 \Uneca\Chimera\Commands\CacheScorecards::class,
@@ -107,9 +106,9 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Livewire\SubscribeToReportNotification::class);
     }
 
-    public function boot()
+    public function packageBooted()
     {
-        parent::boot();
+        //parent::boot();
 
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Super Admin') ? true : null;
