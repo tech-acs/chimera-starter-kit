@@ -33,12 +33,12 @@ class User extends \App\Models\User
     /*public function indicatorAnalytics()
     {
         return $this->hasMany(Analytics::class);
-    }
+    }*/
 
     public function reports()
     {
         return $this->belongsToMany(Report::class)->withTimestamps();
-    }*/
+    }
 
     public function areaRestrictionAsFilter()
     {

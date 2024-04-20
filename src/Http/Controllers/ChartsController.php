@@ -41,7 +41,7 @@ class ChartsController extends Controller
         try {
             Gate::authorize($page->permission_name, Auth::user());
         } catch (AuthorizationException $authorizationException) {
-            return redirect('faq');
+            return redirect('home');
         }
         $indicators = $page->indicators?->filter(function ($indicator) {
             return Gate::allows($indicator->permission_name);
