@@ -4,6 +4,8 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Uneca\Chimera\Models\DataSource;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
 
 class DataExport extends Command
 {
@@ -66,15 +68,13 @@ class DataExport extends Command
             fclose($dumpFileHandle);
             fclose($tmpFileHandle);
             unlink($tmpFile);
+            info('The postgres data has been dumped to file');
+            return self::SUCCESS;
 
-            $this->newLine()->info('The postgres data has been dumped to file');
-            $this->newLine();
-            return Command::SUCCESS;
         } catch (\Exception $exception) {
-            $this->newLine()->error('There was a problem dumping the postgres database');
-            $this->error($exception->getMessage());
-            $this->newLine();
-            return Command::FAILURE;
+            error('There was a problem dumping the postgres database');
+            error($exception->getMessage());
+            return self::FAILURE;
         }
     }
 }

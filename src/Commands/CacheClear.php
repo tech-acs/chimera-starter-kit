@@ -33,6 +33,6 @@ class CacheClear extends Command
 
         $this->newLine()->info("The cache has been cleared");
         $this->newLine();
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

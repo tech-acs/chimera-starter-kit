@@ -73,7 +73,7 @@ class Production extends Command
             }
         });
 
-        $this->components->task('Check source databases are configured and reachable', function () {
+        $this->components->task('Check data source databases are configured and reachable', function () {
             try {
                 $connections = DataSource::active()->pluck('name');
                 if ($connections->isEmpty()) {
@@ -96,14 +96,17 @@ class Production extends Command
 
         $this->components->task('Check email has been properly configured and is sending', function () {
             try {
-                Mail::raw('This is a test email from the dashboard', function($msg) {
-                    $msg->to(User::first()->email ?? 'admin@example.com')
-                        ->subject('Test Email');
-                });
-                return true;
+                if (! in_array(env('MAIL_MAILER'), ['log', 'mailhog'])) {
+                    Mail::raw('This is a test email from the dashboard', function($msg) {
+                        $msg->to(User::first()->email ?? 'admin@example.com')
+                            ->subject('Test Email');
+                    });
+                    return true;
+                }
             } catch (\Throwable $throwable) {
-                return false;
+                //
             }
+            return false;
         });
 
         $this->components->task('Check queue manager (supervisord) is running', function () {
@@ -138,7 +141,6 @@ class Production extends Command
         });
 
         $this->newLine();
-
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

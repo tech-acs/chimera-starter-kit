@@ -4,10 +4,11 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Uneca\Chimera\Traits\PackageTasksTrait;
+use function Laravel\Prompts\info;
 
 class Update extends Command
 {
-    public $signature = 'chimera:update {--composer=global} {--chimera-config} {--migrations} {--packages} {--jetstream-modifications} {--buildables} {--stubs} {--other-configs} {--npm} {--copy-env}';
+    public $signature = 'chimera:update {--composer=global} {--chimera-config} {--migrations} {--packages} {--jetstream-customizations} {--assets} {--stubs} {--npm} {--copy-env}';
 
     public $description = 'Update the Dashboard Starter Kit';
 
@@ -17,48 +18,32 @@ class Update extends Command
     {
         if ($this->option('chimera-config')) {
             $this->callSilent('vendor:publish', ['--tag' => 'chimera-config', '--force' => true]);
-            $this->comment('Published chimera config');
+            info('Published chimera config');
         }
         if ($this->option('migrations')) {
             $this->callSilent('vendor:publish', ['--tag' => 'chimera-migrations', '--force' => true]);
-            $this->comment('Published migrations');
+            info('Published chimera migrations');
         }
         if ($this->option('packages')) {
-            $this->requireComposerPackages($this->requiredComposerPackages);
-            $this->comment('Updated composer.json');
+            $this->installPhpDependencies();
         }
-        if ($this->option('jetstream-modifications')) {
-            $this->copyJetstreamModifications();
-            $this->comment('Copied Jetstream customizations');
+        if ($this->option('jetstream-customizations')) {
+            $this->copyCustomizedJetstreamFiles();
         }
-        if ($this->option('buildables')) {
-            $this->publishResources();
-            $this->comment('Published resources (js, css, public images, tailwind.config.js and vite.config.js)');
+        if ($this->option('assets')) {
+            $this->copyAssets();
         }
         if ($this->option('stubs')) {
             $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);
-            $this->comment('Published stubs');
-        }
-        if ($this->option('other-configs')) {
-            $this->editConfigFiles();
-            $this->comment('Updated app, auth, and jetstream (enable: profile photo and terms + privacy | disable: account deletion) config files');
+            info('Published stubs');
         }
         if ($this->option('npm')) {
-            $this->updateNodePackages(function ($packages) {
-                return $this->requiredNodePackages + $packages;
-            });
-            $this->comment('Updated package.json with required npm packages');
+            $this->installJsDependencies();
         }
         if ($this->option('copy-env')) {
-            copy(__DIR__.'/../../deploy/.env.example', base_path('.env'));
-            copy(__DIR__.'/../../deploy/.env.example', base_path('.env.example'));
-            config(['app.key' => '']);
-            $this->call('key:generate');
-            $this->comment('Copied .env.example');
+            $this->installEnvFiles();
         }
-
-        $this->newLine()->info('Update complete');
-        $this->newLine();
+        info('Update complete');
 
         return self::SUCCESS;
     }

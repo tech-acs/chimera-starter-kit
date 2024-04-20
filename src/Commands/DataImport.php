@@ -9,7 +9,6 @@ use Symfony\Component\Process\Process;
 class DataImport extends Command
 {
     protected $signature = 'chimera:data-import {--command} {--do-not-truncate}';
-
     protected $description = 'Restore postgres data (some tables) from file';
 
     protected array $tables = [
@@ -36,7 +35,7 @@ class DataImport extends Command
             $this->newLine()->line("You can use the command below to manually import the data using the psql tool (enter password when prompted)");
             $this->info($command);
             $this->newLine();
-            return Command::SUCCESS;
+            return self::SUCCESS;
         }
 
         if (! $this->option('do-not-truncate')) {
@@ -48,7 +47,7 @@ class DataImport extends Command
         if (! file_exists($dumpFile)) {
             $this->newLine()->error('No data-export.sql file found to import');
             $this->newLine();
-            return 1;
+            return self::FAILURE;
         }
 
         (new Process(
@@ -61,6 +60,6 @@ class DataImport extends Command
                 $this->output->write($output);
             });
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

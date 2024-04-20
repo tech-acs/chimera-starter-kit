@@ -29,7 +29,7 @@ class CacheCaseStats extends Command
         if ($toCache->isEmpty()) {
             $this->newLine()->error('No matching case-stats found');
             $this->newLine();
-            return Command::FAILURE;
+            return self::FAILURE;
         }
 
         foreach ($toCache as $dataSource) {
@@ -48,7 +48,7 @@ class CacheCaseStats extends Command
             }
         }
         $this->newLine();
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     public function handle()

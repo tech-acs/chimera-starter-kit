@@ -16,7 +16,6 @@ use function Laravel\Prompts\textarea;
 class MakeReport extends GeneratorCommand
 {
     protected $signature = 'chimera:make-report';
-
     protected $description = 'Create a new report. Creates file from stub and adds entry in reports table.';
 
     protected $type = 'default';
@@ -47,44 +46,48 @@ class MakeReport extends GeneratorCommand
 
     public function handle()
     {
-        if (DataSource::all()->isEmpty()) {
-            error("You have not yet added questionnaires to your dashboard. Please do so first.");
+        $dataSources = DataSource::all();
+        if ($dataSources->isEmpty()) {
+            error("You have not yet added data sources to your dashboard. Please do so first.");
             return self::FAILURE;
         }
-        $name = text(
-            label: "Report name (this will be the component name and has to be in camel case)",
-            placeholder: 'Household/BirthRate',
-            hint: "Eg. HouseholdsEnumeratedByDay or Household/BirthRate (including directory helps organize indicator files)",
-            validate: ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:reports,name']
-        );
-        $questionnaires = DataSource::pluck('name')->toArray();
-        $questionnaireMenu = array_combine(range(1, count($questionnaires)), array_values($questionnaires));
 
-        $questionnaire = select("Which questionnaire does this report belong to?", $questionnaireMenu);
+        $name = text(
+            label: "Report name",
+            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
+            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:reports,name']],
+            hint: "This will serve as the component name and has to be in camel case"
+        );
+        $dataSource = select(
+            label: "Which data source will this report be using?",
+            options: $dataSources->pluck('name', 'name')->toArray(),
+            hint: "You will not be able to change this later"
+        );
         $title = text(
-            label: "Please enter a reader friendly title for the report (press enter to leave empty for now) ",
-            validate: ['nullable',]
+            label: "Please enter a reader friendly title for the report",
+            placeholder: 'E.g. Households Enumerated by Day or Birth Rate',
+            hint: "You can leave this empty for now",
         );
         $description = textarea(
-            label: "Please enter a description for the report (press enter to leave empty for now)",
-            validate: ['nullable',]
+            label: "Please enter a description for the report",
+            placeholder: "E.g. This reports generates a file showing a list of all enumerators that have not synced their tablets with the server in the last 24 hours",
+            hint: "You can leave this empty for now"
         );
         $this->ensureReportsPermissionExists();
 
-        DB::transaction(function () use ($name, $title, $description, $questionnaire) {
-            $result = $this->writeFile($name);
-            if ($result) {
+        $report = Report::create([
+            'name' => $name,
+            'title' => $title,
+            'description' => $description,
+            'data_source' => $dataSource,
+        ]);
+        DB::transaction(function () use ($report, $name) {
+            if ($this->writeFile($name)) {
                 info('Report created successfully.');
             } else {
-                throw new \Exception('There was a problem creating the report file');
+                throw new \Exception('There was a problem creating the class file');
             }
-
-            Report::create([
-                'name' => $name,
-                'title' => $title,
-                'description' => $description,
-                'questionnaire' => $questionnaire,
-            ]);
+            $report->save();
         });
 
         return self::SUCCESS;

@@ -28,7 +28,7 @@ class CacheScorecards extends Command
         if ($scorecardsToCache->isEmpty()) {
             $this->newLine()->error('No matching scorecards found');
             $this->newLine();
-            return Command::FAILURE;
+            return self::FAILURE;
         }
 
         foreach ($scorecardsToCache as $scorecard) {
@@ -47,7 +47,7 @@ class CacheScorecards extends Command
             }
         }
         $this->newLine();
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     public function handle()

@@ -20,23 +20,6 @@ class DownloadIndicatorTemplates extends Command
 
     protected $description = 'Download indicator templates from the online repository';
 
-
-    public function handle()
-    {
-        $this->components->info("Download and extract indicator templates from online repository");
-        $isDownloaded = false;
-        $this->components->task('Downloading', function () use (&$isDownloaded) {
-            $isDownloaded = $this->downloadIndicatorTemplates();
-            return $isDownloaded;
-        });
-        if ($isDownloaded) {
-            $this->components->task('Extracting', function () {
-                return $this->extractIndicatorTemplates();
-            });
-        }
-        return Command::SUCCESS;
-    }
-
     protected function getDownloadUrl(): string
     {
         if ($this->option('tag')) {
@@ -98,5 +81,21 @@ class DownloadIndicatorTemplates extends Command
             //
         }
         return false;
+    }
+
+    public function handle()
+    {
+        $this->components->info("Download and extract indicator templates from online repository");
+        $isDownloaded = false;
+        $this->components->task('Downloading', function () use (&$isDownloaded) {
+            $isDownloaded = $this->downloadIndicatorTemplates();
+            return $isDownloaded;
+        });
+        if ($isDownloaded) {
+            $this->components->task('Extracting', function () {
+                return $this->extractIndicatorTemplates();
+            });
+        }
+        return self::SUCCESS;
     }
 }

@@ -5,10 +5,8 @@ namespace Uneca\Chimera\Commands;
 use Uneca\Chimera\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\note;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\password;
@@ -82,7 +80,7 @@ class Adminify extends Command
             if ($user->hasRole(self::ROLE)) {
                 info("The user account, with email address $email, is already assigned the '" . self::ROLE . "' role\n");
                 $response = select(
-                    label: "Do you want to remove the role from the user?", 
+                    label: "Do you want to remove the role from the user?",
                     options: ['Yes', 'No'],
                     default: 'No'
                 );

@@ -11,7 +11,6 @@ class UpdateIndicators extends Command
     use PackageTasksTrait;
 
     public $signature = 'chimera:update-indicators {--all} {--force : Force update without confirmation} {--class= : Update a specific indicator}';
-
     public $description = 'Update Indicators from template';
 
     public function handle(): int

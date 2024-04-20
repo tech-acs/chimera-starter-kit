@@ -12,7 +12,6 @@ use Uneca\Chimera\Services\IndicatorCaching;
 class CacheIndicators extends Command
 {
     protected $signature = 'chimera:cache-indicators {--max-level=0} {--data-source=} {--tag=}';
-
     protected $description = "Calculate and cache (published) indicators";
 
     public function __construct()
@@ -37,7 +36,7 @@ class CacheIndicators extends Command
         if ($indicatorsToCache->isEmpty()) {
             $this->newLine()->error('No matching indicators found');
             $this->newLine();
-            return Command::FAILURE;
+            return self::FAILURE;
         }
 
         $maxLevel = $this->option('max-level') ?? 0;
@@ -81,7 +80,7 @@ class CacheIndicators extends Command
             $this->info("Completed in " . ($endTime - $startTime) . " seconds");
         }
         $this->newLine();
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     public function handle()

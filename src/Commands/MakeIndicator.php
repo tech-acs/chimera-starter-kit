@@ -13,9 +13,7 @@ use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
-use function Laravel\Prompts\table;
 use function Laravel\Prompts\select;
-use function Laravel\Prompts\suggest;
 use function Laravel\Prompts\confirm;
 
 class MakeIndicator extends GeneratorCommand
@@ -58,46 +56,8 @@ class MakeIndicator extends GeneratorCommand
         return str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $templateFile)), $this->buildClass($className));
     }
 
-    /*protected function askForIndicatorTemplate()
-    {
-        $templates = $this->loadIndicatorTemplates();
-        $templateNotFound = true;
-        while ($templateNotFound) {
-            info('The following indicator templates are available for use.');
-            table(
-                ['Name', 'Category'],
-                $templates->map(function ($template) {
-                    unset($template['File']);
-                    return $template;
-                })
-            );
-            $selectedTemplate = search(
-                label: 'Select the template you would like to use for your indicator',
-                placeholder: "Select 'Blank indicator' if you do not want to use a template",
-                options: fn (string $userInput) => strlen($userInput) > 0
-                    ? $templates->filter(function ($item, $key) use ($userInput) {
-                        return str_starts_with(strtolower($item['Name']), strtolower($userInput));
-                    })->pluck('Name')->toArray()
-                    : $templates->pluck('Name')->toArray(),
-                hint: 'Type to search and use the arrow keys to select'
-            );
-            dump($selectedTemplate);
-            $collection = collect($templates);
-            if ($selected = $collection->firstWhere('Name', $selectedTemplate)) {
-                $templateNotFound = false;
-                $this->type = 'template';
-                $this->template = $selected;
-            } elseif (empty($selectedTemplate)) {
-                $templateNotFound = false;
-            } else {
-                error('Template not found');
-            }
-        }
-    }*/
-
     protected function loadIndicatorTemplates(): Collection
     {
-        $templates = collect([]);
         $directories = collect(Storage::disk('indicator_templates')->directories())
             ->filter(fn ($directory) => $directory !== 'docs');
         $files = [];
@@ -127,10 +87,9 @@ class MakeIndicator extends GeneratorCommand
         $name = text(
             label: "Indicator name",
             placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
-            hint: "This will serve as the component name and has to be in camel case",
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']]
+            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']],
+            hint: "This will serve as the component name and has to be in camel case"
         );
-
         $dataSource = select(
             label: "Which data source will this indicator be using?",
             options: $dataSources->pluck('name', 'name')->toArray(),
@@ -156,12 +115,12 @@ class MakeIndicator extends GeneratorCommand
                     });
                 $selectedTemplate = search(
                     label: "Select the indicator template you want to use?",
-                    placeholder: 'Search...',
                     options: fn (string $userInput) => strlen($userInput) > 0
                         ? $templateMenu->filter(function ($item, $key) use ($userInput) {
                             return str_starts_with(strtolower($item['Name']), strtolower($userInput));
                         })->pluck('Label', 'File')->toArray()
                         : $templateMenu->pluck('Label', 'File')->toArray(),
+                    placeholder: 'Search...',
                     scroll: 10,
                     hint: "Type to search and use the arrow keys to select"
                 );
@@ -189,15 +148,16 @@ class MakeIndicator extends GeneratorCommand
         $title = text(
             label: "Please enter a reader friendly title for the indicator",
             placeholder: 'E.g. Households Enumerated by Day or Birth Rate',
-            hint: "You can leave this empty for now",
             default: $defaultTitle ?? '',
+            hint: "You can leave this empty for now",
         );
         $description = textarea(
             label: "Please enter a description for the indicator",
             placeholder: "E.g. This indicator represents the breakdown of the population by gender and age at different geographic levels.",
-            hint: "You can leave this empty for now",
-            default: $defaultDescription ?? ''
+            default: $defaultDescription ?? '',
+            hint: "You can leave this empty for now"
         );
+
         $indicator = Indicator::make([
             'name' => $name,
             'title' => $title,
@@ -206,14 +166,14 @@ class MakeIndicator extends GeneratorCommand
             'type' => $chosenChartType,
         ]);
         DB::transaction(function () use ($indicator, $name, $selectedTemplate) {
-            $result = $this->writeIndicatorFile($name, $selectedTemplate);
-            if ($result) {
+            if ($this->writeIndicatorFile($name, $selectedTemplate)) {
                 info('Indicator created successfully.');
             } else {
-                throw new \Exception('There was a problem creating the indicator file');
+                throw new \Exception('There was a problem creating the class file');
             }
             $indicator->save();
         });
+
         return self::SUCCESS;
     }
 }

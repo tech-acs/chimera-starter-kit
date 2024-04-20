@@ -10,7 +10,6 @@ use function Laravel\Prompts\info;
 class Delete extends Command
 {
     protected $signature = 'chimera:delete';
-
     protected $description = 'Delete dashboard elements such as indicator, report etc. Removes file and database entry.';
 
     public function handle()
