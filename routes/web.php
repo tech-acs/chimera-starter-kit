@@ -13,9 +13,9 @@ use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\PageController;
 use Uneca\Chimera\Http\Controllers\Manage\DataSourceController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueController;
+use Uneca\Chimera\Http\Controllers\Manage\ReportManagementRunNowController;
 use Uneca\Chimera\Http\Controllers\Manage\ReportManagementController;
 use Uneca\Chimera\Http\Controllers\Manage\RoleController;
-use Uneca\Chimera\Http\Controllers\Manage\SettingController;
 use Uneca\Chimera\Http\Controllers\Manage\ScorecardController;
 use Uneca\Chimera\Http\Controllers\Manage\UsageStatsController;
 use Uneca\Chimera\Http\Controllers\Manage\UserController;
@@ -67,6 +67,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
         //Route::get('scorecard/{scorecard}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::name('manage.')->group(function () {
+            Route::get('report/{report}/run_now', ReportManagementRunNowController::class)->name('report.run_now');
             Route::resource('report', ReportManagementController::class)->except(['show']);
             Route::resource('map_indicator', MapIndicatorController::class)->except(['show']);
         });
