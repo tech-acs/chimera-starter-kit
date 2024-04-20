@@ -22,7 +22,7 @@ class Summary extends Component
         $this->dataSource = $dataSource;
         $this->dates['start'] = $this->dataSource->start_date;
         $this->dates['end'] = $this->dataSource->end_date;
-        $this->dates['progress'] = $this->makeProgressStatement($this->dates['start'], $this->dates['end'], now());
+        $this->dates['progress'] = $this->makeProgressStatement($this->dates['start'], $this->dates['end'], Carbon::today());
         $this->lastUpdated = $this->getLastUpdated();
         $this->title = $this->dataSource->title;
         $this->color = 'text-black';
@@ -35,11 +35,11 @@ class Summary extends Component
     private function makeProgressStatement(Carbon $s, Carbon $e, Carbon $now)
     {
         if ($now->isBefore($s)) {
-            $progress = __(':diff days ago', ['diff' => $now->diffInDays($s)]);
+            $progress = __(':diff days to go', ['diff' => (int)$now->diffInDays($s, absolute: true)]);
         } elseif ($now->isBetween($s, $e)) {
-            $progress = __('Day :sofar of :total', ['sofar' => $now->diffInDays($s) + 1, 'total' => $s->diffInDays($e) + 1]);
+            $progress = __('Day :sofar of :total', ['sofar' => (int)$now->diffInDays($s, absolute: true) + 1, 'total' => (int)$s->diffInDays($e, absolute: true) + 1]);
         } elseif ($now->isAfter($e)) {
-            $progress = __('Ended :diff days ago', ['diff' => $now->diffInDays($e)]);
+            $progress = __('Ended :diff days ago', ['diff' => (int)$now->diffInDays($e, absolute: true)]);
         } else {
             $progress = $s->format('M d') . " to " . $e->format('M d'); // E.g. Jan 21 to Feb 08
         }
