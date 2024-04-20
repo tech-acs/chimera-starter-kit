@@ -55,7 +55,7 @@
         <x-action-message class="mr-3" on="saved">
             {{ __('Saved.') }}
         </x-action-message>
-        <a href="{{ route('developer.questionnaire.index') }}"><x-secondary-button class="mr-2">{{ __('Cancel') }}</x-secondary-button></a>
+        <a href="{{ route('developer.data-source.index') }}"><x-secondary-button class="mr-2">{{ __('Cancel') }}</x-secondary-button></a>
         <x-button wire:click.prevent="save()">
             {{ __('Save') }}
         </x-button>

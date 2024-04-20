@@ -13,7 +13,7 @@
             </x-chimera-chart-card>
         @else
             <x-chimera-simple-card>
-                This indicator is not available because the database connection of the questionnaire
+                This indicator is not available because the database connection of the data source
                 called <b>{{ $indicator->data_source }}</b> is not available.
             </x-chimera-simple-card>
         @endconnectible

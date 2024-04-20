@@ -67,7 +67,7 @@
                                         <div class="w-full">
                                             <div class="font-medium text-gray-900">
                                                 <span class="text-base mr-2">{{ $report->title }}</span>
-                                                <span class="inline-flex rounded-full bg-purple-100 px-2 leading-5 text-purple-800">{{ $report->questionnaire }}</span>
+                                                <span class="inline-flex rounded-full bg-purple-100 px-2 leading-5 text-purple-800">{{ $report->data_source }}</span>
                                             </div>
                                             <div class="text-gray-500 mt-2 text-xs">{{ $report->description }}</div>
                                         </div>
