@@ -58,7 +58,7 @@ class MakeScorecard extends GeneratorCommand
         );
         $dataSource = select(
             label: "Which data source will this scorecard be using?",
-            options: $dataSources->pluck('name', 'name')->toArray(),
+            options: $dataSources->pluck('title', 'name')->toArray(),
             hint: "You will not be able to change this later"
         );
         $title = text(
