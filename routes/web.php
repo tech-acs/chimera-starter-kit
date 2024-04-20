@@ -1,15 +1,12 @@
 <?php
 
 use Uneca\Chimera\Http\Controllers\ChartsController;
-use Uneca\Chimera\Http\Controllers\FaqController;
-use Uneca\Chimera\Http\Controllers\HelpController;
 use Uneca\Chimera\Http\Controllers\HomeController;
 use Uneca\Chimera\Http\Controllers\MapController;
 use Uneca\Chimera\Http\Controllers\Manage\AnnouncementController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaHierarchyController;
 use Uneca\Chimera\Http\Controllers\Manage\ConnectionTestController;
-use Uneca\Chimera\Http\Controllers\Manage\FaqManagementController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\AnalyticsController;
 use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
@@ -40,7 +37,6 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
     Route::get('report', [ReportController::class, 'index'])->name('report');
     Route::get('report/{report}/download', [ReportController::class, 'download'])->name('report.download');
     Route::get('report/{report}/generate', [ReportController::class, 'generate'])->name('report.generate');
-    Route::get('faq', FaqController::class)->name('faq');
     Route::get('notification', NotificationController::class)->name('notification.index');
 
     Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {
@@ -49,7 +45,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::get('user/{user}/suspension', UserSuspensionController::class)->name('user.suspension');
 
         Route::prefix('developer')->name('developer.')->group(function () {
-            Route::get('data-source/{data-source}/test-connection', ConnectionTestController::class)->name('data-source.connection.test');
+            Route::get('data-source/{data_source}/test-connection', ConnectionTestController::class)->name('data-source.connection.test');
             Route::resource('data-source', DataSourceController::class);
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
@@ -73,7 +69,6 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::name('manage.')->group(function () {
             Route::resource('report', ReportManagementController::class)->except(['show']);
             Route::resource('map_indicator', MapIndicatorController::class)->except(['show']);
-            Route::resource('faq', FaqManagementController::class)->except(['show']);
         });
         //Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
         Route::resource('announcement', AnnouncementController::class)->only(['index', 'create', 'store']);
