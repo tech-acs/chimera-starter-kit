@@ -12,7 +12,7 @@ class DashboardComponentFactory
 {
     public static function makeIndicator(Indicator $indicator)
     {
-        $classPath = "App\Http\Livewire\\" . str_replace('/', '\\', $indicator->name);
+        $classPath = "App\\Livewire\\" . str_replace('/', '\\', $indicator->name);
         try {
             $instance = new $classPath;
             $instance->indicator = $indicator;
@@ -26,7 +26,7 @@ class DashboardComponentFactory
 
     public static function makeScorecard(Scorecard $scorecard)
     {
-        $classPath = "App\Http\Livewire\\Scorecard\\" . str_replace('/', '\\', $scorecard->name);
+        $classPath = "App\\Livewire\\Scorecard\\" . str_replace('/', '\\', $scorecard->name);
         try {
             $instance = new $classPath;
             $instance->scorecard = $scorecard;
@@ -64,7 +64,7 @@ class DashboardComponentFactory
 
     public static function makeReport(Report $report)
     {
-        $classPath = "App\Reports\\" . str($report->name)->replace('/', '\\');
+        $classPath = "App\\Reports\\" . str($report->name)->replace('/', '\\');
         try {
             $instance = new $classPath($report);
             return $instance;

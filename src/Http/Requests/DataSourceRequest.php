@@ -25,7 +25,7 @@ class DataSourceRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', Rule::unique('data_sources', 'name')->ignore($this->questionnaire)],
+            'name' => ['required', Rule::unique('data_sources', 'name')->ignore($this->data_source)],
             'title' => 'required',
             'driver' => 'required',
             'host' => 'required',

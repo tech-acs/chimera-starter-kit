@@ -11,7 +11,7 @@
         <div class="bg-black/[.4] p-2 text-2xl">
             <h3 class="font-semibold text-white">
                 <a href="{{ $link }}">
-                    <span class="absolute inset-0"></span>
+                    {{--<span class="absolute inset-0"></span>--}}
                     {{ $title }}
                 </a>
             </h3>

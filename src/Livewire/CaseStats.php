@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\DataSource;
-use Uneca\Chimera\Services\BreakoutQueryBuilder;
 use Uneca\Chimera\Services\CaseStatsCaching;
 use Uneca\Chimera\Services\QueryFragmentFactory;
 
