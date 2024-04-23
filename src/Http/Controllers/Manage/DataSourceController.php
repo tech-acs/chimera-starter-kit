@@ -40,7 +40,7 @@ class DataSourceController extends Controller
                 $qualifiedName = str((new ComponentRegistry)->getClass($componentName))->ltrim("\\");
                 return [$componentName => $qualifiedName];
             })
-            ->merge(['case-stats' => 'Uneca\Chimera\Http\Livewire\CaseStats (default)'])
+            ->merge(['case-stats' => 'Uneca\Chimera\Livewire\CaseStats (default)'])
             ->reverse();
     }
 

@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use Uneca\Chimera\Http\Livewire\Chart;
+use Uneca\Chimera\Livewire\Chart;
 
 class {{ class }} extends Chart
 {
