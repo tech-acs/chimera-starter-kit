@@ -40,7 +40,14 @@ class UserController extends Controller
     {
         $user->deleteProfilePhoto();
         $user->usageStats()->delete();
+        $user->areaRestrictions()->delete();
+        $user->announcements()->delete();
+
+        //$user->reports()->dissociate();
+        //$user->permissions;
+
         $user->delete();
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')
+            ->withMessage('The user and all related resources have been removed from the application');
     }
 }

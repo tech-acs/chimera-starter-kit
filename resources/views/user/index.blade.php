@@ -78,7 +78,10 @@
                                     </div>
                                 </div>
                             @endif
-                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
+
+                                <x-chimera::delete-confirmation prompt="This action is irreversible!" />
+
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                     <tr>
@@ -133,6 +136,8 @@
                                                     @endif
                                                     <span class="text-gray-400 px-1">|</span>
                                                     <a href="{{route('user.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
+                                                    <span class="text-gray-400 px-1">|</span>
+                                                    <a href="{{route('user.destroy', $record->id)}}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
                                                 @endif
                                             </td>
                                         </tr>

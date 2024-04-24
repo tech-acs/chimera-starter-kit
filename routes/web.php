@@ -45,8 +45,8 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
 
     Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {
         Route::resource('role', RoleController::class)->only(['index', 'store', 'edit', 'destroy']);
-        Route::resource('user', UserController::class)->only(['index', 'edit', 'update']);
-        Route::get('user/{user}/suspension', UserSuspensionController::class)->name('user.suspension');
+        Route::resource('user', UserController::class)->only(['index', 'edit', 'update', 'destroy'])->middleware('password.confirm');
+        Route::get('user/{user}/suspension', UserSuspensionController::class)->name('user.suspension')->middleware('password.confirm');
 
         Route::prefix('developer')->name('developer.')->group(function () {
             Route::get('questionnaire/{questionnaire}/test-connection', ConnectionTestController::class)->name('questionnaire.connection.test');
