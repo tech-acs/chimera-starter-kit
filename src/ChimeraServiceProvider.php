@@ -33,7 +33,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'chimera',
                 \Uneca\Chimera\Components\ChartCard::class,
                 \Uneca\Chimera\Components\SimpleCard::class,
-                \Uneca\Chimera\Components\Summary::class
+                \Uneca\Chimera\Components\Summary::class,
+                \Uneca\Chimera\Components\SmartTable::class
             )
             ->hasTranslations()
             ->hasRoute('web')

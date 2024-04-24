@@ -7,20 +7,44 @@ use Uneca\Chimera\Http\Requests\MapRequest;
 use Uneca\Chimera\Jobs\ImportShapefileJob;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Services\AreaTree;
-use Uneca\Chimera\Traits\Geospatial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Uneca\Chimera\Services\SmartTableColumn;
+use Uneca\Chimera\Services\SmartTableData;
 
 class AreaController extends Controller
 {
-    use Geospatial;
-
     public function index(Request $request)
     {
-        $search = $request->get('search');
+        $baseQuery = Area::query();
+        $smartTableData = (new SmartTableData($baseQuery, $request))
+            ->columns([
+                SmartTableColumn::make('name')->sortable(),
+                SmartTableColumn::make('code')->sortable(),
+                SmartTableColumn::make('level')->sortable()
+                    ->setBladeTemplate('{{ ucfirst($hierarchies[$row->level] ?? $row->level) }}'),
+                SmartTableColumn::make('path'),
+                SmartTableColumn::make('geom')->setLabel('Has Map')
+                    ->setBladeTemplate('<x-chimera::yes-no value="{{ $row->geom }}" />'),
+            ])
+            ->searchable(['name', 'code', 'level'])
+            ->sortBy('name')
+            ->build();
+
+        $areaCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get()->keyBy('level');
+        $hierarchies = (new AreaTree())->hierarchies;
+        $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
+            return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
+        })->join(', ', ' and ');
+        view()->share('hierarchies', $hierarchies);
+
+        return view('chimera::developer.area.index', compact('smartTableData', 'summary'));
+
+
+        /*$search = $request->get('search');
         $locale = app()->getLocale();
         $records = Area::orderBy('level')->orderBy('name')
             ->when(! empty($search), function ($query) use ($search, $locale) {
@@ -33,7 +57,7 @@ class AreaController extends Controller
         $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
             return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
         })->join(', ', ' and ');
-        return view('chimera::developer.area.index', compact('records', 'summary', 'hierarchies'));
+        return view('chimera::developer.area.index', compact('records', 'summary', 'hierarchies'));*/
     }
 
     public function create()
@@ -42,7 +66,7 @@ class AreaController extends Controller
         return view('chimera::developer.area.create', ['levels' => array_map(fn ($level) => ucfirst($level), $levels)]);
     }
 
-    private function validateShapefile(array $features)
+    /*private function validateShapefile(array $features)
     {
         // Check for empty shapefiles?
         if (empty($features)) {
@@ -58,7 +82,7 @@ class AreaController extends Controller
                 'shapefile' => ["The shapefile needs to have 'name' and 'code' among its attributes"],
             ]);
         }
-    }
+    }*/
 
     public function store(MapRequest $request)
     {
@@ -71,9 +95,6 @@ class AreaController extends Controller
         }
         $shpFile = collect([$filename, 'shp'])->join('.');
         $filePath = Storage::disk('imports')->path('shapefiles/' . $shpFile);
-        /*$importer = new ShapefileImporter();
-        $features = $importer->import($filePath);
-        $this->validateShapefile($features);*/
 
         ImportShapefileJob::dispatch($filePath, $level, auth()->user(), app()->getLocale());
 

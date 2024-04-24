@@ -3,16 +3,37 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Uneca\Chimera\Http\Requests\IndicatorRequest;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Page;
+use Uneca\Chimera\Services\SmartTableColumn;
+use Uneca\Chimera\Services\SmartTableData;
 
 class IndicatorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $records = Indicator::with('pages')->orderBy('title')->get();
-        return view('chimera::indicator.index', compact('records'));
+        $baseQuery = Indicator::with('pages');
+        $smartTableData = (new SmartTableData($baseQuery, $request))
+            ->columns([
+                SmartTableColumn::make('name')
+                    ->sortable(),
+                SmartTableColumn::make('data_source')
+                    ->setLabel('Data Source')
+                    ->sortable()
+                    ->setBladeTemplate('{{ $row->getDataSource()->title }}'),
+                SmartTableColumn::make('tag')
+                    ->setBladeTemplate('{{ $row->tag ?? "-" }}'),
+                SmartTableColumn::make('pages.title')->setLabel('Page')
+                    ->setBladeTemplate('{{ $row->pages->isEmpty() ? "Not assigned" : $row->pages->pluck("title")->join(", ") }}'),
+                SmartTableColumn::make('published')
+                    ->setBladeTemplate('<x-chimera::yes-no value="{{ $row->published }}" />'),
+            ])
+            ->searchable(['name', 'data_source'])
+            ->sortBy('name')
+            ->build();
+        return view('chimera::indicator.index', compact('smartTableData'));
     }
 
     public function edit(Indicator $indicator)
