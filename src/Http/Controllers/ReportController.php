@@ -3,6 +3,8 @@
 namespace Uneca\Chimera\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Report;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Gate;
@@ -11,9 +13,13 @@ use Uneca\Chimera\Services\DashboardComponentFactory;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $filter = $request->get('filter');
         $records = Report::published()
+            ->when($request->has('filter'), function ($query) use ($filter) {
+                return $query->where('data_source', $filter);
+            })
             ->orderBy('rank')
             ->paginate(config('chimera.records_per_page'));
         $records->setCollection(
@@ -24,10 +30,12 @@ class ReportController extends Controller
                 $implementedReport = DashboardComponentFactory::makeReport($report);
                 $path = auth()->user()->areaRestrictions->first()?->path ?? '';
                 $report->fileExists = Storage::disk('reports')->exists($implementedReport->filename($path));
+                $report->data_source_title = $report->getDataSource()->title;
                 return $report;
             })
         );
-        return view('chimera::report.index', compact('records'));
+        $filter = !is_null($filter) ? DataSource::where('name', $filter)->first()->title ?? null : null;
+        return view('chimera::report.index', compact('records', 'filter'));
     }
 
     public function download(Report $report)
@@ -35,9 +43,11 @@ class ReportController extends Controller
         try {
             $implementedReport = DashboardComponentFactory::makeReport($report);
             $path = auth()->user()->areaRestrictions->first()?->path ?? '';
-            return Storage::disk('reports')->download($implementedReport->filename($path));
+            return Storage::disk('reports')
+                ->download($implementedReport->filename($path));
         } catch (\Exception $exception) {
-            return redirect()->back()->withErrors(new MessageBag(['Unable to download the requested report at this time']));
+            return redirect()->back()
+                ->withErrors(new MessageBag(['Unable to download the requested report at this time']));
         }
     }
 

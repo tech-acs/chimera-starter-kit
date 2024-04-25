@@ -37,6 +37,21 @@
         @endif
             <div class="mt-2 flex flex-col">
                 <div class="inline-block min-w-full py-2 align-middle">
+                    <div class="p-2 text-sm text-gray-500">
+                        Filter
+                        @if (is_null($filter))
+                            : click on the rounded badges to filter to that data source
+                        @else
+                            <span class="border border-purple-200 inline-flex rounded-full bg-purple-100 px-2 leading-5 text-purple-800 items-center">
+                                {{ $filter }}
+                                <a href="{{route('report')}}" type="button" class="cursor-pointer flex-shrink-0 ml-1 h-4 w-4 rounded-full inline-flex items-center justify-center text-indigo-400 hover:bg-gray-300 hover:text-indigo-500 focus:outline-none focus:bg-indigo-500 focus:text-white">
+                                    <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                      <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                    </svg>
+                                </a>
+                            </span>
+                        @endif
+                    </div>
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
@@ -67,7 +82,9 @@
                                         <div class="w-full">
                                             <div class="font-medium text-gray-900">
                                                 <span class="text-base mr-2">{{ $report->title }}</span>
-                                                <span class="inline-flex rounded-full bg-purple-100 px-2 leading-5 text-purple-800">{{ $report->data_source }}</span>
+                                                <a href="?filter={{ $report->data_source }}" class="border border-purple-200 inline-flex rounded-full bg-purple-100 px-2 leading-5 text-purple-800">
+                                                    {{ $report->data_source_title }}
+                                                </a>
                                             </div>
                                             <div class="text-gray-500 mt-2 text-xs">{{ $report->description }}</div>
                                         </div>
@@ -77,7 +94,7 @@
                                     {{ $report->schedule_for_humans }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    {{ $report->last_generated_at?->toDayDateTimeString() ?? ' NA ' }}
+                                    {{ $report->last_generated_at?->toDayDateTimeString() ?? ' N/A ' }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-center">
                                     <livewire:subscribe-to-report-notification :report="$report"/>
