@@ -29,49 +29,7 @@
             </div>
         </div>
 
-        <x-chimera-smart-table :$smartTableData hierarchies="$hierarchies"/>
+        <x-chimera-smart-table :$smartTableData />
     </div>
-
-{{--<tr>
-    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        {{ __('Name') }}
-    </th>
-    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-        {{ __('Code') }}
-    </th>
-    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-        {{ __('Level') }}
-    </th>
-    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-        {{ __('Path') }}
-    </th>
-    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-        {{ __('Has map') }}
-    </th>
-    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-</tr>
-
-<tr>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-        {{$record->name}}
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-        {{$record->code}}
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-        {{ ucfirst($hierarchies[$record->level] ?? $record->level) }}
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-        {{$record->path}}
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-red text-center">
-        <x-chimera::yes-no value="{{$record->geom}}" />
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-        <a href="{{route('developer.area.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-        <span class="text-gray-400 px-1">|</span>
-        <a href="{{route('developer.area.destroy', $record->id)}}" class="text-red-600 hover:text-red-900">{{ __('Delete') }}</a>
-    </td>
-</tr>--}}
 
 </x-app-layout>

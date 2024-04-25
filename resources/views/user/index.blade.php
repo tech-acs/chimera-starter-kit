@@ -4,8 +4,10 @@
         <h3 class="text-lg leading-6 font-medium text-gray-900">
             {{ __('User management') }}
         </h3>
-        <p class="mt-2 max-w-4xl text-sm text-gray-500">{{ __('Users can sign-up when they receive their unique registration link (invite).') }}
-            {{ __('You can then assign users one of the roles you have setup which will then dictate which features they will have access to.') }}</p>
+        <p class="mt-2 max-w-4xl text-sm text-gray-500">
+            {{ __('Users can sign-up when they receive their unique registration link (invite).') }}
+            {{ __('You can then assign users one of the roles you have setup which will then dictate which features they will have access to.') }}
+        </p>
     </x-slot>
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -53,113 +55,10 @@
                 </div>
             </div>
             <div>
-                <section id="users" x-show="isSelected('users')">
-                    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                            <form class="mb-4 flex justify-end" method="get" action="{{ route('user.index') }}">
-                                <div>
-                                    <x-input name="search" type="search" class="mt-1 block" placeholder="Search users" value="{{request('search')}}" />
-                                </div>
-                            </form>
-                            @if (session('message'))
-                                <div class="rounded-md p-4 py-3 mt-4 mb-4 border bg-blue-50 border-blue-300">
-                                    <div class="flex">
-                                        <div class="flex-shrink-0">
-                                            <!-- Heroicon name: solid/information-circle -->
-                                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3 flex-1 md:flex md:justify-between">
-                                            <p class="text-sm text-blue-700">
-                                                {{session('message')}}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
-
-                                <x-chimera::delete-confirmation prompt="This action is irreversible!" />
-
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Name') }}
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Created') }}
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Role') }}
-                                        </th>
-                                        <th scope="col" class="relative px-6 py-3">
-                                            <span class="sr-only">Edit</span>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                    @forelse($records as $record)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-10 w-10">
-                                                        <img class="h-10 w-10 rounded-full object-cover" src="{{ $record->profile_photo_url }}" alt="{{ $record->name }}" />
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="text-sm font-medium text-gray-900">
-                                                            {{$record->name}}
-                                                        </div>
-                                                        <div class="text-sm text-gray-500">
-                                                            {{$record->email}}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm">
-                                                    {{$record->created_at->locale(app()->getLocale())->isoFormat('ll')}}
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-gray-800">
-                                                    {{$record->roles->pluck('name')->join(', ')}}
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                @if (!$record->hasRole('Super Admin'))
-                                                    @if($record->is_suspended)
-                                                        <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900" title="Resume (allow) use of the account">{{ __('Resume') }}</a>
-                                                    @else
-                                                        <a href="{{route('user.suspension', $record->id)}}" class="text-yellow-600 hover:text-yellow-900" title="Pause (stop) use of the account">{{ __('Pause') }}</a>
-                                                    @endif
-                                                    <span class="text-gray-400 px-1">|</span>
-                                                    <a href="{{route('user.edit', $record->id)}}" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                                    <span class="text-gray-400 px-1">|</span>
-                                                    <a href="{{route('user.destroy', $record->id)}}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600 hover:text-red-800">{{ __('Delete') }}</a>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4" class="text-sm font-medium text-gray-900 text-center p-4">
-                                            {{ __('There are no records to display') }}
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                    </tbody>
-                                    @if ($records->hasPages())
-                                        <tfoot>
-                                        <tr><td colspan="5" class="px-6 text-left text-xs text-gray-500  tracking-wider">{{ $records->withQueryString()->links() }}</td></tr>
-                                        </tfoot>
-                                    @endif
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                <section id="users" x-show="isSelected('users')" class="py-4">
+                    <x-chimera-smart-table :$smartTableData custom-action-sub-view='chimera::user.custom-action' />
                 </section>
-                <section id="invitations" x-show="isSelected('invitations')">
+                <section id="invitations" x-show="isSelected('invitations')" class="py-4">
                     <livewire:invitation-manager />
                 </section>
             </div>

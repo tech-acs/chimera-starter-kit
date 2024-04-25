@@ -73,9 +73,9 @@
     <div class="mt-2 flex flex-col">
         <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" x-data="confirmedDeletion">
 
-                    <x-chimera::delete-confirmation prompt="[ This action will delete the component file and also the related database entry ]" />
+                    <x-chimera::delete-confirmation prompt="[ This action is irreversible ]" />
 
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -97,7 +97,11 @@
                                     </td>
                                 @endforeach
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-between items-center">
-                                    <a href="{{route('indicator.edit', $row->id)}}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
+                                    @if ($customActionSubView)
+                                        @include($customActionSubView)
+                                    @else
+                                        <a href="{{ route('indicator.edit', $row->id) }}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

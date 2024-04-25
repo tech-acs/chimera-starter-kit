@@ -1,5 +1,5 @@
 <div>
-    <div class="flex justify-end py-2">
+    <div class="flex justify-end">
         <x-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-button>
         <livewire:bulk-inviter />
     </div>
