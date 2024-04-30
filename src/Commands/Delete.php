@@ -3,8 +3,8 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use function Laravel\Prompts\select;
+use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\info;
 
 class Delete extends Command
@@ -24,25 +24,32 @@ class Delete extends Command
         $class = "Uneca\Chimera\Models\\" . $chosenModelType;
         $models = app($class)
             ->all()
-            ->mapWithKeys(function ($item) {
-                return [$item->name => $item->id];
-            })->all();
+            ->mapWithKeys(fn($item) => [$item->id => $item->name])
+            ->sort()
+            ->all();
 
         if (empty($models)) {
             info("No " . str($chosenModelType)->plural() . " found!");
         } else {
-            $chosenModel = select("Which $chosenModelType do you want to delete?", array_keys($models));
-            $modelToDelete = $class::find($models[$chosenModel]);
+            $chosenModels = multiselect(
+                label: 'Which ' . str($chosenModelType)->plural() . ' do you want to delete?',
+                options: $models,
+                required: "You must select at least one $chosenModelType",
+                hint: 'Use the space bar to select and press enter when done.'
+            );
+            $modelsToDelete = $class::find($chosenModels);
             $namespace = $modelTypeMenu[$chosenModelType];
             if (empty($namespace)) {
-                $modelToDelete->delete();
+                $modelsToDelete->each->delete();
             } else {
-                $reflection = new \ReflectionClass($namespace . '\\' . str_replace('/', '\\', $modelToDelete->name));
-                $pathToFile = $reflection->getFileName();
-                if ($pathToFile) {
-                    $result = unlink($pathToFile);
-                    $modelToDelete->delete();
-                    $this->callSilently('permission:cache-reset');
+                foreach ($modelsToDelete as $modelToDelete) {
+                    $reflection = new \ReflectionClass($namespace . '\\' . str_replace('/', '\\', $modelToDelete->name));
+                    $pathToFile = $reflection->getFileName();
+                    if ($pathToFile) {
+                        $result = unlink($pathToFile);
+                        $modelToDelete->delete();
+                        $this->callSilently('permission:cache-reset');
+                    }
                 }
             }
             info("Successfully deleted");
