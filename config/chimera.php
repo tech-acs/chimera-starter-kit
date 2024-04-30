@@ -27,7 +27,6 @@ return [
             'ignore_orphan_areas' => env('IGNORE_ORPHAN_AREAS', false),
         ],
     ],
-
     'cache' => [
         'enabled' => env('CACHE_ENABLED', false),
         'ttl' => env('CACHE_TTL_SECONDS', 60 * 60),

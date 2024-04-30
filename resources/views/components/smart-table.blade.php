@@ -96,7 +96,7 @@
                                         {!! Blade::render($column->getBladeTemplate(), compact('row', 'column')) !!}
                                     </td>
                                 @endforeach
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-between items-center">
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium items-center">
                                     @if ($customActionSubView)
                                         @include($customActionSubView)
                                     @else
