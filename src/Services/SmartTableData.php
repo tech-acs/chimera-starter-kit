@@ -24,7 +24,6 @@ class SmartTableData
 
     public function __construct(Builder $builder, Request $request)
     {
-        // ToDo: Don't reverse sort direction for refresh
         $this->builder = $builder;
         $this->request = $request;
         $this->searchableColumns = collect();
@@ -47,18 +46,12 @@ class SmartTableData
 
     public function sortBy(string $column): self
     {
-
         if ($this->request->has('sort_by') && $this->sortableColumns->contains($this->request->get('sort_by'))) {
             $this->sortBy = $this->request->get('sort_by');
             return $this;
         }
         $this->sortBy = $column;
         return $this;
-    }
-
-    public function reverseSortDirection(string $dir): void
-    {
-        //$this->sortDirection = $dir === 'ASC' ? 'DESC' : 'ASC';
     }
 
     public function searchable(array $columns, $searchHint = null): self
@@ -80,13 +73,8 @@ class SmartTableData
             dd('You have not set a default sorting column');
         }
         if ($this->request->has('sort_by') && $this->sortableColumns->contains($this->request->get('sort_by'))) {
-            //list($col, $dir) = Session::get('previous-sorting', [$this->request->get('sort_by'), 'ASC']);
-            /*if ($col === $this->request->get('sort_by')) {
-                $this->reverseSortDirection($dir);
-            } else {*/
-                $this->sortBy = $this->request->get('sort_by');
-                $this->sortDirection = 'ASC';
-            //}
+            $this->sortBy = $this->request->get('sort_by');
+            $this->sortDirection = $this->request->get('sort_direction', 'ASC');
         }
         if ($this->request->has('page_size')) {
             Session::put('page_size', $this->request->get('page_size'));
@@ -99,7 +87,6 @@ class SmartTableData
                 return $query->orderBy($this->sortBy, $this->sortDirection);
             })
             ->paginate(Session::get('page_size', $this->request->get('page_size', $this->defaultPageSize)));
-        //Session::put('previous-sorting', [$this->sortBy ?? null, $this->sortDirection]);
         return $this;
     }
 }

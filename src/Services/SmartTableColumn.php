@@ -9,6 +9,7 @@ class SmartTableColumn
     private SmartTableData $table;
     private ?string $label = null;
     private bool $isSortable = false;
+    private string $sortDirection = 'ASC';
     private string $bladeTemplate;
     public string $attribute;
 
@@ -28,6 +29,9 @@ class SmartTableColumn
     public function belongsTo(SmartTableData $smartTableData)
     {
         $this->table = $smartTableData;
+        if ($this->table->request->get('sort_by') == $this->attribute) {
+            $this->sortDirection = $this->table->request->get('sort_direction');
+        }
     }
 
     protected function applyLabelFormatting(string $label): string
@@ -58,6 +62,13 @@ class SmartTableColumn
     public function isSortable(): bool
     {
         return $this->isSortable;
+    }
+
+    public function reverseSortDirection(): string
+    {
+        return $this->table->sortBy == $this->attribute ?
+            ($this->sortDirection == 'ASC' ? 'DESC' : 'ASC') :
+            'ASC';
     }
 
     public function sortIcon(): string

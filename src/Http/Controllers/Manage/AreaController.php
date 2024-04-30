@@ -29,8 +29,8 @@ class AreaController extends Controller
                 SmartTableColumn::make('geom')->setLabel('Has Map')
                     ->setBladeTemplate('<x-chimera::yes-no value="{{ $row->geom }}" />'),
             ])
-            ->searchable(['name', 'code', 'level'])
-            ->sortBy('name')
+            ->searchable(['name', 'code'])
+            ->sortBy('level')
             ->build();
 
         $areaCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get()->keyBy('level');
@@ -45,7 +45,7 @@ class AreaController extends Controller
 
     public function create()
     {
-        $levels = (new AreaTree)->hierarchies; //config('chimera.area.hierarchies', []);
+        $levels = (new AreaTree)->hierarchies;
         return view('chimera::developer.area.create', ['levels' => array_map(fn ($level) => ucfirst($level), $levels)]);
     }
 

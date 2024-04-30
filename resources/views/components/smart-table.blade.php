@@ -24,7 +24,7 @@
                 </x-slot>
 
                 <x-slot name="content">
-                    @foreach([10, 20, 30, 40, 50, 75, 100] as $pageSize)
+                    @foreach($pageSizeOptions as $pageSize)
                         <x-dropdown-link href="?page_size={{ $pageSize }}">
                             {{ $pageSize }}
                         </x-dropdown-link>
@@ -82,7 +82,7 @@
                         <tr>
                             @foreach($smartTableData->columns as $column)
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                                    {!! $column->getLabel() !!} <a href="?sort_by={{ $column->attribute }}">{!! $column->sortIcon() !!}</a>
+                                    {!! $column->getLabel() !!} <a href="?sort_by={{ $column->attribute }}&sort_direction={{ $column->reverseSortDirection() }}">{!! $column->sortIcon() !!}</a>
                                 </th>
                             @endforeach
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
