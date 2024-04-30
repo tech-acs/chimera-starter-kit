@@ -1,7 +1,7 @@
 <x-dropdown align="right" width="16">
     <x-slot name="trigger">
         <x-chimera::round-button title="{{ __('Language') }}" class="px-1.5 font-medium">
-            {{ str()->upper($locale) }}
+            {{ config('languages')[$locale] ?? 'EN' }}
         </x-chimera::round-button>
     </x-slot>
 
