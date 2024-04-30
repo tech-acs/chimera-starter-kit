@@ -105,6 +105,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('role-manager', \Uneca\Chimera\Livewire\RoleManager::class);
         Livewire::component('case-stats', \Uneca\Chimera\Livewire\CaseStats::class);
         Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Livewire\SubscribeToReportNotification::class);
+        Livewire::component('dashboard-component-tester', \Uneca\Chimera\Livewire\DashboardComponentTester::class);
     }
 
     public function packageBooted()
