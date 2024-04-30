@@ -3,5 +3,5 @@
 return [
     'en' => 'EN',
     'fr' => 'FR',
-    'pt-pt' => 'PT'
+    'pt-PT' => 'PT'
 ];
