@@ -13,6 +13,7 @@ class BreakoutQueryBuilder
     private bool $excludePartials;
     private bool $excludeDeleted;
     private string $select;
+    protected array $columns;
     private string $from;
     private string $where;
     protected array $conditions;
@@ -20,16 +21,25 @@ class BreakoutQueryBuilder
     private string $having;
     private string $orderBy;
 
-    public function __construct($dataSource = null, $excludePartials = true, $excludeDeleted = true, $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL')
+    public function __construct(
+        string $dataSource = null,
+        array $filter = [],
+        bool $excludePartials = true,
+        bool $excludeDeleted = true,
+        string $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL'
+    )
     {
+        list($selectColumns, $whereConditions) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filter);
+
         $this->dbConnection = DB::connection($dataSource);
         $this->excludePartials = $excludePartials;
         $this->partialCaseIdentifyingCondition = $partialCaseIdentifyingCondition;
         $this->excludeDeleted = $excludeDeleted;
         $this->select = '';
+        $this->columns = $selectColumns;
         $this->from = '';
         $this->where = '';
-        $this->conditions = ["cases.key != ''"];
+        $this->conditions = ["cases.key != ''", ...$whereConditions];
         if ($this->excludeDeleted) {
             array_push($this->conditions, 'cases.deleted = 0');
         }
@@ -43,7 +53,7 @@ class BreakoutQueryBuilder
 
     public function select(array $items) : self
     {
-        $this->select = "SELECT " . implode(', ', $items);
+        $this->select = "SELECT " . implode(', ', array_merge($this->columns, $items));
         return $this;
     }
 
