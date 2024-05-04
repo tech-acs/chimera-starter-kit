@@ -4,7 +4,7 @@
     </x-slot>
 
     <x-slot name="description">
-        {{ __('This the area you have been assigned to. All data in your dashboard is scoped to this.') }}
+        {{ __('This is the area you have been assigned to. All data in your dashboard is scoped to this.') }}
     </x-slot>
 
     <x-slot name="form">
@@ -12,5 +12,4 @@
             {{ auth()->user()->areaRestrictionAsString() }}
         </div>
     </x-slot>
-
 </x-form-section>

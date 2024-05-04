@@ -91,6 +91,12 @@ class BreakoutQueryBuilder
         return $this;
     }
 
+    public function dump(): self
+    {
+        dump($this->toSql());
+        return $this;
+    }
+
     public function toSql() : string
     {
         if (count($this->conditions) > 0) {
