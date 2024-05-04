@@ -1,0 +1,19 @@
+{
+    "name": "BrBG",
+    "description": "It was generated from colorbrewer2.org using the 'diverging' scheme.",
+    "tags": ["colorblind safe", "colorbrewer"],
+    "colors": [
+        "#543005",
+        "#40004b",
+        "#8c510a",
+        "#80cdc1",
+        "#bf812d",
+        "#35978f",
+        "#dfc27d",
+        "#01665e",
+        "#762a83",
+        "#003c30",
+        "#8e0152",
+        "#4d9221"
+    ]
+}

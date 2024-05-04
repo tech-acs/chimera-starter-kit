@@ -8,6 +8,7 @@ use Uneca\Chimera\Services\AreaTree;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Services\IndicatorCaching;
 
 abstract class Chart extends Component
@@ -41,7 +42,6 @@ abstract class Chart extends Component
         'margin' => ['l' => 60, 'r' => 10, 't' => 10, 'b' => 40],
         'modebar' => ['orientation' => 'v', 'color' => 'white', 'bgcolor' => 'darkgray'],
         'dragmode' => 'pan',
-        'colorway' => ['#0abab5', '#d2b48c', '#f28500', '#45b08c'],
     ];
     const EMPTY_CHART_LAYOUT_DIFF = [
         'xaxis' => ['visible' => false],
@@ -81,7 +81,8 @@ abstract class Chart extends Component
 
     protected function getLayout(string $filterPath): array
     {
-        return self::DEFAULT_LAYOUT;
+        $currentPalette = ColorPalette::palette(settings('color_palette'));
+        return [...self::DEFAULT_LAYOUT, 'colorway' => $currentPalette->colors];
     }
 
     protected function mounted(): void

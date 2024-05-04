@@ -1,0 +1,19 @@
+{
+    "name": "RdYIBu",
+    "description": "It was generated from colorbrewer2.org using the 'diverging' scheme.",
+    "tags": ["colorblind safe", "colorbrewer"],
+    "colors": [
+        "#a50026",
+        "#7f3b08",
+        "#d73027",
+        "#276419",
+        "#f46d43",
+        "#74add1",
+        "#fdae61",
+        "#4575b4",
+        "#b35806",
+        "#313695",
+        "#542788",
+        "#7fbc41"
+    ]
+}

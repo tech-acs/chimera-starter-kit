@@ -5,6 +5,7 @@ namespace Uneca\Chimera\Traits;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
+use Uneca\Chimera\Database\Seeders\SettingsSeeder;
 
 trait PackageTasksTrait
 {
@@ -13,8 +14,6 @@ trait PackageTasksTrait
         "plotly.js-basic-dist-min" => "^2.30",
         "plotly.js-locales" => "^2.30",
         "alpinejs" => "3.13",
-        //"@alpinejs/focus" => "3.13",
-        //"@tailwindcss/line-clamp" => "^0.4.2",
         "@tailwindcss/aspect-ratio" => "^0.4.2",
         "lodash" => "^4.17.21",
     ];
@@ -119,6 +118,7 @@ trait PackageTasksTrait
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
             File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
+            File::copyDirectory(__DIR__ . '/../../deploy/resources/color_palettes', resource_path('color_palettes'));
             return true;
         });
         $this->components->task("Images", function () {
@@ -130,6 +130,14 @@ trait PackageTasksTrait
             copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
             copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
             return true;
+        });
+    }
+
+    protected function copyColorPalettes(): void
+    {
+        $this->components->info("Color palettes");
+        $this->components->task("Copying color_palettes to resources directory", function () {
+            return File::copyDirectory(__DIR__ . '/../../deploy/color_palettes', resource_path('color_palettes'));
         });
     }
 

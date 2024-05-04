@@ -1,0 +1,19 @@
+{
+    "name": "Glasbey",
+    "description": "It was extracted from https://glasbey.readthedocs.io/en/latest/color_vision_deficiency.html",
+    "tags": ["colorblind safe"],
+    "colors": [
+        "#0C71FF",
+        "#CA2800",
+        "#FF28BA",
+        "#000096",
+        "#86E300",
+        "#1C5951",
+        "#20D2FF",
+        "#20AE86",
+        "#590000",
+        "#65008E",
+        "#B6005D",
+        "#FFAA96"
+    ]
+}

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Services\ScorecardCaching;
-use Uneca\Chimera\Services\Theme;
+use Uneca\Chimera\Services\ColorPalette;
 
 class ScorecardComponent extends Component
 {
@@ -20,11 +20,12 @@ class ScorecardComponent extends Component
     public string $bgColor;
     public Carbon $dataTimestamp;
 
-    public function mount($index)
+    public function mount(int $index)
     {
         $this->title = $this->scorecard->title;
-        $index = $index % count(Theme::colors());
-        $this->bgColor = Theme::colors()[$index];
+        $currentPalette = ColorPalette::palette(settings('color_palette'));
+        $totalColors = count($currentPalette->colors);
+        $this->bgColor = $currentPalette->colors[$index % $totalColors];
     }
 
     public function getData(array $filter): array

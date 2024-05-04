@@ -8,7 +8,7 @@ use function Laravel\Prompts\info;
 
 class Update extends Command
 {
-    public $signature = 'chimera:update {--composer=global} {--chimera-config} {--migrations} {--packages} {--jetstream-customizations} {--assets} {--stubs} {--npm} {--copy-env}';
+    public $signature = 'chimera:update {--composer=global} {--chimera-config} {--migrations} {--packages} {--jetstream-customizations} {--assets} {--color-palettes} {--stubs} {--npm} {--copy-env}';
 
     public $description = 'Update the Dashboard Starter Kit';
 
@@ -32,6 +32,9 @@ class Update extends Command
         }
         if ($this->option('assets')) {
             $this->copyAssets();
+        }
+        if ($this->option('color-palettes')) {
+            $this->copyColorPalettes();
         }
         if ($this->option('stubs')) {
             $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);

@@ -1,0 +1,19 @@
+{
+    "name": "Orange to Purple",
+    "description": "Sourced from https://wpdatatables.com/data-visualization-color-palette/",
+    "tags": [
+        "diverging",
+        "data viz"
+    ],
+    "colors": [
+        "#ffb400",
+        "#d2980d",
+        "#a57c1b",
+        "#786028",
+        "#363445",
+        "#48446e",
+        "#5e569b",
+        "#776bcd",
+        "#9080ff"
+    ]
+}

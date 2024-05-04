@@ -1,0 +1,23 @@
+{
+    "name": "Chimera",
+    "description": "This is the default dashboard color palette. It is made up of randomly selected tailwind colors. It is NOT colorblind safe.",
+    "colors": [
+        "#ef4444",
+        "#eab308",
+        "#22c55e",
+        "#3b82f6",
+        "#ec4899",
+        "#a855f7",
+        "#a1a1aa",
+        "#166534",
+        "#1e40af",
+        "#6b21a8",
+        "#000",
+        "#ea580c",
+        "#65a30d",
+        "#0891b2",
+        "#7c3aed",
+        "#f43f5e",
+        "#0ea5e9"
+    ]
+}
