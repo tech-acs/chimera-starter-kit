@@ -2,6 +2,7 @@
 
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
+use Uneca\Chimera\Http\Controllers\Manage\SettingController;
 use Uneca\Chimera\Http\Controllers\MapController;
 use Uneca\Chimera\Http\Controllers\Manage\AnnouncementController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaController;
@@ -50,15 +51,18 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
             Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
-            if (app()->environment('local')) {
+            //if (app()->environment('local')) {
+            Route::middleware(['can:developer-mode'])->group(function () {
                 Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
                 Route::resource('area', AreaController::class)->only(['create', 'store']);
                 Route::delete('area/truncate', [AreaController::class, 'destroy'])->name('area.destroy');
                 Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
                 Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
-            }
+            });
         });
 
+        Route::get('setting', [SettingController::class, 'edit'])->name('setting.edit');
+        Route::post('setting', [SettingController::class, 'update'])->name('setting.update');
         Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
         //Route::get('analyzable/{analyzable}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('page', PageController::class)->except(['show']);

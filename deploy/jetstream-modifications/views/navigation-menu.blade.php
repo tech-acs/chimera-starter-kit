@@ -80,6 +80,7 @@
                                     <x-dropdown-link href="{{route('announcement.index')}}">{{ __('Announcements') }}</x-dropdown-link>
                                     <x-dropdown-link href="{{route('usage_stats')}}">{{ __('Usage Stats') }}</x-dropdown-link>
                                     <x-dropdown-link href="{{route('analytics.index')}}">{{ __('Query Analytics') }}</x-dropdown-link>
+                                    <x-dropdown-link href="{{route('setting.edit')}}">{{ __('Settings') }}</x-dropdown-link>
                                 </div>
                             </x-slot>
                         </x-dropdown>

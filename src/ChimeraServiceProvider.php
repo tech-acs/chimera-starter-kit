@@ -8,6 +8,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -17,9 +18,9 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
 
+use Uneca\Chimera\Models\Setting;
 use Uneca\Chimera\Services\ConnectionLoader;
 use Uneca\Chimera\Services\PageBuilder;
-use Uneca\Chimera\Services\Helpers;
 
 class ChimeraServiceProvider extends PackageServiceProvider
 {
@@ -59,6 +60,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_map_indicators_table',
                 'create_analytics_table',
                 'create_report_user_table',
+                'create_settings_table',
             ])
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,
@@ -106,14 +108,20 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('case-stats', \Uneca\Chimera\Livewire\CaseStats::class);
         Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Livewire\SubscribeToReportNotification::class);
         Livewire::component('indicator-tester', \Uneca\Chimera\Livewire\IndicatorTester::class);
+        Livewire::component('special-section-border', \Uneca\Chimera\Livewire\SpecialSectionBorder::class);
     }
 
     public function packageBooted()
     {
-        //parent::boot();
-
         Gate::before(function ($user, $ability) {
+            if ($ability === 'developer-mode') {
+                return null;
+            }
             return $user->hasRole('Super Admin') ? true : null;
+        });
+
+        Gate::define('developer-mode', function ($user) {
+            return session('developer_mode_enabled', false);
         });
 
         (new ConnectionLoader())();
@@ -165,6 +173,12 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 __DIR__ . '/../resources/stubs' => resource_path('stubs'),
             ], 'chimera-stubs');
         }
+
+        $this->app->singleton('settings', function () {
+            return Cache::rememberForever('settings', function () {
+                return Setting::all()->pluck('value', 'key');
+            });
+        });
     }
 
     public function register()
@@ -175,8 +189,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->needs(CachingInterface::class)
             ->give(IndicatorCaching::class);*/
 
-        $this->app->bind('helpers', function ($app) {
+        /*$this->app->bind('helpers', function ($app) {
             return new Helpers();
-        });
+        });*/
     }
 }

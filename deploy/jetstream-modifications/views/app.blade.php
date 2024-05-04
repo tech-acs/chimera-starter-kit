@@ -85,7 +85,7 @@
 
                     </div>
                     <div class="mt-2 md:mt-0 text-center text-base text-gray-400 flex">
-                        <div>{{ __('Owned by') }}&nbsp;<a href="{{ config('chimera.owner.url') }}" target="_blank" class="text-blue-400">{{ config('chimera.owner.name') }}</a></div>
+                        <div>{{ __('Owned by') }}&nbsp;<a href="{{ settings('app_owner_url', '#') }}" target="_blank" class="text-blue-400">{{ settings('app_owner_name', 'ECA') }}</a></div>
                     </div>
                 </div>
             </footer>

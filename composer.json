@@ -39,9 +39,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Uneca\\Chimera\\": "src",
-            "Uneca\\Chimera\\Database\\Factories\\": "database/factories"
-        }
+            "Uneca\\Chimera\\": "src"
+        },
+        "files": [
+            "src/Services/Helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -64,10 +66,7 @@
         "laravel": {
             "providers": [
                 "Uneca\\Chimera\\ChimeraServiceProvider"
-            ],
-            "aliases": {
-                "Chimera": "Uneca\\Chimera\\Facades"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",
