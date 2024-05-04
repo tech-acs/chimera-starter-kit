@@ -32,6 +32,7 @@ class IndicatorController extends Controller
             ])
             ->searchable(['name', 'data_source'])
             ->sortBy('name')
+            ->downloadable()
             ->build();
         return view('chimera::indicator.index', compact('smartTableData'));
     }

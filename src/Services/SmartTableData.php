@@ -5,8 +5,12 @@ namespace Uneca\Chimera\Services;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Uneca\Chimera\Enums\SortDirection;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class SmartTableData
 {
@@ -18,8 +22,10 @@ class SmartTableData
     public Collection $searchableColumns;
     public string $searchPlaceholder;
     public ?string $searchHint;
+    public bool $isDownloadable = false;
+    public string $downloadLink;
     public string $sortBy;
-    public string $sortDirection = 'ASC';
+    public SortDirection $sortDirection = SortDirection::ASC;
     public int $defaultPageSize;
 
     public function __construct(Builder $builder, Request $request)
@@ -67,6 +73,19 @@ class SmartTableData
         return $this;
     }
 
+    public function downloadable()
+    {
+        $router = app()->make(Router::class);
+        $router->pushMiddlewareToGroup('web', \Uneca\Chimera\Http\Middleware\DownloadSmartTableData::class);
+
+        $this->isDownloadable = true;
+        /*$router = app()->make(Router::class);
+        $router->addRoute('get', 'download', function () {
+            //return response()->abort(404);
+        })->name('download_csv');*/
+        return $this;
+    }
+
     public function build(): self
     {
         if (! isset($this->sortBy)) {
@@ -74,19 +93,31 @@ class SmartTableData
         }
         if ($this->request->has('sort_by') && $this->sortableColumns->contains($this->request->get('sort_by'))) {
             $this->sortBy = $this->request->get('sort_by');
-            $this->sortDirection = $this->request->get('sort_direction', 'ASC');
+            $this->sortDirection = $this->request->enum('sort_direction', SortDirection::class) ?? SortDirection::ASC;
         }
         if ($this->request->has('page_size')) {
             Session::put('page_size', $this->request->get('page_size'));
         }
-        $this->rows = $this->builder
+        $this->builder
             ->when($this->request->has('search'), function ($query) {
                 return $query->whereAny($this->searchableColumns->toArray(), 'ILIKE', '%' . $this->request->get('search') . '%');
             })
             ->when(isset($this->sortBy), function ($query) {
-                return $query->orderBy($this->sortBy, $this->sortDirection);
-            })
+                return $query->orderBy($this->sortBy, $this->sortDirection->value);
+            });
+        $this->rows = $this->builder
             ->paginate(Session::get('page_size', $this->request->get('page_size', $this->defaultPageSize)));
+
+        if ($this->isDownloadable) {
+            $path = storage_path('app/public/test.csv');
+            $data = $this->builder->get()->select($this->columns->pluck('attribute')->toArray());
+            //dd($this->builder->get(), $data, $this->columns->pluck('attribute')->toArray());
+            /*$writer = SimpleExcelWriter::create($path);
+            foreach ($data as $record) {
+                $writer->addRow($record);
+            }*/
+            $this->downloadLink = url('storage/test.csv');
+        }
         return $this;
     }
 }

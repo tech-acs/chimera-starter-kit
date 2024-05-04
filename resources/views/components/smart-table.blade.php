@@ -10,7 +10,7 @@
             @endif
         </div>
         <div class="flex items-center">
-            <label class="text-sm text-gray-600 mr-2">Results per page</label>
+            <label class="text-sm text-gray-600 mr-2">Per page</label>
             <x-dropdown align="right" width="20">
                 <x-slot name="trigger">
                     <span class="inline-flex rounded-md border border-gray-300">
@@ -31,6 +31,14 @@
                     @endforeach
                 </x-slot>
             </x-dropdown>
+
+            @if($smartTableData->isDownloadable)
+            <div class="ml-4">
+                <a href="?download=true">
+                    <x-secondary-button title="Download current results as a CSV file"><x-chimera::icon.csv /></x-secondary-button>
+                </a>
+            </div>
+            @endif
         </div>
     </div>
 

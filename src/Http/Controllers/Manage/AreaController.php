@@ -30,6 +30,7 @@ class AreaController extends Controller
                     ->setBladeTemplate('<x-chimera::yes-no value="{{ $row->geom }}" />'),
             ])
             ->searchable(['name', 'code'])
+            ->downloadable()
             ->sortBy('level')
             ->build();
 

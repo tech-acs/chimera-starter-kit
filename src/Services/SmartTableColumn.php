@@ -3,13 +3,14 @@
 namespace Uneca\Chimera\Services;
 
 use Illuminate\Support\Facades\Blade;
+use Uneca\Chimera\Enums\SortDirection;
 
 class SmartTableColumn
 {
     private SmartTableData $table;
     private ?string $label = null;
     private bool $isSortable = false;
-    private string $sortDirection = 'ASC';
+    private SortDirection $sortDirection = SortDirection::ASC;
     private string $bladeTemplate;
     public string $attribute;
 
@@ -30,7 +31,7 @@ class SmartTableColumn
     {
         $this->table = $smartTableData;
         if ($this->table->request->get('sort_by') == $this->attribute) {
-            $this->sortDirection = $this->table->request->get('sort_direction');
+            $this->sortDirection = $this->table->request->enum('sort_direction', SortDirection::class) ?? SortDirection::ASC;
         }
     }
 
@@ -67,7 +68,7 @@ class SmartTableColumn
     public function reverseSortDirection(): string
     {
         return $this->table->sortBy == $this->attribute ?
-            ($this->sortDirection == 'ASC' ? 'DESC' : 'ASC') :
+            ($this->sortDirection == SortDirection::ASC ? 'DESC' : 'ASC') :
             'ASC';
     }
 
@@ -75,7 +76,7 @@ class SmartTableColumn
     {
         if ($this->isSortable) {
             if ($this->table->sortBy === $this->attribute) {
-                if ($this->table->sortDirection === 'ASC') {
+                if ($this->table->sortDirection === SortDirection::ASC) {
                     return Blade::render('<x-chimera::icon.sort-asc class="text-blue-600" />');
                 } else {
                     return Blade::render('<x-chimera::icon.sort-desc class="text-blue-600" />');
