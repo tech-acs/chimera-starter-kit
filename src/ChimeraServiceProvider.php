@@ -109,6 +109,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('subscribe-to-report-notification', \Uneca\Chimera\Livewire\SubscribeToReportNotification::class);
         Livewire::component('indicator-tester', \Uneca\Chimera\Livewire\IndicatorTester::class);
         Livewire::component('special-section-border', \Uneca\Chimera\Livewire\SpecialSectionBorder::class);
+        Livewire::component('artisan-runner', \Uneca\Chimera\Livewire\ArtisanRunner::class);
     }
 
     public function packageBooted()
