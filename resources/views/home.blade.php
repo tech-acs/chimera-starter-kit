@@ -15,16 +15,18 @@
             </x-chimera-simple-card>
         @endforelse
 
-        <div>
-            <div class="mx-auto max-w-7xl">
-                <div class="mt-2 grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:grid-rows-2 sm:gap-x-4 lg:gap-8">
-                    @foreach($graphicalMenu as $menu)
-                        <x-chimera::graphical-menu title="{{ $menu['title'] }}" description="{{ $menu['description'] }}" link="{{ $menu['link'] }}" image="{{ $menu['image'] }}" />
-                    @endforeach
-                </div>
+        <div class="px-4 xl:px-0">
+            <div class="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                @foreach($graphicalMenu as $menu)
+                    <x-chimera::graphical-menu
+                        title="{{ $menu['title'] }}"
+                        description="{{ $menu['description'] }}"
+                        link="{{ $menu['link'] }}"
+                        image="{{ $menu['image'] }}"
+                    />
+                @endforeach
             </div>
         </div>
-
     </div>
 
 </x-app-layout>

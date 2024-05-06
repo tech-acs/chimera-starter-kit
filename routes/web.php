@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('chimera::welcome');
-})->name('landing');
+})->name('landing')->middleware('web');
 
 Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])->group(function () {
     Route::get('home', HomeController::class)->name('home');
