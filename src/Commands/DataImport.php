@@ -38,16 +38,16 @@ class DataImport extends Command
             return self::SUCCESS;
         }
 
-        if (! $this->option('do-not-truncate')) {
-            foreach ($this->tables as $table) {
-                DB::table($table)->truncate();
-            }
-        }
-
         if (! file_exists($dumpFile)) {
             $this->newLine()->error('No data-export.sql file found to import');
             $this->newLine();
             return self::FAILURE;
+        }
+
+        if (! $this->option('do-not-truncate')) {
+            foreach ($this->tables as $table) {
+                DB::table($table)->truncate();
+            }
         }
 
         (new Process(
@@ -60,6 +60,7 @@ class DataImport extends Command
                 $this->output->write($output);
             });
 
+        $this->info('Data imported successfully');
         return self::SUCCESS;
     }
 }

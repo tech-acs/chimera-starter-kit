@@ -61,6 +61,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_analytics_table',
                 'create_report_user_table',
                 'create_settings_table',
+                'add_last_login_at_column_to_users_table'
             ])
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,

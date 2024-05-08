@@ -192,11 +192,11 @@
                                             <div class="">
                                                 <h3 class="text-xl font-semibold leading-6 text-gray-900 inline">{{ $palette->name }}</h3>
                                                 <div class="inline-block ml-4 space-x-1">
-                                                    <span class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                                                    <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/50">
                                                         {{ count($palette->colors) }} colors
                                                     </span>
                                                     @foreach($palette->tags ?? [] as $tag)
-                                                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">{{ $tag }}</span>
+                                                        <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/50">{{ $tag }}</span>
                                                     @endforeach
                                                 </div>
                                                 <p class="mt-1 text-sm text-gray-500">{{ $palette->description }}</p>
@@ -223,9 +223,9 @@
                                     <section class="py-4">
                                         <div class="flex flex-wrap gap-4 px-4">
                                             @foreach($palette->colors as $color)
-                                                <div class=" p-1 bg-white border border-gray-200">
+                                                <div class="p-1 bg-white border border-gray-200">
                                                     <div class="w-16 h-16" style="background-color: {{ $color }}"></div>
-                                                    <span class="text-xs pl-1 tracking-wide">{{ $color }}</span>
+                                                    <span class="text-xs">{{ strtolower($color) }}</span>
                                                 </div>
                                             @endforeach
                                         </div>
