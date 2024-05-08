@@ -136,13 +136,14 @@ class MakeIndicator extends GeneratorCommand
         }
 
         if ($chosenChartType === 'Default') {
-            $includeSampleCode = select(
+            $includeSampleCode = confirm(
                 label: "Do you want the generated file to include functioning sample code?",
-                options: ['Yes', 'No'],
-                default: 'Yes',
-                hint: "This will help you to develop your own indicator logic"
+                default: true,
+                yes: 'Yes',
+                no: 'No',
+                hint: "The sample code will help you to develop your own indicator logic"
             );
-            $this->includeSampleCode = $includeSampleCode === 'Yes' ? '-with-sample-code' : '';
+            $this->includeSampleCode = $includeSampleCode ? '-with-sample-code' : '';
         }
 
         $title = text(

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\info;
 
 class MakeScorecard extends GeneratorCommand
 {
