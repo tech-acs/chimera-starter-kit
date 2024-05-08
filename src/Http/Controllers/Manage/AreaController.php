@@ -18,8 +18,14 @@ class AreaController extends Controller
 {
     public function index(Request $request)
     {
-        $baseQuery = Area::query();
-        $smartTableData = (new SmartTableData($baseQuery, $request))
+        $areaCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get()->keyBy('level');
+        $hierarchies = (new AreaTree())->hierarchies;
+        $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
+            return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
+        })->join(', ', ' and ');
+        view()->share('hierarchies', $hierarchies);
+
+        return (new SmartTableData(Area::query(), $request))
             ->columns([
                 SmartTableColumn::make('name')->sortable(),
                 SmartTableColumn::make('code')->sortable(),
@@ -29,19 +35,11 @@ class AreaController extends Controller
                 SmartTableColumn::make('geom')->setLabel('Has Map')
                     ->setBladeTemplate('<x-chimera::yes-no value="{{ $row->geom }}" />'),
             ])
+            ->editable('developer.area.edit')
             ->searchable(['name', 'code'])
-            ->downloadable()
             ->sortBy('level')
-            ->build();
-
-        $areaCounts = Area::select('level', DB::raw('count(*) AS count'))->groupBy('level')->get()->keyBy('level');
-        $hierarchies = (new AreaTree())->hierarchies;
-        $summary = collect($hierarchies)->map(function ($levelName, $level) use ($areaCounts) {
-            return ($areaCounts[$level]?->count ?? 0) . ' ' . str($levelName)->plural();
-        })->join(', ', ' and ');
-        view()->share('hierarchies', $hierarchies);
-
-        return view('chimera::developer.area.index', compact('smartTableData', 'summary'));
+            ->downloadable()
+            ->view('chimera::developer.area.index', compact('summary'));
     }
 
     public function create()

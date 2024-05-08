@@ -3,12 +3,13 @@
 namespace Uneca\Chimera\Services;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use Uneca\Chimera\Enums\SortDirection;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 
@@ -22,8 +23,9 @@ class SmartTableData
     public Collection $searchableColumns;
     public string $searchPlaceholder;
     public ?string $searchHint;
+    public ?string $editRouteName;
     public bool $isDownloadable = false;
-    public string $downloadLink;
+    public ?string $downloadableFileName;
     public string $sortBy;
     public SortDirection $sortDirection = SortDirection::ASC;
     public int $defaultPageSize;
@@ -73,20 +75,20 @@ class SmartTableData
         return $this;
     }
 
-    public function downloadable()
+    public function editable(string $editRouteName): self
     {
-        $router = app()->make(Router::class);
-        $router->pushMiddlewareToGroup('web', \Uneca\Chimera\Http\Middleware\DownloadSmartTableData::class);
-
-        $this->isDownloadable = true;
-        /*$router = app()->make(Router::class);
-        $router->addRoute('get', 'download', function () {
-            //return response()->abort(404);
-        })->name('download_csv');*/
+        $this->editRouteName = $editRouteName;
         return $this;
     }
 
-    public function build(): self
+    public function downloadable(string $fileName = 'table'): self
+    {
+        $this->isDownloadable = true;
+        $this->downloadableFileName = $fileName;
+        return $this;
+    }
+
+    public function build(): void
     {
         if (! isset($this->sortBy)) {
             dd('You have not set a default sorting column');
@@ -105,19 +107,32 @@ class SmartTableData
             ->when(isset($this->sortBy), function ($query) {
                 return $query->orderBy($this->sortBy, $this->sortDirection->value);
             });
-        $this->rows = $this->builder
+        $this->rows = $this->builder->clone()
             ->paginate(Session::get('page_size', $this->request->get('page_size', $this->defaultPageSize)));
+    }
 
-        if ($this->isDownloadable) {
-            $path = storage_path('app/public/test.csv');
-            $data = $this->builder->get()->select($this->columns->pluck('attribute')->toArray());
-            //dd($this->builder->get(), $data, $this->columns->pluck('attribute')->toArray());
-            /*$writer = SimpleExcelWriter::create($path);
-            foreach ($data as $record) {
-                $writer->addRow($record);
-            }*/
-            $this->downloadLink = url('storage/test.csv');
+    public function view(string $view, array $data = [])
+    {
+        $this->build();
+
+        if ($this->request->has('download')) {
+            $path = storage_path("app/public/{$this->downloadableFileName}.csv");
+
+            $writer = SimpleExcelWriter::create($path);
+            $records = $this->builder->clone()->get();
+            foreach ($records as $row) {
+                $line = [];
+                foreach ($this->columns as $column) {
+                    $line[$column->getLabel()] = str(Blade::render($column->getBladeTemplate(), compact('row', 'column')))
+                        ->stripTags()
+                        ->trim()
+                        ->value();
+                }
+                $writer->addRow($line);
+            }
+            return response()->download($path);
         }
-        return $this;
+
+        return view($view, ['smartTableData' => $this, ...$data]);
     }
 }

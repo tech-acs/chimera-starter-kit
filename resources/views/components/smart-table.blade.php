@@ -34,7 +34,7 @@
 
             @if($smartTableData->isDownloadable)
             <div class="ml-4">
-                <a href="?download=true">
+                <a href="{{ request()->fullUrlWithQuery(['download' => true]) }}">
                     <x-secondary-button title="Download current results as a CSV file"><x-chimera::icon.csv /></x-secondary-button>
                 </a>
             </div>
@@ -107,8 +107,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium items-center">
                                     @if ($customActionSubView)
                                         @include($customActionSubView)
-                                    @else
-                                        <a href="{{ route('indicator.edit', $row->id) }}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
+                                    @elseif(isset($smartTableData->editRouteName))
+                                        <a href="{{ route($smartTableData->editRouteName, $row->id) }}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
                                     @endif
                                 </td>
                             </tr>

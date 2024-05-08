@@ -14,8 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $baseQuery = User::with('roles');
-        $smartTableData = (new SmartTableData($baseQuery, $request))
+        return (new SmartTableData(User::with('roles'), $request))
             ->columns([
                 SmartTableColumn::make('name')
                     ->sortable()
@@ -38,20 +37,7 @@ class UserController extends Controller
             ])
             ->searchable(['name', 'email'])
             ->sortBy('name')
-            ->build();
-        view()->share(['users_count' => User::count(), 'invitations_count' => Invitation::count()]);
-        return view('chimera::user.index', compact('smartTableData'));
-
-        /*$search = $request->get('search');
-        $sortColumn = $request->get('sort') ?? 'name';
-        $records = User::with('roles')
-            ->when(! empty($search), function ($query) use ($search) {
-                $query->where('name', 'ilike', "%$search%")
-                    ->orWhere('email', 'ilike', "$search%");
-            })
-            ->orderBy($sortColumn)
-            ->paginate(config('chimera.records_per_page'));
-        return view('chimera::user.index', ['records' => $records, 'users_count' => User::count(), 'invitations_count' => Invitation::count()]);*/
+            ->view('chimera::user.index', ['users_count' => User::count(), 'invitations_count' => Invitation::count()]);
     }
 
     public function edit(User $user)
@@ -73,6 +59,7 @@ class UserController extends Controller
         $user->areaRestrictions()->delete();
         $user->announcements()->delete();
 
+        // ToDo: finish this!
         //$user->reports()->dissociate();
         //$user->permissions;
 

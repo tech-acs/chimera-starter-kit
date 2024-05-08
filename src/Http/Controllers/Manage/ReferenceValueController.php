@@ -14,8 +14,11 @@ class ReferenceValueController extends Controller
 {
     public function index(Request $request)
     {
-        $baseQuery = ReferenceValue::query();
-        $smartTableData = (new SmartTableData($baseQuery, $request))
+        view()->share('hierarchies', (new AreaTree())->hierarchies);
+        $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
+        $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], "? reference values across ? " . Str::plural('indicator', $stats->no_of_indicators));
+
+        return (new SmartTableData(ReferenceValue::query(), $request))
             ->columns([
                 SmartTableColumn::make('indicator')->sortable(),
                 SmartTableColumn::make('path')->sortable()->setLabel('Area Path'),
@@ -25,11 +28,7 @@ class ReferenceValueController extends Controller
             ])
             ->searchable(['indicator, path'])
             ->sortBy('indicator')
-            ->build();
-        $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
-        $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], "? reference values across ? " . Str::plural('indicator', $stats->no_of_indicators));
-        view()->share('hierarchies', (new AreaTree())->hierarchies);
-        return view('chimera::developer.reference-value.index', compact('smartTableData', 'summary'));
+            ->view('chimera::developer.reference-value.index', compact('summary'));
     }
 
     public function create()

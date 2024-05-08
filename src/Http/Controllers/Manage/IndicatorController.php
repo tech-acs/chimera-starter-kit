@@ -14,11 +14,11 @@ class IndicatorController extends Controller
 {
     public function index(Request $request)
     {
-        $baseQuery = Indicator::with('pages');
-        $smartTableData = (new SmartTableData($baseQuery, $request))
+        return (new SmartTableData(Indicator::with('pages'), $request))
             ->columns([
-                SmartTableColumn::make('name')
-                    ->sortable(),
+                SmartTableColumn::make('title')
+                    ->sortable()
+                    ->setBladeTemplate('<div>{{ $row->title }}</div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
                 SmartTableColumn::make('data_source')
                     ->setLabel('Data Source')
                     ->sortable()
@@ -30,11 +30,10 @@ class IndicatorController extends Controller
                 SmartTableColumn::make('published')
                     ->setBladeTemplate('<x-chimera::yes-no value="{{ $row->published }}" />'),
             ])
-            ->searchable(['name', 'data_source'])
-            ->sortBy('name')
+            ->searchable(['title', 'name', 'data_source'])
+            ->sortBy('title')
             ->downloadable()
-            ->build();
-        return view('chimera::indicator.index', compact('smartTableData'));
+            ->view('chimera::indicator.index');
     }
 
     public function edit(Indicator $indicator)

@@ -13,11 +13,11 @@
         <div class="flex justify-between">
             <div></div>
             <div class="flex items-center">
-                <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium mr-4">
+                <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium">
                     {{ empty($summary) ? "No reference values imported yet" : $summary }}
                 </div>
                 @can('developer-mode')
-                    <div x-data="confirmedDeletion">
+                    <div class="ml-4" x-data="confirmedDeletion">
                         <a href="{{route('developer.reference-value.create')}}"><x-button>{{ __('Import') }}</x-button></a>
 
                         <x-chimera::delete-confirmation />
