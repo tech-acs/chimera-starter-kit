@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //DB::unprepared('DROP EXTENSION IF EXISTS postgis');
+        DB::unprepared('DROP EXTENSION IF EXISTS postgis');
     }
 };
