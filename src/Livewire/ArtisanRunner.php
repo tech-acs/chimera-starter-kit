@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Livewire;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Stringable;
 use Livewire\Component;
 
 class ArtisanRunner extends Component
@@ -34,10 +35,6 @@ class ArtisanRunner extends Component
             'command' => 'chimera:data-import',
             'description' => 'Restore postgres data (some tables) from file',
         ],
-        /*[
-            'command' => 'chimera:update',
-            'description' => '',
-        ],*/
     ];
 
     public function run(int $commandIndex)
@@ -45,7 +42,13 @@ class ArtisanRunner extends Component
         $this->dispatch('happening', message: 'Command is running...');
         $command = $this->commands[$commandIndex]['command'];
         $result = Artisan::call($command);
-        $output = str(Artisan::output())->trim()->trim('INFO')->value();
+        $output = str(Artisan::output())
+            ->trim()
+            ->before("\n")
+            ->replace("INFO", "SUCCESS: ")
+            ->replace("ERROR", "ERROR: ")
+            ->trim()
+            ->value();
         $this->dispatch('happening', message: $output);
     }
 

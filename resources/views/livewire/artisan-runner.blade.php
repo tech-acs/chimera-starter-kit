@@ -20,7 +20,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col items-end pt-1">
-                            <x-danger-button wire:click="run({{ $index }})">Run</x-danger-button>
+                            <x-danger-button type="button" wire:click.prevent="run({{ $index }})">Run</x-danger-button>
                         </div>
                     </li>
                 @endforeach
