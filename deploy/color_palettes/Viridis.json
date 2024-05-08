@@ -1,0 +1,27 @@
+{
+    "name": "Viridis",
+    "description": "Initially developed for the python package matplotlib, and was implemented in R later. [https://waldyrious.net/viridis-palette-generator]",
+    "tags": ["colorblind safe", "data viz"],
+    "colors": [
+        "#fde725",
+        "#dde318",
+        "#bade28",
+        "#95d840",
+        "#75d054",
+        "#56c667",
+        "#3dbc74",
+        "#29af7f",
+        "#20a386",
+        "#1f968b",
+        "#238a8d",
+        "#287d8e",
+        "#2d718e",
+        "#33638d",
+        "#39558c",
+        "#404688",
+        "#453781",
+        "#482576",
+        "#481467",
+        "#440154"
+    ]
+}

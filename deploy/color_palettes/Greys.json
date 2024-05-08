@@ -1,0 +1,18 @@
+{
+    "name": "Greys",
+    "description": "It was generated from colorbrewer2.org using the 'sequential' scheme.",
+    "tags": [
+        "colorblind safe",
+        "colorbrewer"
+    ],
+    "colors": [
+        "#F0F0F0FF",
+        "#D9D9D9FF",
+        "#BDBDBDFF",
+        "#969696FF",
+        "#737373FF",
+        "#525252FF",
+        "#252525FF",
+        "#000000FF"
+    ]
+}
