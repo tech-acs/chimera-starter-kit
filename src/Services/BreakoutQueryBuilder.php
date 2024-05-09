@@ -31,7 +31,12 @@ class BreakoutQueryBuilder
     {
         list($selectColumns, $whereConditions) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filter);
 
-        $this->dbConnection = DB::connection($dataSource);
+        try {
+            $this->dbConnection = DB::connection($dataSource);
+        } catch (\Exception $exception) {
+            throw new \Exception("Not able to connect to the data source named {$dataSource}.");
+        }
+
         $this->excludePartials = $excludePartials;
         $this->partialCaseIdentifyingCondition = $partialCaseIdentifyingCondition;
         $this->excludeDeleted = $excludeDeleted;

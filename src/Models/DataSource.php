@@ -14,7 +14,8 @@ class DataSource extends Model
     protected $guarded = ['id'];
     protected $casts = [
         'start_date' => 'datetime',
-        'end_date' => 'datetime'
+        'end_date' => 'datetime',
+        'password' => 'encrypted',
     ];
     public $translatable = ['title'];
 
