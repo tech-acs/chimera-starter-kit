@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Models;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 

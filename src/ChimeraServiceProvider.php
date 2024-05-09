@@ -3,6 +3,7 @@
 namespace Uneca\Chimera;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
@@ -115,6 +116,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
+        Model::preventLazyLoading(! app()->isProduction());
+
         Gate::before(function ($user, $ability) {
             if ($ability === 'developer-mode') {
                 return null;

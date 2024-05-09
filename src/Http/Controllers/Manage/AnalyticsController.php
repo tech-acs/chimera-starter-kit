@@ -14,6 +14,7 @@ class AnalyticsController extends Controller
     {
         $hierarchies = (new AreaTree())->hierarchies;
         $records = Analytics::query()
+            ->with('analyzable', 'user')
             ->selectRaw('user_id, analyzable_type, analyzable_id, level, source, started_at, completed_at - started_at AS query_time')
             ->orderBy('query_time', 'DESC')
             ->paginate(config('chimera.records_per_page'));

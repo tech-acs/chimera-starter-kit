@@ -3,7 +3,6 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Uneca\Chimera\Database\Seeders\SettingsSeeder;
 use Uneca\Chimera\Traits\PackageTasksTrait;
 use function Laravel\Prompts\info;
 
@@ -25,6 +24,7 @@ class Chimera extends Command
         $this->copyAssets();
         $this->copyColorPalettes();
         $this->customizeExceptionRendering();
+        $this->adjustLocaleSettings();
         $this->installEnvFiles();
         $this->installEmptyWebRoutesFile();
         $this->installJsDependencies();
