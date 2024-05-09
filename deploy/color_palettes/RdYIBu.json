@@ -1,7 +1,7 @@
 {
     "name": "RdYIBu",
     "description": "It was generated from colorbrewer2.org using the 'diverging' scheme.",
-    "tags": ["colorblind safe", "colorbrewer"],
+    "tags": ["colorblind safe", "colorbrewer", "diverging"],
     "colors": [
         "#a50026",
         "#7f3b08",

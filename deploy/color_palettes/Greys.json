@@ -3,7 +3,8 @@
     "description": "It was generated from colorbrewer2.org using the 'sequential' scheme.",
     "tags": [
         "colorblind safe",
-        "colorbrewer"
+        "colorbrewer",
+        "sequential"
     ],
     "colors": [
         "#F0F0F0FF",
