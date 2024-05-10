@@ -30,14 +30,34 @@
 
         <div>
             <div class="bg-white">
-                <div class="max-w-7xl mx-auto py-6">
-                    <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
-                        {{ __('A few selected indicators') }}
-                    </p>
-                    <dl class="rounded-lg bg-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {{ $slot }}
-                    </dl>
-                </div>
+                @if ($dataSource->scorecards->isNotEmpty())
+                    <div class="max-w-7xl mx-auto py-4">
+                        <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
+                            {{ __('A few selected scorecards') }}
+                        </p>
+                        <div class="rounded-lg bg-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            @foreach($dataSource->scorecards as $scorecard)
+                                @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index])
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                @if ($dataSource->featured_indicators->isNotEmpty())
+                    <div class="max-w-7xl mx-auto py-4">
+                        <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
+                            {{ __('Featured indicators') }}
+                        </p>
+                        <div class="flex gap-x-4">
+                            @foreach($dataSource->featured_indicators as $indicator)
+                                <x-chimera::featured-chart-card :indicator="$indicator">
+                                    @livewire($indicator->component, ['indicator' => $indicator])
+                                </x-chimera::featured-chart-card>
+                            @endforeach
+                        </div>
+                    </div>
+
+                @endif
             </div>
         </div>
     </div>

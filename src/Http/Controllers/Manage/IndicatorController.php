@@ -18,7 +18,7 @@ class IndicatorController extends Controller
             ->columns([
                 SmartTableColumn::make('title')
                     ->sortable()
-                    ->setBladeTemplate('<div>{{ $row->title }}</div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
+                    ->setBladeTemplate('<div>{{ $row->title }} <x-chimera::icon.featured class="text-amber-600" :value="$row->is_featured" /></div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
                 SmartTableColumn::make('data_source')
                     ->setLabel('Data Source')
                     ->sortable()
@@ -46,7 +46,8 @@ class IndicatorController extends Controller
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
         $indicator->pages()->sync($request->get('pages', []));
-        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag']));
+        $request->merge(['is_featured' => $request->get('is_featured', false)]);
+        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag', 'is_featured']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

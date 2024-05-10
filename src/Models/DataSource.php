@@ -35,6 +35,15 @@ class DataSource extends Model
             });
     }
 
+    public function getFeaturedIndicatorsAttribute()
+    {
+        return Indicator::where('data_source', $this->name)
+            ->where('is_featured', true)
+            ->inRandomOrder()
+            ->take(2)
+            ->get();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('connection_active', true);

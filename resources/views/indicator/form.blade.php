@@ -62,7 +62,17 @@
                         <span class="text-sm text-gray-900">{{ __('Published') }}</span>
                     </label>
                 </div>
-
+            </div>
+            <div>
+                <div class="relative flex items-start">
+                    <div class="flex h-6 items-center mt-1">
+                        <input @checked(old('is_featured', $indicator->is_featured ?? false)) id="is_featured" name="is_featured" type="checkbox" class="h-6 w-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                    </div>
+                    <div class="ml-3 text-base leading-6">
+                        <label for="is_featured" class="font-medium text-gray-900">Feature on home page</label>
+                        <p class="text-gray-500 text-xs">A maximum of two indicators will be displayed per data source</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
