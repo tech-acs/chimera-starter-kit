@@ -32,5 +32,5 @@ return [
         'ttl' => env('CACHE_TTL_SECONDS', 60 * 60),
         'tags' => [],
     ],
-    'long_query_time' => env('LONG_QUERY_TIME', 10), // Seconds
+    'long_query_time' => env('LONG_QUERY_TIME', 5), // Seconds
 ];
