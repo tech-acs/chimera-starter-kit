@@ -39,4 +39,15 @@ class Analytics extends Model
                 3
             );
     }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Analytics $analytics) {
+            $queryTimeInSeconds = Carbon::createFromTimestamp($analytics->completed_at)->diffInSeconds($analytics->started_at);
+            if ($queryTimeInSeconds < config('chimera.long_query_time')) {
+                return false;
+            }
+            return true;
+        });
+    }
 }
