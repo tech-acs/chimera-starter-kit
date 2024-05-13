@@ -10,13 +10,13 @@
         @endforelse
 
         <div class="px-4 xl:px-0">
-            <div class="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div class="mt-2 grid grid-cols-1 gap-8 lg:grid-cols-3">
                 @foreach($graphicalMenu as $menu)
                     <x-chimera::graphical-menu
                         title="{{ $menu['title'] }}"
                         description="{{ $menu['description'] }}"
                         link="{{ $menu['link'] }}"
-                        image="{{ $menu['image'] }}"
+                        color="{{ \Uneca\Chimera\Services\ColorPalette::current()->colors[$loop->index] }}"
                     />
                 @endforeach
             </div>

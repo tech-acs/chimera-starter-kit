@@ -29,4 +29,9 @@ class ColorPalette
         }
         return null;
     }
+
+    public static function current(): ?object
+    {
+        return ColorPalette::palette(settings('color_palette'));
+    }
 }
