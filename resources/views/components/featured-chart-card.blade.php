@@ -31,15 +31,15 @@
     <div class="border-t border-gray-200 relative" style="min-height: 491px;">
         {{ $slot }}
         <div
-                x-show="show_help"
-                x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
-                x-transition:enter-start="translate-y-full"
-                x-transition:enter-end="translate-y-0"
-                x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
-                x-transition:leave-start="translate-y-0"
-                x-transition:leave-end="translate-y-full"
-                class="transition duration-1000 ease-in-out absolute inset-0 justify-center items-center opacity-90 bg-white px-4 py-5 sm:px-6"
-                x-cloak
+            x-show="show_help"
+            x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+            x-transition:enter-start="translate-y-full"
+            x-transition:enter-end="translate-y-0"
+            x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
+            x-transition:leave-start="translate-y-0"
+            x-transition:leave-end="translate-y-full"
+            class="transition duration-1000 ease-in-out absolute inset-0 justify-center items-center opacity-90 bg-white px-4 py-5 sm:px-6"
+            x-cloak
         >
             {!! $indicator?->help !!}
         </div>

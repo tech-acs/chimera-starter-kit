@@ -18,7 +18,7 @@ return [
     'indicator_template' => [
         'repository_url' => env('INDICATOR_TEMPLATE_REPOSITORY_URL','https://api.github.com/repos/tech-acs/chimera-indicator-templates')
     ],
-    'color_theme' => env('COLOR_THEME', 'default'),
+    'color_theme' => env('COLOR_THEME', 'Chimera'),
     'area' => [
         'map' => [
             'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],
@@ -33,4 +33,5 @@ return [
         'tags' => [],
     ],
     'long_query_time' => env('LONG_QUERY_TIME', 5), // Seconds
+    'featured_indicators_per_data_source' => env('FEATURED_INDICATORS_PER_DATA_SOURCE', 2),
 ];

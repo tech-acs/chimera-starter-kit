@@ -39,8 +39,8 @@ class DataSource extends Model
     {
         return Indicator::where('data_source', $this->name)
             ->where('is_featured', true)
-            ->inRandomOrder()
-            ->take(2)
+            ->orderBy('updated_at')
+            ->take(config('chimera.featured_indicators_per_data_source'))
             ->get();
     }
 

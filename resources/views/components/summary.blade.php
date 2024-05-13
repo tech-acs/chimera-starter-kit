@@ -48,11 +48,22 @@
                         <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
                             {{ __('Featured indicators') }}
                         </p>
-                        <div class="flex gap-x-4">
+                        <div class="flex flex-col gap-y-4">
+
                             @foreach($dataSource->featured_indicators as $indicator)
+
+                                @if (($loop->iteration % 2) === 1)
+                                    <div class="flex gap-x-4">
+                                @endif
+
                                 <x-chimera::featured-chart-card :indicator="$indicator">
                                     @livewire($indicator->component, ['indicator' => $indicator])
                                 </x-chimera::featured-chart-card>
+
+                                @if ((($loop->iteration % 2) === 0) || $loop->last)
+                                    </div>
+                                @endif
+
                             @endforeach
                         </div>
                     </div>
