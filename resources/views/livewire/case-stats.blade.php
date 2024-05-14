@@ -10,12 +10,12 @@
             <x-chimera::case-icon :type="$name" />
             <div class="p-4 sm:p-5">
                 <div class="flex justify-end">
-                    <dt class="text-sm font-normal text-gray-900 text-right">
+                    <dt class="text-base font-semibold text-gray-900 text-right">
                         {{ ucfirst(__($name)) }}
                     </dt>
                 </div>
                 <dd class="mt-1 flex justify-end items-center md:block lg:flex">
-                    <div class="flex items-baseline ml-2 text-2xl font-semibold">
+                    <div class="flex items-baseline ml-2 text-4xl font-semibold">
                         {{ Number::format((float)$value) }}
                     </div>
                 </dd>
