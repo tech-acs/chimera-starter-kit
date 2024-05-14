@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('port', 10);
             $table->string('database');
             $table->string('username');
-            $table->text('password');
+            $table->string('password');
             $table->boolean('connection_active')->default(true);
             $table->string('driver', '25')->default('mysql');
             $table->timestamps();
