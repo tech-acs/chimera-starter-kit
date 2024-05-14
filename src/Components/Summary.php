@@ -48,10 +48,14 @@ class Summary extends Component
 
     private function getLastUpdated()
     {
-        $result = (new BreakoutQueryBuilder($this->dataSource->name))
-            ->get("SELECT modified_time FROM cspro_jobs ORDER BY modified_time DESC LIMIT 1")
-            ->first();
-        return is_null($result) ? '-' : Carbon::parse($result->modified_time)->locale(app()->getLocale())->isoFormat('llll');
+        try {
+            $result = (new BreakoutQueryBuilder($this->dataSource->name))
+                ->get("SELECT modified_time FROM cspro_jobs ORDER BY modified_time DESC LIMIT 1")
+                ->first();
+            return is_null($result) ? '-' : Carbon::parse($result->modified_time)->locale(app()->getLocale())->isoFormat('llll');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     public function render()

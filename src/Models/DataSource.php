@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Translatable\HasTranslations;
@@ -64,7 +65,7 @@ class DataSource extends Model
         }
     }
 
-    public function test()
+    public function test(): Collection
     {
         $result = collect([]);
         $result->add($this->testCanConnect());

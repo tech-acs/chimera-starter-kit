@@ -34,7 +34,7 @@ class BreakoutQueryBuilder
         try {
             $this->dbConnection = DB::connection($dataSource);
         } catch (\Exception $exception) {
-            throw new \Exception("Not able to connect to the data source named {$dataSource}.");
+            throw new \Exception("Data source named {$dataSource} is not connectable.");
         }
 
         $this->excludePartials = $excludePartials;

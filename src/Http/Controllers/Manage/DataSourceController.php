@@ -3,9 +3,10 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
-use Livewire\Features\SupportConsoleCommands\Commands\ComponentParser;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Livewire\Mechanisms\ComponentRegistry;
-use ReflectionClass;
 use Uneca\Chimera\Http\Requests\DataSourceRequest;
 use Uneca\Chimera\Models\DataSource;
 use Illuminate\Support\Facades\Storage;
@@ -62,6 +63,15 @@ class DataSourceController extends Controller
 
     public function edit(DataSource $dataSource)
     {
+        try {
+            $dataSource->password;
+        } catch (DecryptException $e) {
+            DB::table('data_sources')
+                ->where('id', $dataSource->id)
+                ->update(['password' => Crypt::encryptString('')]);
+            $dataSource = DataSource::find($dataSource->id);
+        }
+
         $components = $this->getCaseStatComponentsList();
         return view('chimera::developer.data-source.edit', compact('dataSource', 'components'))
             ->with(['databases' => $this->databases]);
