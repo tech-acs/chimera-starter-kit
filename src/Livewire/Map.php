@@ -100,7 +100,7 @@ class Map extends Component
         );
     }
 
-    final public function updateMap(string $path = '')
+    public function updateMap(string $path = '')
     {
         $nextLevel = empty($path) ? 0 : AreaTree::levelFromPath($path) + 1;
         $geojson = json_decode($this->getGeoJson($path, $nextLevel));
@@ -127,7 +127,7 @@ class Map extends Component
         $this->updateMap('');
     }
 
-    final public function mount()
+    public function mount()
     {
         $this->leafletMapOptions = [
             'center' => config('chimera.area.map.center'),

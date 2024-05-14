@@ -33,7 +33,7 @@ class ScorecardComponent extends Component
         return [$this->value, $this->diff];
     }
 
-    final public function setValue()
+    public function setValue()
     {
         $user = auth()->user();
         $filter = $user->areaRestrictionAsFilter();

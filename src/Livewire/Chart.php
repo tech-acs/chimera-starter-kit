@@ -145,7 +145,7 @@ abstract class Chart extends Component
         }
     }
 
-    final public function updateChart(array $filter): void
+    public function updateChart(array $filter): void
     {
         $this->updateDataAndLayout($filter);
         $this->dispatch("redrawChart-{$this->graphDiv}", $this->data, $this->layout);
@@ -160,7 +160,7 @@ abstract class Chart extends Component
         $this->updateChart($filtersToApply);
     }
 
-    final public function mount()
+    public function mount()
     {
         $this->graphDiv = $this->indicator->component;
         $this->config = $this->getConfig();
