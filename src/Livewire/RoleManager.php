@@ -111,7 +111,7 @@ class RoleManager extends Component
             return $value;
         })->keys();
         $this->role->syncPermissions($filtered);
-        $this->emit('roleUpdated');
+        $this->dispatch('roleUpdated');
     }
 
     public function render()

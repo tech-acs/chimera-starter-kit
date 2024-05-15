@@ -24,7 +24,7 @@ class CaseStats extends Component
     public function setStats()
     {
         $user = auth()->user();
-        $filter = $user->areaRestrictionAsFilter();;
+        $filter = $user->areaRestrictionAsFilter();
         $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
         try {

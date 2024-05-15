@@ -118,8 +118,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        Model::preventLazyLoading(! app()->isProduction());
-
         Gate::before(function ($user, $ability) {
             if ($ability === 'developer-mode') {
                 return null;
