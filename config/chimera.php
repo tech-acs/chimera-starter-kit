@@ -1,5 +1,4 @@
 <?php
-// config for Uneca/census-dashboard-starter-kit
 
 return [
     'owner' => [
@@ -32,6 +31,6 @@ return [
         'ttl' => env('CACHE_TTL_SECONDS', 60 * 60),
         'tags' => [],
     ],
-    'long_query_time' => env('LONG_QUERY_TIME', 5), // Seconds
+    'long_query_time' => env('LONG_QUERY_TIME', 10), // Seconds
     'featured_indicators_per_data_source' => env('FEATURED_INDICATORS_PER_DATA_SOURCE', 2),
 ];

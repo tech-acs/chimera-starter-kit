@@ -51,19 +51,19 @@
                         <div class="flex flex-col gap-y-4">
 
                             @foreach($dataSource->featured_indicators as $indicator)
+                                @can($indicator->permission_name)
+                                    @if (($loop->iteration % 2) === 1)
+                                        <div class="flex gap-x-4">
+                                    @endif
 
-                                @if (($loop->iteration % 2) === 1)
-                                    <div class="flex gap-x-4">
-                                @endif
+                                    <x-chimera::featured-chart-card :indicator="$indicator">
+                                        @livewire($indicator->component, ['indicator' => $indicator])
+                                    </x-chimera::featured-chart-card>
 
-                                <x-chimera::featured-chart-card :indicator="$indicator">
-                                    @livewire($indicator->component, ['indicator' => $indicator])
-                                </x-chimera::featured-chart-card>
-
-                                @if ((($loop->iteration % 2) === 0) || $loop->last)
-                                    </div>
-                                @endif
-
+                                    @if ((($loop->iteration % 2) === 0) || $loop->last)
+                                        </div>
+                                    @endif
+                                @endcan
                             @endforeach
                         </div>
                     </div>

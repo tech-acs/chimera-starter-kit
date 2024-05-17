@@ -60,7 +60,7 @@ class BulkInviter extends Component
     {
         $this->validate();
         BulkInvitationJob::dispatch($this->filePath, $this->sendEmails, auth()->user());
-        $this->emit('processing');
+        $this->dispatch('processing');
     }
 
     public function render()

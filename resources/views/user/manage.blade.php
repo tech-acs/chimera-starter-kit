@@ -55,7 +55,7 @@
                                 @forelse($roles as $role)
                                     <!-- Checked: "bg-indigo-50 border-indigo-200 z-10", Not Checked: "border-gray-200" -->
                                     <label class="border-gray-200 relative border p-4 flex cursor-pointer" x-data="{checked: {{$user->hasRole($role->name) ? '1' : '0'}} }">
-                                        <input type="radio" name="role" value="{{$role->id}}" @if($user->hasRole($role->name)) checked @endif class="h-4 w-4 mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
+                                        <input type="radio" name="role" value="{{ $role->name }}" @if($user->hasRole($role->name)) checked @endif class="h-4 w-4 mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
                                         <div class="ml-3 flex flex-col">
                                             <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" -->
                                             <span id="privacy-setting-0-label" :class="{'text-indigo-900' : checked == 1, 'text-gray-900': checked == 0 }" class="block text-sm font-medium">

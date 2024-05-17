@@ -94,6 +94,7 @@ class InvitationManager extends Component
     {
         $this->records = Invitation::all();
         $this->roles = Role::where('name', '!=', 'Super Admin')->get();
+        $this->sendEmail = config('chimera.emailing_enabled');
     }
 
     public function showLinkModal(Invitation $invitation)

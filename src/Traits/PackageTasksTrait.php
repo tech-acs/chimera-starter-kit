@@ -122,7 +122,6 @@ trait PackageTasksTrait
         });
         $this->components->task("Images", function () {
             $this->copyFilesInDir(__DIR__ . '/../../deploy/assets/images', public_path('images'), '*.*');
-            File::copyDirectory(__DIR__ . '/../../deploy/assets/images/graphical-menu', public_path('images/graphical-menu'));
             return true;
         });
         $this->components->task("Tailwind and vite config files", function () {
