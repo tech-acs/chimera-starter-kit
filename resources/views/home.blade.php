@@ -12,12 +12,14 @@
         <div class="px-4 xl:px-0">
             <div class="mt-2 grid grid-cols-1 gap-8 lg:grid-cols-3">
                 @foreach($graphicalMenu as $menu)
-                    <x-chimera::graphical-menu
-                        title="{{ $menu['title'] }}"
-                        description="{{ $menu['description'] }}"
-                        link="{{ $menu['link'] }}"
-                        color="{{ \Uneca\Chimera\Services\ColorPalette::current()->colors[$loop->index] }}"
-                    />
+                    @can($menu['slug'])
+                        <x-chimera::graphical-menu
+                            title="{{ $menu['title'] }}"
+                            description="{{ $menu['description'] }}"
+                            link="{{ $menu['link'] }}"
+                            color="{{ \Uneca\Chimera\Services\ColorPalette::current()->colors[$loop->index] }}"
+                        />
+                    @endcan
                 @endforeach
             </div>
         </div>

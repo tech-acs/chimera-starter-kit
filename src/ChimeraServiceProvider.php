@@ -129,6 +129,10 @@ class ChimeraServiceProvider extends PackageServiceProvider
             return session('developer_mode_enabled', false);
         });
 
+        Gate::define('profile', function () {
+            return true;
+        });
+
         (new ConnectionLoader())();
 
         Blade::if('connectible', function ($value) {
