@@ -15,6 +15,7 @@ class BreakoutQueryBuilder
     private string $select;
     protected array $columns;
     private string $from;
+    protected array $tables;
     private string $where;
     protected array $conditions;
     private string $groupBy;
@@ -29,7 +30,7 @@ class BreakoutQueryBuilder
         string $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL'
     )
     {
-        list($selectColumns, $whereConditions) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filter);
+        list($selectColumns, $whereConditions, $concernedTables) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filter);
 
         try {
             $this->dbConnection = DB::connection($dataSource);
@@ -43,6 +44,7 @@ class BreakoutQueryBuilder
         $this->select = '';
         $this->columns = $selectColumns;
         $this->from = '';
+        $this->tables = $concernedTables;
         $this->where = '';
         $this->conditions = ["cases.key != ''", ...$whereConditions];
         if ($this->excludeDeleted) {
@@ -65,7 +67,7 @@ class BreakoutQueryBuilder
     public function from(array $items) : self
     {
         $fromClause = "(`level-1` INNER JOIN cases ON `level-1`.`case-id` = cases.id)";
-        foreach ($items as $item) {
+        foreach (array_merge($this->tables, $items) as $item) {
             $fromClause .= " INNER JOIN $item ON `level-1`.`level-1-id` = $item.`level-1-id`";
         }
         $this->from = "FROM $fromClause";
@@ -102,8 +104,17 @@ class BreakoutQueryBuilder
         return $this;
     }
 
+    public function debugLog(): self
+    {
+        logger($this->toSql());
+        return $this;
+    }
+
     public function toSql() : string
     {
+        if (empty($this->from) && (count($this->tables) > 0)) {
+            $this->from([]);
+        }
         if (count($this->conditions) > 0) {
             $this->where = "WHERE " . implode(' AND ', $this->conditions);
         }
