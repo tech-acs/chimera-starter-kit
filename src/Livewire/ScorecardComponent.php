@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Uneca\Chimera\Models\Scorecard;
+use Uneca\Chimera\Services\APCA;
 use Uneca\Chimera\Services\ScorecardCaching;
 use Uneca\Chimera\Services\ColorPalette;
 
@@ -18,6 +19,7 @@ class ScorecardComponent extends Component
     public string $diffTitle;
     public string $unit = '%';
     public string $bgColor;
+    public string $fgColor;
     public Carbon $dataTimestamp;
 
     public function mount(int $index)
@@ -26,6 +28,7 @@ class ScorecardComponent extends Component
         $currentPalette = ColorPalette::palette(settings('color_palette'));
         $totalColors = count($currentPalette->colors);
         $this->bgColor = $currentPalette->colors[$index % $totalColors];
+        $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
     }
 
     public function getData(array $filter): array

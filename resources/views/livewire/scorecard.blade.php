@@ -7,10 +7,10 @@
     <div class="absolute right-1 bottom-1 opacity-60 cursor-pointer mb-1" title="{{ $dataTimestamp?->toDayDateTimeString() }}">
         <x-chimera::icon.stamp class="text-white w-3 h-3" />
     </div>
-    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-white">
+    <dt class="order-2 mt-2 text-lg leading-6 font-medium {{ $fgColor }}">
         {{ $title }}
     </dt>
-    <dd class="order-1 text-3xl font-extrabold text-white flex justify-center items-center">
+    <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center">
         <div class="mr-2"><span wire:loading>...</span>{{ $value }}</div>
         @if (! is_null($diff))
             <x-chimera::stock-ticker diff="{{ $diff }}" diff-title="{{ $diffTitle }}" unit="{{ $unit }}"  />

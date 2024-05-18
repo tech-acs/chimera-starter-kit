@@ -139,7 +139,7 @@
                                     <h2 class="font-bold tracking-tight text-gray-900 text-2xl">Color palette selector</h2>
                                     <p class="mt-2 mb-4 text-lg leading-8 text-gray-600">
                                         You can apply one of the following available color palettes. The colors in the selected palette will apply to dashboard elements
-                                        such as charts and scorecards.
+                                        such as charts, scorecards and cards. The right color will be chosen for text sitting on top of these colors according to Web Content Accessibility Guidelines (WCAG-3/APCA).
                                     </p>
 
                                     <div class="bg-emerald-50 py-2 my-4 mb-10 sm:py-4 border rounded-md">

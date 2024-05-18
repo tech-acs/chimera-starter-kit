@@ -14,10 +14,11 @@
                 @foreach($graphicalMenu as $menu)
                     @can($menu['slug'])
                         <x-chimera::graphical-menu
-                            title="{{ $menu['title'] }}"
-                            description="{{ $menu['description'] }}"
-                            link="{{ $menu['link'] }}"
-                            color="{{ \Uneca\Chimera\Services\ColorPalette::current()->colors[$loop->index] }}"
+                            :title="$menu['title']"
+                            :description="$menu['description']"
+                            :link="$menu['link']"
+                            :bg-color="$menu['bg-color']"
+                            :fg-color="$menu['fg-color']"
                         />
                     @endcan
                 @endforeach
