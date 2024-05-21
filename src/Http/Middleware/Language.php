@@ -19,7 +19,7 @@ class Language
             App::setLocale($lang);
             Cookie::queue('locale', $lang);
         } else {
-            App::setLocale('en_US');
+            App::setLocale('en');
         }
         return $next($request);
     }

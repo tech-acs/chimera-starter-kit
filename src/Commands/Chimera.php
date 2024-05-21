@@ -24,7 +24,6 @@ class Chimera extends Command
         $this->copyAssets();
         $this->copyColorPalettes();
         $this->customizeExceptionRendering();
-        $this->adjustLocaleSettings();
         $this->installEnvFiles();
         $this->installEmptyWebRoutesFile();
         $this->installJsDependencies();

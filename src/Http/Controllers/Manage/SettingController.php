@@ -19,6 +19,7 @@ class SettingController extends Controller
     {
         $inputData = $request->except('_token');
         foreach ($inputData as $key => $value) {
+            // ToDo: validate
             Setting::where('key', $key)->update(['value' => $value]);
         }
         Cache::forget('settings');

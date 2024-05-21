@@ -165,26 +165,6 @@ trait PackageTasksTrait
         });
     }
 
-    protected function adjustLocaleSettings(): void
-    {
-        $this->components->info("Adjust default locale settings");
-        $options = [
-            'Change default locale from en to en_US' => [
-                'search' => "'locale' => env('APP_LOCALE', 'en'),",
-                'replace' => "'locale' => env('APP_LOCALE', 'en_US'),"
-            ],
-            'Change default fallback_locale from en to en_US' => [
-                'search' => "'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),",
-                'replace' => "'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en_US'),"
-            ],
-        ];
-        foreach ($options as $feature => $option) {
-            $this->components->task($feature, function () use ($option) {
-                return $this->replaceInFile($option['search'], $option['replace'], config_path('app.php'));
-            });
-        }
-    }
-
     protected function installEnvFiles(): void
     {
         $this->components->info("Install new environment files");

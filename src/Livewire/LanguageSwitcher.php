@@ -14,7 +14,7 @@ class LanguageSwitcher extends Component
 
     public function mount()
     {
-        $this->locale = Cookie::get('locale', 'en_US');
+        $this->locale = Cookie::get('locale', 'en');
         $this->route = url()->current();
         $this->languages = config('languages');
     }

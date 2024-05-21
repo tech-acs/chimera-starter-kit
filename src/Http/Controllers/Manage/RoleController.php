@@ -27,7 +27,7 @@ class RoleController extends Controller
                 ->withInput();
         }
         Role::create(['name' => $request->get('name'), 'guard_name' => 'web']);
-        return redirect()->route('role.index');
+        return redirect()->route('role.index')->withMessage('Role created successfully.');
     }
 
     public function edit(Role $role)

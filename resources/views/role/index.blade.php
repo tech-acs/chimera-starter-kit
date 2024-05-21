@@ -38,7 +38,7 @@
             </div>
         </form>
 
-        <x-chimera::message-display />
+        <x-chimera::message-display class="mt-6" />
 
         <div class="mt-5 flex flex-col">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
