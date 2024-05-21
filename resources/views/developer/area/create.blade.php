@@ -53,7 +53,7 @@
             {{--Content--}}
             <div>
                 {{-- First tab --}}
-                <section id="users" x-show="isSelected('shapefile')">
+                <section x-show="isSelected('shapefile')">
 
                     <div class="mt-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
                         <div class="flex">
@@ -119,7 +119,7 @@
                                         <select name="level" class="mt-1 w-1/3 rounded-md border border-gray-300 bg-white px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                                             <option value="">{{ __('Select level') }}</option>
                                             @forelse($levels as $level => $name)
-                                                <option value="{{ $level }}" @selected(old('level') == $level) >{{ __($name) }}</option>
+                                                <option value="{{ $level }}" @selected(old('level', '') == $level) >{{ __($name) }}</option>
                                             @empty
                                                 <option value="">{{ __('Not configured') }}</option>
                                             @endforelse
@@ -138,7 +138,7 @@
                     </form>
                 </section>
                 {{-- Second tab --}}
-                <section id="invitations" x-show="isSelected('spreadsheet')">
+                <section x-show="isSelected('spreadsheet')">
                     <livewire:area-spreadsheet-importer />
                 </section>
             </div>

@@ -2,9 +2,7 @@
 
 namespace Uneca\Chimera\Services;
 
-use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Shapefile\Shapefile;
 use Shapefile\ShapefileReader;
 use Throwable;
@@ -67,10 +65,11 @@ class ShapefileImporter
                     $wkt = $feature->getWKT();
                     //$geom = DB::raw("ST_GeomFromText('{$geom}', 4326)")->getValue(DB::connection()->getQueryGrammar());
                     $result = DB::select("SELECT ST_GeomFromText('{$wkt}', 4326) AS geom");
-                    array_push($collector, [
+                    // ToDo: ST_Simplify!
+                    $collector[] = [
                         'attribs' => $attribs,
                         'geom' => $result[0]?->geom ?? null,
-                    ]);
+                    ];
 
                 } catch (Throwable $e) {
                     logger("Error fetching record $i: [Err Code: " . $e->getCode() . "] " . $e->getMessage());

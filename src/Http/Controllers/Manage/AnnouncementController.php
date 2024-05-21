@@ -23,7 +23,7 @@ class AnnouncementController extends Controller
         return Role::whereNotIn('name', ['Super Admin'])
             ->pluck('name', 'id')
             ->map(fn ($role) => "Users having $role role")
-            ->prepend('Everyone', 0)
+            ->prepend('Everyone', 'everyone')
             ->all();
     }
 
@@ -38,7 +38,7 @@ class AnnouncementController extends Controller
         $sender = auth()->user();
         $recipients = $request->integer('recipients');
         $recipientUsers = match ($recipients) {
-            0 => User::whereKeyNot($sender->id)->get(),
+            'everyone' => User::whereKeyNot($sender->id)->get(),
             default => Role::find($recipients)->users,
         };
         if ($recipientUsers->count() > 0) {

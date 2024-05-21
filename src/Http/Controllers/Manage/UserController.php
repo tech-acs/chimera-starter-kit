@@ -49,7 +49,7 @@ class UserController extends Controller
     public function update(User $user, Request $request)
     {
         $user->syncRoles([$request->get('role')]);
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->withMessage('User role updated');
     }
 
     public function destroy(User $user)

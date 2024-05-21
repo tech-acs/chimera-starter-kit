@@ -21,12 +21,8 @@
     </div>
 
     <div class="px-4 sm:px-6 py-4">
-        <div>
-            <h3 class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider pb-6">
-                {{ __('Interview stats') }}
-            </h3>
-            @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource])
-        </div>
+
+        @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource])
 
         <div>
             <div class="bg-white">

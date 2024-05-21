@@ -1,25 +1,24 @@
-<dl wire:init="setStats" class="relative grid grid-cols-1 content-center rounded-md border bg-white divide-y divide-gray-200 md:grid-cols-4 md:divide-y-0 md:divide-x">
-    <div class="absolute z-50 left-2 bottom-2 opacity-25 cursor-pointer" title="{{ $dataTimestamp?->diffForHumans() }} ({{ $dataTimestamp?->toDayDateTimeString() }})">
-        <x-chimera::icon.stamp class="text-gray-800 w-4 h-4" />
+<dl wire:init="setStats" class="content-center mb-2">
+    <div class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider mb-1 flex align-middle">
+        <div>{{ __('Interview stats') }}</div>
+        <a class="cursor-pointer" title="Calculated {{ $dataTimestamp?->diffForHumans() }} ({{ $dataTimestamp?->toDayDateTimeString() }})">
+            <x-chimera::icon.stamp class="text-gray-600 ml-2" />
+        </a>
     </div>
-    <div wire:loading class="h-24 col-span-4">
-        <div class="flex justify-center h-full items-center text-lg text-gray-400"><div>Fetching data . . . </div></div>
+
+    <div wire:loading class="h-16">
+        <div class="flex justify-center h-full items-center text-xl text-gray-400"><div>Fetching data . . . </div></div>
     </div>
-    @foreach($stats as $name => $value)
-        <div class="relative">
-            <x-chimera::case-icon :type="$name" />
-            <div class="p-4 sm:p-5">
-                <div class="flex justify-end">
-                    <dt class="text-base font-semibold text-gray-900 text-right">
-                        {{ ucfirst(__($name)) }}
-                    </dt>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        @foreach($stats as $name => $value)
+            <div class="flex rounded-md shadow bg-white p-2">
+                <x-chimera::case-icon :type="$name" class="opacity-75" />
+                <div class="flex-1 truncate px-4">
+                    <div class="font-medium text-2xl text-gray-900 hover:text-gray-600">{{ Number::format((float)$value) }}</div>
+                    <div class="text-gray-500 text-sm">{{ ucfirst(__($name)) }}</div>
                 </div>
-                <dd class="mt-1 flex justify-end items-center md:block lg:flex">
-                    <div class="flex items-baseline ml-2 text-4xl font-semibold">
-                        {{ Number::format((float)$value) }}
-                    </div>
-                </dd>
             </div>
-        </div>
-    @endforeach
+        @endforeach
+    </div>
 </dl>
