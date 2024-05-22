@@ -19,6 +19,7 @@ abstract class Chart extends Component
     public array $layout;
     public array $config;
     public Carbon $dataTimestamp;
+    public bool $isBeingFeatured = false;
 
     const DEFAULT_CONFIG = [
         'responsive' => true,
@@ -71,7 +72,25 @@ abstract class Chart extends Component
 
     public function getData(array $filter): Collection
     {
-        return collect([]);
+        return collect();
+    }
+
+    public function addAreaNames(Collection $data, string $filterPath, string $keyByColumn = 'area_code'): Collection
+    {
+        if ($data->isEmpty()) {
+            return $data;
+        }
+        $areas = (new AreaTree())->areas($filterPath);
+        $dataKeyByAreaCode = $data->keyBy($keyByColumn);
+        $columns = array_keys((array) $data[0]);
+        return $areas->map(function ($area) use ($dataKeyByAreaCode, $columns, $keyByColumn) {
+            foreach ($columns as $column) {
+                if ($column != $keyByColumn) {
+                    $area->{$column} = $dataKeyByAreaCode[$area->code]->{$column} ?? 0;
+                }
+            }
+            return $area;
+        });
     }
 
     protected function getTraces(Collection $data, string $filterPath): array
@@ -155,7 +174,7 @@ abstract class Chart extends Component
     {
         $filtersToApply = array_merge(
             auth()->user()->areaRestrictionAsFilter(),
-            session()->get('area-filter', [])
+            ($this->isBeingFeatured ? [] : session()->get('area-filter', []))
         );
         $this->updateChart($filtersToApply);
     }

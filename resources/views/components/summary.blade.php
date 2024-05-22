@@ -49,11 +49,11 @@
                             @foreach($dataSource->featured_indicators as $indicator)
                                 @can($indicator->permission_name)
                                     @if (($loop->iteration % 2) === 1)
-                                        <div class="flex gap-x-4">
+                                        <div class="flex gap-x-6">
                                     @endif
 
                                     <x-chimera::featured-chart-card :indicator="$indicator">
-                                        @livewire($indicator->component, ['indicator' => $indicator])
+                                        @livewire($indicator->component, ['indicator' => $indicator, 'isBeingFeatured' => true])
                                     </x-chimera::featured-chart-card>
 
                                     @if ((($loop->iteration % 2) === 0) || $loop->last)
