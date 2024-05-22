@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 
 class DataImport extends Command
 {
-    protected $signature = 'chimera:data-import {--command} {--do-not-truncate}';
+    protected $signature = 'chimera:data-import {--command} {--do-not-truncate=*}';
     protected $description = 'Restore postgres data (some tables) from file';
 
     protected array $tables = [
@@ -44,8 +44,9 @@ class DataImport extends Command
             return self::FAILURE;
         }
 
-        if (! $this->option('do-not-truncate')) {
-            foreach ($this->tables as $table) {
+        $doNotTruncate = $this->option('do-not-truncate');
+        foreach ($this->tables as $table) {
+            if (! in_array($table, $doNotTruncate)) {
                 DB::table($table)->truncate();
             }
         }
