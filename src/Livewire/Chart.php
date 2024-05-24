@@ -20,6 +20,7 @@ abstract class Chart extends Component
     public array $config;
     public Carbon $dataTimestamp;
     public bool $isBeingFeatured = false;
+    public bool $linkedFromScorecard = false;
 
     const DEFAULT_CONFIG = [
         'responsive' => true,
@@ -174,7 +175,7 @@ abstract class Chart extends Component
     {
         $filtersToApply = array_merge(
             auth()->user()->areaRestrictionAsFilter(),
-            ($this->isBeingFeatured ? [] : session()->get('area-filter', []))
+            (($this->isBeingFeatured || $this->linkedFromScorecard) ? [] : session()->get('area-filter', []))
         );
         $this->updateChart($filtersToApply);
     }

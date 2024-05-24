@@ -1,6 +1,6 @@
 <div wire:init="setValue" class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
     @if(! empty($scorecard->linked_indicator))
-        <a href="{{ route('indicator', $scorecard->linked_indicator) }}" class="absolute right-1 top-1">
+        <a href="{{ route('indicator', $scorecard->linked_indicator) }}?linked_from_scorecard" class="absolute right-1 top-1">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
     @endif

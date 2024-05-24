@@ -15,9 +15,10 @@
             </x-slot>
 
             <x-slot name="form">
-                <div class="col-span-6 sm:col-span-4 text-lg space-x-2">
+                <div class="col-span-6 sm:col-span-4 text-lg space-x-4">
                     <x-danger-button wire:click.prevent="deactivate()">Deactivate</x-danger-button>
                     <livewire:artisan-runner />
+                    <x-button><a href="{{ url('/log-viewer') }}" target="_blank">Log viewer</a></x-button>
                 </div>
             </x-slot>
         </x-form-section>
