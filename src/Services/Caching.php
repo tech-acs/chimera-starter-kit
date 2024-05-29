@@ -31,6 +31,7 @@ abstract class Caching
             $this->stamp();
             return Cache::tags($this->tags())->put($this->key, $freshData);
         } catch (\Exception $exception) {
+            dump($exception->getMessage());
             return false;
         }
     }

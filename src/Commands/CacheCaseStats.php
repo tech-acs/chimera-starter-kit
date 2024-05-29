@@ -3,7 +3,9 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
+use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\CaseStatsCaching;
 
 class CacheCaseStats extends Command
@@ -36,15 +38,31 @@ class CacheCaseStats extends Command
             $this->newLine()->info($dataSource->name);
             $startTime = time();
 
+            // National level for non-restricted users (filter = [])
             $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
             $updated = (new CaseStatsCaching($dataSource, []))->update();
             if ($updated) {
                 $analytics['completed_at'] = time();
                 $dataSource->analytics()->create($analytics);
                 $endTime = time();
-                $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+                $this->info("Level 0 completed in " . ($endTime - $startTime) . " seconds");
             } else {
                 $this->error("Could not update cache!");
+            }
+            // Get all user area restrictions and loop them as filter
+            $paths = AreaRestriction::distinct('path')->pluck('path');
+            foreach ($paths as $path) {
+                $filter = AreaTree::pathAsFilter($path);
+                $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
+                $updated = (new CaseStatsCaching($dataSource, $filter))->update();
+                if ($updated) {
+                    $analytics['completed_at'] = time();
+                    $dataSource->analytics()->create($analytics);
+                    $endTime = time();
+                    $this->info("Restriction path $path completed in " . ($endTime - $startTime) . " seconds");
+                } else {
+                    $this->error("Could not update cache!");
+                }
             }
         }
         $this->newLine();

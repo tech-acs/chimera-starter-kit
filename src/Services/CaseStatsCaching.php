@@ -19,6 +19,6 @@ class CaseStatsCaching extends Caching
 
     public function tags(): array
     {
-        return ['case-stats'];
+        return ['case-stats', $this->model];
     }
 }

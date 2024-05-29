@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Services;
 
+use Livewire\Mechanisms\ComponentRegistry;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\DataSource;
@@ -39,9 +40,9 @@ class DashboardComponentFactory
 
     public static function makeCaseStats(DataSource $dataSource)
     {
+        $classPath = app(ComponentRegistry::class)->getClass($dataSource->case_stats_component);
         try {
-            $caseStatsComponentClass = app(\Livewire\LivewireManager::class)->getClass($dataSource->case_stats_component);
-            $instance = new $caseStatsComponentClass;
+            $instance = new $classPath;
             $instance->dataSource = $dataSource;
             return $instance;
         } catch (\Exception $exception) {
