@@ -43,6 +43,13 @@ return [
             'throw' => false,
         ],
 
+        'plotly_defaults' => [
+            'driver' => 'local',
+            'root' => resource_path('plotly_defaults'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
+
         'reports' => [
             'driver' => 'local',
             'root' => storage_path('app/reports'),

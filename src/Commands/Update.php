@@ -17,6 +17,7 @@ class Update extends Command
         {--jetstream-customizations : Copies customized jetstream files from chimera}
         {--assets : Copies assets (css, js and stubs)}
         {--color-palettes : Copies color palettes from chimera}
+        {--plotly-defaults : Copies plotly defaults from chimera}
         {--stubs : Publishes chimera stubs}
         {--npm : Installs node dependencies}
         {--copy-env : Copies .env.example from kit to .env and also generates key}';
@@ -56,6 +57,9 @@ class Update extends Command
         }
         if ($runAll || $this->option('color-palettes')) {
             $this->copyColorPalettes();
+        }
+        if ($runAll || $this->option('plotly-defaults')) {
+            $this->copyPlotlyDefaults();
         }
         if ($runAll || $this->option('stubs')) {
             $this->components->task('Publishing stubs...', function () use ($runAll) {

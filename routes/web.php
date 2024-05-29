@@ -2,6 +2,7 @@
 
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
+use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
 use Uneca\Chimera\Http\Controllers\Manage\SettingController;
 use Uneca\Chimera\Http\Controllers\MapController;
 use Uneca\Chimera\Http\Controllers\Manage\AnnouncementController;
@@ -51,13 +52,16 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
             Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
-            //if (app()->environment('local')) {
             Route::middleware(['can:developer-mode'])->group(function () {
                 Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
                 Route::resource('area', AreaController::class)->only(['create', 'store']);
                 Route::delete('area/truncate', [AreaController::class, 'destroy'])->name('area.destroy');
                 Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
                 Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
+
+                Route::get('indicator/{indicator}/chart-editor', [IndicatorEditorController::class, 'index'])->name('indicator-editor');
+                Route::get('api/indicator/{indicator}', [IndicatorEditorController::class, 'edit']);
+                Route::post('api/indicator/{indicator}', [IndicatorEditorController::class, 'update']);
             });
         });
 

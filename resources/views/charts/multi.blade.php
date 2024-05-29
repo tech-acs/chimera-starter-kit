@@ -10,7 +10,7 @@
         @forelse($indicators as $indicator)
             @connectible($indicator->data_source)
                 <x-chimera-chart-card :indicator="$indicator">
-                    @livewire($indicator->component, ['indicator' => $indicator])
+                    @livewire($indicator->component, ['indicator' => $indicator, 'lazy' => true])
                 </x-chimera-chart-card>
             @else
                 <x-chimera-simple-card>

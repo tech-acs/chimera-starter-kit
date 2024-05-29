@@ -1,6 +1,7 @@
 <?php
 
-//namespace Uneca\Chimera\Services;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 if (! function_exists('settings')) {
     function settings(?string $key = null, $default = null)
@@ -22,18 +23,18 @@ if (! function_exists('safeDivide')) {
     }
 }
 
-/*class Helpers
-{
-    public static function safeDivide($numerator, $denominator, $integerDivision = false) {
-        if (is_numeric($denominator) && $denominator > 0) {
-            return $integerDivision ? intdiv($numerator, $denominator): ($numerator/$denominator);
-        }
-        return 0;
-    }
-
-    public static function livewireComponentExistsInDashboardNamespace(string $component)
+if (! function_exists('toDataFrame')) {
+    function toDataFrame(Collection $data)
     {
-        $components = app(\Livewire\LivewireComponentsFinder::class)->getManifest();
-        return in_array($component, array_keys($components));
+        $df = collect();
+        if ($data->isEmpty()) {
+            return $df;
+        }
+        $firstRow = $data[0];
+        $columns = array_keys($firstRow instanceof Model ? $firstRow->toArray() : (array) $firstRow);
+        foreach ($columns as $column) {
+            $df[$column] = $data->pluck($column)->all();
+        }
+        return $df;
     }
-}*/
+}

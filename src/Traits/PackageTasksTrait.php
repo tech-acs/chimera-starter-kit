@@ -15,6 +15,13 @@ trait PackageTasksTrait
         "alpinejs" => "3.13",
         "@tailwindcss/aspect-ratio" => "^0.4.2",
         "lodash" => "^4.17.21",
+
+        "@vitejs/plugin-react" => "^4.2.1",
+        "ag-grid-react" => "^31.3.2",
+        "react" => "^16.14.0",
+        "react-chart-editor" => "^0.46.1",
+        "react-dom" => "^16.14.0",
+        "react-modal" => "^3.16.1",
     ];
 
     public array $phpDependencies = [
@@ -113,11 +120,10 @@ trait PackageTasksTrait
     protected function copyAssets(): void
     {
         $this->components->info("Copying assets and related config files");
-        $this->components->task("Css, js and stubs", function () {
+        $this->components->task("Css, js, stubs, color_palettes and plotly_defaults", function () {
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
             File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
-            File::copyDirectory(__DIR__ . '/../../deploy/resources/color_palettes', resource_path('color_palettes'));
             return true;
         });
         $this->components->task("Images", function () {
@@ -136,6 +142,14 @@ trait PackageTasksTrait
         $this->components->info("Color palettes");
         $this->components->task("Copying color_palettes to resources directory", function () {
             return File::copyDirectory(__DIR__ . '/../../deploy/color_palettes', resource_path('color_palettes'));
+        });
+    }
+
+    protected function copyPlotlyDefaults(): void
+    {
+        $this->components->info("Plotly defaults");
+        $this->components->task("Copying plotly_defaults to resources directory", function () {
+            return File::copyDirectory(__DIR__ . '/../../deploy/plotly_defaults', resource_path('plotly_defaults'));
         });
     }
 

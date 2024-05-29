@@ -19,6 +19,10 @@ class Indicator extends Model
     protected $guarded = ['id'];
     public $translatable = ['title', 'description', 'help'];
     public $permissionSuffix = ':indicator';
+    protected $casts = [
+        'data' => 'array',
+        'layout' => 'array'
+    ];
 
     public function pages()
     {

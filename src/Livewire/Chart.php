@@ -2,23 +2,22 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\On;
+use Livewire\Component;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Services\AreaTree;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Livewire\Component;
 use Uneca\Chimera\Services\ColorPalette;
-use Uneca\Chimera\Services\IndicatorCaching;
 
 abstract class Chart extends Component
 {
     public Indicator $indicator;
     public string $graphDiv;
-    public array $data;
-    public array $layout;
-    public array $config;
-    public Carbon $dataTimestamp;
+    public array $data = [];
+    public array $layout = [];
+    public array $config = [];
     public bool $isBeingFeatured = false;
     public bool $linkedFromScorecard = false;
 
@@ -28,7 +27,7 @@ abstract class Chart extends Component
         'modeBarButtonsToRemove' => ['select2d', 'lasso2d', 'autoScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian'],
     ];
     const DEFAULT_LAYOUT = [
-        'height' => 450,
+        //'height' => 450,
         'title' => [],
         'showlegend' => true,
         'legend' => ['orientation' => 'h', 'x' => 0, 'y' => 1.12],
@@ -45,35 +44,42 @@ abstract class Chart extends Component
         'modebar' => ['orientation' => 'v', 'color' => 'white', 'bgcolor' => 'darkgray'],
         'dragmode' => 'pan',
     ];
-    const EMPTY_CHART_LAYOUT_DIFF = [
-        'xaxis' => ['visible' => false],
-        'yaxis' => ['visible' => false],
-        'annotations' => [[
-            'text' => 'There is no data for this chart at this level',
-            'xref' => 'paper',
-            'yref' => 'paper',
-            'showarrow' => false,
-            'font' => ['size' => 28]
-        ]]
-    ];
 
-    protected function getListeners(): array
+    public function placeholder()
     {
-        return ['filterChanged' => 'updateChart'];
+        return <<<'HTML'
+            <div class="flex flex-col absolute inset-0 justify-center items-center z-10 opacity-80 bg-white">
+                <svg class="block animate-spin size-10 mb-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Initializing...
+            </div>
+        HTML;
+    }
+
+    #[On(['updateRequest.{indicator.id}', 'filterChanged'])]
+    public function updateChart(array $filter = [])
+    {
+        logger('In updateChart', ['filter' => $filter]);
+        $this->data = $this->getTraces($this->getData($filter), '');
+        $this->layout = $this->getLayout('');
+
+        $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
     }
 
     protected function getConfig(): array
     {
-        $dynamicOptions = [
+        return [
+            ...self::DEFAULT_CONFIG,
             'toImageButtonOptions' => ['filename' => $this->graphDiv . ' (' . now()->toDayDateTimeString() . ')'],
             'locale' => app()->getLocale(),
         ];
-        return array_merge(self::DEFAULT_CONFIG, $dynamicOptions);
     }
 
     public function getData(array $filter): Collection
     {
-        return collect();
+        return $this->indicator->data;
     }
 
     public function addAreaNames(Collection $data, string $filterPath, string $keyByColumn = 'area_code'): Collection
@@ -96,19 +102,39 @@ abstract class Chart extends Component
 
     protected function getTraces(Collection $data, string $filterPath): array
     {
-        return [];
+        $traces = $this->indicator->data;
+        $data = toDataFrame($this->addAreaNames($data, $filterPath));
+        //dump($traces, $data);
+        foreach ($traces as $index => $trace) {
+            $columnNames = Arr::get($traces[$index], 'meta.columnNames', null);
+            if ($columnNames) {
+                $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
+                $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
+            }
+        }
+        return $traces;
     }
 
     protected function getLayout(string $filterPath): array
     {
         $currentPalette = ColorPalette::palette(settings('color_palette'));
-        return [...self::DEFAULT_LAYOUT, 'colorway' => $currentPalette->colors];
+        //return [...self::DEFAULT_LAYOUT, 'colorway' => $currentPalette->colors];
+        return [...$this->indicator->layout, 'colorway' => $currentPalette->colors];
     }
 
-    protected function mounted(): void
+    public function mount()
     {
-        // A lifecycle hook method to be used in derived classes, if needed
+        $this->graphDiv = $this->indicator->id;
+        $this->config = $this->getConfig();
     }
+
+    public function render()
+    {
+        return view('chimera::livewire.chart');
+    }
+
+
+
 
     protected function isDataEmpty(): bool
     {
@@ -125,72 +151,29 @@ abstract class Chart extends Component
         }, true);
     }
 
-    private function getDataAndCacheIt(array $filter): Collection
+    public static function getDefaultLayout(): array
     {
-        $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
-        $this->dataTimestamp = Carbon::now();
-        try {
-            if (config('chimera.cache.enabled')) {
-                $caching = new IndicatorCaching($this->indicator, $filter);
-                $this->dataTimestamp = $caching->getTimestamp();
-                return Cache::tags($caching->tags())
-                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
-                        $caching->stamp();
-                        $this->dataTimestamp = Carbon::now();
-                        $analytics['source'] = 'Caching';
-                        return $this->getData($caching->filter);
-                    });
-            }
-            $analytics['source'] = 'Not caching';
-            return $this->getData($filter);
-        } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache (in Chart.php, getDataAndCacheIt method)", ['Exception: ' => $exception]);
-            return collect([]);
-        } finally {
-            if ($analytics['source'] !== 'Cache') {
-                $analytics['completed_at'] = time();
-                $this->indicator->analytics()->create($analytics);
-            }
-        }
+        $currentPalette = ColorPalette::palette(settings('color_palette'));
+        //return [...self::DEFAULT_LAYOUT, 'colorway' => $currentPalette->colors];
+        return [
+            ...Storage::disk("plotly_defaults")->json("layout.json"),
+            'colorway' => $currentPalette->colors
+        ];
     }
 
-    private function updateDataAndLayout(array $filter): void
+    public function getConfigForEditor(): array
     {
-        $filterPath = AreaTree::getFinestResolutionFilterPath($filter);
-        $this->data = $this->getTraces($this->getDataAndCacheIt(AreaTree::translatePathToCode($filter)), $filterPath);
-        $this->layout = $this->getLayout($filterPath);
-
-        if ($this->isDataEmpty()) {
-            $this->layout = array_merge(self::DEFAULT_LAYOUT, self::EMPTY_CHART_LAYOUT_DIFF);
-        }
+        return [...$this->getConfig(), 'editable' => true];
     }
 
-    public function updateChart(array $filter): void
+    public function getDataForEditor(): array
     {
-        $this->updateDataAndLayout($filter);
-        $this->dispatch("redrawChart-{$this->graphDiv}", $this->data, $this->layout);
+        return $this->getTraces($this->getData([]), '');
     }
 
-    public function deferredLoading()
+    public function getLayoutForEditor(): array
     {
-        $filtersToApply = array_merge(
-            auth()->user()->areaRestrictionAsFilter(),
-            (($this->isBeingFeatured || $this->linkedFromScorecard) ? [] : session()->get('area-filter', []))
-        );
-        $this->updateChart($filtersToApply);
+        return $this->getLayout('');
     }
 
-    public function mount()
-    {
-        $this->graphDiv = $this->indicator->component;
-        $this->config = $this->getConfig();
-        $this->data = [];
-
-        $this->mounted();
-    }
-
-    public function render()
-    {
-        return view('chimera::livewire.chart');
-    }
 }

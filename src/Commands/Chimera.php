@@ -23,6 +23,7 @@ class Chimera extends Command
         $this->configureJetstreamFeatures();
         $this->copyAssets();
         $this->copyColorPalettes();
+        $this->copyPlotlyDefaults();
         $this->customizeExceptionRendering();
         $this->installEnvFiles();
         $this->installEmptyWebRoutesFile();

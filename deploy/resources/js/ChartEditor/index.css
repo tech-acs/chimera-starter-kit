@@ -1,0 +1,11 @@
+.fold__top {
+    box-sizing: content-box;
+}
+
+.plotly_editor {
+    position: absolute;
+}
+
+.panel__header__collapse span {
+    display: inline-flex;
+}

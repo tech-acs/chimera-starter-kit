@@ -165,6 +165,8 @@ class MakeIndicator extends GeneratorCommand
             'description' => $description,
             'data_source' => $dataSource,
             'type' => $chosenChartType,
+            'data' => [],
+            'layout' => Storage::disk("plotly_defaults")->json("layout.json"),
         ]);
         DB::transaction(function () use ($indicator, $name, $selectedTemplate) {
             if ($this->writeIndicatorFile($name, $selectedTemplate)) {
