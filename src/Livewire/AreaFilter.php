@@ -14,7 +14,6 @@ class AreaFilter extends Component
 
     public function mount()
     {
-        //session()->forget('area-filter');
         $areaTree = new AreaTree(removeLastNLevels: 1);
         $selectionsFromSession = session()->get('area-filter', []);
         $restrictions = auth()->user()->areaRestrictionAsFilter();
@@ -75,14 +74,14 @@ class AreaFilter extends Component
             array_filter($this->dropdowns, fn ($dropdown) => $dropdown['selected'])
         );
         session()->put('area-filter', $filter);
-        $this->dispatch('filterChanged', $filter);
+        $this->dispatch('filterChanged');
     }
 
     public function clear()
     {
         session()->forget('area-filter');
         $this->mount();
-        $this->dispatch('filterChanged', []);
+        $this->dispatch('filterChanged');
     }
 
     public function render()

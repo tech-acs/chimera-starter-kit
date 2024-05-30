@@ -8,18 +8,25 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Models\Indicator;
+use Uneca\Chimera\Services\AreaResolver;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\ColorPalette;
+use Uneca\Chimera\Traits\FilterBasedAxisTitle;
 
 abstract class Chart extends Component
 {
+    use FilterBasedAxisTitle;
+
     public Indicator $indicator;
     public string $graphDiv;
     public array $data = [];
     public array $layout = [];
     public array $config = [];
+
     public bool $isBeingFeatured = false;
     public bool $linkedFromScorecard = false;
+    public bool $useDynamicAreaXAxisTitles = false;
+    public array $aggregateAppendedTraces = []; // ['trace name' => 'avg'] ... sum, count, min, max, mode, median
 
     const DEFAULT_CONFIG = [
         'responsive' => true,
@@ -59,16 +66,18 @@ abstract class Chart extends Component
     }
 
     #[On(['updateRequest.{indicator.id}', 'filterChanged'])]
-    public function updateChart(array $filter = [])
+    public function updateChart(AreaResolver $areaResolver)
     {
-        logger('In updateChart', ['filter' => $filter]);
-        $this->data = $this->getTraces($this->getData($filter), '');
-        $this->layout = $this->getLayout('');
+        /*$filterPath = AreaTree::getFinestResolutionFilterPath([...auth()->user()->areaRestrictionAsFilter(), ...session()->get('area-filter', []) ]);
+        $filter = AreaTree::pathAsFilter($filterPath);*/
+
+        $this->data = $this->getTraces($this->getData($areaResolver->expandedPath), $areaResolver->path);
+        $this->layout = $this->getLayout($areaResolver->path);
 
         $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
     }
 
-    protected function getConfig(): array
+    public function getConfig(): array
     {
         return [
             ...self::DEFAULT_CONFIG,
@@ -104,12 +113,16 @@ abstract class Chart extends Component
     {
         $traces = $this->indicator->data;
         $data = toDataFrame($this->addAreaNames($data, $filterPath));
-        //dump($traces, $data);
         foreach ($traces as $index => $trace) {
             $columnNames = Arr::get($traces[$index], 'meta.columnNames', null);
             if ($columnNames) {
                 $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
                 $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
+            }
+            if (in_array($trace['name'], array_keys($this->aggregateAppendedTraces))) {
+                $aggOp = $this->aggregateAppendedTraces[$trace['name']];
+                array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
+                array_push($traces[$index]['y'], collect($traces[$index]['y'])->filter()->{$aggOp}());
             }
         }
         return $traces;
@@ -117,15 +130,20 @@ abstract class Chart extends Component
 
     protected function getLayout(string $filterPath): array
     {
+        $layout = $this->indicator->layout;
+        if ($this->useDynamicAreaXAxisTitles) {
+            $layout['xaxis']['title']['text'] = $this->getAreaBasedAxisTitle($filterPath, true);
+        }
         $currentPalette = ColorPalette::palette(settings('color_palette'));
-        //return [...self::DEFAULT_LAYOUT, 'colorway' => $currentPalette->colors];
-        return [...$this->indicator->layout, 'colorway' => $currentPalette->colors];
+        return [...$layout, 'colorway' => $currentPalette->colors];
     }
 
     public function mount()
     {
         $this->graphDiv = $this->indicator->id;
         $this->config = $this->getConfig();
+
+        // ToDo: call property validator
     }
 
     public function render()

@@ -7,7 +7,7 @@ const rootElement = document.getElementById('chart-editor')
 const indicatorId = rootElement.getAttribute('indicator')
 const defaultLayout = rootElement.getAttribute('default-layout')
 
-const response = await axios.get(`/api/indicator/${indicatorId}`);
+const response = await axios.get(`/manage/developer/api/indicator/${indicatorId}`);
 console.log('Fetched initial:', response.data);
 let data = response.data.data;
 

@@ -2,6 +2,7 @@
     <div
         wire:ignore
         id="{{ $graphDiv }}"
+        data-config='@json($config)'
         x-data
         x-init="console.log('1 - Alpine init: ', $wire.graphDiv); new PlotlyChart($wire.graphDiv)"
     ></div>

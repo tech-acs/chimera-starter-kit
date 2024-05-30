@@ -43,7 +43,7 @@ class CaseStats extends Component
                 $this->stats = $this->getData($filter);
             }
         } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache (in CaseStats.php)", ['Exception: ' => $exception]);
+            logger("Exception occurred while trying to cache (in CaseStats.php)", ['Exception: ' => $exception->getMessage()]);
             $this->stats = [];
         } finally {
             if ($analytics['source'] !== 'Cache') {

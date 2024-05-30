@@ -12,8 +12,6 @@ export default defineConfig({
                 'resources/css/map.css',
                 'resources/js/map.js',
 
-                'resources/js/chart.js',
-
                 'resources/js/ChartEditor/index.jsx',
             ],
             refresh: true,

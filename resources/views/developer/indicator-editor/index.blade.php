@@ -1,3 +1,8 @@
+@pushonce('scripts')
+    @viteReactRefresh
+    @vite('resources/js/ChartEditor/index.jsx')
+@endpushonce
+
 <x-app-layout>
 
     {{--<main class="flex-grow pb-6 pr-4">--}}

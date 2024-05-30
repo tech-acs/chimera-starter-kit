@@ -52,6 +52,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
             Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
+
             Route::middleware(['can:developer-mode'])->group(function () {
                 Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
                 Route::resource('area', AreaController::class)->only(['create', 'store']);
