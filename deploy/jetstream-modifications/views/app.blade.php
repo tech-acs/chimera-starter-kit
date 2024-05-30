@@ -92,35 +92,28 @@
 
         </div>
 
+        <x-chimera::toast-notification />
+
         @stack('modals')
 
         @livewireScripts
 
         <script>
-            /*document.addEventListener('livewire:init', () => {
-                // Runs after Livewire is loaded but before it's initialized on the page...
-                Livewire.on('error', (statusCode, response) => {
-                    if (statusCode === 504) {
-                        // Handle the timeout here, then return false
-                        alert('The data took too long to fetch. Make sure caching is enabled!');
-                        console.log({statusCode, response});
-                        return false;
-                    }
-                });
-            })*/
             document.addEventListener('livewire:init', () => {
                 Livewire.hook('request', ({ fail }) => {
                     fail(({ status, preventDefault }) => {
+                        const message = {"content": "", "type": "error"}
                         if (status === 419) {
-                            confirm('Your custom page expiration behavior...')
-
-                            preventDefault()
+                            message.content = "Your session has expired. Please login again"
+                        } else if (status === 500) {
+                            message.content = "We encountered a server error. Probably because data was not fetched in a timely manner."
                         }
+                        Livewire.dispatch('notify', message)
+                        preventDefault()
                     })
                 })
             })
         </script>
 
-        @stack('late-scripts')
     </body>
 </html>
