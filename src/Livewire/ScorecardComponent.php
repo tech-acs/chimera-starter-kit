@@ -58,7 +58,7 @@ class ScorecardComponent extends Component
                 list($this->value, $this->diff) = $this->getData($filter);
             }
         } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception]);
+            logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception->getMessage()]);
             list($this->value, $this->diff) = ['Err', null];
         } finally {
             if ($analytics['source'] !== 'Cache') {

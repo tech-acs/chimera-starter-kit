@@ -1,7 +1,3 @@
-@push('scripts')
-    @vite(['resources/js/chart.js'])
-@endpush
-
 <x-app-layout>
 
     <livewire:area-filter />

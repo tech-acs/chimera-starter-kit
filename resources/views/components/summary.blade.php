@@ -45,22 +45,25 @@
                             {{ __('Featured indicators') }}
                         </p>
                         <div class="flex flex-col gap-y-4">
+                            @connectible($dataSource->name)
+                                @foreach($dataSource->featured_indicators as $indicator)
+                                    @can($indicator->permission_name)
+                                        @if (($loop->iteration % 2) === 1)
+                                            <div class="flex gap-x-6">
+                                        @endif
 
-                            @foreach($dataSource->featured_indicators as $indicator)
-                                @can($indicator->permission_name)
-                                    @if (($loop->iteration % 2) === 1)
-                                        <div class="flex gap-x-6">
-                                    @endif
+                                        <x-chimera::featured-chart-card :indicator="$indicator">
+                                            @livewire($indicator->component, ['indicator' => $indicator, 'isBeingFeatured' => true, 'lazy' => true])
+                                        </x-chimera::featured-chart-card>
 
-                                    <x-chimera::featured-chart-card :indicator="$indicator">
-                                        @livewire($indicator->component, ['indicator' => $indicator, 'isBeingFeatured' => true])
-                                    </x-chimera::featured-chart-card>
-
-                                    @if ((($loop->iteration % 2) === 0) || $loop->last)
-                                        </div>
-                                    @endif
-                                @endcan
-                            @endforeach
+                                        @if ((($loop->iteration % 2) === 0) || $loop->last)
+                                            </div>
+                                        @endif
+                                    @endcan
+                                @endforeach
+                            @else
+                                <p>Featured indicators can not be displayed because the data source named {{ $dataSource->name }} is not connectible.</p>
+                            @endconnectible
                         </div>
                     </div>
 

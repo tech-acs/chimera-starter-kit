@@ -1,13 +1,9 @@
 <x-app-layout>
 
     <div class="flex flex-col max-w-7xl mx-auto py-6 space-y-6">
-        @forelse($dataSources as $dataSource)
+        @foreach($dataSources as $dataSource)
             <x-chimera-summary :data-source="$dataSource" />
-        @empty
-            <x-chimera-simple-card>
-                {{ __('There are no data sources to display.') }}
-            </x-chimera-simple-card>
-        @endforelse
+        @endforeach
 
         <div class="px-4 xl:px-0">
             <div class="mt-2 grid grid-cols-1 gap-8 lg:grid-cols-3">

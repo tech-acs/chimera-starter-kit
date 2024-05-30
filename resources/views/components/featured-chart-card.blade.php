@@ -1,6 +1,3 @@
-@pushonce('scripts')
-    @vite(['resources/js/chart.js'])
-@endpushonce
 @props(['indicator' => null])
 <div class="flex-grow basis-1/2 bg-white border overflow-hidden sm:rounded-lg" x-data="{ show_help: false }">
     <div class="flex justify-between px-4 py-2 sm:px-4 bg-indigo-50">
