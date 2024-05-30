@@ -53,7 +53,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_indicator_page_table',
                 'create_scorecards_table',
                 'create_reports_table',
-                'add_is_suspended_column_to_users_table',
                 'create_notifications_table',
                 'create_announcements_table',
                 'create_reference_values_table',
@@ -62,10 +61,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_analytics_table',
                 'create_report_user_table',
                 'create_settings_table',
-                'add_last_login_at_column_to_users_table',
-                'add_is_featured_column_to_indicators_table',
-                'change_password_column_type_to_text_on_data_sources_table',
-                'add_data_and_layout_columns_to_indicators_table',
+                'add_is_suspended_and_last_login_at_columns_to_users_table',
             ])
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,
