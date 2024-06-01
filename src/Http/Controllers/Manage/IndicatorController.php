@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Uneca\Chimera\Http\Requests\IndicatorRequest;
 use Uneca\Chimera\Models\Indicator;
@@ -18,7 +19,7 @@ class IndicatorController extends Controller
             ->columns([
                 SmartTableColumn::make('title')
                     ->sortable()
-                    ->setBladeTemplate('<div>{{ $row->title }} <x-chimera::icon.featured class="text-amber-600" :value="$row->is_featured" /></div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
+                    ->setBladeTemplate('<div>{{ $row->title }} <x-chimera::icon.featured class="text-amber-600" :value="$row->featured_at" /></div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
                 SmartTableColumn::make('data_source')
                     ->setLabel('Data Source')
                     ->sortable()
@@ -46,8 +47,8 @@ class IndicatorController extends Controller
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
         $indicator->pages()->sync($request->get('pages', []));
-        $request->merge(['is_featured' => $request->get('is_featured', false)]);
-        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag', 'is_featured']));
+        $request->merge(['featured_at' => $request->get('is_featured', false) ? Carbon::now() : null]);
+        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag', 'featured_at']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

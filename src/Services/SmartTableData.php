@@ -3,9 +3,7 @@
 namespace Uneca\Chimera\Services;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
@@ -88,36 +86,38 @@ class SmartTableData
         return $this;
     }
 
-    public function build(): void
+    public function build(Request $request): void
     {
         if (! isset($this->sortBy)) {
             dd('You have not set a default sorting column');
         }
-        if ($this->request->has('sort_by') && $this->sortableColumns->contains($this->request->get('sort_by'))) {
-            $this->sortBy = $this->request->get('sort_by');
-            $this->sortDirection = $this->request->enum('sort_direction', SortDirection::class) ?? SortDirection::ASC;
+        if ($request->has('sort_by') && $this->sortableColumns->contains($request->get('sort_by'))) {
+            $this->sortBy = $request->get('sort_by');
+            $this->sortDirection = $request->enum('sort_direction', SortDirection::class) ?? SortDirection::ASC;
         }
-        if ($this->request->has('page_size')) {
-            Session::put('page_size', $this->request->get('page_size'));
+        if ($request->has('page_size')) {
+            Session::put('page_size', $request->get('page_size'));
         }
         $this->builder
-            ->when($this->request->has('search'), function ($query) {
-                return $query->whereAny($this->searchableColumns->toArray(), 'ILIKE', '%' . $this->request->get('search') . '%');
+            ->when($request->has('search'), function ($query) use ($request) {
+                return $query->whereAny($this->searchableColumns->toArray(), 'ILIKE', '%' . $request->get('search') . '%');
             })
             ->when(isset($this->sortBy), function ($query) {
                 return $query->orderBy($this->sortBy, $this->sortDirection->value);
             });
         $this->rows = $this->builder->clone()
-            ->paginate(Session::get('page_size', $this->request->get('page_size', $this->defaultPageSize)));
+            ->paginate(Session::get('page_size', $request->get('page_size', $this->defaultPageSize)));
     }
 
     public function view(string $view, array $data = [])
     {
-        $this->build();
-
         if ($this->request->has('download')) {
+            if ($this->request->get('download') === 'all') {
+                $this->build($this->request->replace(['search' => null]));
+            } else {
+                $this->build($this->request);
+            }
             $path = storage_path("app/public/{$this->downloadableFileName}.csv");
-
             $writer = SimpleExcelWriter::create($path);
             $records = $this->builder->clone()->get();
             foreach ($records as $row) {
@@ -133,6 +133,7 @@ class SmartTableData
             return response()->download($path);
         }
 
+        $this->build($this->request);
         return view($view, ['smartTableData' => $this, ...$data]);
     }
 }

@@ -95,7 +95,7 @@
         </x-slot>
 
         <x-slot name="footer">
-            <x-action-message class="mr-3 inline-flex" on="invited">
+            <x-action-message class="mr-3 inline-flex items-center" on="invited">
                 {{ __('Invited.') }}
             </x-action-message>
 

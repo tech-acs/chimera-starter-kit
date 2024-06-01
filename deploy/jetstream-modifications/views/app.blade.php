@@ -106,7 +106,9 @@
                         if (status === 419) {
                             message.content = "Your session has expired. Please login again"
                         } else if (status === 500) {
-                            message.content = "We encountered a server error. Probably because data was not fetched in a timely manner."
+                            message.content = "We encountered a server error."
+                        } else {
+                            message.content = "Error occurred or the server did not respond in a timely manner."
                         }
                         Livewire.dispatch('notify', message)
                         preventDefault()

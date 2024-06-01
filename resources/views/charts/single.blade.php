@@ -8,10 +8,10 @@
                 @livewire($indicator->component, ['indicator' => $indicator, 'lazy' => true, 'linkedFromScorecard' => request()->has('linked_from_scorecard')])
             </x-chimera-chart-card>
         @else
-            <x-chimera-simple-card>
+            <x-chimera::simple-card>
                 This indicator is not available because the database connection of the data source
                 called <b>{{ $indicator->data_source }}</b> is not available.
-            </x-chimera-simple-card>
+            </x-chimera::simple-card>
         @endconnectible
     </div>
 

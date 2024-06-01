@@ -21,7 +21,7 @@
                         <p class="ml-2 mt-1 truncate text-sm text-gray-500">ordered by query time</p>
 
                     </div>
-                    <div class="text-sm text-red-400">The system is currently configured only to log queries that take longer than {{ config('chimera.long_query_time') }} seconds to execute</div>
+                    <div class="text-sm text-red-400">The system is currently configured to log only queries that take longer than {{ config('chimera.long_query_time') }} seconds to execute</div>
                 </div>
 
                 <dd class="mt-6 text-sm text-gray-900">

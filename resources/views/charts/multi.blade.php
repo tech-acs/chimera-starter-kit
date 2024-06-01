@@ -9,15 +9,15 @@
                     @livewire($indicator->component, ['indicator' => $indicator, 'lazy' => true])
                 </x-chimera-chart-card>
             @else
-                <x-chimera-simple-card>
+                <x-chimera::simple-card>
                     This indicator is not available because the database connection of the data source
                     called <b>{{$indicator->data_source}}</b> is not available.
-                </x-chimera-simple-card>
+                </x-chimera::simple-card>
             @endconnectible
         @empty
-            <x-chimera-simple-card class="col-span-3">
+            <x-chimera::simple-card class="col-span-3">
                 {{ __('There are no indicators to display') }}
-            </x-chimera-simple-card>
+            </x-chimera::simple-card>
         @endforelse
     </div>
 

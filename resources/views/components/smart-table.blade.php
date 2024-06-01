@@ -3,6 +3,8 @@
         <div>
             @if($smartTableData->searchableColumns->isNotEmpty())
                 <form method="get" action="{{ route($smartTableData->request->route()->getName()) }}">
+                    <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
+                    <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}">
                     <x-input type="search" name="search" placeholder="{{ $smartTableData->searchPlaceholder }}" value="{{ request('search') }}" />
                     <div class="text-xs text-gray-400 ml-1">{{ $smartTableData->searchHint }}</div>
                     <button type="submit" class="sm:hidden rounded-md bg-white px-2.5 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Search</button>
@@ -33,12 +35,37 @@
             </x-dropdown>
 
             @if($smartTableData->isDownloadable)
-            <div class="ml-4">
-                <a href="{{ request()->fullUrlWithQuery(['download' => true]) }}">
-                    <x-secondary-button title="Download current results as a CSV file"><x-chimera::icon.csv /></x-secondary-button>
-                </a>
-            </div>
+                {{--<div class="ml-4">
+                    <a href="{{ request()->fullUrlWithQuery(['download' => true]) }}">
+                        <x-secondary-button title="Download current results as a CSV file"><x-chimera::icon.csv /></x-secondary-button>
+                    </a>
+                </div>--}}
+                <div class="relative" x-data="{ open: false }">
+                    <div class="inline-flex divide-x divide-gray-200 rounded-md shadow-sm ml-4 border border-gray-300">
+                        <a href="{{ request()->fullUrlWithQuery(['download' => 'all']) }}">
+                            <button class="inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-blue-600 shadow-sm hover:text-blue-400">
+                                <x-chimera::icon.download />
+                                <p class="text-xs tracking-widest font-semibold">ALL</p>
+                            </button>
+                        </a>
+                        <button @click="open = ! open" @click.outside="open = false" type="button" class="inline-flex items-center rounded-l-none rounded-r-md bg-white p-2 hover:text-blue-400" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                            <svg class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <ul x-show="open" class="absolute right-0 z-10 mt-1 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
+                        <a href="{{ request()->fullUrlWithQuery(['download' => 'filtered']) }}">
+                            <button class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-blue-600 shadow-sm hover:text-blue-400">
+                                <x-chimera::icon.download />
+                                <p class="text-xs tracking-widest font-semibold">FILTERED</p>
+                            </button>
+                        </a>
+                    </ul>
+                </div>
             @endif
+
         </div>
     </div>
 
@@ -54,7 +81,9 @@
                         <tr>
                             @foreach($smartTableData->columns as $column)
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
-                                    {!! $column->getLabel() !!} <a href="?sort_by={{ $column->attribute }}&sort_direction={{ $column->reverseSortDirection() }}">{!! $column->sortIcon() !!}</a>
+                                    {!! $column->getLabel() !!} <a href="?sort_by={{ $column->attribute }}&sort_direction={{ $column->reverseSortDirection() }}&search={{ request('search') }}">
+                                        {!! $column->sortIcon() !!}
+                                    </a>
                                 </th>
                             @endforeach
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>

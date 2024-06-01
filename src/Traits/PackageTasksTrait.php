@@ -145,14 +145,6 @@ trait PackageTasksTrait
         });
     }
 
-    protected function copyPlotlyDefaults(): void
-    {
-        $this->components->info("Plotly defaults");
-        $this->components->task("Copying plotly_defaults to resources directory", function () {
-            return File::copyDirectory(__DIR__ . '/../../deploy/plotly_defaults', resource_path('plotly_defaults'));
-        });
-    }
-
     protected function customizeExceptionRendering(): void
     {
         $this->components->info("Customize exception rendering (invalid invitation links and expired login pages)");

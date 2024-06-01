@@ -39,8 +39,8 @@ class DataSource extends Model
     public function getFeaturedIndicatorsAttribute()
     {
         return Indicator::where('data_source', $this->name)
-            ->where('is_featured', true)
-            ->orderBy('updated_at')
+            ->whereNotNull('featured_at')
+            ->orderBy('featured_at', 'DESC')
             ->take(config('chimera.featured_indicators_per_data_source'))
             ->get();
     }

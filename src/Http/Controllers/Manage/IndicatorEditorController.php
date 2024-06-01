@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Uneca\Chimera\Livewire\Chart;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 
@@ -11,7 +12,8 @@ class IndicatorEditorController extends Controller
 {
     public function index(Indicator $indicator)
     {
-        return view('chimera::developer.indicator-editor.index', compact('indicator'));
+        $defaultLayout = json_encode(Chart::getDefaultLayout());
+        return view('chimera::developer.indicator-editor.index', compact('indicator', 'defaultLayout'));
     }
 
     public function edit(Indicator $indicator)
@@ -22,9 +24,9 @@ class IndicatorEditorController extends Controller
         unset($dataSources['path']);
         return [
             'dataSources' => $dataSources,
-            'data' => $instance->getDataForEditor(),
-            'layout' => $instance->getLayoutForEditor(),
-            'config' => $instance->getConfigForEditor(),
+            'data' => $instance->getTraces($instance->getData([]), ''),
+            'layout' => $instance->getLayout(''),
+            'config' => [...$instance->getConfig(), 'editable' => true],
             'title' => $indicator->title ?? '',
         ];
     }

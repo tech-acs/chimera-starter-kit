@@ -3,7 +3,6 @@
 namespace Uneca\Chimera;
 
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
@@ -34,7 +33,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ->hasViewComponents(
                 'chimera',
                 \Uneca\Chimera\Components\ChartCard::class,
-                \Uneca\Chimera\Components\SimpleCard::class,
                 \Uneca\Chimera\Components\Summary::class,
                 \Uneca\Chimera\Components\SmartTable::class
             )
@@ -185,18 +183,5 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 return Setting::all()->pluck('value', 'key');
             });
         });
-    }
-
-    public function register()
-    {
-        parent::register();
-
-        /*$this->app->when(Chart::class)
-            ->needs(CachingInterface::class)
-            ->give(IndicatorCaching::class);*/
-
-        /*$this->app->bind('helpers', function ($app) {
-            return new Helpers();
-        });*/
     }
 }
