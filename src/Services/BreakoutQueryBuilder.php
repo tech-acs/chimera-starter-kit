@@ -12,6 +12,7 @@ class BreakoutQueryBuilder
     private string $partialCaseIdentifyingCondition;
     private bool $excludePartials;
     private bool $excludeDeleted;
+    private string $filterPath;
     private string $select;
     protected array $columns;
     private string $from;
@@ -21,16 +22,21 @@ class BreakoutQueryBuilder
     private string $groupBy;
     private string $having;
     private string $orderBy;
+    private string $leftJoin = '';
+    private string $joinColumn = 'area_code';
+    private ?string $referenceValueToInclude = null;
 
     public function __construct(
         string $dataSource = null,
-        array $filter = [],
+        string $filterPath = '',
         bool $excludePartials = true,
         bool $excludeDeleted = true,
         string $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL'
     )
     {
-        list($selectColumns, $whereConditions, $concernedTables) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filter);
+        $this->filterPath = $filterPath;
+        //$filter = AreaTree::pathAsFilter($filterPath);
+        list($selectColumns, $whereConditions, $concernedTables) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filterPath);
 
         try {
             $this->dbConnection = DB::connection($dataSource);
@@ -121,13 +127,69 @@ class BreakoutQueryBuilder
         return "{$this->select} {$this->from} {$this->where} {$this->groupBy} {$this->having} {$this->orderBy}";
     }
 
+    private function areaLeftJoinData(Collection $data, ?string $referenceValueToInclude): Collection
+    {
+        if ($data->isEmpty()) {
+            return $data;
+        }
+        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+        //logger('area wt', ['areas' => $areas]);
+        $dataKeyByAreaCode = $data->keyBy($this->joinColumn);
+        $columns = array_keys((array) $data[0]);
+        return $areas->map(function ($area) use ($dataKeyByAreaCode, $columns) {
+            foreach ($columns as $column) {
+                if ($column != $this->joinColumn) {
+                    $area->{$column} = $dataKeyByAreaCode[$area->code]->{$column} ?? 0;
+                }
+            }
+            return $area;
+        });
+    }
+
+    private function dataLeftJoinArea(Collection $data, ?string $referenceValueToInclude): Collection
+    {
+        if ($data->isEmpty()) {
+            return $data;
+        }
+        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+        $areasKeyByAreaCode = $areas->pluck('name', 'code');
+        return $data->map(function ($row) use ($areasKeyByAreaCode) {
+            $row->area_name = $areasKeyByAreaCode[$row->{$this->joinColumn}];
+            return $row;
+        });
+    }
+
+    public function lastlyAreaLeftJoinData(string $joinColumnOnDataSide = 'area_code', ?string $referenceValueToInclude = null): self
+    {
+        $this->leftJoin = 'area-left-join-data';
+        $this->joinColumn = $joinColumnOnDataSide;
+        $this->referenceValueToInclude = $referenceValueToInclude;
+        return $this;
+    }
+
+    public function lastlyDataLeftJoinArea(string $joinColumnOnDataSide = 'area_code', ?string $referenceValueToInclude = null): self
+    {
+        $this->leftJoin = 'data-left-join-area';
+        $this->joinColumn = $joinColumnOnDataSide;
+        $this->referenceValueToInclude = $referenceValueToInclude;
+        return $this;
+    }
+
     public function get($sql = null) : Collection
     {
         try {
-            return collect($this->dbConnection->select($sql ?? $this->toSql()));
+            $data = collect($this->dbConnection->select($sql ?? $this->toSql()));
+            if ($this->leftJoin === 'area-left-join-data') {
+                $data = $this->areaLeftJoinData($data, $this->referenceValueToInclude);
+            } elseif ($this->leftJoin === 'data-left-join-area') {
+                $data = $this->dataLeftJoinArea($data, $this->referenceValueToInclude);
+            }
+            return $data;
         } catch (\Exception $exception) {
             logger('In BreakoutQueryBuilder', ['Exception' => $exception->getMessage()]);
             return collect([]);
         }
     }
+
+
 }

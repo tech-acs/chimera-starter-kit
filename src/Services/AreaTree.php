@@ -56,18 +56,18 @@ class AreaTree
         return str($path)->explode('.')->count() - 1;
     }
 
-    public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = false, ?string $nameOfReferenceValueToInclude = null)
+    public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = false, ?string $referenceValueToInclude = null)
     {
         $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";
-        if (is_null($nameOfReferenceValueToInclude)) {
+        if (is_null($referenceValueToInclude)) {
             return Area::selectRaw($checksumSafe ? "CONCAT('*', areas.path) AS path, code, name" : 'areas.path, code, name')
                 ->whereRaw("path ~ '{$lquery}'")
                 ->orderBy($orderBy)
                 ->get();
         } else {
-            return Area::selectRaw($checksumSafe ? "CONCAT('*', areas.path) AS path, code, name, value" : 'areas.path, code, name, value')
+            return Area::selectRaw($checksumSafe ? "CONCAT('*', areas.path) AS path, code, name, value AS ref_value" : 'areas.path, code, name, value AS ref_value')
                 ->leftJoin('reference_values', 'areas.path', 'reference_values.path')
-                ->whereRaw("areas.path ~ '{$lquery}' AND COALESCE(reference_values.indicator, '{$nameOfReferenceValueToInclude}') = '{$nameOfReferenceValueToInclude}'")
+                ->whereRaw("areas.path ~ '{$lquery}' AND COALESCE(reference_values.indicator, '{$referenceValueToInclude}') = '{$referenceValueToInclude}'")
                 ->orderBy($orderBy)
                 ->get();
         }

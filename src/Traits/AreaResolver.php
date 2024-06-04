@@ -9,7 +9,7 @@ trait AreaResolver
     public function areaResolver(): array
     {
         $filtersToApply = [
-            ...(($this->isBeingFeatured || $this->linkedFromScorecard) ? [] : session()->get('area-filter', [])),
+            ...((($this?->isBeingFeatured ?? false) || ($this?->linkedFromScorecard ?? false)) ? [] : session()->get('area-filter', [])),
             ...auth()->user()->areaRestrictionAsFilter(),
         ];
         $path = AreaTree::getFinestResolutionFilterPath($filtersToApply);

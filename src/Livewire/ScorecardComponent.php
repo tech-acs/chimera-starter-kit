@@ -9,9 +9,12 @@ use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Services\APCA;
 use Uneca\Chimera\Services\ScorecardCaching;
 use Uneca\Chimera\Services\ColorPalette;
+use Uneca\Chimera\Traits\AreaResolver;
 
 class ScorecardComponent extends Component
 {
+    use AreaResolver;
+
     public Scorecard $scorecard;
     public string $title;
     public int|float|string $value = '';
@@ -31,7 +34,7 @@ class ScorecardComponent extends Component
         $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
     }
 
-    public function getData(array $filter): array
+    public function getData(string $filterPath): array
     {
         return [$this->value, $this->diff];
     }
@@ -39,7 +42,8 @@ class ScorecardComponent extends Component
     public function setValue()
     {
         $user = auth()->user();
-        $filter = $user->areaRestrictionAsFilter();
+        //$filter = $user->areaRestrictionAsFilter();
+        list($filterPath, $filter) = $this->areaResolver();
         $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : count($filter), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
         try {
@@ -55,7 +59,7 @@ class ScorecardComponent extends Component
                     });
             } else {
                 $analytics['source'] = 'Not caching';
-                list($this->value, $this->diff) = $this->getData($filter);
+                list($this->value, $this->diff) = $this->getData($filterPath);
             }
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception->getMessage()]);

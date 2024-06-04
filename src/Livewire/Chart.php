@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Models\Indicator;
-use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Traits\AreaResolver;
 use Uneca\Chimera\Traits\FilterBasedAxisTitle;
@@ -47,15 +46,15 @@ abstract class Chart extends Component
     public function updateChart()
     {
         list($filterPath, $filter) = $this->areaResolver();
-        //dump($filterPath, $filter);
+        //logger('Called from JS', ['filterPath' => $filterPath, 'filter' => $filter]);
 
-        $this->data = $this->getTraces($this->getData($filter), $filterPath);
+        $this->data = $this->getTraces($this->getData($filterPath), $filterPath);
         $this->layout = $this->getLayout($filterPath);
 
         $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
     }
 
-    public function getData(array $filter): Collection
+    public function getData(string $filterPath): Collection
     {
         return $this->indicator->data;
     }
@@ -72,19 +71,20 @@ abstract class Chart extends Component
     public function getTraces(Collection $data, string $filterPath): array
     {
         $traces = $this->indicator->data;
-        $data = toDataFrame($this->addAreaNames($data, $filterPath));
+        $data = toDataFrame($data);
         foreach ($traces as $index => $trace) {
             $columnNames = Arr::get($traces[$index], 'meta.columnNames', null);
             if ($columnNames) {
                 $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
                 $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
             }
-            if (in_array($trace['name'], array_keys($this->aggregateAppendedTraces))) {
+            if (in_array($trace['name'] ?? null, array_keys($this->aggregateAppendedTraces))) {
                 $aggOp = $this->aggregateAppendedTraces[$trace['name']];
                 array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
                 array_push($traces[$index]['y'], collect($traces[$index]['y'])->{$aggOp}());
             }
         }
+        //logger('traces', ['to send' => $traces]);
         return $traces;
     }
 
@@ -120,7 +120,7 @@ abstract class Chart extends Component
         return view('chimera::livewire.chart');
     }
 
-    public function addAreaNames(Collection $data, string $filterPath, string $keyByColumn = 'area_code'): Collection
+    /*public function addAreaNames(Collection $data, string $filterPath, string $keyByColumn = 'area_code'): Collection
     {
         if ($data->isEmpty()) {
             return $data;
@@ -136,7 +136,7 @@ abstract class Chart extends Component
             }
             return $area;
         });
-    }
+    }*/
 
     public function isDataEmpty(): bool
     {

@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Services\CaseStatsCaching;
 use Uneca\Chimera\Services\QueryFragmentFactory;
+use Uneca\Chimera\Traits\AreaResolver;
 
 class CaseStats extends Component
 {
+    use AreaResolver;
+
     public DataSource $dataSource;
     public array $stats = [];
     public Carbon $dataTimestamp;
@@ -24,7 +27,8 @@ class CaseStats extends Component
     public function setStats()
     {
         $user = auth()->user();
-        $filter = $user->areaRestrictionAsFilter();
+        //$filter = $user->areaRestrictionAsFilter();
+        list($filterPath, $filter) = $this->areaResolver();
         $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
         try {
@@ -40,7 +44,7 @@ class CaseStats extends Component
                     });
             } else {
                 $analytics['source'] = 'Not caching';
-                $this->stats = $this->getData($filter);
+                $this->stats = $this->getData($filterPath);
             }
         } catch (\Exception $exception) {
             logger("Exception occurred while trying to cache (in CaseStats.php)", ['Exception: ' => $exception->getMessage()]);
@@ -53,13 +57,13 @@ class CaseStats extends Component
         }
     }
 
-    public function getData(array $filter)
+    public function getData(string $filterPath)
     {
         $queryFragmentFactory = QueryFragmentFactory::make($this->dataSource->name);
         if (is_null($queryFragmentFactory)) {
             $whereConditions = [];
         } else {
-            list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filter);
+            list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filterPath);
         }
         $sql = "
             SELECT

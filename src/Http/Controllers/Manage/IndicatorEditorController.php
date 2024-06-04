@@ -19,12 +19,11 @@ class IndicatorEditorController extends Controller
     public function edit(Indicator $indicator)
     {
         $instance = DashboardComponentFactory::makeIndicator($indicator);
-        $dataPlusAreaNames = $instance->addAreaNames($instance->getData([]), '');
-        $dataSources = toDataFrame($dataPlusAreaNames);
+        $dataSources = toDataFrame($instance->getData(''));
         unset($dataSources['path']);
         return [
             'dataSources' => $dataSources,
-            'data' => $instance->getTraces($instance->getData([]), ''),
+            'data' => $instance->getTraces($instance->getData(''), ''),
             'layout' => $instance->getLayout(''),
             'config' => [...$instance->getConfig(), 'editable' => true],
             'title' => $indicator->title ?? '',
@@ -39,7 +38,7 @@ class IndicatorEditorController extends Controller
                 unset($trace['x'], $trace['y']);
                 return $trace;
             });
-        //logger('received', ['traces' => $traces[0]]);
+        logger('received', ['traces' => $traces, 'layout' => $request->get('layout')]);
         $indicator->update(['data' => $traces, 'layout' => $request->get('layout')]);
         return response('Saved');
     }
