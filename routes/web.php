@@ -2,6 +2,7 @@
 
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
+use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
 use Uneca\Chimera\Http\Controllers\Manage\SettingController;
 use Uneca\Chimera\Http\Controllers\MapController;
@@ -63,6 +64,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
                 Route::get('indicator/{indicator}/chart-editor', [IndicatorEditorController::class, 'index'])->name('indicator-editor');
                 Route::get('api/indicator/{indicator}', [IndicatorEditorController::class, 'edit']);
                 Route::post('api/indicator/{indicator}', [IndicatorEditorController::class, 'update']);
+                Route::post('api/chart-template', [ChartTemplateController::class, 'store']);
             });
         });
 

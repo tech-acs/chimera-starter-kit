@@ -19,7 +19,7 @@ trait PlotlyDefaults
         ],
         "xaxis" => [
             "type" => "category",
-            "tickmode" => "linear",
+            "tickmode" => "auto",
             "automargin" => true,
         ],
         "margin" => [
