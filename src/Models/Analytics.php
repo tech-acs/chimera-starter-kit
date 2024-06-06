@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class Analytics extends Model
 {
     protected $guarded = ['id'];
+    protected $casts = ['started_at' => 'datetime'];
     public $timestamps = false;
 
     public function analyzable()
@@ -40,7 +41,7 @@ class Analytics extends Model
             );
     }
 
-    protected static function booted(): void
+    /*protected static function booted(): void
     {
         static::creating(function (Analytics $analytics) {
             $queryTimeInSeconds = Carbon::createFromTimestamp($analytics->completed_at)->diffInSeconds($analytics->started_at);
@@ -49,5 +50,5 @@ class Analytics extends Model
             }
             return true;
         });
-    }
+    }*/
 }

@@ -31,8 +31,8 @@
                                 <tr>
                                     <th scope="col" class="py-3 pl-4 text-left text-sm font-semibold text-gray-900 lg:table-cell">User</th>
                                     <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">From</th>
-                                    <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Level</th>
-                                    <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Status</th>
+                                    {{--<th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Level</th>--}}
+                                    <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Path</th>
                                     <th scope="col" class="px-3 py-3 text-left text-sm font-semibold text-gray-900 lg:table-cell">Started At</th>
                                     <th scope="col" class="px-3 py-3 text-center text-sm font-semibold text-gray-900 lg:table-cell">Query Time (seconds)</th>
                                 </tr>
@@ -47,10 +47,10 @@
                                             </a>
                                             {{ $record->analyzable?->title }}
                                         </td>
-                                        <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->level }}</td>
-                                        <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->source }}</td>
+                                        {{--<td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->level }}</td>--}}
+                                        <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->path }}</td>
                                         <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200">{{ $record->started_at?->toDayDateTimeString() }}</td>
-                                        <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200 text-center">{{ $record->query_time }}</td>
+                                        <td class="px-3 py-3 text-sm text-gray-500 lg:table-cell border-t border-gray-200 text-center">{{ $record->elapsed_seconds }}</td>
                                     </tr>
                                 @empty
                                     <tr>

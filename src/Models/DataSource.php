@@ -22,7 +22,7 @@ class DataSource extends Model
 
     public function analytics()
     {
-        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
+        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('started_at');
     }
 
     public function getScorecardsAttribute()

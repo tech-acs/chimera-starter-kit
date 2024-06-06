@@ -66,7 +66,7 @@
             <div>
                 <div class="relative flex items-start">
                     <div class="flex h-6 items-center mt-1">
-                        <input @checked(old('is_featured', $indicator->is_featured ?? false)) id="is_featured" name="is_featured" type="checkbox" class="h-6 w-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        <input @checked(old('is_featured', $indicator->featured_at ?? false)) id="is_featured" name="is_featured" type="checkbox" class="h-6 w-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                     </div>
                     <div class="ml-3 text-base leading-6">
                         <label for="is_featured" class="font-medium text-gray-900">Feature on home page</label>

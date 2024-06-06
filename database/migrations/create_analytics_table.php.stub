@@ -18,10 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('analyzable_id');
             $table->string('analyzable_type');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('source')->nullable();
-            $table->tinyInteger('level')->nullable();
-            $table->bigInteger('started_at');
-            $table->bigInteger('completed_at');
+            $table->string('path')->nullable();
+            $table->timestamp('started_at');
+            $table->bigInteger('elapsed_seconds');
         });
     }
 

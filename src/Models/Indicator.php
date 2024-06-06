@@ -32,7 +32,7 @@ class Indicator extends Model
     public function analytics()
     {
         return $this->morphMany(Analytics::class, 'analyzable')
-            ->orderBy('completed_at');
+            ->orderBy('started_at');
     }
 
     protected function component(): Attribute
