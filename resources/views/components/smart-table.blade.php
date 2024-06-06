@@ -42,7 +42,7 @@
                 </div>--}}
                 <div class="relative" x-data="{ open: false }">
                     <div class="inline-flex divide-x divide-gray-200 rounded-md shadow-sm ml-4 border border-gray-300">
-                        <a href="{{ request()->fullUrlWithQuery(['download' => 'all']) }}">
+                        <a href="{{ request()->fullUrlWithQuery(['download' => 'all']) }}" title="Download all records as a CSV file">
                             <button class="inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-blue-600 shadow-sm hover:text-blue-400">
                                 <x-chimera::icon.download />
                                 <p class="text-xs tracking-widest font-semibold">ALL</p>
@@ -56,7 +56,7 @@
                     </div>
 
                     <ul x-show="open" class="absolute right-0 z-10 mt-1 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
-                        <a href="{{ request()->fullUrlWithQuery(['download' => 'filtered']) }}">
+                        <a href="{{ request()->fullUrlWithQuery(['download' => 'filtered']) }}" title="Download filtered (current) records as a CSV file">
                             <button class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-blue-600 shadow-sm hover:text-blue-400">
                                 <x-chimera::icon.download />
                                 <p class="text-xs tracking-widest font-semibold">FILTERED</p>

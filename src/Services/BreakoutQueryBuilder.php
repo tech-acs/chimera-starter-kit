@@ -146,7 +146,7 @@ class BreakoutQueryBuilder
         });
     }
 
-    private function dataLeftJoinArea(Collection $data, ?string $referenceValueToInclude): Collection
+    private function areaRightJoinData(Collection $data, ?string $referenceValueToInclude): Collection
     {
         if ($data->isEmpty()) {
             return $data;
@@ -167,7 +167,7 @@ class BreakoutQueryBuilder
         return $this;
     }
 
-    public function lastlyDataLeftJoinArea(string $joinColumnOnDataSide = 'area_code', ?string $referenceValueToInclude = null): self
+    public function lastlyAreaRightJoinData(string $joinColumnOnDataSide = 'area_code', ?string $referenceValueToInclude = null): self
     {
         $this->leftJoin = 'data-left-join-area';
         $this->joinColumn = $joinColumnOnDataSide;
@@ -182,7 +182,7 @@ class BreakoutQueryBuilder
             if ($this->leftJoin === 'area-left-join-data') {
                 $data = $this->areaLeftJoinData($data, $this->referenceValueToInclude);
             } elseif ($this->leftJoin === 'data-left-join-area') {
-                $data = $this->dataLeftJoinArea($data, $this->referenceValueToInclude);
+                $data = $this->areaRightJoinData($data, $this->referenceValueToInclude);
             }
             return $data;
         } catch (\Exception $exception) {
