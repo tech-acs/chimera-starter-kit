@@ -1,5 +1,4 @@
 <x-app-layout>
-
     <livewire:area-filter />
 
     <div class="grid grid-cols-1 gap-6 sm:p-6 sm:pt-0 pb-6 sm:pb-0 bg-gray-100">

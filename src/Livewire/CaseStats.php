@@ -3,61 +3,44 @@
 namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\On;
+use Livewire\Component;
 use Uneca\Chimera\Models\DataSource;
-use Uneca\Chimera\Services\CaseStatsCaching;
 use Uneca\Chimera\Services\QueryFragmentFactory;
 use Uneca\Chimera\Traits\AreaResolver;
+use Uneca\Chimera\Traits\Cachable;
 
 class CaseStats extends Component
 {
+    use Cachable;
     use AreaResolver;
 
     public DataSource $dataSource;
-    public array $stats = [];
+    public Collection $stats;
     public Carbon $dataTimestamp;
 
     public function mount(DataSource $dataSource)
     {
-        $this->dataSource = $dataSource;
-    }
-
-    public function setStats()
-    {
-        $user = auth()->user();
-        //$filter = $user->areaRestrictionAsFilter();
-        list($filterPath, $filter) = $this->areaResolver();
-        $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : (count($filter) - 1), 'started_at' => time(), 'completed_at' => null];
         $this->dataTimestamp = Carbon::now();
-        try {
-            if (config('chimera.cache.enabled')) {
-                $caching = new CaseStatsCaching($this->dataSource, $filter);
-                $this->dataTimestamp = $caching->getTimestamp();
-                $this->stats = Cache::tags($caching->tags())
-                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
-                        $caching->stamp();
-                        $this->dataTimestamp = Carbon::now();
-                        $analytics['source'] = 'Caching';
-                        return $this->getData($caching->filter);
-                    });
-            } else {
-                $analytics['source'] = 'Not caching';
-                $this->stats = $this->getData($filterPath);
-            }
-        } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache (in CaseStats.php)", ['Exception: ' => $exception->getMessage()]);
-            $this->stats = [];
-        } finally {
-            if ($analytics['source'] !== 'Cache') {
-                $analytics['completed_at'] = time();
-                $this->dataSource->analytics()->create($analytics);
-            }
-        }
+        $this->dataSource = $dataSource;
+        list($this->filterPath,) = $this->areaResolver();
+        $this->checkData();
     }
 
-    public function getData(string $filterPath)
+    public function placeholder()
+    {
+        return view('chimera::livewire.placeholders.case-stats');
+    }
+
+    public function cacheKey(): string
+    {
+        return implode(':', ['case-stats', $this->dataSource->id, $this->filterPath]);
+    }
+
+    public function getData(string $filterPath): Collection
     {
         $queryFragmentFactory = QueryFragmentFactory::make($this->dataSource->name);
         if (is_null($queryFragmentFactory)) {
@@ -83,7 +66,12 @@ class CaseStats extends Component
             $info['partial'] = $l->partial;
             $info['duplicate'] = $l->duplicate;
         }
-        return $info;
+        return collect($info);
+    }
+
+    public function setPropertiesFromData(): void
+    {
+        list($this->dataTimestamp, $this->stats) = Cache::get($this->cacheKey());
     }
 
     public function render()

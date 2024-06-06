@@ -27,8 +27,8 @@ return [
         ],
     ],
     'cache' => [
-        'enabled' => env('CACHE_ENABLED', false),
-        'ttl' => env('CACHE_TTL_SECONDS', 60 * 60),
+        //'enabled' => env('CACHE_ENABLED', false),
+        'ttl' => env('CACHE_TTL_SECONDS', 60 * 5),
         'tags' => [],
     ],
     'long_query_time' => env('LONG_QUERY_TIME', 10), // Seconds

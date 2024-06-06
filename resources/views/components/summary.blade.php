@@ -22,34 +22,34 @@
 
     <div class="px-4 sm:px-6 py-4">
 
-        @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource])
+        @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource, 'lazy' => true])
 
         <div>
             <div class="bg-white">
                 @if ($dataSource->scorecards->isNotEmpty())
-                    <div class="max-w-7xl mx-auto py-4">
+                    <div class="max-w-7xl mx-auto py-4 pb-2">
                         <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
                             {{ __('A few selected scorecards') }}
                         </p>
                         <div class="rounded-lg bg-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             @foreach($dataSource->scorecards as $scorecard)
-                                @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index])
+                                @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index, 'lazy' => true])
                             @endforeach
                         </div>
                     </div>
                 @endif
 
                 @if ($dataSource->featured_indicators->isNotEmpty())
-                    <div class="max-w-7xl mx-auto py-4">
+                    <div class="max-w-7xl mx-auto py-4 pb-2">
                         <p class="text-center text-sm font-semibold uppercase text-gray-600 tracking-wider pb-2">
                             {{ __('Featured indicators') }}
                         </p>
-                        <div class="flex flex-col gap-y-4">
+                        <div class="flex flex-col gap-y-6">
                             @connectible($dataSource->name)
                                 @foreach($dataSource->featured_indicators as $indicator)
                                     @can($indicator->permission_name)
                                         @if (($loop->iteration % 2) === 1)
-                                            <div class="flex gap-x-6">
+                                            <div class="flex gap-6 flex-col lg:flex-row">
                                         @endif
 
                                         <x-chimera::featured-chart-card :indicator="$indicator">

@@ -4,22 +4,23 @@ namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Services\APCA;
-use Uneca\Chimera\Services\ScorecardCaching;
 use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Traits\AreaResolver;
+use Uneca\Chimera\Traits\Cachable;
 
-class ScorecardComponent extends Component
+abstract class ScorecardComponent extends Component
 {
+    use Cachable;
     use AreaResolver;
 
     public Scorecard $scorecard;
     public string $title;
     public int|float|string $value = '';
     public int|float|string|null $diff = null;
-    public string $diffTitle;
     public string $unit = '%';
     public string $bgColor;
     public string $fgColor;
@@ -32,44 +33,24 @@ class ScorecardComponent extends Component
         $totalColors = count($currentPalette->colors);
         $this->bgColor = $currentPalette->colors[$index % $totalColors];
         $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
+        list($this->filterPath,) = $this->areaResolver();
+        $this->checkData();
     }
 
-    public function getData(string $filterPath): array
+    public function placeholder()
     {
-        return [$this->value, $this->diff];
+        return view('chimera::livewire.placeholders.scorecard');
     }
 
-    public function setValue()
+    public function cacheKey(): string
     {
-        $user = auth()->user();
-        //$filter = $user->areaRestrictionAsFilter();
-        list($filterPath, $filter) = $this->areaResolver();
-        $analytics = ['user_id' => auth()->id(), 'source' => 'Cache', 'level' => empty($filter) ? null : count($filter), 'started_at' => time(), 'completed_at' => null];
-        $this->dataTimestamp = Carbon::now();
-        try {
-            if (config('chimera.cache.enabled')) {
-                $caching = new ScorecardCaching($this->scorecard, []);
-                $this->dataTimestamp = $caching->getTimestamp();
-                list($this->value, $this->diff) = Cache::tags($caching->tags())
-                    ->remember($caching->key, config('chimera.cache.ttl'), function () use ($caching, &$analytics) {
-                        $caching->stamp();
-                        $this->dataTimestamp = Carbon::now();
-                        $analytics['source'] = 'Caching';
-                        return $this->getData($caching->filter);
-                    });
-            } else {
-                $analytics['source'] = 'Not caching';
-                list($this->value, $this->diff) = $this->getData($filterPath);
-            }
-        } catch (\Exception $exception) {
-            logger("Exception occurred while trying to cache (in ScorecardComponent.php)", ['Exception: ' => $exception->getMessage()]);
-            list($this->value, $this->diff) = ['Err', null];
-        } finally {
-            if ($analytics['source'] !== 'Cache') {
-                $analytics['completed_at'] = time();
-                $this->scorecard->analytics()->create($analytics);
-            }
-        }
+        return implode(':', ['score-card', $this->scorecard->id, $this->filterPath]);
+    }
+
+    public function setPropertiesFromData(): void
+    {
+        list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
+        list($this->value, $this->diff) = $data;
     }
 
     public function render()

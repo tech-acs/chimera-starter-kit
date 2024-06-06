@@ -23,7 +23,7 @@ class Scorecard extends Model
 
     public function analytics()
     {
-        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('completed_at');
+        return $this->morphMany(Analytics::class, 'analyzable')->orderBy('started_at');
     }
 
     /*protected function permissionName(): Attribute

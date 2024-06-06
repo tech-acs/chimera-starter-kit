@@ -2,18 +2,22 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Traits\AreaResolver;
+use Uneca\Chimera\Traits\Cachable;
 use Uneca\Chimera\Traits\FilterBasedAxisTitle;
 use Uneca\Chimera\Traits\PlotlyDefaults;
 
 abstract class Chart extends Component
 {
+    use Cachable;
     use AreaResolver;
     use PlotlyDefaults;
     use FilterBasedAxisTitle;
@@ -23,11 +27,21 @@ abstract class Chart extends Component
     public array $data = [];
     public array $layout = [];
     public array $config = [];
+    public Carbon $dataTimestamp;
 
     public bool $isBeingFeatured = false;
     public bool $linkedFromScorecard = false;
     public bool $useDynamicAreaXAxisTitles = false;
     public array $aggregateAppendedTraces = []; // ['trace name' => 'avg'] ... sum, count, min, max, mode, median
+
+    public function mount()
+    {
+        $this->graphDiv = $this->indicator->id;
+        $this->config = $this->getConfig();
+        list($this->filterPath,) = $this->areaResolver();
+        $this->checkData();
+        // ToDo: call property validator for $aggregateAppendedTraces
+    }
 
     public function placeholder()
     {
@@ -42,21 +56,23 @@ abstract class Chart extends Component
         HTML;
     }
 
-    #[On(['updateRequest.{indicator.id}', 'filterChanged'])]
-    public function updateChart()
+    public function cacheKey(): string
     {
-        list($filterPath, $filter) = $this->areaResolver();
-        //logger('Called from JS', ['filterPath' => $filterPath, 'filter' => $filter]);
-
-        $this->data = $this->getTraces($this->getData($filterPath), $filterPath);
-        $this->layout = $this->getLayout($filterPath);
-
-        $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
+        return implode(':', ['indicator', $this->indicator->id, $this->filterPath]);
     }
 
-    public function getData(string $filterPath): Collection
+    #[On(['filterChanged'])]
+    public function update()
     {
-        return $this->indicator->data;
+        list($this->filterPath,) = $this->areaResolver();
+        Cache::forget($this->cacheKey());
+        $this->checkData();
+    }
+
+    #[On(['dataReady'])]
+    public function sendUpdates()
+    {
+        $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
     }
 
     public function getConfig(): array
@@ -107,36 +123,12 @@ abstract class Chart extends Component
         ];
     }
 
-    public function mount()
+    public function setPropertiesFromData(): void
     {
-        $this->graphDiv = $this->indicator->id;
-        $this->config = $this->getConfig();
-
-        // ToDo: call property validator
+        list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
+        $this->data = $this->getTraces($data, $this->filterPath);
+        $this->layout = $this->getLayout($this->filterPath);
     }
-
-    public function render()
-    {
-        return view('chimera::livewire.chart');
-    }
-
-    /*public function addAreaNames(Collection $data, string $filterPath, string $keyByColumn = 'area_code'): Collection
-    {
-        if ($data->isEmpty()) {
-            return $data;
-        }
-        $areas = (new AreaTree())->areas($filterPath);
-        $dataKeyByAreaCode = $data->keyBy($keyByColumn);
-        $columns = array_keys((array) $data[0]);
-        return $areas->map(function ($area) use ($dataKeyByAreaCode, $columns, $keyByColumn) {
-            foreach ($columns as $column) {
-                if ($column != $keyByColumn) {
-                    $area->{$column} = $dataKeyByAreaCode[$area->code]->{$column} ?? 0;
-                }
-            }
-            return $area;
-        });
-    }*/
 
     public function isDataEmpty(): bool
     {
@@ -151,5 +143,10 @@ abstract class Chart extends Component
                 default => empty($trace['x']) && $carry,
             };
         }, true);
+    }
+
+    public function render()
+    {
+        return view('chimera::livewire.chart');
     }
 }
