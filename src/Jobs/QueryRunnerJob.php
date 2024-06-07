@@ -2,17 +2,16 @@
 
 namespace Uneca\Chimera\Jobs;
 
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Livewire\CaseStats;
 use Uneca\Chimera\Livewire\Chart;
 use Uneca\Chimera\Livewire\ScorecardComponent;
+use Uneca\Chimera\Services\FetchCacheAndRecord;
 
 class QueryRunnerJob implements ShouldQueue, ShouldBeUnique
 {
@@ -35,24 +34,7 @@ class QueryRunnerJob implements ShouldQueue, ShouldBeUnique
     {
         //sleep(2);
 
-        $startTime = time();
-        $result = $this->artefact->getData($this->filterPath);
-        $elapsedSeconds = time() - $startTime;
-
-        if ($this->cacheForever) {
-            Cache::put($this->key, [Carbon::now(), $result]);
-        } else {
-            Cache::put($this->key, [Carbon::now(), $result], config('chimera.cache.ttl'));
-        }
-
-        if ($elapsedSeconds > config('chimera.long_query_time')) {
-            $this->artefact->analytics()->create([
-                'user_id' => null,
-                'path' => $this->filterPath,
-                'started_at' => Carbon::createFromTimestamp($startTime),
-                'elapsed_seconds' => $elapsedSeconds
-            ]);
-        }
+        (new FetchCacheAndRecord)($this->artefact, $this->key, $this->filterPath, $this->cacheForever);
     }
 
     public function uniqueId(): string

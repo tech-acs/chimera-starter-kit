@@ -18,13 +18,16 @@ class IndicatorEditorController extends Controller
 
     public function edit(Indicator $indicator)
     {
+        $filterPath = '';
+
         $instance = DashboardComponentFactory::makeIndicator($indicator);
-        $dataSources = toDataFrame($instance->getData(''));
+        $data = $instance->getData($filterPath);
+        $dataSources = toDataFrame($data);
         unset($dataSources['path']);
         return [
             'dataSources' => $dataSources,
-            'data' => $instance->getTraces($instance->getData(''), ''),
-            'layout' => $instance->getLayout(''),
+            'data' => $instance->getTraces($data, $filterPath),
+            'layout' => $instance->getLayout($filterPath),
             'config' => [...$instance->getConfig(), 'editable' => true],
             'title' => $indicator->title ?? '',
         ];
@@ -33,6 +36,7 @@ class IndicatorEditorController extends Controller
     public function update(Indicator $indicator, Request $request)
     {
         //throw new \Exception('Bad stuff happened!');
+
         $traces = collect($request->json('data'))
             ->map(function ($trace) {
                 unset($trace['x'], $trace['y']);

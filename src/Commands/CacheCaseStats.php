@@ -5,8 +5,8 @@ namespace Uneca\Chimera\Commands;
 use Illuminate\Console\Command;
 use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\DataSource;
-use Uneca\Chimera\Services\AreaTree;
-use Uneca\Chimera\Services\CaseStatsCaching;
+use Uneca\Chimera\Services\DashboardComponentFactory;
+use Uneca\Chimera\Services\FetchCacheAndRecord;
 
 class CacheCaseStats extends Command
 {
@@ -19,7 +19,7 @@ class CacheCaseStats extends Command
         parent::__construct();
     }
 
-    private function cacheCaseStats()
+    public function handle()
     {
         $query = DataSource::active()->showOnHomePage();
         if ($this->option('data-source')) {
@@ -36,41 +36,23 @@ class CacheCaseStats extends Command
 
         foreach ($toCache as $dataSource) {
             $this->newLine()->info($dataSource->name);
-            $startTime = time();
+
+            $artefact = DashboardComponentFactory::makeCaseStats($dataSource);
 
             // National level for non-restricted users (filter = [])
-            $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            $updated = (new CaseStatsCaching($dataSource, []))->update();
-            if ($updated) {
-                $analytics['completed_at'] = time();
-                $dataSource->analytics()->create($analytics);
-                $endTime = time();
-                $this->info("Level 0 completed in " . ($endTime - $startTime) . " seconds");
-            } else {
-                $this->error("Could not update cache!");
-            }
+            $startTime = time();
+            (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), '', true);
+            $this->info("Level 0 completed in " . (time() - $startTime) . " seconds");
+
             // Get all user area restrictions and loop them as filter
             $paths = AreaRestriction::distinct('path')->pluck('path');
             foreach ($paths as $path) {
-                $filter = AreaTree::pathAsFilter($path);
-                $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-                $updated = (new CaseStatsCaching($dataSource, $filter))->update();
-                if ($updated) {
-                    $analytics['completed_at'] = time();
-                    $dataSource->analytics()->create($analytics);
-                    $endTime = time();
-                    $this->info("Restriction path $path completed in " . ($endTime - $startTime) . " seconds");
-                } else {
-                    $this->error("Could not update cache!");
-                }
+                $startTime = time();
+                (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), $path, true);
+                $this->info("Restriction path $path completed in " . (time() - $startTime) . " seconds");
             }
         }
         $this->newLine();
         return self::SUCCESS;
-    }
-
-    public function handle()
-    {
-        return $this->cacheCaseStats();
     }
 }

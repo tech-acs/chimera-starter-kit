@@ -7,7 +7,8 @@ use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Services\AreaTree;
-use Uneca\Chimera\Services\IndicatorCaching;
+use Uneca\Chimera\Services\DashboardComponentFactory;
+use Uneca\Chimera\Services\FetchCacheAndRecord;
 
 class CacheIndicators extends Command
 {
@@ -19,7 +20,7 @@ class CacheIndicators extends Command
         parent::__construct();
     }
 
-    private function cacheIndicators()
+    public function handle()
     {
         if ($this->option('tag')) {
             $builder = Indicator::published()->ofTag($this->option('tag'));
@@ -43,48 +44,28 @@ class CacheIndicators extends Command
         if ($maxLevel > 0 && ($maxLevel >= AreaHierarchy::count())) {
             $maxLevel = AreaHierarchy::count() - 1;
         }
+
         foreach ($indicatorsToCache as $indicator) {
             $this->newLine()->info($indicator->name);
-            $startTime = time();
 
-            $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            $updated = (new IndicatorCaching($indicator, []))->update(); // National level - no filters (non-level/null level)
-            if ($updated) {
-                $analytics['completed_at'] = time();
-                $indicator->analytics()->create($analytics);
-            } else {
-                $this->error("Could not update cache!");
-            }
+            $artefact = DashboardComponentFactory::makeScorecard($indicator);
+
+            // National level for non-restricted users
+            $startTime = time();
+            (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), '', true);
+            $this->info("Level 0 completed in " . (time() - $startTime) . " seconds");
 
             $hierarchies = (new AreaTree())->hierarchies;
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
                 $paths = Area::ofLevel($level)->pluck('path');
                 foreach ($paths as $path) {
-                    $codes = explode('.', $path);
-                    $filter = [];
-                    for ($i = 0; $i < count($codes); $i++) {
-                        $filter[$hierarchies[$i]] = $codes[$i];
-                    }
-                    $analytics = ['source' => 'Caching (cmd)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
-                    $updated = (new IndicatorCaching($indicator, $filter))->update(); // Sub-national level
-                    if ($updated) {
-                        $analytics['completed_at'] = time();
-                        $indicator->analytics()->create($analytics);
-                    } else {
-                        $this->error("Could not update cache!");
-                    }
+                    (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), $path, true);
                 }
                 $this->info(" - cached {$hierarchies[$level]} level");
             }
-            $endTime = time();
-            $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+            $this->info("Completed in " . (time() - $startTime) . " seconds");
         }
         $this->newLine();
         return self::SUCCESS;
-    }
-
-    public function handle()
-    {
-        return $this->cacheIndicators();
     }
 }

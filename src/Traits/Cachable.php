@@ -19,7 +19,7 @@ trait Cachable
 
     public function getDataAndCacheIt(string $key, string $filterPath, bool $cacheForever = false): void
     {
-        $result = QueryRunnerJob::dispatch($this, $key, $filterPath, $cacheForever);
+        QueryRunnerJob::dispatch($this, $key, $filterPath, $cacheForever);
     }
 
     public function checkData(): void
