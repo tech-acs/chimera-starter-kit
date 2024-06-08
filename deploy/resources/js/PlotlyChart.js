@@ -23,15 +23,15 @@ export default class PlotlyChart {
         } else if (this.config.locale === 'pt') {
             Plotly.register(pt);
         }
-        Plotly.newPlot(el, this.data, this.layout, this.config);
-        Livewire.dispatch(`updateRequest.${this.id}`);
-        console.log('3 - Initialized Plotly and announced readiness: ' + this.id);
+        //Plotly.newPlot(el, this.data, this.layout, this.config);
+        //Livewire.dispatch(`updateRequest.${this.id}`);
+        console.log('3 - Initialized Plotly');
     }
 
     registerLivewireEventListeners() {
         Livewire.on(`updateResponse.${this.id}`, (dataAndLayout) => {
             console.log('4 - Received payload from backend: ' + this.id, dataAndLayout);
-            Plotly.react(this.id, ...dataAndLayout)
+            Plotly.react(this.id, ...dataAndLayout, this.config)
         });
     }
 }

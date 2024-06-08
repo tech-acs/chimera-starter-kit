@@ -4,6 +4,9 @@
 
         @include('chimera::livewire.placeholders.chart')
     @else
+        <div class="opacity-25 absolute z-50 cursor-pointer" title="Calculated {{ $dataTimestamp?->diffForHumans() }} ({{ $dataTimestamp?->toDayDateTimeString() }})">
+            <x-chimera::icon.stamp class="w-4 h-4" />
+        </div>
         <div
             wire:ignore
             id="{{ $graphDiv }}"

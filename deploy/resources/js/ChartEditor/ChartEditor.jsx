@@ -8,6 +8,7 @@ import Button from "./Button.jsx";
 import {ErrorIcon, ResetIcon, SaveIcon, SuccessIcon, TemplateIcon} from "./Icons.jsx";
 import fr from 'plotly.js-locales/fr';
 import pt from 'plotly.js-locales/pt-pt';
+import {cloneDeep} from "lodash";
 
 function ChartEditor({dataSources, initialData, initialLayout, config, indicatorId, indicatorTitle, defaultLayout}) {
     const [data, setData] = useState(initialData);
@@ -21,10 +22,23 @@ function ChartEditor({dataSources, initialData, initialLayout, config, indicator
         setFrames(frames);
     };
 
+    const stripData = (original) => {
+        const dataStrippedData = cloneDeep(original);
+        dataStrippedData.forEach((trace, index) => {
+            if (trace.meta.columnNames) {
+                const propertiesToRemove = Object.keys(trace.meta.columnNames);
+                propertiesToRemove.forEach(property => {
+                    delete dataStrippedData[index][property];
+                });
+            }
+        })
+        return dataStrippedData;
+    }
+
     const save = async () => {
-        // ToDo: Remove x and y from data before sending
-        const response = await axios.post(`/manage/developer/api/indicator/${indicatorId}`, { data, layout }, {validateStatus: () => true});
-        console.log('Saving: (traces, layout, response.status, response.data)', data, layout, response.status, response.data);
+        const dataStrippedData = stripData(data);
+        const response = await axios.post(`/manage/developer/api/indicator/${indicatorId}`, { dataStrippedData, layout }, {validateStatus: () => true});
+        console.log('Saving: (traces, layout, response.status, response.data)', dataStrippedData, layout, response.status, response.data);
         if (response.status === 200) {
             setNotification({color: "green", icon: SuccessIcon, text: "Successfully saved"})
         } else {
@@ -37,6 +51,7 @@ function ChartEditor({dataSources, initialData, initialLayout, config, indicator
 
     const reset = () => {
         setLayout(JSON.parse(defaultLayout));
+        setData([]);
     }
 
     if (config.locale === 'fr') {
@@ -95,7 +110,7 @@ function ChartEditor({dataSources, initialData, initialLayout, config, indicator
                 <div className="flex justify-end gap-x-4 p-3">
                     <div className="flex items-center text-nowrap font-medium mr-8"
                          style={{color: notification.color}}>{notification.icon?.()} {notification?.text}</div>
-                    <Button label="Reset to defaults" clickHandler={reset} icon={ResetIcon}
+                    <Button label="Reset" clickHandler={reset} icon={ResetIcon}
                             colorClasses="bg-red-600 hover:bg-red-500 focus:ring-red-500"/>
                     <DataViewer data={dataSources}/>
                     <TemplateSaver layout={layout} data={data} />

@@ -8,6 +8,7 @@ module.exports = {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './vendor/laravel/jetstream/**/*.blade.php',
         './vendor/uneca/dashboard-starter-kit/**/*.blade.php',
+        './vendor/uneca/dashboard-starter-kit/src/Livewire/*.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './app/MapIndicators/**/*.php',
