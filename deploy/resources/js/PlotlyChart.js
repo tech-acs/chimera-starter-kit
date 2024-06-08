@@ -10,12 +10,6 @@ export default class PlotlyChart {
 
     constructor(rootElementId) {
         this.id = rootElementId;
-        console.log('2 - Constructor of PlotlyChart: ' + this.id);
-        this.initializeChart();
-        this.registerLivewireEventListeners();
-    }
-
-    initializeChart() {
         const el = document.getElementById(this.id)
         this.config = JSON.parse(el.dataset['config'])
         if (this.config.locale === 'fr') {
@@ -24,13 +18,13 @@ export default class PlotlyChart {
             Plotly.register(pt);
         }
         //Plotly.newPlot(el, this.data, this.layout, this.config);
-        //Livewire.dispatch(`updateRequest.${this.id}`);
-        console.log('3 - Initialized Plotly');
+        console.log('1 - (alpine init), 2 - PlotlyChart constructor with id: ' + this.id);
+        this.registerLivewireEventListeners();
     }
 
     registerLivewireEventListeners() {
         Livewire.on(`updateResponse.${this.id}`, (dataAndLayout) => {
-            console.log('4 - Received payload from backend: ' + this.id, dataAndLayout);
+            console.log('3 - Received updateResponse: ' + this.id, dataAndLayout);
             Plotly.react(this.id, ...dataAndLayout, this.config)
         });
     }

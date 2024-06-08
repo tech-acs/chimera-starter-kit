@@ -12,22 +12,26 @@ class FetchCacheAndRecord
 {
     public function __invoke(CaseStats|ScorecardComponent|Chart $artefact, string $key, string $filterPath, bool $cacheForever = false)
     {
-        $startTime = time();
-        $result = $artefact->getData($filterPath);
-        $elapsedSeconds = time() - $startTime;
+        try {
+            $startTime = time();
+            $result = $artefact->getData($filterPath);
+            $elapsedSeconds = time() - $startTime;
 
-        if ($cacheForever) {
-            Cache::put($key, [Carbon::now(), $result]);
-        } else {
-            Cache::put($key, [Carbon::now(), $result], config('chimera.cache.ttl'));
-        }
+            if ($cacheForever) {
+                Cache::put($key, [Carbon::now(), $result]);
+            } else {
+                Cache::put($key, [Carbon::now(), $result], config('chimera.cache.ttl'));
+            }
 
-        if ($elapsedSeconds > config('chimera.long_query_time')) {
-            $artefact->analytics()->create([
-                'path' => $filterPath,
-                'started_at' => Carbon::createFromTimestamp($startTime),
-                'elapsed_seconds' => $elapsedSeconds
-            ]);
+            if ($elapsedSeconds > config('chimera.long_query_time')) {
+                $artefact->analytics()->create([
+                    'path' => $filterPath,
+                    'started_at' => Carbon::createFromTimestamp($startTime),
+                    'elapsed_seconds' => $elapsedSeconds
+                ]);
+            }
+        } catch (\Exception $exception) {
+            logger('Something bad happened in FetchCacheAndRecord invokable', ['Exception' => $exception->getMessage()]);
         }
     }
 }

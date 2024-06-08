@@ -3,9 +3,10 @@
 namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Livewire\Attributes\On;
 use Livewire\Component;
+use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Services\APCA;
 use Uneca\Chimera\Services\ColorPalette;
@@ -33,6 +34,7 @@ abstract class ScorecardComponent extends Component
         $totalColors = count($currentPalette->colors);
         $this->bgColor = $currentPalette->colors[$index % $totalColors];
         $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
+
         list($this->filterPath,) = $this->areaResolver();
         $this->checkData();
     }
@@ -50,7 +52,12 @@ abstract class ScorecardComponent extends Component
     public function setPropertiesFromData(): void
     {
         list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
-        list($this->value, $this->diff) = $data;
+        if (($data instanceof Collection) && ($data->count() == 2)) {
+            list($this->value, $this->diff) = $data;
+            $this->dataStatus = DataStatus::RENDERABLE;
+        } else {
+            $this->dataStatus = DataStatus::EMPTY;
+        }
     }
 
     public function render()

@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\On;
 use Livewire\Component;
+use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Services\QueryFragmentFactory;
 use Uneca\Chimera\Traits\AreaResolver;
@@ -42,13 +42,14 @@ class CaseStats extends Component
 
     public function getData(string $filterPath): Collection
     {
-        $queryFragmentFactory = QueryFragmentFactory::make($this->dataSource->name);
-        if (is_null($queryFragmentFactory)) {
-            $whereConditions = [];
-        } else {
-            list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filterPath);
-        }
-        $sql = "
+        try {
+            $queryFragmentFactory = QueryFragmentFactory::make($this->dataSource->name);
+            if (is_null($queryFragmentFactory)) {
+                $whereConditions = [];
+            } else {
+                list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filterPath);
+            }
+            $sql = "
             SELECT
                 COUNT(*) AS total,
                 SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete,
@@ -57,21 +58,27 @@ class CaseStats extends Component
             FROM cases
             WHERE
         ";
-        $l = DB::connection($this->dataSource->name)
-            ->select($sql . implode(' AND ', array_merge(["cases.key != ''", "cases.deleted = 0"], $whereConditions)))[0];
-        $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
-        if (!is_null($l)) {
-            $info['total'] = $l->total;
-            $info['complete'] = $l->complete;
-            $info['partial'] = $l->partial;
-            $info['duplicate'] = $l->duplicate;
+            $l = DB::connection($this->dataSource->name)
+                ->select($sql . implode(' AND ', array_merge(["cases.key != ''", "cases.deleted = 0"], $whereConditions)))[0];
+            $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
+            if (!is_null($l)) {
+                $info['total'] = $l->total;
+                $info['complete'] = $l->complete;
+                $info['partial'] = $l->partial;
+                $info['duplicate'] = $l->duplicate;
+            }
+            return collect($info);
+        } catch (\Exception $exception) {
+            return collect();
         }
-        return collect($info);
     }
 
     public function setPropertiesFromData(): void
     {
         list($this->dataTimestamp, $this->stats) = Cache::get($this->cacheKey());
+        $this->dataStatus = $this->stats->isEmpty() ?
+            DataStatus::EMPTY :
+            DataStatus::RENDERABLE;
     }
 
     public function render()

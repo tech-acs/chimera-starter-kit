@@ -22,7 +22,7 @@
 
     <div class="px-4 sm:px-6 py-4">
 
-        @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource, 'lazy' => true])
+        @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource])
 
         <div>
             <div class="bg-white">

@@ -4,11 +4,12 @@ namespace Uneca\Chimera\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Jobs\QueryRunnerJob;
 
 trait Cachable
 {
-    public bool $isDataReady = false;
+    public DataStatus $dataStatus = DataStatus::PENDING;
     public string $filterPath = '';
 
     public abstract function getData(string $filterPath): Collection;
@@ -27,9 +28,8 @@ trait Cachable
         if (Cache::has($this->cacheKey())) {
             $this->setPropertiesFromData();
             $this->dispatch('dataReady')->self();
-            $this->isDataReady = true;
         } else {
-            $this->isDataReady = false;
+            $this->dataStatus = DataStatus::PENDING;
             $this->getDataAndCacheIt($this->cacheKey(), $this->filterPath);
         }
     }

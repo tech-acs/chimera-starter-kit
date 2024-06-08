@@ -1,9 +1,12 @@
-<div>
-    @if(! $isDataReady)
+<div x-data="{ dataStatus: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
+
+    <div x-show="dataStatus == 'pending'" x-cloak>
         <div wire:poll.visible.3s="checkData"></div>
 
         @include('chimera::livewire.placeholders.scorecard')
-    @else
+    </div>
+
+    <div x-show="dataStatus == 'renderable'" x-cloak x-transition.duration.1000ms>
         <div class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
             @if(! empty($scorecard->linked_indicator))
                 <a href="{{ route('indicator', $scorecard->linked_indicator) }}?linked_from_scorecard" class="absolute right-1 top-1">
@@ -23,6 +26,18 @@
                 @endif
             </dd>
         </div>
-    @endif
+    </div>
+
+    <div x-show="dataStatus == 'empty'" x-cloak>
+        <div class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
+            <dt class="order-2 mt-2 text-lg leading-6 font-medium truncate {{ $fgColor }}">
+                {{ $title }}
+            </dt>
+            <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center">
+                <div class="mr-2">{{ __('N/A') }}</div>
+            </dd>
+        </div>
+    </div>
+
 </div>
 

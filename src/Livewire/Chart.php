@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Traits\AreaResolver;
@@ -65,7 +66,6 @@ abstract class Chart extends Component
     public function update()
     {
         list($this->filterPath,) = $this->areaResolver();
-        Cache::forget($this->cacheKey());
         $this->checkData();
     }
 
@@ -88,19 +88,22 @@ abstract class Chart extends Component
     {
         $traces = $this->indicator->data;
         $data = toDataFrame($data);
-        foreach ($traces as $index => $trace) {
-            $columnNames = Arr::get($traces[$index], 'meta.columnNames', null);
-            if ($columnNames) {
-                $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
-                $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
+        if ($data->isNotEmpty()) {
+            foreach ($traces as $index => $trace) {
+                $columnNames = Arr::get($traces[$index], 'meta.columnNames', null);
+                if ($columnNames) {
+                    $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
+                    $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
+                }
+                if (in_array($trace['name'] ?? null, array_keys($this->aggregateAppendedTraces))) {
+                    $aggOp = $this->aggregateAppendedTraces[$trace['name']];
+                    array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
+                    array_push($traces[$index]['y'], collect($traces[$index]['y'])->{$aggOp}());
+                }
             }
-            if (in_array($trace['name'] ?? null, array_keys($this->aggregateAppendedTraces))) {
-                $aggOp = $this->aggregateAppendedTraces[$trace['name']];
-                array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
-                array_push($traces[$index]['y'], collect($traces[$index]['y'])->{$aggOp}());
-            }
+        } else {
+            $traces = [];
         }
-        //logger('traces', ['to send' => $traces]);
         return $traces;
     }
 
@@ -128,21 +131,9 @@ abstract class Chart extends Component
         list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
         $this->data = $this->getTraces($data, $this->filterPath);
         $this->layout = $this->getLayout($this->filterPath);
-    }
-
-    public function isDataEmpty(): bool
-    {
-        return array_reduce($this->data, function ($carry, $trace) {
-            /*
-            * Not all graphs put their data under the 'x' and 'y' keys.
-            * Pies for example put it in the 'values' key.
-            * Therefore, you might need to add those other cases here!
-            */
-            return match ($trace['type'] ?? null) {
-                'pie' => empty($trace['values']) && $carry,
-                default => empty($trace['x']) && $carry,
-            };
-        }, true);
+        $this->dataStatus = empty($this->data) ?
+            DataStatus::EMPTY :
+            DataStatus::RENDERABLE;
     }
 
     public function render()
