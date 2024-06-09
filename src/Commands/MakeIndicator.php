@@ -8,6 +8,7 @@ use Uneca\Chimera\Models\DataSource;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Uneca\Chimera\Traits\PlotlyDefaults;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
@@ -18,6 +19,8 @@ use function Laravel\Prompts\confirm;
 
 class MakeIndicator extends GeneratorCommand
 {
+    use PlotlyDefaults;
+
     protected $signature = 'chimera:make-indicator';
     protected $description = 'Create a new indicator component. Creates file from stub and adds entry in indicators table.';
 
@@ -166,7 +169,7 @@ class MakeIndicator extends GeneratorCommand
             'data_source' => $dataSource,
             'type' => $chosenChartType,
             'data' => [],
-            'layout' => Storage::disk("plotly_defaults")->json("layout.json"),
+            'layout' => self::DEFAULT_LAYOUT,
         ]);
         DB::transaction(function () use ($indicator, $name, $selectedTemplate) {
             if ($this->writeIndicatorFile($name, $selectedTemplate)) {

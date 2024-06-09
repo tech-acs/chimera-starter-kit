@@ -38,10 +38,6 @@ class IndicatorEditorController extends Controller
         //throw new \Exception('Bad stuff happened!');
 
         $traces = collect($request->json('data'));
-            /*->map(function ($trace) {
-                unset($trace['x'], $trace['y']);
-                return $trace;
-            });*/
         logger('received', ['traces' => $traces, 'layout' => $request->get('layout')]);
         $indicator->update(['data' => $traces, 'layout' => $request->get('layout')]);
         return response('Saved');

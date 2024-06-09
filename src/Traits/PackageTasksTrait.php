@@ -12,7 +12,7 @@ trait PackageTasksTrait
         "leaflet" => "^1.9",
         "plotly.js-dist" => "^2.30",
         "plotly.js-locales" => "^2.30",
-        "alpinejs" => "3.13",
+        "alpinejs" => "^3.14",
         "@tailwindcss/aspect-ratio" => "^0.4.2",
         "lodash" => "^4.17.21",
         "react" => "^16.14.0",
@@ -122,7 +122,7 @@ trait PackageTasksTrait
         $this->components->task("Css, js, and stubs", function () {
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
-            File::copyDirectory(__DIR__ . '/../../deploy/resources/js/ChartEditor', resource_path('js'));
+            File::copyDirectory(__DIR__ . '/../../deploy/resources/js/ChartEditor', resource_path('js/ChartEditor'));
             File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
             return true;
         });

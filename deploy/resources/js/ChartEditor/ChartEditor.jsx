@@ -37,7 +37,7 @@ function ChartEditor({dataSources, initialData, initialLayout, config, indicator
 
     const save = async () => {
         const dataStrippedData = stripData(data);
-        const response = await axios.post(`/manage/developer/api/indicator/${indicatorId}`, { dataStrippedData, layout }, {validateStatus: () => true});
+        const response = await axios.post(`/manage/developer/api/indicator/${indicatorId}`, { data: dataStrippedData, layout }, {validateStatus: () => true});
         console.log('Saving: (traces, layout, response.status, response.data)', dataStrippedData, layout, response.status, response.data);
         if (response.status === 200) {
             setNotification({color: "green", icon: SuccessIcon, text: "Successfully saved"})
