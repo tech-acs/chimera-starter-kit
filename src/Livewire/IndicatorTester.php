@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Uneca\Chimera\Models\Indicator;
@@ -30,15 +31,9 @@ class IndicatorTester extends Component
             'result' => 'pending',
             'result_description' => '',
         ],
-        /*'has_layout' => [
-            'test' => 'Graph has layout',
-            'test_description' => 'getLayout() method should return some layout',
-            'result' => 'pending',
-            'result_description' => '',
-        ],*/
         'graph_is_valid' => [
             'test' => 'Renders properly',
-            'test_description' => 'getLayout() method should return some layout',
+            'test_description' => 'All traces should have column names assigned',
             'result' => 'pending',
             'result_description' => '',
         ]
@@ -57,7 +52,7 @@ class IndicatorTester extends Component
     private function returnsData(): array
     {
         $instance = DashboardComponentFactory::makeIndicator($this->indicator);
-        $data = $instance->getData([]);
+        $data = $instance->getData('');
         if ($data->isEmpty()) {
             return ['result' => 'failed', 'result_description' => 'No data returned'];
         } else {
@@ -67,12 +62,29 @@ class IndicatorTester extends Component
 
     private function returnsTraces(): array
     {
-        return ['result' => 'pending', 'result_description' => 'not implemented, yet!'];
+        $instance = DashboardComponentFactory::makeIndicator($this->indicator);
+        $traces = $instance->getTraces($instance->getData(''), '');
+        $traceCount = count($traces);
+        if ($traceCount > 0) {
+            return ['result' => 'passed', 'result_description' => $traceCount . ' ' . str('trace')->plural($traceCount) . " returned"];
+        } else {
+            return ['result' => 'failed', 'result_description' => 'No traces returned'];
+        }
     }
 
     private function graphIsValid(): array
     {
-        return ['result' => 'pending', 'result_description' => 'not implemented, yet!'];
+        $instance = DashboardComponentFactory::makeIndicator($this->indicator);
+        $traces = $instance->getTraces($instance->getData(''), '');
+        //dump($traces);
+        $isValid = array_reduce($traces, function ($carry, $trace) {
+            return $carry || Arr::has($trace, 'meta.columnNames');
+        }, true);
+        if ($isValid) {
+            return ['result' => 'passed', 'result_description' => 'All traces are well formed'];
+        } else {
+            return ['result' => 'failed', 'result_description' => 'Some traces are malformed'];
+        }
     }
 
     private function runTest(string $testName): array

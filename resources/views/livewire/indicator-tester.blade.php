@@ -5,8 +5,10 @@
 
     <x-dialog-modal wire:model="modalOpen">
         <x-slot name="title">
-            Comprehensive Indicator Test
-            <div class="text-xs text-gray-400">Hello there</div>
+            Indicator Test
+            <div class="text-xs text-gray-400">
+                These tests try to ascertain the validity of the indicator.<br>
+                Mainly, it checks that data is available and the chart is properly designed.</div>
         </x-slot>
         <x-slot name="content">
 
