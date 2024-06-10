@@ -6,7 +6,7 @@
         @endforeach
 
         <div class="px-4 xl:px-0">
-            <div class="mt-2 grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div class="mt-2 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 @foreach($graphicalMenu as $menu)
                     @can($menu['slug'])
                         <x-chimera::graphical-menu

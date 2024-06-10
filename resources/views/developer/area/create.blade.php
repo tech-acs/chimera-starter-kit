@@ -33,7 +33,7 @@
                         <a
                             @click="select('shapefile')"
                             :class="isSelected('shapefile') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
-                            class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
+                            class="cursor-pointer text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             {{ __('Shapefile') }}
                             <svg class="w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><polyline points="96 184 32 200 32 56 96 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline><polygon points="160 216 96 184 96 40 160 72 160 216" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polygon><polyline points="160 72 224 56 224 200 160 216" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline></svg>
@@ -42,7 +42,7 @@
                         <a
                             @click="select('spreadsheet')"
                             :class="isSelected('spreadsheet') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
-                            class="cursor-pointer border-transparent text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
+                            class="cursor-pointer text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             {{ __('Spreadsheet') }}
                             <svg class="w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M32,56H224a0,0,0,0,1,0,0V192a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56A0,0,0,0,1,32,56Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><line x1="32" y1="104" x2="224" y2="104" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><line x1="32" y1="152" x2="224" y2="152" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><line x1="88" y1="104" x2="88" y2="200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line></svg>
@@ -53,7 +53,7 @@
             {{--Content--}}
             <div>
                 {{-- First tab --}}
-                <section x-show="isSelected('shapefile')">
+                <section id="shapefile" x-show="isSelected('shapefile')">
 
                     <div class="mt-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
                         <div class="flex">
@@ -138,7 +138,7 @@
                     </form>
                 </section>
                 {{-- Second tab --}}
-                <section x-show="isSelected('spreadsheet')">
+                <section id="spreadsheet" x-show="isSelected('spreadsheet')">
                     <livewire:area-spreadsheet-importer />
                 </section>
             </div>

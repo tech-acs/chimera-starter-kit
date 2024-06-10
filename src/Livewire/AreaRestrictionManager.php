@@ -45,6 +45,7 @@ class AreaRestrictionManager extends AreaFilter
             ->mapWithKeys(fn ($dropdown, $key) => [$key => ['level' => AreaTree::levelFromPath($dropdown['selected']), 'path' => $this->removeChecksumSafety($dropdown['selected'])]]);
         $this->user->areaRestrictions()->delete();
         $this->user->areaRestrictions()->createMany($areaRestrictions->values());
+        $this->dispatch('restriction.applied');
     }
 
     public function render()

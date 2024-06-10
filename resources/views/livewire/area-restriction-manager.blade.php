@@ -1,11 +1,10 @@
 <div class="bg-white rounded-sm border-gray-200 border">
     @if (! empty($dropdowns))
-        <div class="p-2 pb-4 md:flex md:space-x-4 lg:space-x-8 xl:space-x-10 items-baseline space-y-4 md:space-y-2" x-data="{ loading: false }">
-            {{--@foreach($areas as $type => $area)--}}
+        <div class="p-2 pb-4 flex flex-col items-baseline space-y-4" x-data="{ loading: false }">
             @foreach ($dropdowns as $levelName => $dropdown)
-                <div class="flex items-baseline space-x-4">
-                    <span class="text-base leading-6 font-medium text-gray-900">{{ ucfirst(__($levelName)) }}</span>
-                    <div class="relative">
+                <div class="grid grid-cols-2 gap-4 w-2/3">
+                    <div class="text-base leading-6 font-medium text-gray-900 flex justify-end items-center">{{ ucfirst(__($levelName)) }}</div>
+                    <div>
                         <select
                             id="{{ $levelName }}"
                             name="{{ $levelName }}"
@@ -24,10 +23,16 @@
                 </div>
             @endforeach
 
-            <div class="flex items-baseline space-x-4">
-                <x-button wire:click.prevent="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
-                    {{ __('Apply') }}
-                </x-button>
+            <div class="flex justify-end items-center gap-4 w-2/3">
+                <x-action-message class="mr-3 inline-flex items-center" on="restriction.applied">
+                    {{ __('Applied.') }}
+                </x-action-message>
+                <div class="flex justify-end">
+                    <x-button wire:click.prevent="filter" wire:loading.attr="disabled" wire:target="filter, changeHandler">
+                        {{ __('Apply') }}
+                    </x-button>
+                </div>
+
             </div>
         </div>
     @else

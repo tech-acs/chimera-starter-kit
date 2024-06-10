@@ -17,7 +17,7 @@ class RoleManager extends Component
 
     public function mount()
     {
-        $groups = collect([]);
+        $groups = collect();
 
         $pages = Page::with('indicators')
             ->withCount('indicators')
@@ -102,7 +102,6 @@ class RoleManager extends Component
                 $this->permissions[$permissionable['permission_name']] = $this->role->hasPermissionTo($permissionable['permission_name']);
             }
         }
-        //dump($this->permissionGroups);
     }
 
     public function save()

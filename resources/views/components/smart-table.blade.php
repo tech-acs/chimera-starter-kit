@@ -55,7 +55,7 @@
                         </button>
                     </div>
 
-                    <ul x-show="open" class="absolute right-0 z-10 mt-1 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
+                    <ul x-cloak x-show="open" class="absolute right-0 z-10 mt-1 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
                         <a href="{{ request()->fullUrlWithQuery(['download' => 'filtered']) }}" title="Download filtered (current) records as a CSV file">
                             <button class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-blue-600 shadow-sm hover:text-blue-400">
                                 <x-chimera::icon.download />

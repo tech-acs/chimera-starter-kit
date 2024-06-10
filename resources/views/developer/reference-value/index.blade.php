@@ -13,7 +13,17 @@
         <x-chimera::message-display />
 
         <div class="flex justify-between">
-            <div></div>
+            <div>
+                @if(count($hierarchies) > 0)
+                    <a
+                        title="Download excel template you can use to populate your indicator reference values with and import them"
+                        href="{{ route('developer.download-reference-value-import-template') }}"
+                        class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                    >
+                        Download Import Template
+                    </a>
+                @endif
+            </div>
             <div class="flex items-center">
                 <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium">
                     {{ empty($summary) ? "No reference values imported yet" : $summary }}

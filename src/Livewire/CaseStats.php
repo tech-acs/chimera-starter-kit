@@ -5,11 +5,10 @@ namespace Uneca\Chimera\Livewire;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\DataSource;
-use Uneca\Chimera\Services\QueryFragmentFactory;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
 use Uneca\Chimera\Traits\AreaResolver;
 use Uneca\Chimera\Traits\Cachable;
 
@@ -43,23 +42,16 @@ class CaseStats extends Component
     public function getData(string $filterPath): Collection
     {
         try {
-            $queryFragmentFactory = QueryFragmentFactory::make($this->dataSource->name);
-            if (is_null($queryFragmentFactory)) {
-                $whereConditions = [];
-            } else {
-                list(, $whereConditions) = $queryFragmentFactory->getSqlFragments($filterPath);
-            }
-            $sql = "
-            SELECT
-                COUNT(*) AS total,
-                SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete,
-                SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 0 ELSE 1 END) AS partial,
-                COUNT(*) - COUNT(DISTINCT `key`) AS duplicate
-            FROM cases
-            WHERE
-        ";
-            $l = DB::connection($this->dataSource->name)
-                ->select($sql . implode(' AND ', array_merge(["cases.key != ''", "cases.deleted = 0"], $whereConditions)))[0];
+            $l = (new BreakoutQueryBuilder($this->dataSource->name, $filterPath, excludePartials: false))
+                ->select([
+                    "COUNT(*) AS total",
+                    "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete",
+                    "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 0 ELSE 1 END) AS partial",
+                    "COUNT(*) - COUNT(DISTINCT cases.`key`) AS duplicate"
+                ])
+                ->from([])
+                ->get()
+                ->first();
             $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
             if (!is_null($l)) {
                 $info['total'] = $l->total;
@@ -69,6 +61,7 @@ class CaseStats extends Component
             }
             return collect($info);
         } catch (\Exception $exception) {
+            logger('Exception in CaseStats:', ['exception' => $exception->getMessage()]);
             return collect();
         }
     }

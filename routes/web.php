@@ -2,8 +2,10 @@
 
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
+use Uneca\Chimera\Http\Controllers\Manage\AreaImportTemplateDownloadController;
 use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
+use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueImportTemplateDownloadController;
 use Uneca\Chimera\Http\Controllers\Manage\SettingController;
 use Uneca\Chimera\Http\Controllers\MapController;
 use Uneca\Chimera\Http\Controllers\Manage\AnnouncementController;
@@ -52,7 +54,9 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             Route::resource('data-source', DataSourceController::class);
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
+            Route::get('download-area-import-template', AreaImportTemplateDownloadController::class)->name('download-area-import-template');
             Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
+            Route::get('download-reference-value-import-template', ReferenceValueImportTemplateDownloadController::class)->name('download-reference-value-import-template');
 
             Route::middleware(['can:developer-mode'])->group(function () {
                 Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
