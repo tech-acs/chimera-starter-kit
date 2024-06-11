@@ -6,5 +6,8 @@ use Uneca\Chimera\Livewire\Chart;
 
 class {{ class }} extends Chart
 {
-
+    public function getData(string $filterPath): Collection
+    {
+        // TODO: Implement getData() method.
+    }
 }

@@ -70,7 +70,7 @@
                                     <x-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
-                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Dashboard Elements') }}</div>
+                                    <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Dashboard Artefacts') }}</div>
                                     <x-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-dropdown-link>

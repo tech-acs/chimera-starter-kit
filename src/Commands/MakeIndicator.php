@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Support\Collection;
+use Uneca\Chimera\Models\ChartTemplate;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\DataSource;
 use Illuminate\Console\GeneratorCommand;
@@ -42,41 +43,26 @@ class MakeIndicator extends GeneratorCommand
         $className = $this->qualifyClass($name);
         $path = $this->getPath($className);
         $this->makeDirectory($path);
-        if (is_null($template)) {
+        //if (is_null($template)) {
             $content = $this->buildClass($className);
-        } else {
+        /*} else {
             $fullTemplatePath = Storage::disk('indicator_templates')->path($template);
             $destinationPath = app_path() . "/IndicatorTemplates/$template";
             $this->makeDirectory($destinationPath);
             copy($fullTemplatePath, $destinationPath);
             $content = $this->buildClassWithTemplate($template, $className);
-        }
+        }*/
         return $this->files->put($path, $content);
     }
 
-    protected function buildClassWithTemplate(string $templateFile, string $className)
+    /*protected function buildClassWithTemplate(string $templateFile, string $className)
     {
         return str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $templateFile)), $this->buildClass($className));
-    }
+    }*/
 
     protected function loadIndicatorTemplates(): Collection
     {
-        $directories = collect(Storage::disk('indicator_templates')->directories())
-            ->filter(fn ($directory) => $directory !== 'docs');
-        $files = [];
-        foreach ($directories as $directory) {
-            $files = array_merge($files, Storage::disk('indicator_templates')->files($directory));
-        }
-        $templates = collect($files)
-            ->filter(fn ($file) => pathinfo($file, PATHINFO_EXTENSION) == 'php')
-            ->map(function ($file) {
-                return [
-                    "Name" => str_replace('.php', '', pathinfo($file, \PATHINFO_FILENAME)),
-                    "Category" => pathinfo($file, PATHINFO_DIRNAME),
-                    "File" => $file
-                ];
-            });
-        return $templates;
+        return ChartTemplate::orderBy('name')->get();
     }
 
     public function handle()
@@ -87,16 +73,18 @@ class MakeIndicator extends GeneratorCommand
             return self::FAILURE;
         }
 
-        $name = text(
-            label: "Indicator name",
-            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']],
-            hint: "This will serve as the component name and has to be in camel case"
-        );
         $dataSource = select(
             label: "Which data source will this indicator be using?",
             options: $dataSources->pluck('title', 'name')->toArray(),
             hint: "You will not be able to change this later"
+        );
+
+        $name = text(
+            label: "Indicator name",
+            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
+            default: DataSource::whereName($dataSource)->first()->title . '/',
+            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']],
+            hint: "This will serve as the component name and has to be in camel case"
         );
 
         $availableTemplates = $this->loadIndicatorTemplates();
@@ -105,7 +93,7 @@ class MakeIndicator extends GeneratorCommand
         if ($availableTemplates->isNotEmpty()) {
             $useTemplate = confirm(
                 label: 'Do you want to create the indicator from a template?',
-                default: true,
+                default: false,
                 yes: 'Yes',
                 no: 'No',
                 hint: "There are {$availableTemplates->count()} templates to choose from"
@@ -113,28 +101,25 @@ class MakeIndicator extends GeneratorCommand
             if ($useTemplate) {
                 $templateMenu = $availableTemplates
                     ->map(function ($template) {
-                        $template['Label'] = "<fg=gray>{$template['Category']}:</> {$template['Name']}";
+                        $template->label = "<fg=gray>{$template->category}:</> {$template->name}";
                         return $template;
                     });
-                $selectedTemplate = search(
+                $selectedTemplateId = search(
                     label: "Select the indicator template you want to use?",
                     options: fn (string $userInput) => strlen($userInput) > 0
                         ? $templateMenu->filter(function ($item, $key) use ($userInput) {
-                            return str_starts_with(strtolower($item['Name']), strtolower($userInput));
-                        })->pluck('Label', 'File')->toArray()
-                        : $templateMenu->pluck('Label', 'File')->toArray(),
-                    placeholder: 'Search...',
+                            return str_starts_with(strtolower($item->name), strtolower($userInput));
+                        })->pluck('label', 'id')->toArray()
+                        : $templateMenu->pluck('label', 'id')->toArray(),
+                    placeholder: __('Search...'),
                     scroll: 10,
                     hint: "Type to search and use the arrow keys to select"
                 );
+                $selectedTemplate = ChartTemplate::find($selectedTemplateId);
                 $chosenChartType = 'Template';
                 $this->type = 'template';
                 $this->includeSampleCode = false;
-                $defaultTitle = str(basename($selectedTemplate))
-                    ->snake()
-                    ->before('.php')
-                    ->replace('_', ' ')
-                    ->title();
+                $defaultTitle = $selectedTemplate->name;
             }
         }
 
@@ -168,11 +153,11 @@ class MakeIndicator extends GeneratorCommand
             'description' => $description,
             'data_source' => $dataSource,
             'type' => $chosenChartType,
-            'data' => [],
-            'layout' => self::DEFAULT_LAYOUT,
+            'data' => $selectedTemplate?->data ?? [],
+            'layout' => $selectedTemplate?->layout ?? self::DEFAULT_LAYOUT,
         ]);
         DB::transaction(function () use ($indicator, $name, $selectedTemplate) {
-            if ($this->writeIndicatorFile($name, $selectedTemplate)) {
+            if ($this->writeIndicatorFile($name)) {
                 info('Indicator created successfully.');
             } else {
                 throw new \Exception('There was a problem creating the class file');

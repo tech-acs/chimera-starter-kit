@@ -7,40 +7,15 @@ use Illuminate\Support\Collection;
 
 class {{ class }} extends Chart
 {
-    public function getData(array $filter = []): Collection
+    public function getData(string $filterPath = ''): Collection
     {
-        return collect(new \DatePeriod(
-            new \DateTime('2010-04-01'),
-            new \DateInterval('P1D'),
-            new \DateTime('2010-04-19')
-        ))
+        return collect(
+            new \DatePeriod(
+                new \DateTime('2010-04-01'),
+                new \DateInterval('P1D'),
+                new \DateTime('2010-04-19')
+            ))
             ->zip(range(1, 18, 1))
             ->map(fn ($pair) => (object)['eas' => $pair[0]->format('Y-m-d'), 'households' => $pair[1]/10]);
-    }
-
-    protected function getTraces(Collection $data, string $filterPath): array
-    {
-        $trace1 = [
-            'x' => $data->pluck('eas')->all(),
-            'y' => $data->pluck('households')->all(),
-            'name' => 'The indicator',
-        ];
-        return [$trace1];
-    }
-
-    protected function getLayout(string $filterPath): array
-    {
-        $layout = parent::getLayout($filterPath);
-        $layout['xaxis']['type'] = 'date';
-        $layout['yaxis']['title']['text'] = __('No. of observations (cumulative)');
-        $layout['annotations'] = [[
-            'text' => __('SAMPLE'),
-            'textangle' => -30,
-            'opacity' => 0.12,
-            'xref' => 'paper',
-            'yref' => 'paper',
-            'font' => ['color' => 'black', 'size' => 120]
-        ]];
-        return $layout;
     }
 }

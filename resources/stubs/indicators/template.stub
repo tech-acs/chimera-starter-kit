@@ -2,8 +2,12 @@
 
 namespace DummyNamespace;
 
-use App\IndicatorTemplates\{{ parent_class }} as Template;
+use Uneca\Chimera\Livewire\Chart;
 
-class {{ class }} extends Template {
-
+class {{ class }} extends Chart
+{
+    public function getData(string $filterPath): Collection
+    {
+        // TODO: Implement getData() method.
+    }
 }

@@ -78,6 +78,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         //Route::get('analyzable/{analyzable}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('page', PageController::class)->except(['show']);
         Route::resource('indicator', IndicatorController::class)->except(['show', 'create', 'store', 'destroy']);
+        Route::resource('chart-template', ChartTemplateController::class)->only(['index', 'destroy']);
         //Route::get('indicator/{indicator}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
         //Route::get('scorecard/{scorecard}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');

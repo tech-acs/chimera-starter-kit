@@ -1,6 +1,7 @@
 <div class="inline text-left">
-    <a title="Test" wire:click="$set('modalOpen', true)" class="cursor-pointer text-indigo-600 hover:text-indigo-400">
-        <svg class="size-5 inline" viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 8.04l-12.122 12.124a2.857 2.857 0 1 1 -4.041 -4.04l12.122 -12.124" /><path d="M7 13h8" /><path d="M19 15l1.5 1.6a2 2 0 1 1 -3 0l1.5 -1.6z" /><path d="M15 3l6 6" /></svg>
+    <a title="Test" wire:click="$set('modalOpen', true)" class="cursor-pointer text-orange-600 hover:text-orange-400">
+        Test
+        {{--<svg class="size-5 inline" viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 8.04l-12.122 12.124a2.857 2.857 0 1 1 -4.041 -4.04l12.122 -12.124" /><path d="M7 13h8" /><path d="M19 15l1.5 1.6a2 2 0 1 1 -3 0l1.5 -1.6z" /><path d="M15 3l6 6" /></svg>--}}
     </a>
 
     <x-dialog-modal wire:model="modalOpen">

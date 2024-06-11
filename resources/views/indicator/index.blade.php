@@ -4,7 +4,10 @@
             {{ __('Indicators') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage indicators and their grouping into pages, here') }}
+            {{ __('Manage indicators and browse available ') }}
+            <a title="Chart templates" href="{{ route('chart-template.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                Chart Templates
+            </a>
         </p>
     </x-slot>
 

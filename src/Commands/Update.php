@@ -59,7 +59,7 @@ class Update extends Command
         }
         if ($runAll || $this->option('stubs')) {
             $this->components->task('Publishing stubs...', function () use ($runAll) {
-                $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs']);
+                $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs', '----force' => true]);
             });
         }
         if ($runAll || $this->option('npm')) {
