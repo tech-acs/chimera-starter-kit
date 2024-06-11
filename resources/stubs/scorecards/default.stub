@@ -6,5 +6,8 @@ use Uneca\Chimera\Livewire\ScorecardComponent;
 
 class {{ class }} extends ScorecardComponent
 {
-    //
+    public function getData(string $filterPath): Collection
+    {
+        // TODO: Implement getData() method.
+    }
 }

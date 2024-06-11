@@ -63,7 +63,7 @@
         </x-slot>
         <x-slot name="footer">
             <x-action-message class="mr-3 inline-flex items-center" on="running">{{ __('Tests are running...') }}</x-action-message>
-            <x-secondary-button wire:click="$toggle('modalOpen')" wire:loading.attr="disabled">{{ __('Cancel') }}</x-secondary-button>
+            <x-secondary-button wire:click="$toggle('modalOpen')" wire:loading.attr="disabled">{{ __('Close') }}</x-secondary-button>
             <x-button class="ml-4" wire:click.prevent="start()" wire:loading.attr="disabled" onclick="() => Livewire.dispatch('running');">{{ __('Start Test') }}</x-button>
         </x-slot>
     </x-dialog-modal>
