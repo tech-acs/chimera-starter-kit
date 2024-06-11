@@ -17,8 +17,8 @@ class Chimera extends Command
     public function handle(): int
     {
         $this->installJetstream();
-        $this->installPhpDependencies();
         $this->installHorizon();
+        $this->installPhpDependencies();
         $this->publishVendorFiles();
         $this->copyCustomizedJetstreamFiles();
         $this->configureJetstreamFeatures();

@@ -23,7 +23,9 @@
         "spatie/laravel-package-tools": "^1.16",
         "laravel/jetstream": "^5.0",
         "livewire/livewire": "^3.4",
-        "spatie/laravel-translatable": "^6.2"
+        "spatie/laravel-translatable": "^6.2",
+        "opcodesio/log-viewer": "^3.10",
+        "laravel/horizon": "^5.24"
     },
     "require-dev": {
         "laravel/pint": "^1.14",

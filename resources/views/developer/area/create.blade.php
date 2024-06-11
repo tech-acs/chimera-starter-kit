@@ -16,9 +16,9 @@
             selectedId: null,
             init() {
                 // Set the first tab on page load.
-                this.$nextTick(() => this.select('shapefile'))
+                this.$nextTick(() => this.tabTo('shapefile_tab'))
             },
-            select(id) {
+            tabTo(id) {
                 this.selectedId = id
             },
             isSelected(id) {
@@ -31,8 +31,8 @@
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <a
-                            @click="select('shapefile')"
-                            :class="isSelected('shapefile') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
+                            @click="tabTo('shapefile_tab')"
+                            :class="isSelected('shapefile_tab') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
                             class="cursor-pointer text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             {{ __('Shapefile') }}
@@ -40,8 +40,8 @@
                         </a>
 
                         <a
-                            @click="select('spreadsheet')"
-                            :class="isSelected('spreadsheet') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
+                            @click="tabTo('spreadsheet_tab')"
+                            :class="isSelected('spreadsheet_tab') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-200'"
                             class="cursor-pointer text-gray-500 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm"
                         >
                             {{ __('Spreadsheet') }}
@@ -53,7 +53,7 @@
             {{--Content--}}
             <div>
                 {{-- First tab --}}
-                <section id="shapefile" x-show="isSelected('shapefile')">
+                <section id="shapefile_tab" x-show="isSelected('shapefile_tab')">
 
                     <div class="mt-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
                         <div class="flex">
@@ -138,7 +138,7 @@
                     </form>
                 </section>
                 {{-- Second tab --}}
-                <section id="spreadsheet" x-show="isSelected('spreadsheet')">
+                <section id="spreadsheet_tab" x-show="isSelected('spreadsheet_tab')">
                     <livewire:area-spreadsheet-importer />
                 </section>
             </div>
