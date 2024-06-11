@@ -25,6 +25,7 @@ class CaseStats extends Component
     {
         $this->dataTimestamp = Carbon::now();
         $this->dataSource = $dataSource;
+
         list($this->filterPath,) = $this->areaResolver();
         $this->checkData();
     }

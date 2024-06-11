@@ -6,7 +6,6 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
@@ -14,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Laravel\Fortify\Fortify;
+use Laravel\Horizon\Horizon;
+use Opcodes\LogViewer\Facades\LogViewer;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
@@ -28,7 +29,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('chimera')
-            ->hasConfigFile(['chimera', 'languages', 'filesystems'])
+            ->hasConfigFile(['chimera', 'languages', 'filesystems', 'horizon'])
             ->hasViews()
             ->hasViewComponents(
                 'chimera',
@@ -125,8 +126,12 @@ class ChimeraServiceProvider extends PackageServiceProvider
             return session('developer_mode_enabled', false);
         });
 
-        Gate::define('profile', function () {
+        /*Gate::define('profile', function () {
             return true;
+        });*/
+
+        LogViewer::auth(function ($request) {
+            return session('developer_mode_enabled', false);
         });
 
         (new ConnectionLoader())();
@@ -138,17 +143,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
             } catch (\Exception $exception) {
                 return false;
             }
-        });
-
-        Collection::macro('joinWithExternalColumn', function (array $keyValue, string $using, string $newColumnName) {
-            return empty($keyValue) ?
-                $this :
-                $this->map(function ($item) use ($keyValue, $using, $newColumnName) {
-                    if (property_exists($item, $using)) {
-                        $item->$newColumnName = $keyValue[$item->$using] ?? null;
-                    }
-                    return $item;
-                });
         });
 
         $pages = PageBuilder::pages();
@@ -173,11 +167,11 @@ class ChimeraServiceProvider extends PackageServiceProvider
             $schedule->command('chimera:generate-reports')->hourly();
         });
 
-        if ($this->app->runningInConsole()) {
+        /*if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../resources/stubs' => resource_path('stubs'),
             ], 'chimera-stubs');
-        }
+        }*/
 
         $this->app->singleton('settings', function () {
             return Cache::rememberForever('settings', function () {

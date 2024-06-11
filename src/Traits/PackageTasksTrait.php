@@ -31,6 +31,8 @@ trait PackageTasksTrait
         'spatie/simple-excel:^3.5',
         'spatie/laravel-translatable:^6.1',
         'spatie/db-dumper:^3.5',
+        'opcodesio/log-viewer:^3.10',
+        'laravel/horizon:^5.24'
     ];
 
     public array $vendorPublish = [
@@ -38,7 +40,8 @@ trait PackageTasksTrait
         'Chimera migrations' => ['--tag=chimera-migrations', '--force'],
         'Chimera stubs' => ['--tag=chimera-stubs'],
         'Livewire config' => ['--tag=livewire:config'],
-        'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force']
+        'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
+        'Log Viewer' => ['--tag=log-viewer-config'],
     ];
 
     public array $customizedJetstreamViews = [
@@ -64,6 +67,14 @@ trait PackageTasksTrait
         $this->components->bulletList($this->phpDependencies);
         $this->components->task('Installing composer packages (takes time)', function () {
             return $this->requireComposerPackages($this->phpDependencies);
+        });
+    }
+
+    protected function installHorizon(): void
+    {
+        $this->components->info("Queue monitoring and management");
+        $this->components->task('Installing Laravel Horizon', function () {
+            return $this->callSilently('horizon:install');
         });
     }
 

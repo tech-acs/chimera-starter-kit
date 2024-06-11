@@ -1,0 +1,16 @@
+[Unit]
+Description=Laravel Horizon Queue Manager
+After=network.target auditd.service
+
+[Service]
+ExecStart=/usr/bin/php {{ app_path }}/artisan horizon
+User=www-data
+Group=www-data
+Restart=always
+# Time to sleep before restarting the service. Without this, StartLimitIntervalSec (default 10s) and
+# StartLimitBurst (default 5) are reached and "service start request repeated too quickly, refusing to start"
+# error will be caused.
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
