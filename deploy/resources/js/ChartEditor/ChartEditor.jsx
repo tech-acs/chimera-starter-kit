@@ -5,9 +5,9 @@ import 'react-chart-editor/lib/react-chart-editor.css';
 import DataViewer from "./DataViewer.jsx";
 import TemplateSaver from "./TemplateSaver.jsx";
 import Button from "./Button.jsx";
-import {ErrorIcon, ResetIcon, SaveIcon, SuccessIcon, TemplateIcon} from "./Icons.jsx";
+import {CancelIcon, ErrorIcon, ResetIcon, SaveIcon, SuccessIcon, TemplateIcon} from "./Icons.jsx";
 import fr from 'plotly.js-locales/fr';
-import pt from 'plotly.js-locales/pt-pt';
+import ptPT from 'plotly.js-locales/pt-pt';
 import {cloneDeep} from "lodash";
 
 function ChartEditor({dataSources, initialData, initialLayout, config, indicatorId, indicatorTitle, defaultLayout}) {
@@ -57,7 +57,7 @@ function ChartEditor({dataSources, initialData, initialLayout, config, indicator
     if (config.locale === 'fr') {
         plotly.register(fr);
     } else if (config.locale === 'pt') {
-        plotly.register(pt);
+        plotly.register(ptPT);
     }
 
     /*const traceTypesConfig = {
@@ -110,11 +110,12 @@ function ChartEditor({dataSources, initialData, initialLayout, config, indicator
                 <div className="flex justify-end gap-x-4 p-3">
                     <div className="flex items-center text-nowrap font-medium mr-8"
                          style={{color: notification.color}}>{notification.icon?.()} {notification?.text}</div>
+
                     <Button label="Reset" clickHandler={reset} icon={ResetIcon}
                             colorClasses="bg-red-600 hover:bg-red-500 focus:ring-red-500"/>
+                    <Button label="Cancel" clickHandler={() => window.history.back()} icon={CancelIcon} />
                     <DataViewer data={dataSources}/>
                     <TemplateSaver layout={layout} data={data} />
-                    {/*<Button label="Save as template" clickHandler={() => {}} icon={TemplateIcon} />*/}
                     <Button label="Save" clickHandler={save} icon={SaveIcon}
                             colorClasses="bg-teal-600 hover:bg-teal-500 focus:ring-teal-500"/>
                 </div>

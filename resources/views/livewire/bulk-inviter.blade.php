@@ -15,6 +15,15 @@
                     <p class="mb-2">The file needs to have at least one column named <span class="font-semibold">email</span> that contains the email addresses.</p>
                     <p>It can also optionally have another column called <span class="font-semibold">role</span> that contains the role to assign.</p>
                 </span>
+                <div class="pt-2">
+                    <a
+                        title="Download excel template you can use to invite user in bulk"
+                        wire:click="downloadTemplate"
+                        class="text-sm font-medium text-indigo-600 hover:text-indigo-500 cursor-pointer"
+                    >
+                        Download Import Template
+                    </a>
+                </div>
             </div>
 
             <div class="mt-5">

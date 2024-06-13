@@ -124,6 +124,9 @@ trait PackageTasksTrait
                 return $this->replaceInFile($option['search'], $option['replace'], config_path('jetstream.php'));
             });
         }
+        $this->components->task('Link storage directory to public', function () {
+            return $this->callSilently('storage:link');
+        });
     }
 
     protected function copyAssets(): void

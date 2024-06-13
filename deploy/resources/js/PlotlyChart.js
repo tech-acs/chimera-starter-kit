@@ -1,6 +1,6 @@
 import Plotly from 'plotly.js-basic-dist-min';
 import fr from 'plotly.js-locales/fr';
-import pt from 'plotly.js-locales/pt-pt';
+import ptPT from 'plotly.js-locales/pt-pt';
 
 export default class PlotlyChart {
     id;
@@ -15,7 +15,7 @@ export default class PlotlyChart {
         if (this.config.locale === 'fr') {
             Plotly.register(fr);
         } else if (this.config.locale === 'pt') {
-            Plotly.register(pt);
+            Plotly.register(ptPT);
         }
         //Plotly.newPlot(el, this.data, this.layout, this.config);
         console.log('1 - (alpine init), 2 - PlotlyChart constructor with id: ' + this.id);

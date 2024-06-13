@@ -39,13 +39,13 @@ function DataViewer({data}) {
     })
 
     return (
-        <div>
-            <Button label="Data Viewer" clickHandler={openModal} icon={TableIcon} colorClasses="bg-gray-600 hover:bg-gray-500 focus:ring-gray-500" />
+        <div className="flex">
+            <Button label="Data" clickHandler={openModal} icon={TableIcon} colorClasses="bg-gray-600 hover:bg-gray-500 focus:ring-gray-500" />
 
             <Modal
                 isOpen={showModal}
                 onRequestClose={closeModal}
-                contentLabel="Example Modal"
+                contentLabel=""
                 style={
                     {
                         content: {

@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Livewire\Features\SupportStreaming\HandlesStreaming;
 use Uneca\Chimera\Jobs\BulkInvitationJob;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -9,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class BulkInviter extends Component
 {
@@ -61,6 +63,13 @@ class BulkInviter extends Component
         $this->validate();
         BulkInvitationJob::dispatch($this->filePath, $this->sendEmails, auth()->user());
         $this->dispatch('processing');
+    }
+
+    public function downloadTemplate()
+    {
+        $pathToCsv = Storage::disk('local')->path('bulk_invitations_template.xlsx');
+        SimpleExcelWriter::create($pathToCsv)->addHeader(['email', 'role']);
+        return response()->download($pathToCsv);
     }
 
     public function render()

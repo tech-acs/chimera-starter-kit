@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 import Button from "./Button.jsx";
-import {ErrorIcon, SuccessIcon, TableIcon} from "./Icons.jsx";
+import {ErrorIcon, SuccessIcon, TemplateIcon} from "./Icons.jsx";
 import {cloneDeep, isEmpty} from "lodash";
 
 function TemplateSaver({layout, data}) {
@@ -63,8 +63,8 @@ function TemplateSaver({layout, data}) {
     Modal.setAppElement('#chart-editor');
 
     return (
-        <div>
-            <Button label="Save as template" clickHandler={openModal} icon={TableIcon} colorClasses="bg-gray-600 hover:bg-gray-500 focus:ring-gray-500" />
+        <div className="flex">
+            <Button label="Save as template" clickHandler={openModal} icon={TemplateIcon} colorClasses="bg-gray-600 hover:bg-gray-500 focus:ring-gray-500" />
 
             <Modal
                 isOpen={showModal}
