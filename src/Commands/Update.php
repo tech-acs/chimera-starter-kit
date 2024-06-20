@@ -15,7 +15,7 @@ class Update extends Command
         {--migrations : Publishes migration files from chimera}
         {--packages : Installs php dependencies via composer}
         {--jetstream-customizations : Copies customized jetstream files from chimera}
-        {--assets : Copies assets (css, js and stubs)}
+        {--assets : Copies assets (css, js, images and stubs)}
         {--color-palettes : Copies color palettes from chimera}
         {--stubs : Publishes chimera stubs}
         {--npm : Installs node dependencies}
