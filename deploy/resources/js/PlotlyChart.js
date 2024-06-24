@@ -1,4 +1,4 @@
-import Plotly from 'plotly.js-basic-dist-min';
+import Plotly from 'plotly.js-dist';
 import fr from 'plotly.js-locales/fr';
 import ptPT from 'plotly.js-locales/pt-pt';
 
