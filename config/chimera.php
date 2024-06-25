@@ -29,7 +29,7 @@ return [
     'cache' => [
         //'enabled' => env('CACHE_ENABLED', false),
         'ttl' => env('CACHE_TTL_SECONDS', 60 * 5),
-        'tags' => [],
+        'tags' => ['High priority', 'Medium priority', 'Low priority'],
     ],
     'long_query_time' => env('LONG_QUERY_TIME', 10), // Seconds
     'featured_indicators_per_data_source' => env('FEATURED_INDICATORS_PER_DATA_SOURCE', 2),

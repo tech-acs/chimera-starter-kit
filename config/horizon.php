@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'middleware' => ['web', 'can:developer-mode'],
+    'middleware' => ['web', 'horizon'],
 
     /*
     |--------------------------------------------------------------------------

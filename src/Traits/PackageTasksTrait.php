@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Traits;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Process\Process;
 
 trait PackageTasksTrait
@@ -37,6 +38,7 @@ trait PackageTasksTrait
         'Chimera config' => ['--tag=chimera-config', '--force'],
         'Chimera migrations' => ['--tag=chimera-migrations', '--force'],
         'Chimera stubs' => ['--tag=chimera-stubs'],
+        'HorizonServiceProvider' => ['--tag=chimera-provider', '--force'],
         'Livewire config' => ['--tag=livewire:config'],
         'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
         'Log Viewer config' => ['--tag=log-viewer-config'],
@@ -188,6 +190,14 @@ trait PackageTasksTrait
             );
             file_put_contents(base_path('bootstrap/app.php'), $bootstrapApp);
         });
+    }
+
+    protected function registerProviders(): void
+    {
+        ServiceProvider::addProviderToBootstrapFile(
+            "App\Providers\HorizonServiceProvider",
+            $this->laravel->getBootstrapProvidersPath(),
+        );
     }
 
     protected function installEnvFiles(): void

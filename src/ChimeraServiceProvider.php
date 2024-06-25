@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Laravel\Fortify\Fortify;
-use Laravel\Horizon\Horizon;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -39,6 +38,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             )
             ->hasTranslations()
             ->hasRoute('web')
+            ->publishesServiceProvider('HorizonServiceProvider')
             ->hasMigrations([
                 'install_postgis_extension',
                 'install_ltree_extension',
@@ -126,10 +126,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
             return session('developer_mode_enabled', false);
         });
 
-        /*Gate::define('profile', function () {
-            return true;
-        });*/
-
         LogViewer::auth(function ($request) {
             return session('developer_mode_enabled', false);
         });
@@ -161,6 +157,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         $router->pushMiddlewareToGroup('web', \Uneca\Chimera\Http\Middleware\Language::class);
         $router->aliasMiddleware('enforce_2fa', \Uneca\Chimera\Http\Middleware\RedirectIf2FAEnforced::class);
         $router->aliasMiddleware('log_page_views', \Uneca\Chimera\Http\Middleware\LogPageView::class);
+        $router->aliasMiddleware('horizon', \Uneca\Chimera\Http\Middleware\HorizonAccess::class);
 
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
