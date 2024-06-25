@@ -95,8 +95,9 @@ abstract class Chart extends Component
                     $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
                     $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
                 }
-                if (in_array($trace['name'] ?? null, array_keys($this->aggregateAppendedTraces))) {
-                    $aggOp = $this->aggregateAppendedTraces[$trace['name']];
+                $traceName = strip_tags($trace['name'] ?? '');
+                if (in_array($traceName, array_keys($this->aggregateAppendedTraces))) {
+                    $aggOp = $this->aggregateAppendedTraces[$traceName];
                     array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
                     array_push($traces[$index]['y'], collect($traces[$index]['y'])->{$aggOp}());
                 }
