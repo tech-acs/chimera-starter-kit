@@ -76,7 +76,9 @@ class IndicatorTester extends Component
     {
         $instance = DashboardComponentFactory::makeIndicator($this->indicator);
         $traces = $instance->getTraces($instance->getData(''), '');
-        //dump($traces);
+        if (count($traces) < 1) {
+            return ['result' => 'failed', 'result_description' => 'No traces found'];
+        }
         $isValid = array_reduce($traces, function ($carry, $trace) {
             return $carry || Arr::has($trace, 'meta.columnNames');
         }, true);

@@ -8,7 +8,7 @@
                 </svg>
             </div>
             <div class="ml-3  text-sm text-red-700">
-                <p class="mb-1 font-semibold">There were {{ $errors->count() }} errors with your submission</p>
+                <p class="mb-1 font-semibold">There were {{ $errors->count() }} errors found</p>
                 <ul class="ml-4">
                     @foreach($errors->all() as $error)
                         <li class="list-disc">{{ $error }}</li>

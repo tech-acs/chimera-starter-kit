@@ -3,6 +3,7 @@
 namespace DummyNamespace;
 
 use Uneca\Chimera\Livewire\Chart;
+use Illuminate\Support\Collection;
 
 class {{ class }} extends Chart
 {

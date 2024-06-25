@@ -167,11 +167,11 @@ class ChimeraServiceProvider extends PackageServiceProvider
             $schedule->command('chimera:generate-reports')->hourly();
         });
 
-        /*if ($this->app->runningInConsole()) {
+        if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../resources/stubs' => resource_path('stubs'),
             ], 'chimera-stubs');
-        }*/
+        }
 
         $this->app->singleton('settings', function () {
             return Cache::rememberForever('settings', function () {

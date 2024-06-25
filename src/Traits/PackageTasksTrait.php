@@ -132,11 +132,10 @@ trait PackageTasksTrait
     protected function copyAssets(): void
     {
         $this->components->info("Copying assets and related config files");
-        $this->components->task("Css, js, and stubs", function () {
+        $this->components->task("Css and js", function () {
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
             $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
             File::copyDirectory(__DIR__ . '/../../deploy/resources/js/ChartEditor', resource_path('js/ChartEditor'));
-            File::copyDirectory(__DIR__ . '/../../deploy/resources/stubs', resource_path('stubs'));
             return true;
         });
         $this->components->task("Images", function () {
@@ -147,6 +146,13 @@ trait PackageTasksTrait
             copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
             copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
             return true;
+        });
+    }
+
+    protected function publishStubs(): void
+    {
+        $this->components->task('Publishing stubs...', function () {
+            $this->callSilent('vendor:publish', ['--tag' => 'chimera-stubs', '--force' => true]);
         });
     }
 
