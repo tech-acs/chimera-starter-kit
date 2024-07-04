@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Livewire\Mechanisms\ComponentRegistry;
@@ -19,12 +20,6 @@ class DataSourceController extends Controller
         'SQLite 3.8.8+' => 'sqlite',
         'SQL Server 2017+' => 'sqlsrv',
     ];
-
-    public function index()
-    {
-        $records = DataSource::orderBy('rank')->get();
-        return view('chimera::developer.data-source.index', compact('records'));
-    }
 
     private function getCaseStatComponentsList()
     {
@@ -45,6 +40,12 @@ class DataSourceController extends Controller
             ->reverse();
     }
 
+    public function index()
+    {
+        $records = DataSource::orderBy('rank')->get();
+        return view('chimera::developer.data-source.index', compact('records'));
+    }
+
     public function create()
     {
         $components = $this->getCaseStatComponentsList();
@@ -58,6 +59,9 @@ class DataSourceController extends Controller
             'name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database',
             'username', 'password', 'connection_active', 'case_stats_component', 'driver'
         ]));
+        if ($request->boolean('create_queryfragment')) {
+            Artisan::call('chimera:make-queryfragment', ['--data-source' => $request->title]);
+        }
         return redirect()->route('developer.data-source.index')->withMessage('Record created');
     }
 

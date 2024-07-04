@@ -27,12 +27,12 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
-                    <x-label for="start_date" value="{!! __('Exercise start date') !!} *" />
+                    <x-label for="start_date" value="{!! __('Exercise start date') !!}" />
                     <x-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($dataSource ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
                     <x-input-error for="start_date" class="mt-2" />
                 </div>
                 <div>
-                    <x-label for="end_date" value="{!! __('Exercise end date') !!} *" />
+                    <x-label for="end_date" value="{!! __('Exercise end date') !!}" />
                     <x-input id="end_date" name="end_date" type="date" class="mt-1 block w-full" value="{{old('end_date', optional($dataSource ?? null)->end_date?->format('Y-m-d') ?? null)}}" />
                     <x-input-error for="end_date" class="mt-2" />
                 </div>
@@ -125,12 +125,23 @@
                     <x-input-error for="password" class="mt-2" />
                 </div>
             </div>
-            <div>
-                <x-label for="active" value="{{ __('Active') }}" />
-                <select name="connection_active" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="1" @selected(old('connection_active', $dataSource->connection_active ?? false) == true)>{{ __('Yes') }}</option>
-                    <option value="0" @selected(old('connection_active', $dataSource->connection_active ?? false) == false)>{{ __('No') }}</option>
-                </select>
+            <div class="grid grid-cols-3 gap-6">
+                <div>
+                    <x-label for="active" value="{{ __('Active') }}" />
+                    <select name="connection_active" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="1" @selected(old('connection_active', $dataSource->connection_active ?? false) == true)>{{ __('Yes') }}</option>
+                        <option value="0" @selected(old('connection_active', $dataSource->connection_active ?? false) == false)>{{ __('No') }}</option>
+                    </select>
+                </div>
+                @if (str(Illuminate\Support\Facades\Route::currentRouteName())->endsWith('create'))
+                    <div>
+                        <x-label for="active" value="{{ __('Also create QueryFragment class') }}" />
+                        <select name="create_queryfragment" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="1" @selected(old('create_queryfragment', $dataSource->create_queryfragment ?? true) == true)>{{ __('Yes') }}</option>
+                            <option value="0" @selected(old('create_queryfragment', $dataSource->create_queryfragment ?? true) == false)>{{ __('No') }}</option>
+                        </select>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

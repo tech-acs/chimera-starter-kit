@@ -8,7 +8,6 @@ use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\DataSource;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Uneca\Chimera\Traits\PlotlyDefaults;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\error;

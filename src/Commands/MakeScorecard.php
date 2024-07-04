@@ -51,22 +51,26 @@ class MakeScorecard extends GeneratorCommand
             return self::FAILURE;
         }
 
-        $name = text(
-            label: "Scorecard name",
-            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:scorecards,name']],
-            hint: "This will serve as the component name and has to be in camel case"
-        );
         $dataSource = select(
             label: "Which data source will this scorecard be using?",
             options: $dataSources->pluck('title', 'name')->toArray(),
             hint: "You will not be able to change this later"
         );
+
+        $name = text(
+            label: "Scorecard name",
+            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
+            default: DataSource::whereName($dataSource)->first()->title . '/',
+            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:scorecards,name']],
+            hint: "This will serve as the component name and has to be in camel case"
+        );
+
         $title = text(
             label: "Please enter a reader friendly title for the scorecard",
             placeholder: 'E.g. Households Enumerated by Day or Birth Rate',
             hint: "You can leave this empty for now",
         );
+
         $this->ensureScorecardsPermissionExists();
 
         $scorecard = Scorecard::make([

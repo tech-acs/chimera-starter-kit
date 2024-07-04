@@ -52,16 +52,17 @@ class MakeReport extends GeneratorCommand
             return self::FAILURE;
         }
 
-        $name = text(
-            label: "Report name",
-            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:reports,name']],
-            hint: "This will serve as the component name and has to be in camel case"
-        );
         $dataSource = select(
             label: "Which data source will this report be using?",
             options: $dataSources->pluck('title', 'name')->toArray(),
             hint: "You will not be able to change this later"
+        );
+        $name = text(
+            label: "Report name",
+            placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
+            default: DataSource::whereName($dataSource)->first()->title . '/',
+            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:reports,name']],
+            hint: "This will serve as the component name and has to be in camel case"
         );
         $title = text(
             label: "Please enter a reader friendly title for the report",

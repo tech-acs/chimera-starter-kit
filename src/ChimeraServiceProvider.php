@@ -85,6 +85,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\Production::class,
                 \Uneca\Chimera\Commands\UpdateIndicators::class,
                 \Uneca\Chimera\Commands\CustomJetstreamInstallCommand::class,
+                \Uneca\Chimera\Commands\MakeQueryFragment::class
             ]);
     }
 

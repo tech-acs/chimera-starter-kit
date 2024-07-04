@@ -2,6 +2,7 @@
 
 namespace DummyNamespace;
 
+use Illuminate\Support\Collection;
 use Uneca\Chimera\Livewire\ScorecardComponent;
 
 class {{ class }} extends ScorecardComponent
