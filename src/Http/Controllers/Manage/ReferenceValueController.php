@@ -26,6 +26,7 @@ class ReferenceValueController extends Controller
                     ->setBladeTemplate('{{ ucfirst($hierarchies[$row->level] ?? $row->level) }}'),
                 SmartTableColumn::make('value'),
             ])
+            ->editable('developer.reference-value.edit')
             ->searchable(['indicator'])
             ->sortBy('indicator')
             ->view('chimera::developer.reference-value.index', compact('summary'));

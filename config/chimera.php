@@ -11,7 +11,7 @@ return [
     'emailing_enabled' => env('EMAILING_ENABLED', false),
     'enforce_2fa' => env('ENFORCE_2FA', false),
     'invitation' => [
-        'ttl_hours' => env('INVITATION_TTL_HOURS', 72)
+        'ttl_hours' => (int) env('INVITATION_TTL_HOURS', 72)
     ],
     'require_account_approval' => env('REQUIRE_ACCOUNT_APPROVAL', false),
     'indicator_template' => [
@@ -28,7 +28,7 @@ return [
     ],
     'cache' => [
         //'enabled' => env('CACHE_ENABLED', false),
-        'ttl' => env('CACHE_TTL_SECONDS', 60 * 5),
+        'ttl' => (int) env('CACHE_TTL_SECONDS', 60 * 5),
         'tags' => ['High priority', 'Medium priority', 'Low priority'],
     ],
     'long_query_time' => env('LONG_QUERY_TIME', 10), // Seconds

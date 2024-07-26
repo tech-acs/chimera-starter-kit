@@ -80,7 +80,7 @@
                         <thead class="bg-gray-50">
                         <tr>
                             @foreach($smartTableData->columns as $column)
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 tracking-wider text-nowrap">
                                     {!! $column->getLabel() !!} <a href="?sort_by={{ $column->attribute }}&sort_direction={{ $column->reverseSortDirection() }}&search={{ request('search') }}">
                                         {!! $column->sortIcon() !!}
                                     </a>
@@ -93,15 +93,25 @@
                         @forelse($smartTableData->rows as $row)
                             <tr>
                                 @foreach($smartTableData->columns as $column)
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 {{ $column->classes }}">
                                         {!! Blade::render($column->getBladeTemplate(), compact('row', 'column')) !!}
                                     </td>
                                 @endforeach
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium items-center">
                                     @if ($customActionSubView)
                                         @include($customActionSubView)
-                                    @elseif(isset($smartTableData->editRouteName))
-                                        <a href="{{ route($smartTableData->editRouteName, $row->id) }}" class="text-indigo-600 hover:text-indigo-900 inline">{{ __('Edit') }}</a>
+                                    @else
+                                        <div class="flex justify-end divide-x-2 divide-gray-400 h-4 text-sm">
+                                            @isset($smartTableData->showRouteName)
+                                                <a href="{{ route($smartTableData->showRouteName, $row->id) }}" class="text-gray-600 hover:text-grey-900 px-2">{{ __('View') }}</a>
+                                            @endisset
+                                            @isset($smartTableData->editRouteName)
+                                                <a href="{{ route($smartTableData->editRouteName, $row->id) }}" class="text-indigo-600 hover:text-indigo-900 px-2">{{ __('Edit') }}</a>
+                                            @endisset
+                                            @isset($smartTableData->deleteRouteName)
+                                                <a href="{{ route($smartTableData->deleteRouteName, $row->id) }}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600 hover:text-red-800 px-2">{{ __('Delete') }}</a>
+                                            @endisset
+                                        </div>
                                     @endif
                                 </td>
                             </tr>

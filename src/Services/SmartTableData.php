@@ -21,7 +21,9 @@ class SmartTableData
     public Collection $searchableColumns;
     public string $searchPlaceholder;
     public ?string $searchHint;
+    public ?string $showRouteName;
     public ?string $editRouteName;
+    public ?string $deleteRouteName;
     public bool $isDownloadable = false;
     public ?string $downloadableFileName;
     public string $sortBy;
@@ -73,9 +75,21 @@ class SmartTableData
         return $this;
     }
 
+    public function showable(string $showRouteName): self
+    {
+        $this->showRouteName = $showRouteName;
+        return $this;
+    }
+
     public function editable(string $editRouteName): self
     {
         $this->editRouteName = $editRouteName;
+        return $this;
+    }
+
+    public function deletable(string $deleteRouteName): self
+    {
+        $this->deleteRouteName = $deleteRouteName;
         return $this;
     }
 

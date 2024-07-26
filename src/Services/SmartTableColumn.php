@@ -13,6 +13,7 @@ class SmartTableColumn
     private SortDirection $sortDirection = SortDirection::ASC;
     private string $bladeTemplate;
     public string $attribute;
+    public string $classes = '';
 
     public function __construct(string $attribute)
     {
@@ -54,9 +55,15 @@ class SmartTableColumn
         return $this->applyLabelFormatting($this->label);
     }
 
-    public function sortable()
+    public function sortable(): self
     {
         $this->isSortable = true;
+        return $this;
+    }
+
+    public function tdClasses(string $classes): self
+    {
+        $this->classes = $classes;
         return $this;
     }
 
