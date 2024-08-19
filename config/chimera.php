@@ -14,9 +14,6 @@ return [
         'ttl_hours' => (int) env('INVITATION_TTL_HOURS', 72)
     ],
     'require_account_approval' => env('REQUIRE_ACCOUNT_APPROVAL', false),
-    'indicator_template' => [
-        'repository_url' => env('INDICATOR_TEMPLATE_REPOSITORY_URL','https://api.github.com/repos/tech-acs/chimera-indicator-templates')
-    ],
     'color_theme' => env('COLOR_THEME', 'Chimera'),
     'area' => [
         'map' => [

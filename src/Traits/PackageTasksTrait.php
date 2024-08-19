@@ -38,7 +38,6 @@ trait PackageTasksTrait
         'Chimera config' => ['--tag=chimera-config', '--force'],
         'Chimera migrations' => ['--tag=chimera-migrations', '--force'],
         'Chimera stubs' => ['--tag=chimera-stubs'],
-        'HorizonServiceProvider' => ['--tag=chimera-provider', '--force'],
         'Livewire config' => ['--tag=livewire:config'],
         'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
         'Log Viewer config' => ['--tag=log-viewer-config'],
@@ -68,14 +67,6 @@ trait PackageTasksTrait
         $this->components->bulletList($this->phpDependencies);
         $this->components->task('Installing composer packages (takes time)', function () {
             return $this->requireComposerPackages($this->phpDependencies);
-        });
-    }
-
-    protected function installHorizon(): void
-    {
-        $this->components->info("Queue monitoring and management");
-        $this->components->task('Installing Laravel Horizon', function () {
-            return $this->callSilently('horizon:install');
         });
     }
 
@@ -192,12 +183,9 @@ trait PackageTasksTrait
         });
     }
 
-    protected function registerProviders(): void
+    protected function registerProvider(string $provider): void
     {
-        ServiceProvider::addProviderToBootstrapFile(
-            "App\Providers\HorizonServiceProvider",
-            $this->laravel->getBootstrapProvidersPath(),
-        );
+        ServiceProvider::addProviderToBootstrapFile($provider, $this->laravel->getBootstrapProvidersPath());
     }
 
     protected function installEnvFiles(): void

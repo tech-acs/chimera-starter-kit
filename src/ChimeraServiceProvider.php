@@ -28,7 +28,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('chimera')
-            ->hasConfigFile(['chimera', 'languages', 'filesystems', 'horizon'])
+            ->hasConfigFile(['chimera', 'languages', 'filesystems'])
             ->hasViews()
             ->hasViewComponents(
                 'chimera',
@@ -75,7 +75,6 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\Dockerize::class,
                 \Uneca\Chimera\Commands\Adminify::class,
                 \Uneca\Chimera\Commands\Delete::class,
-                \Uneca\Chimera\Commands\DownloadIndicatorTemplates::class,
                 \Uneca\Chimera\Commands\GenerateReports::class,
                 \Uneca\Chimera\Commands\MakeIndicator::class,
                 \Uneca\Chimera\Commands\MakeMapIndicator::class,
@@ -83,9 +82,9 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeScorecard::class,
                 \Uneca\Chimera\Commands\Update::class,
                 \Uneca\Chimera\Commands\Production::class,
-                \Uneca\Chimera\Commands\UpdateIndicators::class,
                 \Uneca\Chimera\Commands\CustomJetstreamInstallCommand::class,
-                \Uneca\Chimera\Commands\MakeQueryFragment::class
+                \Uneca\Chimera\Commands\MakeQueryFragment::class,
+                \Uneca\Chimera\Commands\DeployHorizon::class,
             ]);
     }
 
