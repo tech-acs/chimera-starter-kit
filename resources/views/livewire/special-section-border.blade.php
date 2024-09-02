@@ -19,7 +19,7 @@
                     <x-danger-button wire:click.prevent="deactivate()">Deactivate</x-danger-button>
                     <livewire:artisan-runner />
                     <x-button><a href="{{ url('/log-viewer') }}" target="_blank">Log viewer</a></x-button>
-                    <x-button><a href="{{ url('/horizon') }}" target="_blank">Horizon</a></x-button>
+                    {{--<x-button><a href="{{ url('/horizon') }}" target="_blank">Horizon</a></x-button>--}}
                 </div>
             </x-slot>
         </x-form-section>

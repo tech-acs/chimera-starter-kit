@@ -28,6 +28,6 @@ return [
         'ttl' => (int) env('CACHE_TTL_SECONDS', 60 * 5),
         'tags' => ['High priority', 'Medium priority', 'Low priority'],
     ],
-    'long_query_time' => env('LONG_QUERY_TIME', 10), // Seconds
+    'long_query_time' => (int) env('LONG_QUERY_TIME', 10), // Seconds
     'featured_indicators_per_data_source' => env('FEATURED_INDICATORS_PER_DATA_SOURCE', 2),
 ];

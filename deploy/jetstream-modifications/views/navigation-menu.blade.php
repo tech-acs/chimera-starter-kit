@@ -39,7 +39,7 @@
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <div class="flex space-x-4">
-                    <x-dropdown align="right" width="w-96" contentClasses="py-0 bg-white overflow-hidden">
+                    <x-dropdown align="right" width="96" contentClasses="py-0 bg-white overflow-hidden">
                         <x-slot name="trigger">
                             <livewire:notification-bell />
                         </x-slot>
@@ -51,7 +51,7 @@
                     <livewire:language-switcher />
 
                     @can('Super User')
-                        <x-dropdown align="right" width="60">
+                        <x-dropdown align="right">
                             <x-slot name="trigger">
                                 <x-chimera::round-button title="{{ __('Manage dashboard') }}">
                                     <x-chimera::icon.wrench />
