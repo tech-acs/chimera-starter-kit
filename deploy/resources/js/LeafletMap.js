@@ -162,7 +162,7 @@ export default class LeafletMap {
                 span.innerText = indicatorName;
                 input.onchange = e => {
                     let selectedIndicator = e.target.value
-                    Livewire.emit('indicatorSelected', selectedIndicator)
+                    Livewire.dispatch('indicatorSelected', {mapIndicator: selectedIndicator})
                 };
             }
             L.DomEvent.disableClickPropagation(menuContainer);
@@ -231,7 +231,7 @@ export default class LeafletMap {
                             //console.log(this.nav, this.nav.canMoveForward())
                             let feature = e.target.feature;
                             if (this.nav.canMoveForward()) {
-                                Livewire.emit('mapClicked', feature.properties.path);
+                                Livewire.dispatch('mapClicked', {path: feature.properties.path});
                             }
                             if ((feature.properties.info !== undefined) && (feature.properties.info !== null)) {
                                 this.infoBox.update(feature.properties.info);
@@ -254,7 +254,7 @@ export default class LeafletMap {
     }
 
     registerLivewireEventListeners() {
-        Livewire.on('indicatorSwitched', (style, legend) => {
+        Livewire.on('indicatorSwitched', ({style, legend}) => {
             console.log({style, legend})
             this.selectedStyle = style;
             this.setLegend(legend);
@@ -269,8 +269,8 @@ export default class LeafletMap {
             }
         });
 
-        Livewire.on('backendResponse', (geojson, level, data) => {
-            console.log({geojson, data})
+        Livewire.on('backendResponse', ({geojson, level, data}) => {
+            console.log({geojson, level, data})
             if (geojson !== null) {
                 if (level > this.nav.position) {
                     this.nav.moveForward();

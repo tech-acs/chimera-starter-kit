@@ -93,11 +93,7 @@ class Map extends Component
     {
         $this->currentIndicator = $mapIndicator;
         $currentIndicator = new $this->currentIndicator;
-        $this->dispatch(
-            'indicatorSwitched',
-            $currentIndicator::SELECTED_COLOR_CHART,
-            $currentIndicator->getLegend()
-        );
+        $this->dispatch('indicatorSwitched', style: $currentIndicator::SELECTED_COLOR_CHART, legend: $currentIndicator->getLegend());
     }
 
     public function updateMap(string $path = '')
@@ -110,9 +106,9 @@ class Map extends Component
             $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
             $geojson->features = $filtered->values()->all();
             $currentIndicator = new $this->currentIndicator;
-            $this->dispatch('backendResponse', $geojson, $nextLevel, $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($path), $path));
+            $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($path), $path));
         } else {
-            $this->dispatch('backendResponse', null, $nextLevel, []);
+            $this->dispatch('backendResponse', geojson: null, level: $nextLevel, data: []);
         }
     }
 

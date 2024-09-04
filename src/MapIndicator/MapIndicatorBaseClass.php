@@ -177,6 +177,9 @@ abstract class MapIndicatorBaseClass
 
     public function getDataAndCacheIt(string $path): Collection
     {
+        $filter = AreaTree::pathAsFilter($path);
+        return $this->getData($filter);
+
         //if (isset($this->currentIndicator)) {
             //$currentIndicator = new $this->currentIndicator;
             $filter = AreaTree::pathAsFilter($path);
