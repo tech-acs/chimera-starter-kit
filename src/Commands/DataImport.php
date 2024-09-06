@@ -12,17 +12,17 @@ class DataImport extends Command
     protected $description = 'Restore postgres data (some tables) from file';
 
     protected array $tables = [
+        'data_sources',
         'area_hierarchies',
         'areas',
-        'indicators',
-        'indicator_page',
-        'map_indicators',
-        'pages',
-        'permissions', // ???
-        'data_sources',
-        'reports',
         'reference_values',
         'scorecards',
+        'pages',
+        'indicator_page',
+        'indicators',
+        'reports',
+        'map_indicators',
+        'permissions', // ???
     ];
 
     public function handle()

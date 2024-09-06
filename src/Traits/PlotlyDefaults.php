@@ -21,6 +21,7 @@ trait PlotlyDefaults
             "type" => "category",
             "tickmode" => "auto",
             "automargin" => true,
+            "categoryorder" => "category ascending",
         ],
         "margin" => [
             "l" => 60,

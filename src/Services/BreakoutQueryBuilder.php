@@ -127,13 +127,22 @@ class BreakoutQueryBuilder
         return "{$this->select} {$this->from} {$this->where} {$this->groupBy} {$this->having} {$this->orderBy}";
     }
 
+    private function makeTemplateRow($row)
+    {
+        $columns = array_keys((array) $row);
+        $template = [];
+        foreach ($columns as $column) {
+            $template[$column] = null;
+        }
+        return (object) $template;
+    }
+
     private function areaLeftJoinData(Collection $data, ?string $referenceValueToInclude): Collection
     {
         if ($data->isEmpty()) {
             return $data;
         }
-        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
-        //logger('area wt', ['areas' => $areas]);
+        /*$areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
         $dataKeyByAreaCode = $data->keyBy($this->joinColumn);
         $columns = array_keys((array) $data[0]);
         return $areas->map(function ($area) use ($dataKeyByAreaCode, $columns) {
@@ -143,7 +152,25 @@ class BreakoutQueryBuilder
                 }
             }
             return $area;
+        });*/
+
+        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+        $areasKeyByAreaCode = $areas->pluck('name', 'code');
+        $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode) {
+            $row->area_name = $areasKeyByAreaCode[$row->{$this->joinColumn}];
+            return $row;
         });
+
+        $areaCodesPresentInData = $areaEnhancedData->pluck('area_code')->all();
+        $areasMissingFromData = $areas->filter(fn ($area) => ! in_array($area->code, $areaCodesPresentInData));
+        $newRowTemplate = $this->makeTemplateRow($areaEnhancedData->first());
+        foreach ($areasMissingFromData as $area) {
+            $newRowSkeleton = clone $newRowTemplate;
+            $newRowSkeleton->area_name = $area->name;
+            $newRowSkeleton->area_code = $area->code;
+            $areaEnhancedData[] = $newRowSkeleton;
+        }
+        return $areaEnhancedData->sortBy('area_name');
     }
 
     private function areaRightJoinData(Collection $data, ?string $referenceValueToInclude): Collection
