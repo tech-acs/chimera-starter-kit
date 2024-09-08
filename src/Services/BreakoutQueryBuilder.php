@@ -155,9 +155,14 @@ class BreakoutQueryBuilder
         });*/
 
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
-        $areasKeyByAreaCode = $areas->pluck('name', 'code');
-        $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode) {
-            $row->area_name = $areasKeyByAreaCode[$row->{$this->joinColumn}];
+        //$areasKeyByAreaCode = $areas->pluck('name', 'code');
+        $areasKeyByAreaCode = $areas->keyBy('code');
+        $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
+            $area = $areasKeyByAreaCode[$row->{$this->joinColumn}];
+            $row->area_name = $area->name;
+            if ($referenceValueToInclude) {
+                $row->ref_value = $area->ref_value;
+            }
             return $row;
         });
 
@@ -179,9 +184,14 @@ class BreakoutQueryBuilder
             return $data;
         }
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
-        $areasKeyByAreaCode = $areas->pluck('name', 'code');
-        return $data->map(function ($row) use ($areasKeyByAreaCode) {
-            $row->area_name = $areasKeyByAreaCode[$row->{$this->joinColumn}];
+        //$areasKeyByAreaCode = $areas->pluck('name', 'code');
+        $areasKeyByAreaCode = $areas->keyBy('code');
+        return $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
+            $area = $areasKeyByAreaCode[$row->{$this->joinColumn}];
+            $row->area_name = $area->name;
+            if ($referenceValueToInclude) {
+                $row->ref_value = $area->ref_value;
+            }
             return $row;
         });
     }
