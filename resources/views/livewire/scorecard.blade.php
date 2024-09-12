@@ -22,7 +22,7 @@
             <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center">
                 <div class="mr-2"><span wire:loading>...</span>{{ $value }}</div>
                 @if (! is_null($diff))
-                    <x-chimera::stock-ticker diff="{{ $diff }}" diff-title="{{ $diffTitle }}" unit="{{ $unit }}" />
+                    <x-chimera::stock-ticker diff="{{ $diff }}" diff-title="" unit="{{ $unit }}" />
                 @endif
             </dd>
         </div>

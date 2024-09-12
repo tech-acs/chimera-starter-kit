@@ -35,7 +35,7 @@ class ScorecardController extends Controller
 
     public function edit(Scorecard $scorecard)
     {
-        $indicators = Indicator::where('data_source', $scorecard->dataSource)->get()->pluck('title', 'slug');
+        $indicators = Indicator::where('data_source', $scorecard->data_source)->get()->pluck('title', 'slug');
         return view('chimera::scorecard.edit', compact('scorecard', 'indicators'));
     }
 
