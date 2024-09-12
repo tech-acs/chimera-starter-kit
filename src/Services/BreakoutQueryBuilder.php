@@ -173,6 +173,9 @@ class BreakoutQueryBuilder
             $newRowSkeleton = clone $newRowTemplate;
             $newRowSkeleton->area_name = $area->name;
             $newRowSkeleton->area_code = $area->code;
+            if ($referenceValueToInclude) {
+                $newRowSkeleton->ref_value = $area->ref_value;
+            }
             $areaEnhancedData[] = $newRowSkeleton;
         }
         return $areaEnhancedData->sortBy('area_name');
