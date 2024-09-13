@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
@@ -58,6 +59,11 @@ abstract class ScorecardComponent extends Component
         } else {
             $this->dataStatus = DataStatus::EMPTY;
         }
+    }
+
+    public function getDataModel(): Model
+    {
+        return $this->scorecard;
     }
 
     public function render()

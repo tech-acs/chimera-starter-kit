@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Enums\DataStatus;
@@ -33,4 +34,6 @@ trait Cachable
             $this->getDataAndCacheIt($this->cacheKey(), $this->filterPath);
         }
     }
+
+    public abstract function getDataModel(): Model;
 }

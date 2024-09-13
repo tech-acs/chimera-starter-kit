@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
@@ -73,6 +74,11 @@ class CaseStats extends Component
         $this->dataStatus = $this->stats->isEmpty() ?
             DataStatus::EMPTY :
             DataStatus::RENDERABLE;
+    }
+
+    public function getDataModel(): Model
+    {
+        return $this->dataSource;
     }
 
     public function render()

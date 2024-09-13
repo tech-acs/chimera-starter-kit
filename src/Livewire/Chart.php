@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -135,6 +136,11 @@ abstract class Chart extends Component
         $this->dataStatus = empty($this->data) ?
             DataStatus::EMPTY :
             DataStatus::RENDERABLE;
+    }
+
+    public function getDataModel(): Model
+    {
+        return $this->indicator;
     }
 
     public function render()

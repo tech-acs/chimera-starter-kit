@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\MapIndicator;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\MapIndicator;
@@ -262,5 +263,10 @@ abstract class MapIndicatorBaseClass
             })
             ->all();
          return $styles[$this::SELECTED_COLOR_CHART];
+    }
+
+    public function getDataModel(): Model
+    {
+        return $this->mapIndicator;
     }
 }
