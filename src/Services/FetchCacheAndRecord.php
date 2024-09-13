@@ -25,6 +25,7 @@ class FetchCacheAndRecord
 
             if ($elapsedSeconds > config('chimera.long_query_time')) {
                 $artefact->getDataModel()->analytics()->create([
+                    'user_id' => auth()->id(),
                     'path' => $filterPath,
                     'started_at' => Carbon::createFromTimestamp($startTime),
                     'elapsed_seconds' => $elapsedSeconds

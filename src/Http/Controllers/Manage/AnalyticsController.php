@@ -15,7 +15,6 @@ class AnalyticsController extends Controller
         $hierarchies = (new AreaTree())->hierarchies;
         $records = Analytics::query()
             ->with('analyzable', 'user')
-            //->selectRaw('user_id, analyzable_type, analyzable_id, started_at, elapsed_seconds')
             ->orderBy('started_at', 'DESC')
             ->paginate(config('chimera.records_per_page'));
         $records->setCollection(
@@ -40,7 +39,6 @@ class AnalyticsController extends Controller
     {
         $hierarchies = (new AreaTree())->hierarchies;
         $longestRunningQueries = $indicator->analytics()
-            //->selectRaw('user_id, started_at, level, source, completed_at - started_at AS query_time')
             ->orderBy('elapsed_seconds', 'DESC')
             ->take(5)
             ->get()
@@ -49,7 +47,6 @@ class AnalyticsController extends Controller
                 return $record;
             });
         $queryTimes = $indicator->analytics()
-            //->selectRaw('completed_at - started_at AS query_time')
             ->orderBy('started_at')
             ->get()
             ->pluck('elapsed_seconds');

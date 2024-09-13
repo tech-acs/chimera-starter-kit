@@ -36,10 +36,10 @@ class AnnouncementController extends Controller
     public function store(AnnouncementRequest $request)
     {
         $sender = auth()->user();
-        $recipients = $request->integer('recipients');
+        $recipients = $request->get('recipients');
         $recipientUsers = match ($recipients) {
             'everyone' => User::whereKeyNot($sender->id)->get(),
-            default => Role::find($recipients)->users,
+            default => Role::find((int) $recipients)->users,
         };
         if ($recipientUsers->count() > 0) {
             $recipientsList = $this->recipientsList();
