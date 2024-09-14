@@ -3,17 +3,16 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use function Laravel\Prompts\error;
+use Illuminate\Support\Facades\File;
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\multiselect;
 
 class DataExport extends Command
 {
-    protected $signature = 'chimera:data-export
-                            {--exclude-table=* : Tables to exclude from the export}';
-
+    protected $signature = 'chimera:data-export';
     protected $description = 'Dump postgres data (from some tables) to file';
 
-    protected array $tables = [
+    protected array $exportables = [
         'data_sources',
         'area_hierarchies',
         'areas',
@@ -27,37 +26,45 @@ class DataExport extends Command
         'permissions', // ???
     ];
 
-    public function handle()
+    private function dumpTable(array $pgsqlConfig, string $exportFolder, string $tableName)
     {
-        $pgsqlConfig = config('database.connections.pgsql');
-        $dumpFile = base_path() . '/data-export.sql';
-
-        $excludedTables = $this->option('exclude-table');
-        if ($excludedTables) {
-            $this->tables = array_values(array_filter($this->tables, function($table) use ($excludedTables) {
-                return ! in_array($table, $excludedTables);
-            }));
-        }
-
         try {
             \Spatie\DbDumper\Databases\PostgreSql::create()
                 ->setDbName($pgsqlConfig['database'])
                 ->setUserName($pgsqlConfig['username'])
                 ->setPassword($pgsqlConfig['password'])
                 ->setPort($pgsqlConfig['port'])
-                ->includeTables($this->tables)
+                ->includeTables($tableName)
                 ->doNotCreateTables()
                 ->addExtraOption('--inserts') // Dump data as INSERT commands (rather than COPY)
                 ->addExtraOption('--on-conflict-do-nothing')
                 ->addExtraOption('--attribute-inserts') // INSERT commands with explicit column names
-                ->dumpToFile($dumpFile);
-
-            info('The postgres data has been dumped to file');
-            return self::SUCCESS;
+                ->dumpToFile("$exportFolder/$tableName.sql");
+            return true;
         } catch (\Exception $exception) {
-            error('There was a problem dumping the postgres database');
-            error($exception->getMessage());
-            return self::FAILURE;
+            logger('There was a problem dumping the postgres database', ['Exception message:', $exception->getMessage()]);
+            return false;
         }
+    }
+
+    public function handle()
+    {
+        $pgsqlConfig = config('database.connections.pgsql');
+        $exportFolder = base_path() . '/data-export';
+        File::ensureDirectoryExists($exportFolder);
+
+        $selectedTables = multiselect(
+            label: 'Select the tables you want to export',
+            options: $this->exportables,
+            required: "You must select at least one table",
+            hint: 'Use the space bar to select and press enter when done.'
+        );
+
+        foreach ($selectedTables as $table) {
+            $this->dumpTable($pgsqlConfig, $exportFolder, $table);
+        }
+
+        info('The selected tables have been dumped to file');
+        return self::SUCCESS;
     }
 }
