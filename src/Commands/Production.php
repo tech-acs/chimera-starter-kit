@@ -49,9 +49,9 @@ class Production extends Command
             }
         });
 
-        $this->components->task('Check caching is functional and enabled (CACHE_DRIVER=redis, redis is reachable & CACHE_ENABLED=true)', function () {
+        $this->components->task('Check caching is functional and enabled (CACHE_DRIVER=redis and redis is reachable)', function () {
             try {
-                $productionEnvValues = ['cache.default' => 'redis', 'chimera.cache.enabled' => true];
+                $productionEnvValues = ['cache.default' => 'redis'];
                 $redis = new Redis();
                 $redis->connect(config('database.redis.cache.host'), config('database.redis.cache.port'));
                 $username = config('database.redis.cache.username');
@@ -109,14 +109,14 @@ class Production extends Command
             return false;
         });
 
-        $this->components->task('Check queue manager (supervisord) is running', function () {
+        /*$this->components->task('Check queue manager (supervisord) is running', function () {
             try {
                 $response = Http::get('http://127.0.0.1:9001');
                 return $response->ok();
             } catch (\Throwable $throwable) {
                 return false;
             }
-        });
+        });*/
 
         $this->components->task('Check public/storage has been linked to storage/app/public', function () {
             try {

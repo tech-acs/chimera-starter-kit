@@ -14,13 +14,18 @@
         <div class="grid grid-cols-1 gap-6 pl-3 md:pl-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <x-label for="name" value="{{ __('Name') }} *" />
-                    <x-input id="name" name="name" type="text" class="mt-1 block w-full" value="{{old('name', $dataSource->name ?? null)}}" />
+                    <div class="flex justify-between">
+                        <x-label for="name" value="{{ __('Name') }} *" />
+                        @if(request()->routeIs('developer.data-source.edit'))
+                            @cannot('developer-mode') <div class="text-sm text-red-400 italic">{{ __('the data source name can only be changed in developer mode')}}</div> @endcannot
+                        @endif
+                    </div>
+                    <x-input id="name" name="name" type="text" class="mt-1 block w-full" value="{{ old('name', $dataSource->name ?? null) }}" />
                     <x-input-error for="name" class="mt-2" />
                 </div>
                 <div>
                     <x-label for="title" value="{{ __('Display title') }} *" />
-                    <x-chimera::multi-lang-input id="title" name="title" value="{{old('title', $dataSource->title ?? null)}}" />
+                    <x-chimera::multi-lang-input id="title" name="title" value="{{ old('title', $dataSource->title ?? null) }}" />
                     <x-input-error for="title" class="mt-2" />
                 </div>
             </div>
@@ -28,7 +33,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                     <x-label for="start_date" value="{!! __('Exercise start date') !!}" />
-                    <x-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{old('start_date', optional($dataSource ?? null)->start_date?->format('Y-m-d') ?? null)}}" />
+                    <x-input id="start_date" name="start_date" type="date" class="mt-1 block w-full" value="{{ old('start_date', optional($dataSource ?? null)->start_date?->format('Y-m-d') ?? null) }}" />
                     <x-input-error for="start_date" class="mt-2" />
                 </div>
                 <div>

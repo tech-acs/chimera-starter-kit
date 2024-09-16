@@ -62,6 +62,12 @@ class SmartTableData
         return $this;
     }
 
+    public function sortDesc()
+    {
+        $this->sortDirection = SortDirection::DESC;
+        return $this;
+    }
+
     public function searchable(array $columns, $searchHint = null): self
     {
         $this->searchableColumns = collect($columns);

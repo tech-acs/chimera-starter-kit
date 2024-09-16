@@ -7,6 +7,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Mechanisms\ComponentRegistry;
 use Uneca\Chimera\Http\Requests\DataSourceRequest;
 use Uneca\Chimera\Models\DataSource;
@@ -83,10 +84,14 @@ class DataSourceController extends Controller
 
     public function update(DataSource $dataSource, DataSourceRequest $request)
     {
-        $dataSource->update($request->only([
+        $columns = $request->only([
             'name', 'title', 'start_date', 'end_date', 'show_on_home_page', 'rank', 'host', 'port', 'database',
             'username', 'password', 'connection_active', 'case_stats_component', 'driver'
-        ]));
+        ]);
+        if (Gate::denies('developer-mode')) {
+            unset($columns['name']);
+        }
+        $dataSource->update($columns);
         return redirect()->route('developer.data-source.index')->withMessage('Record updated');
     }
 
