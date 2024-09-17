@@ -2,35 +2,35 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Livewire\Attributes\On;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use Uneca\Chimera\Traits\AreaResolver;
 
 class Exporter extends Component
 {
-    protected $listeners = ['updateChart' => 'update'];
+    use AreaResolver;
 
     public $indicator;
-    public $filter = [];
+    public string $filterPath = '';
 
     public function mount()
     {
-        $this->filter = array_merge(
-            auth()->user()->areaRestrictionAsFilter(),
-            session()->get('area-filter', [])
-        );
+        $this->update();
     }
 
-    public function update(array $filter)
+    #[On(['filterChanged'])]
+    public function update()
     {
-        $this->filter = $filter;
+        list($this->filterPath,) = $this->areaResolver();
     }
 
     public function export()
     {
         $indicatorInstance = DashboardComponentFactory::makeIndicator($this->indicator);
-        $data = $indicatorInstance->getData($this->filter);
+        $data = $indicatorInstance->getData($this->filterPath);
 
         $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->indicator->slug) . '.csv';
         $writer = SimpleExcelWriter::create($file);
