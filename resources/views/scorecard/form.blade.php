@@ -57,7 +57,7 @@
         </div>
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <x-secondary-button class="mr-2"><a href="{{ route('scorecard.index') }}">{{ __('Cancel') }}</a></x-secondary-button>
+        <x-secondary-button onclick="window.history.back()" class="mr-2">{{ __('Cancel') }}</x-secondary-button>
         <x-button>
             {{ __('Submit') }}
         </x-button>
