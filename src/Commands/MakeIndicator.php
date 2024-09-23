@@ -42,15 +42,8 @@ class MakeIndicator extends GeneratorCommand
         $className = $this->qualifyClass($name);
         $path = $this->getPath($className);
         $this->makeDirectory($path);
-        //if (is_null($template)) {
-            $content = $this->buildClass($className);
-        /*} else {
-            $fullTemplatePath = Storage::disk('indicator_templates')->path($template);
-            $destinationPath = app_path() . "/IndicatorTemplates/$template";
-            $this->makeDirectory($destinationPath);
-            copy($fullTemplatePath, $destinationPath);
-            $content = $this->buildClassWithTemplate($template, $className);
-        }*/
+        $content = $this->buildClass($className);
+
         return $this->files->put($path, $content);
     }
 

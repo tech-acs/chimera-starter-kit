@@ -18,7 +18,7 @@ class ScorecardController extends Controller
             ->columns([
                 SmartTableColumn::make('title')
                     ->sortable()
-                    ->setBladeTemplate('<div>{{ $row->title }}</div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
+                    ->setBladeTemplate('<div>{{ $row->title }} <x-chimera::icon.linked class="text-blue-600" :value="$row->linked_indicator" /></div><div class="text-xs text-gray-400">{{ $row->name }}</div>'),
                 SmartTableColumn::make('data_source')
                     ->setLabel('Data Source')
                     ->sortable()
