@@ -142,18 +142,7 @@ class BreakoutQueryBuilder
         if ($data->isEmpty()) {
             return $data;
         }
-        /*$areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
-        $dataKeyByAreaCode = $data->keyBy($this->joinColumn);
-        $columns = array_keys((array) $data[0]);
-        return $areas->map(function ($area) use ($dataKeyByAreaCode, $columns) {
-            foreach ($columns as $column) {
-                if ($column != $this->joinColumn) {
-                    $area->{$column} = $dataKeyByAreaCode[$area->code]->{$column} ?? 0;
-                }
-            }
-            return $area;
-        });*/
-
+        
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
         //$areasKeyByAreaCode = $areas->pluck('name', 'code');
         $areasKeyByAreaCode = $areas->keyBy('code');
@@ -173,6 +162,7 @@ class BreakoutQueryBuilder
             $newRowSkeleton = clone $newRowTemplate;
             $newRowSkeleton->area_name = $area->name;
             $newRowSkeleton->area_code = $area->code;
+            $newRowTemplate->area_path = $area->path;
             if ($referenceValueToInclude) {
                 $newRowSkeleton->ref_value = $area->ref_value;
             }
@@ -192,6 +182,7 @@ class BreakoutQueryBuilder
         return $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
             $area = $areasKeyByAreaCode[$row->{$this->joinColumn}];
             $row->area_name = $area->name;
+            $row->area_path = $area->path;
             if ($referenceValueToInclude) {
                 $row->ref_value = $area->ref_value;
             }

@@ -30,6 +30,7 @@ if (! function_exists('toDataFrame')) {
         if ($data->isEmpty()) {
             return $df;
         }
+        $data = $data->values();
         $firstRow = $data[0];
         $columns = array_keys($firstRow instanceof Model ? $firstRow->toArray() : (array) $firstRow);
         foreach ($columns as $column) {

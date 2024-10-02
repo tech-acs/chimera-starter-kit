@@ -24,7 +24,7 @@ class SpecialSectionBorder extends Component
         if (Gate::allows('Super Admin')) {
             $this->step--;
 
-            if ($this->step < 4) {
+            if (($this->step < 4) && ($this->step > 0)) {
                 $this->message = $this->step;
             }
             if ($this->step <= 0) {
