@@ -6,6 +6,8 @@
     @endcan
     <span class="text-gray-400 px-1">|</span>
     <livewire:indicator-tester :indicator="$row"/>
+    <span class="text-gray-400 px-1">|</span>
+    <livewire:cache-clearer artefact="indicator" :id="$row->id" />
 </div>
 
 

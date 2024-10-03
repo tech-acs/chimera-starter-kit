@@ -5,7 +5,6 @@ namespace Uneca\Chimera\Http\Controllers\Manage;
 use App\Http\Controllers\Controller;
 use Uneca\Chimera\Models\Analytics;
 use Uneca\Chimera\Models\Indicator;
-use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Services\AreaTree;
 
 class AnalyticsController extends Controller
@@ -15,7 +14,7 @@ class AnalyticsController extends Controller
         $hierarchies = (new AreaTree())->hierarchies;
         $records = Analytics::query()
             ->with('analyzable', 'user')
-            ->orderBy('started_at', 'DESC')
+            ->orderBy('elapsed_seconds', 'DESC')
             ->paginate(config('chimera.records_per_page'));
         $records->setCollection(
             $records->getCollection()->map(function ($record) use ($hierarchies) {

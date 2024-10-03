@@ -111,6 +111,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('indicator-tester', \Uneca\Chimera\Livewire\IndicatorTester::class);
         Livewire::component('special-section-border', \Uneca\Chimera\Livewire\SpecialSectionBorder::class);
         Livewire::component('artisan-runner', \Uneca\Chimera\Livewire\ArtisanRunner::class);
+        Livewire::component('cache-clearer', \Uneca\Chimera\Livewire\CacheClearer::class);
     }
 
     public function packageBooted()

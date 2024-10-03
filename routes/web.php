@@ -75,13 +75,10 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::get('setting', [SettingController::class, 'edit'])->name('setting.edit');
         Route::post('setting', [SettingController::class, 'update'])->name('setting.update');
         Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
-        //Route::get('analyzable/{analyzable}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('page', PageController::class)->except(['show']);
         Route::resource('indicator', IndicatorController::class)->except(['show', 'create', 'store', 'destroy']);
         Route::resource('chart-template', ChartTemplateController::class)->only(['index', 'destroy']);
-        //Route::get('indicator/{indicator}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
-        //Route::get('scorecard/{scorecard}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
         Route::name('manage.')->group(function () {
             Route::get('report/{report}/run_now', ReportManagementRunNowController::class)->name('report.run_now');
             Route::resource('report', ReportManagementController::class)->except(['show']);
