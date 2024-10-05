@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use function DeepCopy\deep_copy;
 
 class BreakoutQueryBuilder
 {
@@ -139,14 +140,14 @@ class BreakoutQueryBuilder
         return (object) $template;
     }
 
-    private function areaLeftJoinData(Collection $data, ?string $referenceValueToInclude): Collection
+    private function areaLeftJoinData(Collection $result, ?string $referenceValueToInclude): Collection
     {
-        if ($data->isEmpty()) {
-            return $data;
+        if ($result->isEmpty()) {
+            return $result;
         }
+        $data = deep_copy($result);
 
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
-        //$areasKeyByAreaCode = $areas->pluck('name', 'code');
         $areasKeyByAreaCode = $areas->keyBy('code');
         $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
             $area = $areasKeyByAreaCode[$row->{$this->joinColumn}];
@@ -173,13 +174,14 @@ class BreakoutQueryBuilder
         return $areaEnhancedData->sortBy('area_name');
     }
 
-    private function areaRightJoinData(Collection $data, ?string $referenceValueToInclude): Collection
+    private function areaRightJoinData(Collection $result, ?string $referenceValueToInclude): Collection
     {
-        if ($data->isEmpty()) {
-            return $data;
+        if ($result->isEmpty()) {
+            return $result;
         }
+        $data = deep_copy($result);
+
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
-        //$areasKeyByAreaCode = $areas->pluck('name', 'code');
         $areasKeyByAreaCode = $areas->keyBy('code');
         return $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
             $area = $areasKeyByAreaCode[$row->{$this->joinColumn}];
@@ -219,7 +221,7 @@ class BreakoutQueryBuilder
     {
         Log::channel('x-ray')->info(json_encode([
             'name' => $this->getCallingClassName(3),
-            'sql' => $sql,
+            'sql' => str_replace(['\r', '\n'], '', $sql),
             'queryResult' => $queryResult,
             'joinType' => $joinType,
             'finalResult' => $finalResult,
@@ -242,15 +244,14 @@ class BreakoutQueryBuilder
             } else {
                 $finalResult = $result;
             }
-            return $finalResult;
         } catch (\Exception $exception) {
-            logger('From ' . $this->getCallingClassName(2) . ' in BreakoutQueryBuilder', ['Exception' => $exception->getMessage()]);
-            return collect();
+            logger('From ' . $this->getCallingClassName(2) . ' in BreakoutQueryBuilder', ['Exception' => $exception->getMessage(), 'Line' => $exception->getLine()]);
         } finally {
             if (Context::hasHidden('x-ray')) {
                 $this->xRay($query, $result, $this->leftJoin, $finalResult);
             }
         }
+        return $finalResult;
     }
 
 
