@@ -28,7 +28,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('chimera')
-            ->hasConfigFile(['chimera', 'languages', 'filesystems'])
+            ->hasConfigFile(['chimera', 'languages', 'filesystems', 'logging'])
             ->hasViews()
             ->hasViewComponents(
                 'chimera',
@@ -112,6 +112,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('special-section-border', \Uneca\Chimera\Livewire\SpecialSectionBorder::class);
         Livewire::component('artisan-runner', \Uneca\Chimera\Livewire\ArtisanRunner::class);
         Livewire::component('cache-clearer', \Uneca\Chimera\Livewire\CacheClearer::class);
+        Livewire::component('x-ray', \Uneca\Chimera\Livewire\XRay::class);
     }
 
     public function packageBooted()

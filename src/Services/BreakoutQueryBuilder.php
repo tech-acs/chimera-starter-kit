@@ -4,7 +4,9 @@ namespace Uneca\Chimera\Services;
 
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BreakoutQueryBuilder
 {
@@ -142,7 +144,7 @@ class BreakoutQueryBuilder
         if ($data->isEmpty()) {
             return $data;
         }
-        
+
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
         //$areasKeyByAreaCode = $areas->pluck('name', 'code');
         $areasKeyByAreaCode = $areas->keyBy('code');
@@ -206,19 +208,43 @@ class BreakoutQueryBuilder
         return $this;
     }
 
+    public function getCallingClassName($level)
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        // level 0 is this method (immediate caller), 1 is this class (BreakoutQueryBuilder) and 2 is the dashboard artefact
+        return $trace[$level]['class'] ?? null;
+    }
+
+    public function xRay($sql, $queryResult, $joinType, $finalResult)
+    {
+        Log::channel('x-ray')->info(json_encode([
+            'name' => $this->getCallingClassName(3),
+            'sql' => $sql,
+            'queryResult' => $queryResult,
+            'joinType' => $joinType,
+            'finalResult' => $finalResult,
+        ]) . '\n');
+    }
+
     public function get($sql = null) : Collection
     {
         try {
-            $data = collect($this->dbConnection->select($sql ?? $this->toSql()));
+            $query = $sql ?? $this->toSql();
+            $result = collect($this->dbConnection->select($query));
             if ($this->leftJoin === 'area-left-join-data') {
-                $data = $this->areaLeftJoinData($data, $this->referenceValueToInclude);
+                $finalResult = $this->areaLeftJoinData($result, $this->referenceValueToInclude);
             } elseif ($this->leftJoin === 'data-left-join-area') {
-                $data = $this->areaRightJoinData($data, $this->referenceValueToInclude);
+                $finalResult = $this->areaRightJoinData($result, $this->referenceValueToInclude);
+            } else {
+                $finalResult = $result;
             }
-            return $data;
+            if (Context::hasHidden('x-ray')) {
+                $this->xRay($query, $result, $this->leftJoin, $finalResult);
+            }
+            return $finalResult;
         } catch (\Exception $exception) {
-            logger('In BreakoutQueryBuilder', ['Exception' => $exception->getMessage()]);
-            return collect([]);
+            logger('From ' . $this->getCallingClassName(2) . ' in BreakoutQueryBuilder', ['Exception' => $exception->getMessage()]);
+            return collect();
         }
     }
 

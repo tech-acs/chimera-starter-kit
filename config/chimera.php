@@ -30,4 +30,5 @@ return [
     ],
     'long_query_time' => (int) env('LONG_QUERY_TIME', 10), // Seconds
     'featured_indicators_per_data_source' => env('FEATURED_INDICATORS_PER_DATA_SOURCE', 2),
+    'xray_file' => env('XRAY_FILE', storage_path('logs/x-ray.log')),
 ];

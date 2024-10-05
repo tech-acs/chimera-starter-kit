@@ -7,6 +7,7 @@ use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueImportTemplateDownloadController;
 use Uneca\Chimera\Http\Controllers\Manage\SettingController;
+use Uneca\Chimera\Http\Controllers\Manage\XRayController;
 use Uneca\Chimera\Http\Controllers\MapController;
 use Uneca\Chimera\Http\Controllers\Manage\AnnouncementController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaController;
@@ -69,6 +70,8 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
                 Route::get('api/indicator/{indicator}', [IndicatorEditorController::class, 'edit']);
                 Route::post('api/indicator/{indicator}', [IndicatorEditorController::class, 'update']);
                 Route::post('api/chart-template', [ChartTemplateController::class, 'store']);
+
+                Route::get('x-ray', XRayController::class)->name('x-ray');
             });
         });
 
