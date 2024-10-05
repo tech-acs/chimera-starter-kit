@@ -13,6 +13,7 @@ class XRay extends Component
     public Collection $groupedIndicators;
     public string $output = '';
     public int $lineNumber = 0;
+    public string $filterPath = '';
 
     public function mount()
     {
@@ -37,14 +38,16 @@ class XRay extends Component
         while ($this->lineNumber < $count) {
             $line = $xrays[$this->lineNumber];
             $parsedLine = json_decode($line, true);
-            $this->dispatch('x-ray-film', film: [
-                'name' => $parsedLine['name'],
-                'sql' => $parsedLine['sql'],
-                'queryResult' => $parsedLine['queryResult'],
-                'joinType' => $parsedLine['joinType'],
-                'finalResult' => $parsedLine['finalResult'],
-                'index' => $this->lineNumber
-            ]);
+            if (count($parsedLine) >= 5) {
+                $this->dispatch('x-ray-film', film: [
+                    'name' => $parsedLine['name'],
+                    'sql' => $parsedLine['sql'],
+                    'queryResult' => $parsedLine['queryResult'],
+                    'joinType' => $parsedLine['joinType'],
+                    'finalResult' => $parsedLine['finalResult'],
+                    'index' => $this->lineNumber
+                ]);
+            }
             $this->lineNumber++;
         }
     }
@@ -54,8 +57,7 @@ class XRay extends Component
         Context::addHidden('x-ray', true);
 
         $indicatorComponent = DashboardComponentFactory::makeIndicator($indicator);
-        $filterPath = '';
-        $indicatorComponent->getData($filterPath);
+        $indicatorComponent->getData($this->filterPath);
     }
 
     public function render()

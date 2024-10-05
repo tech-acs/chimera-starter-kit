@@ -38,7 +38,6 @@ class BreakoutQueryBuilder
     )
     {
         $this->filterPath = $filterPath;
-        //$filter = AreaTree::pathAsFilter($filterPath);
         list($selectColumns, $whereConditions, $concernedTables) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filterPath);
 
         try {
@@ -221,7 +220,7 @@ class BreakoutQueryBuilder
     {
         Log::channel('x-ray')->info(json_encode([
             'name' => $this->getCallingClassName(3),
-            'sql' => str_replace(['\r', '\n'], '', $sql),
+            'sql' => str($sql)->squish()->toString(),
             'queryResult' => $queryResult,
             'joinType' => $joinType,
             'finalResult' => $finalResult,

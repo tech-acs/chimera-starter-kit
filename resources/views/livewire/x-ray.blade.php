@@ -1,5 +1,11 @@
 <div class="p-4 border rounded-md bg-white flex" wire:poll.1s="checkLogEntries()">
     <div class="mr-6 overflow-y-auto" style="height: calc(100vh - 240px);">
+        <div class="flex justify-end items-center">
+            <label for="path" class="block text-sm font-medium leading-6 text-gray-900">Path</label>
+            <div class="ml-2">
+                <input wire:model="filterPath" placeholder="leave empty for national" type="text" id="path" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            </div>
+        </div>
         @foreach($groupedIndicators as $dataSource => $indicators)
             <div class="border-b border-gray-200 pb-4">
                 <h3 class="text-base font-semibold leading-6 text-gray-900">{{ $dataSource }}</h3>
