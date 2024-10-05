@@ -1,10 +1,10 @@
 <div class="p-4 border rounded-md bg-white flex" wire:poll.1s="checkLogEntries()">
-    <div class="mr-6">
+    <div class="mr-6 overflow-y-auto" style="height: calc(100vh - 240px);">
         @foreach($groupedIndicators as $dataSource => $indicators)
-            <div class="border-b border-gray-200 pb-5">
+            <div class="border-b border-gray-200 pb-4">
                 <h3 class="text-base font-semibold leading-6 text-gray-900">{{ $dataSource }}</h3>
             </div>
-            <div class="pl-4 pt-4 space-y-4">
+            <div class="pl-4 pt-4 space-y-4 mb-4">
                 @foreach($indicators as $indicator)
                     <div wire:click="takeXRay({{ $indicator->id }})" class="p-2 border rounded-md bg-gray-50 cursor-pointer hover:bg-blue-50">
                         <span>{{ $indicator->title }}</span>
