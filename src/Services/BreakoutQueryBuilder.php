@@ -228,6 +228,10 @@ class BreakoutQueryBuilder
 
     public function get($sql = null) : Collection
     {
+        $query = '';
+        $result = collect();
+        $finalResult = collect();
+
         try {
             $query = $sql ?? $this->toSql();
             $result = collect($this->dbConnection->select($query));
@@ -238,13 +242,14 @@ class BreakoutQueryBuilder
             } else {
                 $finalResult = $result;
             }
-            if (Context::hasHidden('x-ray')) {
-                $this->xRay($query, $result, $this->leftJoin, $finalResult);
-            }
             return $finalResult;
         } catch (\Exception $exception) {
             logger('From ' . $this->getCallingClassName(2) . ' in BreakoutQueryBuilder', ['Exception' => $exception->getMessage()]);
             return collect();
+        } finally {
+            if (Context::hasHidden('x-ray')) {
+                $this->xRay($query, $result, $this->leftJoin, $finalResult);
+            }
         }
     }
 
