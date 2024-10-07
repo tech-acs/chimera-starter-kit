@@ -85,22 +85,39 @@ abstract class Chart extends Component
         ];
     }
 
-    public function getTraces(Collection $data, string $filterPath): array
+    public function getTraces(Collection $data, string $filterPath, bool $designMode = false): array
     {
         $traces = $this->indicator->data;
         $data = toDataFrame($data);
         if ($data->isNotEmpty()) {
             foreach ($traces as $index => $trace) {
-                $columnNames = Arr::get($traces[$index], 'meta.columnNames', null);
+                $columnNames = Arr::get($trace, 'meta.columnNames');
                 if ($columnNames) {
                     $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
                     $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
                 }
                 $traceName = strip_tags($trace['name'] ?? '');
-                if (in_array($traceName, array_keys($this->aggregateAppendedTraces))) {
+                /*if (in_array($traceName, array_keys($this->aggregateAppendedTraces))) {
                     $aggOp = $this->aggregateAppendedTraces[$traceName];
                     array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
                     array_push($traces[$index]['y'], collect($traces[$index]['y'])->{$aggOp}());
+                }*/
+                if ((! $designMode) && in_array($traceName, array_keys($this->aggregateAppendedTraces))) {
+                    $aggOp = $this->aggregateAppendedTraces[$traceName];
+                    if (strtolower($aggOp) === 'sum') {
+                        $newDynamicTrace = [
+                            ...$traces[$index],
+                            'name' => __('Aggregate'),
+                            'yaxis' => 'y2',
+                            'x' => [__('<b>All') . ' ' . $this->getAreaBasedAxisTitle($filterPath) . '</b>'],
+                            'y' => [collect($traces[$index]['y'])->{$aggOp}()],
+                        ];
+                        unset($newDynamicTrace['meta'], $newDynamicTrace['xsrc'], $newDynamicTrace['ysrc']);
+                        $traces[] = $newDynamicTrace;
+                    } else {
+                        $traces[$index]['x'][] = __('<b>All').' '.$this->getAreaBasedAxisTitle($filterPath).'</b>';
+                        $traces[$index]['y'][] = collect($traces[$index]['y'])->{$aggOp}();
+                    }
                 }
             }
         } else {

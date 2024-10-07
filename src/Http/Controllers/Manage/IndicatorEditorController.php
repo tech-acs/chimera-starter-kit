@@ -37,7 +37,7 @@ class IndicatorEditorController extends Controller
         unset($dataSources['path']);
         return [
             'dataSources' => $dataSources,
-            'data' => $instance->getTraces($data, $filterPath),
+            'data' => $instance->getTraces($data, $filterPath, true),
             'layout' => $instance->getLayout($filterPath),
             'config' => [...$instance->getConfig(), 'editable' => true],
             'title' => $indicator->title ?? '',
