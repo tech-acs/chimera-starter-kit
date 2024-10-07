@@ -149,10 +149,12 @@ class BreakoutQueryBuilder
         $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
         $areasKeyByAreaCode = $areas->keyBy('code');
         $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
-            $area = $areasKeyByAreaCode[$row->{$this->joinColumn}];
-            $row->area_name = $area->name;
+            $area = $areasKeyByAreaCode->get($row->{$this->joinColumn});
+            $area ??= (object) ['name' => 'Unknown'];
+            $row->area_name = $area->name ?? null;
+            $row->area_path = $area->path ?? null;
             if ($referenceValueToInclude) {
-                $row->ref_value = $area->ref_value;
+                $row->ref_value = $area->ref_value ?? null;
             }
             return $row;
         });
