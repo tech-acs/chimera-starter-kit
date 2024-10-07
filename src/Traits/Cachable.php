@@ -10,7 +10,7 @@ use Uneca\Chimera\Jobs\QueryRunnerJob;
 
 trait Cachable
 {
-    public DataStatus $dataStatus = DataStatus::PENDING;
+    public string $dataStatus = DataStatus::PENDING->value;
     public string $filterPath = '';
 
     public abstract function getData(string $filterPath): Collection;
@@ -30,7 +30,7 @@ trait Cachable
             $this->setPropertiesFromData();
             $this->dispatch('dataReady')->self();
         } else {
-            $this->dataStatus = DataStatus::PENDING;
+            $this->dataStatus = DataStatus::PENDING->value;
             $this->getDataAndCacheIt($this->cacheKey(), $this->filterPath);
         }
     }

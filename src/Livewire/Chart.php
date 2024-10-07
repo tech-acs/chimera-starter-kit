@@ -134,8 +134,8 @@ abstract class Chart extends Component
         $this->data = $this->getTraces($data, $this->filterPath);
         $this->layout = $this->getLayout($this->filterPath);
         $this->dataStatus = empty($this->data) ?
-            DataStatus::EMPTY :
-            DataStatus::RENDERABLE;
+            DataStatus::EMPTY->value :
+            DataStatus::RENDERABLE->value;
     }
 
     public function getDataModel(): Model

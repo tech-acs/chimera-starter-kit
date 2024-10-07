@@ -72,8 +72,8 @@ class CaseStats extends Component
     {
         list($this->dataTimestamp, $this->stats) = Cache::get($this->cacheKey());
         $this->dataStatus = $this->stats->isEmpty() ?
-            DataStatus::EMPTY :
-            DataStatus::RENDERABLE;
+            DataStatus::EMPTY->value :
+            DataStatus::RENDERABLE->value;
     }
 
     public function getDataModel(): Model

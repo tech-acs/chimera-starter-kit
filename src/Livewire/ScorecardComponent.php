@@ -55,9 +55,9 @@ abstract class ScorecardComponent extends Component
         list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
         if (($data instanceof Collection) && ($data->count() == 2)) {
             list($this->value, $this->diff) = $data;
-            $this->dataStatus = DataStatus::RENDERABLE;
+            $this->dataStatus = DataStatus::RENDERABLE->value;
         } else {
-            $this->dataStatus = DataStatus::EMPTY;
+            $this->dataStatus = DataStatus::EMPTY->value;
         }
     }
 
