@@ -57,7 +57,7 @@ class MakeReferenceValueSynthesizer extends GeneratorCommand
             hint: "You will be able to change this later in the class file"
         );
         $indicator = text(
-            label: "Please enter a name for the reference values",
+            label: "Please enter a name (indicator) for the reference values",
             placeholder: 'E.g. population, households, etc.',
             hint: "You can also change this later in the class file",
         );

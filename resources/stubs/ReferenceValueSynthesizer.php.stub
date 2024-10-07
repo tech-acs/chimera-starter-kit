@@ -3,6 +3,7 @@
 namespace App\ReferenceValueSynthesizers;
 
 use Uneca\Chimera\Contracts\ReferenceValueSynthesizerBaseClass;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
 use Illuminate\Support\Collection;
 
 class {{ class }} extends ReferenceValueSynthesizerBaseClass

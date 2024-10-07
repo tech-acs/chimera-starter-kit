@@ -8,6 +8,7 @@ use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\ReferenceValue;
+use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\info;
 
@@ -15,30 +16,26 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
 {
     protected $signature = 'chimera:transfer-reference-values {class}';
 
-    protected $description = 'Transfer (update or create) reference values synthesized from a data source (listing, etc.) to the areas table';
-
-    protected string $dataSource;
-    protected string $indicator;
-    protected int $level;
-    protected bool $isAdditive;
+    protected $description = 'Transfer (update or create) reference values synthesized from a data source (listing, etc.) to the reference_values table';
 
     protected function promptForMissingArgumentsUsing(): array
     {
         $availableSynthesizers = collect(glob(app_path('ReferenceValueSynthesizers') . '/*.php'))
             ->mapWithKeys(function (string $file) {
-                return [$file => basename($file, '.php')];
+                return [basename($file, '.php') => basename($file, '.php')];
             })->toArray();
         return [
             'class' => fn () => select(
                 label: "Please provide a ReferenceValueSynthesizer class to use",
                 options: $availableSynthesizers,
+                hint: 'If there is nothing listed, then define some ReferenceValueSynthesizer classes.'
             ),
         ];
     }
 
-    private function writeHigherLevelValues(string $indicator, int $level)
+    private function writeHigherLevelValues(string $indicator, int $level, bool $isAdditive)
     {
-        $aggMethod = $this->isAdditive ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
+        $aggMethod = $isAdditive ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
         DB::insert("
             INSERT INTO reference_values(path, level, indicator, value, created_at, updated_at)
             SELECT areas.path, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value, '" . now() . "', '" . now() . "'
@@ -53,26 +50,26 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
 
     public function handle()
     {
-        $class = $this->argument('class');
-        $synthesizer = app()->make($class);
-        $this->dataSource = $synthesizer->dataSource;
-        $this->indicator = $synthesizer->indicator;
-        $this->level = $synthesizer->level;
-        $this->isAdditive = $synthesizer->isAdditive;
+        $classArg = $this->argument('class');
+        $class = str("\\App\\ReferenceValueSynthesizers\\$classArg")->rtrim('.php')->toString();
+        if (! class_exists($class)) {
+            error("$class class not found");
+            return Command::FAILURE;
+        }
+        $synthesizer = app($class);
 
         $initialCount = ReferenceValue::count();
-
         // Get paths one level above (as BreakoutQueryBuilder works down) your leaf areas (EAs)
-        $areaPaths = Area::ofLevel($this->level - 1)->get('path');
+        $areaPaths = Area::ofLevel($synthesizer->level - 1)->get('path');
         foreach ($areaPaths as $area) {
-            $prospectiveReferenceData = $this->getData($this->dataSource, $area->path);
+            $prospectiveReferenceData = $synthesizer->getData($synthesizer->dataSource, $area->path);
             if ($prospectiveReferenceData->isNotEmpty()) {
-                $refData = $prospectiveReferenceData->map(function ($ref) {
+                $refData = $prospectiveReferenceData->map(function ($ref) use ($synthesizer) {
                     return [
                         'path' => $ref->area_path,
-                        'indicator' => $this->indicator,
+                        'indicator' => $synthesizer->indicator,
                         'value' => $ref->value,
-                        'level' => $this->level
+                        'level' => $synthesizer->level
                     ];
                 })->all();
                 foreach ($refData as $data) {
@@ -84,8 +81,8 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
             }
         }
 
-        for ($level = $this->level; $level > 0; $level--) {
-            $this->writeHigherLevelValues($this->indicator, $level);
+        for ($level = $synthesizer->level; $level > 0; $level--) {
+            $this->writeHigherLevelValues($synthesizer->indicator, $level, $synthesizer->isAdditive);
         }
 
         $finalCount = ReferenceValue::count();
