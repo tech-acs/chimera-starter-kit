@@ -1,0 +1,28 @@
+<?php
+
+namespace App\ReferenceValueSynthesizers;
+
+use Uneca\Chimera\Contracts\ReferenceValueSynthesizerBaseClass;
+use Illuminate\Support\Collection;
+
+class {{ class }} extends ReferenceValueSynthesizerBaseClass
+{
+    public string $dataSource = '{{ dataSource }}';
+    public string $indicator = '{{ indicator }}';
+    public int $level = {{ level }};
+    public bool $isAdditive = {{ isAdditive }};
+
+    public function getData(string $dataSource, string $path): Collection
+    {
+        /* TODO:
+            Returned collection must have at least 'area_path' and 'value' keys.
+            Using BreakoutQueryBuilder with the lastlyAreaRightJoinData() call will include area_path column
+
+        return (new BreakoutQueryBuilder($dataSource, filterPath: $path))
+            ->select(['COUNT(*) AS value'])
+            ->from(['table_name'])
+            ->groupBy(['area_code'])
+            ->lastlyAreaRightJoinData()
+            ->get();*/
+    }
+}
