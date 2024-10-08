@@ -90,6 +90,7 @@ abstract class Chart extends Component
         $traces = $this->indicator->data;
         $data = toDataFrame($data);
         if ($data->isNotEmpty()) {
+            $newDynamicTraces = [];
             foreach ($traces as $index => $trace) {
                 $columnNames = Arr::get($trace, 'meta.columnNames');
                 if ($columnNames) {
@@ -107,8 +108,9 @@ abstract class Chart extends Component
                     if (strtolower($aggOp) === 'sum') {
                         $newDynamicTrace = [
                             ...$traces[$index],
-                            'name' => __('Aggregate'),
+                            'name' => $traceName . __(' (across ') . strtolower($this->getAreaBasedAxisTitle($filterPath)) . ')',
                             'yaxis' => 'y2',
+                            'showlegend' => false,
                             'x' => [__('<b>All') . ' ' . $this->getAreaBasedAxisTitle($filterPath) . '</b>'],
                             'y' => [collect($traces[$index]['y'])->{$aggOp}()],
                         ];
@@ -119,6 +121,9 @@ abstract class Chart extends Component
                         $traces[$index]['y'][] = collect($traces[$index]['y'])->{$aggOp}();
                     }
                 }
+            }
+            foreach ($newDynamicTraces as $newDynamicTrace) {
+                $traces[] = $newDynamicTrace;
             }
         } else {
             $traces = [];
@@ -131,6 +136,11 @@ abstract class Chart extends Component
         $layout = $this->indicator->layout;
         if ($this->useDynamicAreaXAxisTitles) {
             $layout['xaxis']['title']['text'] = $this->getAreaBasedAxisTitle($filterPath, true);
+        }
+        if (! empty($this->aggregateAppendedTraces)) {
+            $layout['yaxis2']['side'] = 'right';
+            $layout['yaxis2']['overlaying'] = 'y';
+            $layout['yaxis2']['showgrid'] = false;
         }
         $currentPalette = ColorPalette::palette(settings('color_palette'));
         return [...$layout, 'colorway' => $currentPalette->colors];

@@ -22,10 +22,15 @@ trait PlotlyDefaults
             "tickmode" => "auto",
             "automargin" => true,
         ],
+        "yaxis2" => [
+            "side" => "right",
+            "overlaying" => "y",
+            "showgrid" => false,
+        ],
         "margin" => [
             "l" => 60,
-            "r" => 10,
-            "t" => 10,
+            "r" => 30,
+            "t" => 15,
             "b" => 40,
         ],
         "modebar" => [
