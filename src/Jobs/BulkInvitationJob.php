@@ -37,7 +37,7 @@ class BulkInvitationJob implements ShouldQueue
         SimpleExcelReader::create($this->filePath)->getRows()
             ->each(function (array $row) use ($expiresAt, &$totalCount, &$successCount) {
                 $totalCount++;
-                $email = trim($row['email']);
+                $email = str($row['email'])->trim()->lower()->toString();
                 $role = $row['role'] ?? null;
                 $rowValidator = Validator::make(
                     ['email' => $email, 'role' => $role],
