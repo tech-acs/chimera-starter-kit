@@ -38,7 +38,7 @@ class ImportShapefileJob implements ShouldQueue
         private string $locale
     ) {}
 
-    private function namesAndCodesAreValid(array $features): bool
+    private function areNamesAndCodesValid(array $features): bool
     {
         // Check that all areas have valid values for 'code' and 'name'
         $featuresWithInvalidCode = array_filter($features, function ($feature) {
@@ -58,7 +58,7 @@ class ImportShapefileJob implements ShouldQueue
         return true;
     }
 
-    private function augumentData(array $features, int $level): array
+    private function addParentInfo(array $features, int $level): array
     {
         $hierarchies = (new AreaTree())->hierarchies; $locale = app()->getLocale();
         $thisAreaHierarchy = AreaHierarchy::whereRaw("name->>'{$locale}' = '{$hierarchies[$level]}'")->first();
@@ -107,6 +107,7 @@ class ImportShapefileJob implements ShouldQueue
                     'Task ongoing',
                     "The shapefile is being processed. The work is {$batch->progress()}% complete."
                 ));
+                Cache::put("batch_progress", time());
             }
 
         })->then(function (Batch $batch) { // All jobs completed successfully...
@@ -122,27 +123,43 @@ class ImportShapefileJob implements ShouldQueue
             Cache::forget("batch_{$batch->id}");
         }); //->allowFailures()
 
-        foreach ($features->chunk(config('chimera.shapefile_import_chunk_size')) as $featuresChunk) {
+        $processBatch = true;
+        foreach ($features->chunk(config('chimera.shapefile.import_chunk_size')) as $featuresChunk) {
             $features = $featuresChunk->values()->toArray();
 
-            if ($this->namesAndCodesAreValid($features)) {
+            if ($this->areNamesAndCodesValid($features)) {
                 // Find and add parent info for all areas (unless root level)
-                $augmentedFeaturesChunk = $this->augumentData($features, $this->level);
+                $augmentedFeaturesChunk = $this->addParentInfo($features, $this->level);
 
                 $orphanFeatures = array_filter($augmentedFeaturesChunk, fn ($feature) => empty($feature['path']));
-                if (! config('chimera.area.map.ignore_orphan_areas') && ! empty($orphanFeatures)) {
+                if (! empty($orphanFeatures)) {
                     $orphans = collect($orphanFeatures)->pluck('attribs.code')->join(', ', ' and ');
                     logger('All areas require a containing parent area. ' . count($orphanFeatures) . " orphan area(s) found.", ['Orphan feature codes' => $orphans]);
-                    $batch->cancel();
                 }
 
-                $batch->add(new ImportShapefileChunkJob($augmentedFeaturesChunk, $this->level, $this->user, $this->locale));
+                if (empty($orphanFeatures) || ! config('chimera.shapefile.stop_import_if_orphans_found')) {
+                    if (! empty($orphanFeatures)) {
+                        $augmentedFeaturesChunk = array_filter($augmentedFeaturesChunk, fn ($feature) => ! empty($feature['path']));
+                    }
+                    $batch->add(new ImportShapefileChunkJob($augmentedFeaturesChunk, $this->level, $this->user, $this->locale));
+                } else {
+                    $processBatch = false;
+                    break;
+                }
             } else {
-                $batch->cancel();
+                $processBatch = false;
+                break;
             }
         }
 
-        $batch->dispatch();
+        if ($processBatch) {
+            $batch->dispatch();
+        }else {
+            Notification::sendNow($user, new TaskFailedNotification(
+                'Task failed',
+                "The shapefile could not be imported because there were some errors found in it. Please check the logs for details."
+            ));
+        }
     }
 
     public function failed(\Throwable $exception)
