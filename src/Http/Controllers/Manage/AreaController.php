@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\ValidationException;
 use Uneca\Chimera\Http\Requests\MapRequest;
 use Uneca\Chimera\Jobs\ImportShapefileJob;
 use Uneca\Chimera\Models\Area;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Uneca\Chimera\Services\ShapefileImporter;
 use Uneca\Chimera\Services\SmartTableColumn;
 use Uneca\Chimera\Services\SmartTableData;
 
@@ -59,6 +61,23 @@ class AreaController extends Controller
         }
         $shpFile = collect([$filename, 'shp'])->join('.');
         $filePath = Storage::disk('imports')->path('shapefiles/' . $shpFile);
+
+        $importer = new ShapefileImporter();
+        $sampleFeature = $importer->sample($filePath);
+
+        // Check for empty shapefiles
+        if (empty($sampleFeature)) {
+            throw ValidationException::withMessages([
+                'shapefile' => ['The shapefile does not contain any valid features.'],
+            ]);
+        }
+
+        // Check that shapefile has 'name' and 'code' columns in the attribute table
+        if (! (array_key_exists('name', $sampleFeature['attribs']) && array_key_exists('code', $sampleFeature['attribs']))) {
+            throw ValidationException::withMessages([
+                'shapefile' => ["The shapefile needs to have 'name' and 'code' attributes"],
+            ]);
+        }
 
         ImportShapefileJob::dispatch($filePath, $level, auth()->user(), app()->getLocale());
 

@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\LazyCollection;
 use Shapefile\Shapefile;
 use Shapefile\ShapefileReader;
 use Throwable;
@@ -45,40 +46,79 @@ class ShapefileImporter
         return $attribs;
     }
 
-    public function import($filePath)
+    public function import($filePath): LazyCollection
     {
-        $collector = [];
+        ini_set('memory_limit', '1024M');
+
         try {
             $shapefile = new ShapefileReader($filePath, self::OPTIONS);
-
             $totalRecords = $shapefile->getTotRecords();
-            for ($i = 1; $i <= $totalRecords; $i++) {
-                $shapefile->setCurrentRecord($i);
-                try {
-                    $feature = $shapefile->fetchRecord();
+            return LazyCollection::make(function () use ($shapefile, $totalRecords) {
+                for ($i = 1; $i <= $totalRecords; $i++) {
+                    $shapefile->setCurrentRecord($i);
+                    try {
+                        $feature = $shapefile->fetchRecord();
 
-                    if ($feature->isDeleted()) {
-                        continue;
+                        if ($feature->isDeleted()) {
+                            continue;
+                        }
+
+                        $attribs = $this->castDataArray($shapefile, array_change_key_case($feature->getDataArray(), CASE_LOWER));
+                        $wkt = $feature->getWKT();
+                        $result = DB::select("SELECT ST_GeomFromText('{$wkt}', 4326) AS geom");
+
+                        yield [
+                            'attribs' => $attribs,
+                            'geom' => $result[0]?->geom ?? null,
+                        ];
+
+                    } catch (Throwable $e) {
+                        logger("Error fetching record $i: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
                     }
-
-                    $attribs = $this->castDataArray($shapefile, array_change_key_case($feature->getDataArray(), CASE_LOWER));
-                    $wkt = $feature->getWKT();
-                    //$geom = DB::raw("ST_GeomFromText('{$geom}', 4326)")->getValue(DB::connection()->getQueryGrammar());
-                    $result = DB::select("SELECT ST_GeomFromText('{$wkt}', 4326) AS geom");
-                    // ToDo: ST_Simplify!
-                    $collector[] = [
-                        'attribs' => $attribs,
-                        'geom' => $result[0]?->geom ?? null,
-                    ];
-
-                } catch (Throwable $e) {
-                    logger("Error fetching record $i: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
                 }
-            }
+            });
+
         } catch (Throwable $e) {
             logger("Error instantiating ShapefileReader: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
         }
+    }
 
-        return $collector;
+    public function sample($filePath): ?array
+    {
+        ini_set('memory_limit', '1024M');
+
+        try {
+            $shapefile = new ShapefileReader($filePath, self::OPTIONS);
+            $totalRecords = $shapefile->getTotRecords();
+            $sampleFeatureNotAcquired = true; $currentRecord = 1; $sample = null;
+            while ($sampleFeatureNotAcquired && ($currentRecord <= $totalRecords)) {
+                $shapefile->setCurrentRecord($currentRecord);
+                try {
+                    $sampleFeature = $shapefile->fetchRecord();
+
+                    if ($sampleFeature->isDeleted()) {
+                        $currentRecord++;
+                        continue;
+                    }
+
+                    $attribs = $this->castDataArray($shapefile, array_change_key_case($sampleFeature->getDataArray(), CASE_LOWER));
+                    $wkt = $sampleFeature->getWKT();
+                    $result = DB::select("SELECT ST_GeomFromText('{$wkt}', 4326) AS geom");
+
+                    $sample = [
+                        'attribs' => $attribs,
+                        'geom' => $result[0]?->geom ?? null,
+                    ];
+                    $sampleFeatureNotAcquired = false;
+
+                } catch (Throwable $e) {
+                    logger("Error fetching record $currentRecord: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
+                }
+            }
+            return $sample;
+        } catch (Throwable $e) {
+            logger("Error instantiating ShapefileReader: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
+        }
+        return null;
     }
 }
