@@ -4,14 +4,10 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Uneca\Chimera\Models\AreaHierarchy;
-use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\MapIndicator;
-use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Services\AreaTree;
-use Uneca\Chimera\Services\IndicatorCaching;
-use Uneca\Chimera\Services\MapIndicatorCaching;
-use Uneca\Chimera\Services\ScorecardCaching;
+use Uneca\Chimera\Services\DashboardComponentFactory;
 
 class CacheMapIndicators extends Command
 {
@@ -27,9 +23,9 @@ class CacheMapIndicators extends Command
     private function cacheMapIndicators()
     {
         //if ($this->option('tag')) {
-            //$builder = MapIndicator::published()->ofTag($this->option('tag'));
+        //$builder = MapIndicator::published()->ofTag($this->option('tag'));
         //} else {
-            $builder = MapIndicator::published();
+        $builder = MapIndicator::published();
         //}
 
         if ($this->option('data-source')) {
@@ -50,34 +46,23 @@ class CacheMapIndicators extends Command
         }
         foreach ($indicatorsToCache as $indicator) {
             $this->newLine()->info($indicator->name);
+
+            $artefact = DashboardComponentFactory::makeMapIndicator($indicator);
+
+            // National level for non-restricted users
             $startTime = time();
+            $artefact->getDataAndCacheIt($artefact->cacheKey(''), '', true);
+            $this->info("Level 0 completed in " . (time() - $startTime) . " seconds");
 
-            $analytics = ['source' => 'Caching (cmd)', 'level' => null, 'started_at' => time(), 'completed_at' => null];
-            $updated = (new MapIndicatorCaching($indicator, []))->update(); // National level - no filters (non-level)
-            if ($updated) {
-                $analytics['completed_at'] = time();
-                $indicator->analytics()->create($analytics);
-            } else {
-                $this->error("Could not update cache!");
-            }
-
+            $hierarchies = (new AreaTree())->hierarchies;
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
-                $levelName = (new AreaTree())->hierarchies[$level];
-                $areaCodes = Area::ofLevel($level)->pluck('code');
-                foreach ($areaCodes as $code) {
-                    $analytics = ['source' => 'Caching (cmd)', 'level' => $level, 'started_at' => time(), 'completed_at' => null];
-                    $updated = (new MapIndicatorCaching($indicator, [$levelName => $code]))->update();
-                    if ($updated) {
-                        $analytics['completed_at'] = time();
-                        $indicator->analytics()->create($analytics);
-                    } else {
-                        $this->error("Could not update cache!");
-                    }
+                $paths = Area::ofLevel($level)->pluck('path');
+                foreach ($paths as $filterPath) {
+                    $artefact->getDataAndCacheIt($artefact->cacheKey($filterPath), $filterPath, true);
                 }
-                $this->info(" - cached $levelName level");
+                $this->info(" - cached {$hierarchies[$level]} level");
             }
-            $endTime = time();
-            $this->info("Completed in " . ($endTime - $startTime) . " seconds");
+            $this->info("Completed in " . (time() - $startTime) . " seconds");
         }
         $this->newLine();
         return self::SUCCESS;
