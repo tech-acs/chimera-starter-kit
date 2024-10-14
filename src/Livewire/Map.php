@@ -106,7 +106,8 @@ class Map extends Component
             $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
             $geojson->features = $filtered->values()->all();
             $currentIndicator = new $this->currentIndicator;
-            $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($path), $path));
+            $key = $currentIndicator->cacheKey($path);
+            $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($key, $path), $path));
         } else {
             $this->dispatch('backendResponse', geojson: null, level: $nextLevel, data: []);
         }

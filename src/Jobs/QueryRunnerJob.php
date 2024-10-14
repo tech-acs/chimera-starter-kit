@@ -32,8 +32,6 @@ class QueryRunnerJob implements ShouldQueue, ShouldBeUnique
 
     public function handle()
     {
-        //sleep(4);
-
         (new FetchCacheAndRecord)($this->artefact, $this->key, $this->filterPath, $this->cacheForever);
     }
 

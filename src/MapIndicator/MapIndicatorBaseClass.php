@@ -2,12 +2,10 @@
 
 namespace Uneca\Chimera\MapIndicator;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Models\MapIndicator;
-use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\MapIndicatorCaching;
 
 abstract class MapIndicatorBaseClass
@@ -150,6 +148,18 @@ abstract class MapIndicatorBaseClass
         }
     }
 
+    public function cacheKey(string $filterPath): string
+    {
+        return implode(':', ['map-indicator', $this->mapIndicator->id, $filterPath]);
+    }
+
+    public function getDataAndCacheIt(string $key, string $filterPath, bool $cacheForever = false): Collection
+    {
+        return Cache::remember($key, config('chimera.cache.ttl'), function () use ($filterPath) {
+            return $this->getData($filterPath);
+        });
+    }
+
     protected function generateRanges(array $bins)
     {
         $ranges = [];
@@ -176,7 +186,7 @@ abstract class MapIndicatorBaseClass
         return 'default';
     }
 
-    public function getDataAndCacheIt(string $path): Collection
+    /*public function getDataAndCacheIt(string $path): Collection
     {
         $filter = AreaTree::pathAsFilter($path);
         return $this->getData($filter);
@@ -205,21 +215,11 @@ abstract class MapIndicatorBaseClass
                 return $this->getData($filter);
             } catch (\Exception $exception) {
                 logger("Exception occurred while trying to cache (in Map.php, getDataAndCacheIt method)", ['Exception: ' => $exception]);
-                return collect([]);
-            } finally {
-                if ($analytics['source'] !== 'Cache') {
-                    $analytics['completed_at'] = time();
-                    $this->mapIndicator->analytics()->create($analytics);
-                }
+                return collect();
             }
         //}
         //return collect([]);
-    }
-
-    public function getData(array $filter): Collection
-    {
-        return collect([]);
-    }
+    }*/
 
     public function getMappableData(Collection $data, string $filterPath): Collection
     {

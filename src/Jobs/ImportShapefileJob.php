@@ -124,7 +124,7 @@ class ImportShapefileJob implements ShouldQueue
         }); //->allowFailures()
 
         $processBatch = true;
-        foreach ($features->chunk(config('chimera.shapefile.import_chunk_size')) as $featuresChunk) {
+        foreach ($features->chunk(config('chimera.shapefile.import_chunk_size')) as $index => $featuresChunk) {
             $features = $featuresChunk->values()->toArray();
 
             if ($this->areNamesAndCodesValid($features)) {
@@ -133,8 +133,8 @@ class ImportShapefileJob implements ShouldQueue
 
                 $orphanFeatures = array_filter($augmentedFeaturesChunk, fn ($feature) => empty($feature['path']));
                 if (! empty($orphanFeatures)) {
-                    $orphans = collect($orphanFeatures)->pluck('attribs.code')->join(', ', ' and ');
-                    logger('All areas require a containing parent area. ' . count($orphanFeatures) . " orphan area(s) found.", ['Orphan feature codes' => $orphans]);
+                    $orphans = collect($orphanFeatures)->pluck('attribs.name')->join(', ', ' and ');
+                    logger(count($orphanFeatures) . " orphan area(s) found in chunk " . ($index + 1), ['Names' => $orphans]);
                 }
 
                 if (empty($orphanFeatures) || ! config('chimera.shapefile.stop_import_if_orphans_found')) {
