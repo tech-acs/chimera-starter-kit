@@ -168,7 +168,7 @@ class BreakoutQueryBuilder
             $newRowSkeleton->area_code = $area->code;
             $newRowTemplate->area_path = $area->path;
             if ($referenceValueToInclude) {
-                $newRowSkeleton->ref_value = $area->ref_value;
+                $newRowSkeleton->ref_value = $area->ref_value ?? null;
             }
             $areaEnhancedData[] = $newRowSkeleton;
         }
@@ -190,7 +190,7 @@ class BreakoutQueryBuilder
             $row->area_name = $area->name ?? null;
             $row->area_path = $area->path ?? null;
             if ($referenceValueToInclude) {
-                $row->ref_value = $area->ref_value;
+                $row->ref_value = $area->ref_value ?? null;
             }
             return $row;
         });

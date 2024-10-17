@@ -25,10 +25,10 @@ class ReportGeneratedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject("Report ready for download")
-                    ->line("A new version of the {$this->report->title} report has been generated")
-                    ->action('Download Report', route('report.download', $this->report))
-                    ->line('You can download the report from the above link');
+            ->subject("Report ready for download")
+            ->line("A new version of the {$this->report->title} report has been generated")
+            ->action('Download Report', route('report.download', $this->report))
+            ->line('You can download the report from the above link');
     }
 
     public function toArray($notifiable)
