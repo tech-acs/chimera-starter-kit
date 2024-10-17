@@ -48,7 +48,7 @@ class CacheIndicators extends Command
         foreach ($indicatorsToCache as $indicator) {
             $this->newLine()->info($indicator->name);
 
-            $artefact = DashboardComponentFactory::makeScorecard($indicator);
+            $artefact = DashboardComponentFactory::makeIndicator($indicator);
 
             // National level for non-restricted users
             $startTime = time();
