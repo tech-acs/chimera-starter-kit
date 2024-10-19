@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 use Illuminate\Support\Str;
@@ -30,14 +31,20 @@ class Exporter extends Component
     public function export()
     {
         $indicatorInstance = DashboardComponentFactory::makeIndicator($this->indicator);
-        $data = $indicatorInstance->getData($this->filterPath);
+        //$data = $indicatorInstance->getData($this->filterPath);
+        $indicatorInstance->filterPath = $this->filterPath;
+        if (Cache::has($indicatorInstance->cacheKey())) {
+            list(, $data) = Cache::get($indicatorInstance->cacheKey());
 
-        $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->indicator->slug) . '.csv';
-        $writer = SimpleExcelWriter::create($file);
-        foreach ($data as $record) {
-            $writer->addRow((array)$record);
+            $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->indicator->slug) . '.csv';
+            $writer = SimpleExcelWriter::create($file);
+            foreach ($data as $record) {
+                $writer->addRow((array)$record);
+            }
+            return response()->download($file);
+        } else {
+            $this->dispatch('notify', content: __('Data not yet ready for download'), type: 'info');
         }
-        return response()->download($file);
     }
 
     public function render()
