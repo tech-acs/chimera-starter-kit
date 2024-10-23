@@ -94,15 +94,13 @@ abstract class Chart extends Component
             foreach ($traces as $index => $trace) {
                 $columnNames = Arr::get($trace, 'meta.columnNames');
                 if ($columnNames) {
-                    $traces[$index]['x'] = $data[$columnNames['x']] ?? null;
-                    $traces[$index]['y'] = $data[$columnNames['y']] ?? null;
+                    /*$traces[$index]['x'] = $data[$columnNames['x']] ?? null;
+                    $traces[$index]['y'] = $data[$columnNames['y']] ?? null;*/
+                    foreach ($columnNames as $key => $columnName) {
+                        $traces[$index][$key] = $data[$columnName] ?? null;
+                    }
                 }
                 $traceName = strip_tags($trace['name'] ?? '');
-                /*if (in_array($traceName, array_keys($this->aggregateAppendedTraces))) {
-                    $aggOp = $this->aggregateAppendedTraces[$traceName];
-                    array_push($traces[$index]['x'], __('All') . ' ' . $this->getAreaBasedAxisTitle($filterPath));
-                    array_push($traces[$index]['y'], collect($traces[$index]['y'])->{$aggOp}());
-                }*/
                 if ((! $designMode) && in_array($traceName, array_keys($this->aggregateAppendedTraces))) {
                     $aggOp = $this->aggregateAppendedTraces[$traceName];
                     if (strtolower($aggOp) === 'sum') {
