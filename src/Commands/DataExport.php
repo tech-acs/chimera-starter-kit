@@ -33,6 +33,7 @@ class DataExport extends Command
                 ->setDbName($pgsqlConfig['database'])
                 ->setUserName($pgsqlConfig['username'])
                 ->setPassword($pgsqlConfig['password'])
+                ->setHost($pgsqlConfig['host'])
                 ->setPort($pgsqlConfig['port'])
                 ->includeTables($tableName)
                 ->doNotCreateTables()
