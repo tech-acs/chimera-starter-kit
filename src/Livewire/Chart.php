@@ -111,6 +111,7 @@ abstract class Chart extends Component
                             'showlegend' => false,
                             'x' => [__('<b>All') . ' ' . $this->getAreaBasedAxisTitle($filterPath) . '</b>'],
                             'y' => [collect($traces[$index]['y'])->{$aggOp}()],
+                            'hovertemplate' => '%{y:.0f}'
                         ];
                         unset($newDynamicTrace['meta'], $newDynamicTrace['xsrc'], $newDynamicTrace['ysrc']);
                         $traces[] = $newDynamicTrace;
