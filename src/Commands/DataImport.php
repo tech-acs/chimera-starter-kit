@@ -6,19 +6,20 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 
 class DataImport extends Command
 {
-    protected $signature = 'chimera:data-import {--do-not-truncate}';
+    protected $signature = 'chimera:data-import';
     protected $description = 'Restore postgres data (some tables) from file';
 
-    private function restoreTable(array $pgsqlConfig, bool $doNotTruncate, string $sourceFile)
+    private function restoreTable(array $pgsqlConfig, bool $truncate, string $sourceFile)
     {
         $table = basename($sourceFile, '.sql');
-        if (! $doNotTruncate) {
+        if ($truncate) {
             DB::table($table)->truncate();
         }
         info("Restoring $table");
@@ -51,18 +52,23 @@ class DataImport extends Command
             return self::FAILURE;
         }
 
-        $doNotTruncate = $this->option('do-not-truncate');
-        $truncationWarning = $doNotTruncate ? '' : ' [tables will be truncated before restoring]';
-
         $selectedFiles = multiselect(
-            label: 'Select the files (tables) you want to restore' . $truncationWarning,
+            label: 'Select the files (tables) you want to restore',
             options: $importables,
             required: "You must select at least one file",
             hint: 'Use the space bar to select and press enter when done.'
         );
 
+        $truncate = confirm(
+            label: "Do you want to truncate the tables before restoring the data from exported file?",
+            default: true,
+            yes: 'Yes',
+            no: 'No',
+            hint: "Truncating is the safer alternative as it will ensure consistency between dev and prod"
+        );
+
         foreach ($selectedFiles as $file) {
-            $this->restoreTable($pgsqlConfig, $doNotTruncate, "$exportFolder/$file");
+            $this->restoreTable($pgsqlConfig, $truncate, "$exportFolder/$file");
         }
 
         info('Data import completed');
