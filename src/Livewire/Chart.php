@@ -32,7 +32,6 @@ abstract class Chart extends Component
     public Carbon $dataTimestamp;
 
     public bool $isBeingFeatured = false;
-    public bool $linkedFromScorecard = false;
     public bool $useDynamicAreaXAxisTitles = false;
     public array $aggregateAppendedTraces = []; // ['trace name' => 'avg'] ... sum, count, min, max, mode, median
 

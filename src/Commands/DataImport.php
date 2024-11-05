@@ -60,7 +60,7 @@ class DataImport extends Command
         );
 
         $truncate = confirm(
-            label: "Do you want to truncate the tables before restoring the data from exported file?",
+            label: "Do you want to truncate the tables before restoring the data from the export file?",
             default: true,
             yes: 'Yes',
             no: 'No',

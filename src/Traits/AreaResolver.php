@@ -10,10 +10,7 @@ trait AreaResolver
 {
     public function shouldIgnoreFilterInSession(): bool
     {
-        return ($this?->isBeingFeatured ?? false) ||
-            ($this?->linkedFromScorecard ?? false) ||
-            $this instanceof CaseStats ||
-            $this instanceof ScorecardComponent;
+        return ($this?->isBeingFeatured ?? false) || $this instanceof CaseStats || $this instanceof ScorecardComponent;
     }
 
     public function areaResolver(): array
