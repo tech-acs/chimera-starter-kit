@@ -53,4 +53,9 @@ class Report extends Model
             },
         );
     }
+
+    public function scopeEnabled($query)
+    {
+        return $query->where('enabled', true);
+    }
 }
