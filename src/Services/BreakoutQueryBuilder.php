@@ -196,6 +196,67 @@ class BreakoutQueryBuilder
         });
     }
 
+    private function areaCrossJoinData(Collection $result, ?string $referenceValueToInclude, array $lookup = [], string $columnName = null): Collection
+    {
+        // Return early if the input data is empty
+        if ($result->isEmpty()) {
+            return $result;
+        }
+        $data = deep_copy($result);
+        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+
+        // Cross-join lookup with areas to create a Cartesian product
+        $lookupCollection = collect($lookup)->map(function ($value, $key) {
+            return [
+                'key' => $key,
+                'value' => $value
+            ];
+        });
+        $crossJoinedData = $lookupCollection->crossJoin($areas);
+        // Transform cross-joined data into enriched rows
+        $newRowTemplate = $this->makeTemplateRow($data->first());
+        $crossJoinedRows = $crossJoinedData->map(function ($pair) use ($columnName, $referenceValueToInclude,$newRowTemplate) {
+            [$lookupItem, $area] = $pair;
+            $newRow = clone $newRowTemplate;
+            $newRow->{$columnName} = $lookupItem['key'] ?? null;
+            $newRow->{$columnName . '_name'} = $lookupItem['value'] ?? null;
+            $newRow->area_name = $area->name;
+            $newRow->area_code = $area->code;
+            $newRow->area_path = $area->path;
+            if ($referenceValueToInclude) {
+                $newRow->ref_value = $area->ref_value;
+            }
+
+            return $newRow;
+        });
+        // Enrich existing data with area and lookup details
+        $areasKeyByAreaCode = $areas->keyBy('code');
+        $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude,$columnName,$lookup) {
+            $area = $areasKeyByAreaCode->get($row->{$this->joinColumn});
+            $area ??= (object) ['name' => 'Unknown'];
+            $row->area_name = $area->name ?? null;
+            $row->area_path = $area->path ?? null;
+            if ($referenceValueToInclude) {
+                $row->ref_value = $area->ref_value;
+            }
+            $row->{$columnName . '_name'} = $lookup[$row->{$columnName}] ?? null;
+            return $row;
+        });
+        // Filter cross-joined rows to exclude existing records
+        $existingKeys = $areaEnhancedData->map(fn ($row) => [$row->{$columnName}, $row->area_code])->toArray();
+        $filteredCrossJoinedRows = $crossJoinedRows->reject(function ($row) use ($existingKeys, $columnName) {
+            return in_array([$row->{$columnName}, $row->area_code], $existingKeys);
+        });
+
+        // Combine existing data with the filtered cross-joined rows
+        $combinedData = $areaEnhancedData->merge($filteredCrossJoinedRows);
+        // Sort the combined data by area name and return it
+        return $combinedData->sortBy([
+            ['area_name', 'asc'],
+            [$columnName ,'asc']
+        ]);
+    }
+
     public function lastlyAreaLeftJoinData(string $joinColumnOnDataSide = 'area_code', ?string $referenceValueToInclude = null): self
     {
         $this->leftJoin = 'area-left-join-data';
@@ -211,7 +272,14 @@ class BreakoutQueryBuilder
         $this->referenceValueToInclude = $referenceValueToInclude;
         return $this;
     }
-
+    public function lastlyAreaCrossJoinData(string $secondaryJoinColumnOnDataSide,array $secondaryDataToJoin,string $joinColumnOnDataSide = 'area_code',?string $referenceValueToInclude = null,): self{
+        $this->leftJoin = 'area-cross-join-data';
+        $this->joinColumn = $joinColumnOnDataSide;
+        $this->secondaryJoinColumn = $secondaryJoinColumnOnDataSide;
+        $this->secondaryDataToJoin = $secondaryDataToJoin;
+        $this->referenceValueToInclude = $referenceValueToInclude;
+        return $this;
+    }
     public function getCallingClassName($level)
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -222,12 +290,12 @@ class BreakoutQueryBuilder
     public function xRay($sql, $queryResult, $joinType, $finalResult)
     {
         Log::channel('x-ray')->info(json_encode([
-            'name' => $this->getCallingClassName(3),
-            'sql' => str($sql)->squish()->toString(),
-            'queryResult' => $queryResult,
-            'joinType' => $joinType,
-            'finalResult' => $finalResult,
-        ]) . '\n');
+                'name' => $this->getCallingClassName(3),
+                'sql' => str($sql)->squish()->toString(),
+                'queryResult' => $queryResult,
+                'joinType' => $joinType,
+                'finalResult' => $finalResult,
+            ]) . '\n');
     }
 
     public function get($sql = null) : Collection
@@ -243,6 +311,8 @@ class BreakoutQueryBuilder
                 $finalResult = $this->areaLeftJoinData($result, $this->referenceValueToInclude);
             } elseif ($this->leftJoin === 'data-left-join-area') {
                 $finalResult = $this->areaRightJoinData($result, $this->referenceValueToInclude);
+            } elseif ($this->leftJoin === 'area-cross-join-data') {
+                $finalResult = $this->areaCrossJoinData($result, $this->referenceValueToInclude, $this->secondaryDataToJoin, $this->secondaryJoinColumn);
             } else {
                 $finalResult = $result;
             }
