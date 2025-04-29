@@ -11,7 +11,7 @@ trait FilterBasedAxisTitle
         $areaTree = new AreaTree();
         //$path = AreaTree::getFinestResolutionFilterPath($filter);
         $depth = collect(explode('.', $filterPath))->filter()->count();
-        $levelName = $areaTree->hierarchies[$depth];
+        $levelName = $areaTree->hierarchies[$depth]??($depth > 0 ? $areaTree->hierarchies[$depth-1]:'');
         $title = str($levelName)->plural()->title();
         if ($depth > 0 && $includeParent) {
             $previousLevel = $areaTree->getArea($filterPath);
