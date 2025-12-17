@@ -20,7 +20,7 @@ class Map extends Component
 {
     public array $leafletMapOptions;
     public array $indicators = [];
-    public string $currentIndicator;
+    public ?string $currentIndicator = null;
     public array $previouslySentPaths = [];
     public array $simplification;
     public array $allStyles;
@@ -105,9 +105,13 @@ class Map extends Component
             $filteredPaths = $filtered->map(fn ($feature) => $feature->properties->path)->all();
             $this->previouslySentPaths = array_merge($this->previouslySentPaths, $filteredPaths);
             $geojson->features = $filtered->values()->all();
-            $currentIndicator = new $this->currentIndicator;
-            $key = $currentIndicator->cacheKey($path);
-            $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($key, $path), $path));
+            if (is_null($this->currentIndicator)) {
+                $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: []);
+            } else {
+                $currentIndicator = new $this->currentIndicator;
+                $key = $currentIndicator->cacheKey($path);
+                $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($key, $path), $path));
+            }
         } else {
             $this->dispatch('backendResponse', geojson: null, level: $nextLevel, data: []);
         }
@@ -127,8 +131,8 @@ class Map extends Component
     public function mount()
     {
         $this->leafletMapOptions = [
-            'center' => config('chimera.area.map.center'),
-            'zoom' => 6,
+            'center' => [settings('map_center_lat'), settings('map_center_lon')],
+            'zoom' => settings('map_starting_zoom'),
             'minZoom' => 6,
             'zoomControl' => false,
             'attributionControl' => false,

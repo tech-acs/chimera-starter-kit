@@ -28,7 +28,7 @@ class SmartTableData
     public ?string $downloadableFileName;
     public string $sortBy;
     public SortDirection $sortDirection = SortDirection::ASC;
-    public int $defaultPageSize;
+    public ?int $defaultPageSize;
 
     public function __construct(Builder $builder, Request $request)
     {

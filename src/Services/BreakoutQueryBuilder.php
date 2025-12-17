@@ -30,7 +30,7 @@ class BreakoutQueryBuilder
     private ?string $referenceValueToInclude = null;
 
     public function __construct(
-        string $dataSource = null,
+        ?string $dataSource = null,
         string $filterPath = '',
         bool $excludePartials = true,
         bool $excludeDeleted = true,

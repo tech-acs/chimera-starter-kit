@@ -111,7 +111,7 @@ class DataSourceController extends Controller
             return redirect()->route('developer.data-source.index')
                 ->withMessage('Connection test successful');
         } else {
-            return redirect()->route('data-source.index')
+            return redirect()->route('developer.data-source.index')
                 ->withErrors($results->pluck('message')->filter()->all());
         }
     }

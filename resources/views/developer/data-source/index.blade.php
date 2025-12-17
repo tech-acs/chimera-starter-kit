@@ -12,6 +12,8 @@
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <x-chimera::message-display />
 
+        <x-chimera::error-display />
+
         <div class="text-right">
             <a href="{{ route('developer.data-source.create') }}"><x-button>{{ __('Create new') }}</x-button></a>
         </div>
