@@ -22,7 +22,7 @@ abstract class ReportBaseClass
         $this->report = $report;
     }
 
-    abstract public function getData(string $path): Collection;
+    abstract public function getData(string $filterPath): Collection;
 
     public function filename(string $path): string
     {
@@ -33,6 +33,9 @@ abstract class ReportBaseClass
 
     protected function writeFile(array $data, string $filename)
     {
+        if (empty($data)) {
+            $data = [['No data found.' => '']];
+        }
         SimpleExcelWriter::create(Storage::disk('reports')
             ->path($filename))
             ->addHeader([$this->report->title])
@@ -44,10 +47,10 @@ abstract class ReportBaseClass
     protected function generateForPath(string $path)
     {
         $data = $this->getData($path);
-        if ($data->isEmpty()) {
+        /*if ($data->isEmpty()) {
             //dump("There is no data to export for path: $path");
             return;
-        }
+        }*/
         $rowified = $data->map(function ($obj) {
             return (array)$obj;
         })->all();
