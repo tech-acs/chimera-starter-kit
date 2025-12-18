@@ -13,7 +13,7 @@ class HomeController extends Controller
     public function __invoke()
     {
         $dataSources = DataSource::active()->showOnHomePage()->orderBy('rank')->get();
-        $pages = collect(PageBuilder::pages())
+        /*$pages = collect(PageBuilder::pages())
             ->map(function ($page, $route) {
                 return [
                     'title' => $page->title,
@@ -48,8 +48,8 @@ class HomeController extends Controller
             $page['bg-color'] = $currentPalette[$index % $totalColors];
             $page['fg-color'] = APCA::decideBlackOrWhiteTextColor($currentPalette[$index]);
             return $page;
-        })->all();
+        })->all();*/
 
-        return view('chimera::home', compact('dataSources', 'graphicalMenu'));
+        return view('chimera::home', compact('dataSources'));
     }
 }
