@@ -12,10 +12,13 @@ use Spatie\SimpleExcel\SimpleExcelWriter;
 use Uneca\Chimera\Notifications\ReportGeneratedNotification;
 use Uneca\Chimera\Services\AreaTree;
 
+use OpenSpout\Common\Entity\Style\{Style, Border, BorderPart, CellAlignment};
+
 abstract class ReportBaseClass
 {
     public Report $report;
-    public $fileType = 'csv';
+
+    public $fileType = 'xlsx';
 
     public function __construct(Report $report)
     {
@@ -36,12 +39,56 @@ abstract class ReportBaseClass
         if (empty($data)) {
             $data = [['No data found.' => '']];
         }
+        $border = new Border(
+            new BorderPart(Border::BOTTOM, width: Border::WIDTH_THIN),
+            new BorderPart(Border::LEFT, width: Border::WIDTH_THIN),
+            new BorderPart(Border::RIGHT, width: Border::WIDTH_THIN),
+            new BorderPart(Border::TOP, width: Border::WIDTH_THIN)
+        );
+        $style = (new Style())->setBorder($border);
+
+        $headerStyle = (new Style())
+            ->setFontBold()
+            ->setFontSize(12)
+            ->setShouldWrapText()
+            ->setBackgroundColor('d1d5db')
+            ->setBorder($border);
+        $columnHeaderStyle = $headerStyle->setCellAlignment(CellAlignment::CENTER);
+        $columnHeaders = array_keys(reset($data)); // Actual headers (get from the first row)
+
+        SimpleExcelWriter::create(
+            Storage::disk('reports')->path($filename),
+            configureWriter: function ($writer) use ($columnHeaders) {
+                $options = $writer->getOptions();
+                $options->DEFAULT_COLUMN_WIDTH = 15;
+                $options->DEFAULT_ROW_HEIGHT = 18;
+                // Arguments: startColumn, startRow, endColumn, endRow
+                $options->mergeCells(0, 1, count($columnHeaders) - 1, 1);
+                $options->mergeCells(0, 2, count($columnHeaders) - 1, 2);
+            }
+        )
+        ->noHeaderRow()
+        ->addRow([$this->report->title], $headerStyle)
+        ->addRow([__("As of ") . now()->toDayDateTimeString()], $headerStyle)
+        ->setHeaderStyle($columnHeaderStyle)
+        ->addHeader($columnHeaders)
+        ->addRows($data, $style);
+
+        $this->fileType = 'csv';
+    }
+
+    protected function writeCsvFile(array $data, string $filename)
+    {
+        if (empty($data)) {
+            $data = [['No data found.' => '']];
+        }
         SimpleExcelWriter::create(Storage::disk('reports')
             ->path($filename))
             ->addHeader([$this->report->title])
             ->addHeader(["As of " . now()->toDayDateTimeString()])
             ->addHeader(array_keys(reset($data))) // Actual headers (get from the first row)
             ->addRows($data);
+        $this->fileType = 'csv';
     }
 
     protected function generateForPath(string $path)
