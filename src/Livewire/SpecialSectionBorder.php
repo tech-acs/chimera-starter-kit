@@ -16,7 +16,7 @@ class SpecialSectionBorder extends Component
 
     public function mount()
     {
-        $this->developerMode = session('developer_mode_enabled', false);
+        $this->developerMode = (session('developer_mode_enabled', false) || app()->environment('local'));
     }
 
     public function knock()

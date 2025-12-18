@@ -127,7 +127,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         });
 
         Gate::define('developer-mode', function ($user) {
-            return session('developer_mode_enabled', false);
+            return (session('developer_mode_enabled', false) || $this->app->environment('local'));
         });
 
         LogViewer::auth(function ($request) {
