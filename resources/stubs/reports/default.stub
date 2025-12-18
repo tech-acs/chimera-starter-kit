@@ -2,8 +2,9 @@
 
 namespace DummyNamespace;
 
-use Uneca\Chimera\Report\ReportBaseClass;
 use Illuminate\Support\Collection;
+use Uneca\Chimera\Report\ReportBaseClass;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
 
 class {{ class }} extends ReportBaseClass
 {
