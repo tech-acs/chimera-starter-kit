@@ -272,6 +272,7 @@ class BreakoutQueryBuilder
         $this->referenceValueToInclude = $referenceValueToInclude;
         return $this;
     }
+
     public function lastlyAreaCrossJoinData(string $secondaryJoinColumnOnDataSide,array $secondaryDataToJoin,string $joinColumnOnDataSide = 'area_code',?string $referenceValueToInclude = null,): self{
         $this->leftJoin = 'area-cross-join-data';
         $this->joinColumn = $joinColumnOnDataSide;
@@ -280,6 +281,7 @@ class BreakoutQueryBuilder
         $this->referenceValueToInclude = $referenceValueToInclude;
         return $this;
     }
+
     public function getCallingClassName($level)
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -290,12 +292,12 @@ class BreakoutQueryBuilder
     public function xRay($sql, $queryResult, $joinType, $finalResult)
     {
         Log::channel('x-ray')->info(json_encode([
-                'name' => $this->getCallingClassName(3),
-                'sql' => str($sql)->squish()->toString(),
-                'queryResult' => $queryResult,
-                'joinType' => $joinType,
-                'finalResult' => $finalResult,
-            ]) . '\n');
+            'name' => $this->getCallingClassName(3),
+            'sql' => str($sql)->squish()->toString(),
+            'queryResult' => $queryResult,
+            'joinType' => $joinType,
+            'finalResult' => $finalResult,
+        ]) . '\n');
     }
 
     public function get($sql = null) : Collection
