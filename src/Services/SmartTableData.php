@@ -36,7 +36,7 @@ class SmartTableData
         $this->request = $request;
         $this->searchableColumns = collect();
         $this->searchPlaceholder = __('Search');
-        $this->defaultPageSize = config('chimera.records_per_page');
+        $this->defaultPageSize = settings('records_per_page');
         return $this;
     }
 

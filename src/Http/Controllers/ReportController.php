@@ -21,7 +21,7 @@ class ReportController extends Controller
                 return $query->where('data_source', $filter);
             })
             ->orderBy('rank')
-            ->paginate(config('chimera.records_per_page'));
+            ->paginate(settings('records_per_page'));
         $records->setCollection(
             $records->getCollection()->filter(function ($report) {
                 return Gate::allows($report->permission_name);

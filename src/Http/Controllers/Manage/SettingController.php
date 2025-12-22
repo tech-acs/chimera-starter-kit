@@ -11,19 +11,35 @@ class SettingController extends Controller
 {
     public function edit()
     {
-        $settings = Setting::directlyEditable()->orderBy('id')->get(['key', 'value', 'label']);
-        return view('chimera::setting.index', compact('settings'));
+        $groupedSettings = Setting::directlyEditable()
+            ->orderBy('id')
+            ->get()
+            ->map(function ($setting) {
+                list($label, $help) = str($setting->label)->explode('|');
+                $setting->label = $label;
+                $setting->help = $help;
+                return $setting;
+            })
+            ->groupBy('group');
+        return view('chimera::setting.index', compact('groupedSettings'));
     }
 
     public function update(Request $request)
     {
+        $checkboxTypes = Setting::directlyEditable()
+            ->where('input_type', 'checkbox')
+            ->pluck('value', 'key')
+            ->map(fn($v) => null)
+            ->toArray();
+        $request->mergeIfMissing($checkboxTypes);
         $inputData = $request->except('_token');
         foreach ($inputData as $key => $value) {
-            // ToDo: validate
+            // ToDo: validate. But how?
             Setting::where('key', $key)->update(['value' => $value]);
         }
         Cache::forget('settings');
-        session()->put('tab', $request->get('tab', 'ownership'));
+        session()->flash('active-tab', $request->get('active-tab', 'group1'));
+
         return redirect()->route('setting.edit')
             ->with(['message' => 'Successfully updated the settings.']);
     }
