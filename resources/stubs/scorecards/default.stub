@@ -8,6 +8,10 @@ use Uneca\Chimera\Services\BreakoutQueryBuilder;
 
 class {{ class }} extends ScorecardComponent
 {
+    // public string $unit = '%';
+    // public string $bgColor;
+    // public string $fgColor;
+
     public function getData(string $filterPath): Collection
     {
         // TODO: Implement getData() method.

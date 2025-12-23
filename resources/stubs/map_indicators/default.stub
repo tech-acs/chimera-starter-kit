@@ -7,5 +7,15 @@ use Uneca\Chimera\Services\BreakoutQueryBuilder;
 
 class {{ class }} extends MapIndicatorBaseClass
 {
+    // public string $valueField = 'value';
+    // public string $displayValueField = 'display_value';
+    // public string $infoTextField = 'info';
 
+    // public array $bins = [0, 35, 65, 100];
+    // public const SELECTED_COLOR_CHART = 'rag';
+
+    public function getData(string $filterPath): Collection
+    {
+        return collect();
+    }
 }
