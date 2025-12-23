@@ -14,7 +14,7 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $records = Announcement::paginate(config('chimera.records_per_page'));
+        $records = Announcement::paginate(settings('records_per_page'));
         return view('chimera::announcement.index', compact('records'));
     }
 

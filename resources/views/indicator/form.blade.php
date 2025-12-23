@@ -70,7 +70,7 @@
                     </div>
                     <div class="ml-3 text-base leading-6">
                         <label for="is_featured" class="font-medium text-gray-900">Feature on home page</label>
-                        <p class="text-gray-500 text-xs">{{ __('A maximum of :featured featured indicators will be displayed per data source', ['featured' => config('chimera.featured_indicators_per_data_source')]) }}</p>
+                        <p class="text-gray-500 text-xs">{{ __('A maximum of :featured featured indicators will be displayed per data source', ['featured' => settings('featured_indicators_per_data_source')]) }}</p>
                     </div>
                 </div>
             </div>

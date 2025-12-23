@@ -15,7 +15,7 @@ class AnalyticsController extends Controller
         $records = Analytics::query()
             ->with('analyzable', 'user')
             ->orderBy('elapsed_seconds', 'DESC')
-            ->paginate(config('chimera.records_per_page'));
+            ->paginate(settings('records_per_page'));
         $records->setCollection(
             $records->getCollection()->map(function ($record) use ($hierarchies) {
                 $class = class_basename($record->analyzable_type);
