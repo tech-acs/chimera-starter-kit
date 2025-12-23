@@ -131,8 +131,8 @@ class Map extends Component
     public function mount()
     {
         $this->leafletMapOptions = [
-            'center' => config('chimera.area.map.center'),//[settings('map_center_lat'), settings('map_center_lon')],
-            'zoom' => 6,//settings('map_starting_zoom'),
+            'center' => [settings('map_center_lat'), settings('map_center_lon')],
+            'zoom' => settings('map_starting_zoom'),
             'minZoom' => 6,
             'zoomControl' => false,
             'attributionControl' => false,
