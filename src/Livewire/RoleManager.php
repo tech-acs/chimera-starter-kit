@@ -106,9 +106,7 @@ class RoleManager extends Component
 
     public function save()
     {
-        $filtered = collect($this->permissions)->filter(function ($value, $key) {
-            return $value;
-        })->keys();
+        $filtered = collect($this->permissions)->filter(fn($value, $key) => $value)->keys();
         $this->role->syncPermissions($filtered);
         $this->dispatch('roleUpdated');
     }
