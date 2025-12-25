@@ -2,14 +2,13 @@
 
 namespace Uneca\Chimera\Commands;
 
+use App\Actions\Maker\CreateIndicatorAction;
+use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Uneca\Chimera\DTOs\IndicatorAttributes;
 use Uneca\Chimera\Models\ChartTemplate;
-use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\DataSource;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\DB;
 use Uneca\Chimera\Traits\PlotlyDefaults;
-use function Laravel\Prompts\info;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\text;
@@ -17,7 +16,7 @@ use function Laravel\Prompts\textarea;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\confirm;
 
-class MakeIndicator extends GeneratorCommand
+class MakeIndicator extends Command
 {
     use PlotlyDefaults;
 
@@ -27,37 +26,12 @@ class MakeIndicator extends GeneratorCommand
     protected $type = 'default';
     protected $includeSampleCode = '';
 
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace . '\Livewire';
-    }
-
-    protected function getStub()
-    {
-        return resource_path("stubs/indicators/{$this->type}{$this->includeSampleCode}.stub");
-    }
-
-    protected function writeIndicatorFile(string $name, ?string $template = null)
-    {
-        $className = $this->qualifyClass($name);
-        $path = $this->getPath($className);
-        $this->makeDirectory($path);
-        $content = $this->buildClass($className);
-
-        return $this->files->put($path, $content);
-    }
-
-    /*protected function buildClassWithTemplate(string $templateFile, string $className)
-    {
-        return str_replace(['DummyParentClass', '{{ parent_class }}', '{{parent_class}}'], str_replace('/', "\\", str_replace('.php', '', $templateFile)), $this->buildClass($className));
-    }*/
-
     protected function loadIndicatorTemplates(): Collection
     {
         return ChartTemplate::orderBy('name')->get();
     }
 
-    public function handle()
+    public function handle(CreateIndicatorAction $createIndicatorAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -126,6 +100,8 @@ class MakeIndicator extends GeneratorCommand
             $this->includeSampleCode = $includeSampleCode ? '-with-sample-code' : '';
         }
 
+        $stub = resource_path("stubs/indicators/{$this->type}{$this->includeSampleCode}.stub");
+
         $title = text(
             label: "Please enter a reader friendly title for the indicator",
             placeholder: 'E.g. Households Enumerated by Day or Birth Rate',
@@ -139,24 +115,24 @@ class MakeIndicator extends GeneratorCommand
             hint: "You can leave this empty for now"
         );
 
-        $indicator = Indicator::make([
-            'name' => $name,
-            'title' => $title,
-            'description' => $description,
-            'data_source' => $dataSource,
-            'type' => $chosenChartType,
-            'data' => $selectedTemplate?->data ?? [],
-            'layout' => $selectedTemplate?->layout ?? self::DEFAULT_LAYOUT,
-        ]);
-        DB::transaction(function () use ($indicator, $name, $selectedTemplate) {
-            if ($this->writeIndicatorFile($name)) {
-                info('Indicator created successfully.');
-            } else {
-                throw new \Exception('There was a problem creating the class file');
-            }
-            $indicator->save();
-        });
+        $indicatorAttributes = new IndicatorAttributes(
+            name: $name,
+            title: $title,
+            dataSource: $dataSource,
+            type: $chosenChartType,
+            description: $description,
+            data: $selectedTemplate?->data ?? [],
+            layout: $selectedTemplate?->layout ?? self::DEFAULT_LAYOUT,
+            stub: $stub
+        );
+        try {
+            $createIndicatorAction->execute($indicatorAttributes);
+            info('Indicator created successfully.');
+            return self::SUCCESS;
 
-        return self::SUCCESS;
+        } catch (\Exception $e) {
+            error($e->getMessage());
+            return self::FAILURE;
+        }
     }
 }

@@ -12,6 +12,14 @@
     <div class="flex flex-col max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <x-chimera::message-display />
 
+        <x-chimera::error-display />
+
+        @can('developer-mode')
+            <div class="text-right">
+                <a href="{{route('developer.report.create')}}"><x-button>{{ __('Create new') }}</x-button></a>
+            </div>
+        @endcan
+
         <div class="mt-2 flex flex-col">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

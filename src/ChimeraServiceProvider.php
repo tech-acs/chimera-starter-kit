@@ -86,7 +86,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeQueryFragment::class,
                 \Uneca\Chimera\Commands\DeployHorizon::class,
                 \Uneca\Chimera\Commands\MakeReferenceValueSynthesizer::class,
-                \Uneca\Chimera\Commands\TransferReferenceValues::class
+                \Uneca\Chimera\Commands\TransferReferenceValues::class,
+                \Uneca\Chimera\Commands\ChimeraArtefactGenerator::class
             ]);
     }
 

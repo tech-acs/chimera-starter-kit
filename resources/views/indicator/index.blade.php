@@ -16,6 +16,12 @@
 
         <x-chimera::error-display />
 
+        @can('developer-mode')
+            <div class="text-right">
+                <a href="{{route('developer.indicator.create')}}"><x-button>{{ __('Create new') }}</x-button></a>
+            </div>
+        @endcan
+
         <x-chimera-smart-table :$smartTableData custom-action-sub-view="chimera::indicator.custom-action" />
     </div>
 </x-app-layout>
