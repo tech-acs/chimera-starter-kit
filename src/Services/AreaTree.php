@@ -79,4 +79,16 @@ class AreaTree
             ->whereRaw("path ~ '{$path}'")
             ->first();
     }
+
+    public function getLeafs(?string $parentPath = null)
+    {
+        $maxLevel = Area::orderBy('level', 'desc')->value('level');
+
+        return Area::where('level', $maxLevel)
+            ->when(! is_null($parentPath), function ($query) use ($parentPath) {
+                return $query->whereRaw("path ~ '{$parentPath}.*{1}'");
+            })
+            ->select('path', 'code', 'name')
+            ->get();
+    }
 }
