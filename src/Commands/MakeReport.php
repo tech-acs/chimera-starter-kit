@@ -2,10 +2,10 @@
 
 namespace Uneca\Chimera\Commands;
 
+use App\Actions\Maker\CreateReportAction;
+use Illuminate\Console\Command;
+use Uneca\Chimera\DTOs\ReportAttributes;
 use Uneca\Chimera\Models\DataSource;
-use Uneca\Chimera\Models\Report;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
@@ -13,38 +13,17 @@ use function Laravel\Prompts\text;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\textarea;
 
-class MakeReport extends GeneratorCommand
+class MakeReport extends Command
 {
     protected $signature = 'chimera:make-report';
     protected $description = 'Create a new report. Creates file from stub and adds entry in reports table.';
-
-    protected $type = 'default';
-
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace . '\Reports';
-    }
-
-    protected function getStub()
-    {
-        return resource_path("stubs/reports/{$this->type}.stub");
-    }
-
-    protected function writeFile(string $name)
-    {
-        $className = $this->qualifyClass($name);
-        $path = $this->getPath($className);
-        $this->makeDirectory($path);
-        $content = $this->buildClass($className);
-        return $this->files->put($path, $content);
-    }
 
     private function ensureReportsPermissionExists()
     {
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'reports']);
     }
 
-    public function handle()
+    public function handle(CreateReportAction $createReportAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -76,21 +55,21 @@ class MakeReport extends GeneratorCommand
         );
         $this->ensureReportsPermissionExists();
 
-        $report = Report::create([
-            'name' => $name,
-            'title' => $title,
-            'description' => $description,
-            'data_source' => $dataSource,
-        ]);
-        DB::transaction(function () use ($report, $name) {
-            if ($this->writeFile($name)) {
-                info('Report created successfully.');
-            } else {
-                throw new \Exception('There was a problem creating the class file');
-            }
-            $report->save();
-        });
+        $reportAttributes = new ReportAttributes(
+            name: $name,
+            title: $title,
+            description: $description,
+            dataSource: $dataSource,
+            stub: resource_path("stubs/reports/default.stub")
+        );
+        try {
+            $createReportAction->execute($reportAttributes);
+            info('Report created successfully.');
+            return self::SUCCESS;
 
-        return self::SUCCESS;
+        } catch (\Exception $e) {
+            error($e->getMessage());
+            return self::FAILURE;
+        }
     }
 }

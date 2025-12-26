@@ -2,48 +2,27 @@
 
 namespace Uneca\Chimera\Commands;
 
+use App\Actions\Maker\CreateScorecardAction;
+use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
+use Uneca\Chimera\DTOs\ScorecardAttributes;
 use Uneca\Chimera\Models\DataSource;
-use Uneca\Chimera\Models\Scorecard;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\info;
 
-class MakeScorecard extends GeneratorCommand
+class MakeScorecard extends Command
 {
     protected $signature = 'chimera:make-scorecard';
     protected $description = 'Create a new scorecard component. Creates file from stub and adds entry in scorecards table.';
-
-    protected $type = 'default';
-
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace . '\Livewire\Scorecard';
-    }
-
-    protected function getStub()
-    {
-        return resource_path("stubs/scorecards/{$this->type}.stub");
-    }
-
-    protected function writeFile(string $name)
-    {
-        $className = $this->qualifyClass($name);
-        $path = $this->getPath($className);
-        $this->makeDirectory($path);
-        $content = $this->buildClass($className);
-        return $this->files->put($path, $content);
-    }
 
     private function ensureScorecardsPermissionExists()
     {
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'scorecards']);
     }
 
-    public function handle()
+    public function handle(CreateScorecardAction $createScorecardAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -73,20 +52,20 @@ class MakeScorecard extends GeneratorCommand
 
         $this->ensureScorecardsPermissionExists();
 
-        $scorecard = Scorecard::make([
-            'name' => $name,
-            'title' => $title,
-            'data_source' => $dataSource,
-        ]);
-        DB::transaction(function () use ($scorecard, $name) {
-            if ($this->writeFile($name)) {
-                info('Scorecard created successfully.');
-            } else {
-                throw new \Exception('There was a problem creating the class file');
-            }
-            $scorecard->save();
-        });
+        $scorecardAttributes = new ScorecardAttributes(
+            name: $name,
+            title: $title,
+            dataSource: $dataSource,
+            stub: resource_path("stubs/scorecards/default.stub")
+        );
+        try {
+            $createScorecardAction->execute($scorecardAttributes);
+            info('Scorecard created successfully.');
+            return self::SUCCESS;
 
-        return self::SUCCESS;
+        } catch (\Exception $e) {
+            error($e->getMessage());
+            return self::FAILURE;
+        }
     }
 }

@@ -66,6 +66,11 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
                 Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
                 Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
 
+                Route::resource('indicator', \Uneca\Chimera\Http\Controllers\Manage\IndicatorMakerController::class)->only(['create', 'store']);
+                Route::resource('scorecard', \Uneca\Chimera\Http\Controllers\Manage\ScorecardMakerController::class)->only(['create', 'store']);
+                Route::resource('map_indicator', \Uneca\Chimera\Http\Controllers\Manage\MapIndicatorMakerController::class)->only(['create', 'store']);
+                Route::resource('report', \Uneca\Chimera\Http\Controllers\Manage\ReportMakerController::class)->only(['create', 'store']);
+
                 Route::get('indicator/{indicator}/chart-editor', [IndicatorEditorController::class, 'index'])->name('indicator-editor');
                 Route::get('api/indicator/{indicator}', [IndicatorEditorController::class, 'edit']);
                 Route::post('api/indicator/{indicator}', [IndicatorEditorController::class, 'update']);

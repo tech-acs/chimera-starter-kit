@@ -2,10 +2,10 @@
 
 namespace Uneca\Chimera\Commands;
 
-use Uneca\Chimera\Models\MapIndicator;
+use App\Actions\Maker\CreateMapIndicatorAction;
+use Illuminate\Console\Command;
+use Uneca\Chimera\DTOs\MapIndicatorAttributes;
 use Uneca\Chimera\Models\DataSource;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\error;
@@ -13,38 +13,17 @@ use function Laravel\Prompts\text;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\textarea;
 
-class MakeMapIndicator extends GeneratorCommand
+class MakeMapIndicator extends Command
 {
     protected $signature = 'chimera:make-map-indicator';
     protected $description = 'Create a new map indicator. Creates file from stub and adds entry in map_indicators table.';
-
-    protected $type = 'default';
-
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace . '\MapIndicators';
-    }
-
-    protected function getStub()
-    {
-        return resource_path("stubs/map_indicators/{$this->type}.stub");
-    }
-
-    protected function writeFile(string $name)
-    {
-        $className = $this->qualifyClass($name);
-        $path = $this->getPath($className);
-        $this->makeDirectory($path);
-        $content = $this->buildClass($className);
-        return $this->files->put($path, $content);
-    }
 
     private function ensureMapIndicatorsPermissionExists()
     {
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'map_indicators']);
     }
 
-    public function handle()
+    public function handle(CreateMapIndicatorAction $createMapIndicatorAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -75,21 +54,21 @@ class MakeMapIndicator extends GeneratorCommand
         );
         $this->ensureMapIndicatorsPermissionExists();
 
-        $mapIndicator = MapIndicator::create([
-            'name' => $name,
-            'title' => $title,
-            'description' => $description,
-            'data_source' => $dataSource,
-        ]);
-        DB::transaction(function () use ($mapIndicator, $name) {
-            if ($this->writeFile($name)) {
-                info('Map indicator created successfully.');
-            } else {
-                throw new \Exception('There was a problem creating the class file');
-            }
-            $mapIndicator->save();
-        });
+        $indicatorAttributes = new MapIndicatorAttributes(
+            name: $name,
+            title: $title,
+            description: $description,
+            dataSource: $dataSource,
+            stub: resource_path("stubs/map_indicators/default.stub")
+        );
+        try {
+            $createMapIndicatorAction->execute($indicatorAttributes);
+            info('Map indicator created successfully.');
+            return self::SUCCESS;
 
-        return self::SUCCESS;
+        } catch (\Exception $e) {
+            error($e->getMessage());
+            return self::FAILURE;
+        }
     }
 }
