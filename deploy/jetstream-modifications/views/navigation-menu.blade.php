@@ -22,16 +22,20 @@
                         </x-nav-link>
                     @endcan
                 @endforeach
-                @can('maps')
-                    <x-nav-link href="{{ route('map') }}" class="!text-base" :active="request()->routeIs('map')">
-                        {{ __('Map') }}
-                    </x-nav-link>
-                @endcan
-                @can('reports')
-                    <x-nav-link href="{{ route('report') }}" class="!text-base" :active="request()->routeIs('report')">
-                        {{ __('Reports') }}
-                    </x-nav-link>
-                @endcan
+                @if(settings('show_map_menu'))
+                    @can('maps')
+                        <x-nav-link href="{{ route('map') }}" class="!text-base" :active="request()->routeIs('map')">
+                            {{ __('Map') }}
+                        </x-nav-link>
+                    @endcan
+                @endif
+                @if((int)settings('show_reports_menu'))
+                    @can('reports')
+                        <x-nav-link href="{{ route('report') }}" class="!text-base" :active="request()->routeIs('report')">
+                            {{ __('Reports') }}
+                        </x-nav-link>
+                    @endcan
+                @endif
 
                     <livewire:command-palette />
                 </div>
@@ -223,16 +227,20 @@
                     </x-responsive-nav-link>
                 @endcan
             @endforeach
-            @can('maps')
-                <x-responsive-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
-                    {{ __('Map') }}
-                </x-responsive-nav-link>
-            @endcan
-            @can('reports')
-                <x-responsive-nav-link href="{{ route('report') }}" :active="request()->routeIs('report')">
-                    {{ __('Reports') }}
-                </x-responsive-nav-link>
-            @endcan
+            @if(settings('show_map_menu'))
+                @can('maps')
+                    <x-responsive-nav-link href="{{ route('map') }}" :active="request()->routeIs('map')">
+                        {{ __('Map') }}
+                    </x-responsive-nav-link>
+                @endcan
+            @endif
+            @if(settings('show_reports_menu'))
+                @can('reports')
+                    <x-responsive-nav-link href="{{ route('report') }}" :active="request()->routeIs('report')">
+                        {{ __('Reports') }}
+                    </x-responsive-nav-link>
+                @endcan
+            @endif
             @can('Super User')
                 <div class="border-t border-gray-200"></div>
                 <x-responsive-nav-link href="{{ route('user.index') }}">{{ __('Users') }}</x-responsive-nav-link>
@@ -252,6 +260,7 @@
                 <x-responsive-nav-link href="{{ route('announcement.index') }}">{{ __('Announcements') }}</x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('usage_stats') }}">{{ __('Usage Stats') }}</x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('analytics.index') }}">{{ __('Query Analytics') }}</x-responsive-nav-link>
+                <x-responsive-nav-link href="{{ route('setting.edit') }}">{{ __('Settings') }}</x-responsive-nav-link>
             @endcan
         </div>
 

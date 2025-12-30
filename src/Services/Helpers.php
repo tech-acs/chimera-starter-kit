@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Crypt;
 
 if (! function_exists('settings')) {
     function settings(?string $key = null, $default = null)
@@ -9,7 +10,13 @@ if (! function_exists('settings')) {
         if (is_null($key)) {
             return app('settings');
         }
-        return app('settings')->get($key, $default);
+        //return app('settings')->get($key, $default);
+        $setting = app('settings')->get($key);
+        if (! is_null($setting)) {
+            return Crypt::decryptString($setting);
+        } else {
+            return $default;
+        }
     }
 }
 

@@ -3,8 +3,8 @@
         <x-button wire:click="$toggle('showSingleInviteForm')" wire:loading.attr="disabled">{{ __('Invite New User') }}</x-button>
         <livewire:bulk-inviter />
     </div>
-    <div class="py-2 align-middle inline-block min-w-full">
-        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+    <div class="py-2 align-middle overflow-x-auto min-w-full">
+        <div class="shadow overflow-x-auto border-b border-gray-200 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-200" wire:model="records">
                 <thead class="bg-gray-50">
                 <tr>
@@ -74,7 +74,7 @@
             {{ __('The link will expire in :ttl hours.', ['ttl' => config('chimera.invitation.ttl_hours')]) }}
             <div class="mt-6">
                 <x-label for="email" value="{{ __('Email address') }}" />
-                <x-input id="email" type="email" class="mt-1 block w-2/3" wire:model.defer="email" />
+                <x-input id="email" type="email" class="mt-1 block w-full md:w-2/3" wire:model.defer="email" />
                 <x-input-error for="email" class="mt-2" />
                 @if(config('chimera.emailing_enabled'))
                     <x-label>
@@ -84,7 +84,7 @@
             </div>
             <div class="mt-6">
                 <x-label for="role" value="{{ __('Role to assign') }}" />
-                <select wire:model="role" id="location" name="location" class="mt-1 block w-2/3 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <select wire:model="role" id="location" name="location" class="mt-1 block w-full md:w-2/3 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     <option value="">{{ __('Will assign later') }}</option>
                     @foreach($roles as $r)
                         <option value="{{$r->name}}">{{$r->name}}</option>

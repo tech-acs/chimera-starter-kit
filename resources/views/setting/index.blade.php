@@ -30,7 +30,7 @@
                             }"
                         >
                             {{-- Tabs menu --}}
-                            <div class="grid grid-cols-1 items-start content-start gap-y-4">
+                            <div class="grid grid-cols-1 items-start content-start gap-y-3">
                                 @foreach($groupedSettings as $groupName => $settings)
                                     <div
                                         @click="tabTo('group{{ $loop->iteration }}')"
@@ -47,7 +47,7 @@
                                     class="px-4 py-2 shadow-xs cursor-pointer"
                                 >
                                     <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Color palette selector</h2>
-                                    <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">It applies to dashboard elements such as charts, scorecards and cards.</p>
+                                    <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Applies sitewide to charts, scorecards and cards.</p>
                                 </div>
                                 <input type="hidden" name="active-tab" x-model="selectedId">
                             </div>

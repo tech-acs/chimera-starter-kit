@@ -4,7 +4,7 @@
         <x-chimera::message-display />
 
         <div class="mt-2 flex flex-col">
-            <div class="inline-block min-w-full py-2 align-middle">
+            <div class="inline-block min-w-full py-2 px-4 align-middle">
                 {{--<div class="p-2 text-sm text-gray-500">
                     Filter
                     @if (is_null($filter))
@@ -20,7 +20,7 @@
                         </span>
                     @endif
                 </div>--}}
-                <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                     <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
                         <tr>

@@ -11,7 +11,7 @@
                 </form>
             @endif
         </div>
-        <div class="flex items-center">
+        <div class="flex flex-col md:flex-row items-center">
             <label class="text-sm text-gray-600 mr-2">Per page</label>
             <x-dropdown align="right" width="20">
                 <x-slot name="trigger">
