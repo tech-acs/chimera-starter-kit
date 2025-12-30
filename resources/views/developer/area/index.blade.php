@@ -25,16 +25,16 @@
                 @endif
             </div>
             <div class="flex items-center">
-                <div class="bg-sky-400/20 text-sky-600 h-9 px-4 text-sm flex items-center rounded-full font-medium">
+                <div class="hidden md:flex bg-sky-400/20 text-sky-600 h-9 px-4 text-sm items-center rounded-full font-medium">
                     {{ empty($summary) ? "No areas imported yet" : $summary }}
                 </div>
                 @can('developer-mode')
-                    <div class="ml-4" x-data="confirmedDeletion">
+                    <div class="flex ml-4" x-data="confirmedDeletion">
                         <a href="{{route('developer.area.create')}}"><x-button>{{ __('Import') }}</x-button></a>
 
                         <x-chimera::delete-confirmation />
                         <a href="{{route('developer.area.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
-                            <x-danger-button class="ml-2">{{ __('Delete All') }}</x-danger-button>
+                            <x-danger-button class="ml-2 text-nowrap">{{ __('Delete All') }}</x-danger-button>
                         </a>
                     </div>
                 @endcan
