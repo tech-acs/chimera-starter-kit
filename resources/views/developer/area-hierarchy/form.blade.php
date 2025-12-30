@@ -17,14 +17,14 @@
             <small>(Set 0 for no simplification)</small>
             <x-input-error for="simplification_tolerance" class="mt-2" />
         </div>
-        <div>
+        {{--<div>
             <x-label for="map_zoom_levels" value="{{ __('Corrosponding map zoom levels') }} *" />
             <div>
                 <x-input name="zoom_start" min="6" max="21" type="number" step="1" class="mt-1 mr-2 w-24" value="{{ old('zoom-start', $areaHierarchy->zoom_start ?? null) }}" /> &#8211;
                 <x-input name="zoom_end" min="6" max="21" type="number" step="1" class="w-24 ml-2" value="{{ old('zoom-end', $areaHierarchy->zoom_end ?? null) }}" />
                 <x-input-error for="map_zoom_levels" class="mt-2" />
             </div>
-        </div>
+        </div>--}}
     </div>
     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
         <x-secondary-button class="mr-2"><a href="{{ route('developer.area-hierarchy.index') }}">{{ __('Cancel') }}</a></x-secondary-button>
