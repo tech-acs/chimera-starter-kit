@@ -176,9 +176,17 @@ class ChimeraServiceProvider extends PackageServiceProvider
         }
 
         $this->app->singleton('settings', function () {
-            return Cache::rememberForever('settings', function () {
-                return Setting::all()->pluck('value', 'key');
-            });
+            return Cache::rememberForever('settings', fn() => Setting::all()->pluck('value', 'key'));
         });
+        config([
+            'mail.mailers.smtp.host'       => settings('mail_host'),
+            'mail.mailers.smtp.port'       => settings('mail_port'),
+            'mail.mailers.smtp.encryption' => settings('mail_encryption'),
+            'mail.mailers.smtp.username'   => settings('mail_username'),
+            'mail.mailers.smtp.password'   => settings('mail_password'),
+            'mail.from.address'            => settings('mail_from_address'),
+            'mail.from.name'               => settings('mail_from_name'),
+        ]);
+        \Illuminate\Support\Facades\Mail::forgetMailers();
     }
 }
