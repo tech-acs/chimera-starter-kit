@@ -12,6 +12,16 @@
                 <x-input-error for="description" class="mt-2" />
             </div>
             <div>
+                <x-label for="type" value="{{ __('Contained artefact type') }} *" />
+                <select name="type" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                    <option value="">{{ __('Select type') }}</option>
+                    @foreach($pageableTypes as $pageableType)
+                        <option class="p-2 rounded-md" value="{{ $pageableType }}" @selected($pageableType === $page?->for ?? null)>{{ $pageableType }}</option>
+                    @endforeach
+                </select>
+                <x-input-error for="type" class="mt-2" />
+            </div>
+            <div>
                 <x-label for="rank" value="{{ __('Rank') }}" />
                 <x-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $page->rank ?? null) }}" />
                 <x-input-error for="rank" class="mt-2" />
@@ -38,9 +48,10 @@
                     </label>
                 </div>
             </div>
+
             @if (isset($page))
                 <div class="">
-                    <x-label for="indicators" value="{{ __('Indicators on page') }}" />
+                    <x-label for="indicators" value="{{ __('Artefacts on page') }}" />
 
                     <div class="w-1/2 mt-2 px-2 border border-gray-300 rounded-md">
                         <ul role="list" class="divide-y divide-gray-200 -mt-[1px]" x-data="indicatorOrdering()">
@@ -48,7 +59,7 @@
                                 <li class="flex py-4">
                                     <div class="">
                                         <p class="text-sm font-medium text-gray-900">
-                                            {{ __('You have not added any indicators to this page') }}
+                                            {{ __('You have not added any artefacts to this page') }}
                                         </p>
                                     </div>
                                 </li>
@@ -82,6 +93,7 @@
         </x-button>
     </div>
 </div>
+
 <script>
     function indicatorOrdering() {
         return {

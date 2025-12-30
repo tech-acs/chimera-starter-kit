@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\PageRequest;
 use Uneca\Chimera\Models\Page;
 use Illuminate\Http\Request;
@@ -12,18 +13,22 @@ class PageController extends Controller
 {
     public function index()
     {
-        $records = Page::withCount('indicators')->orderBy('rank')->get();
-        return view('chimera::page.index', compact('records'));
+        $groupedPages = Page::includeArtefactCount()
+            ->orderBy('for')
+            ->orderBy('rank')
+            ->get()
+            ->groupBy('for');
+        return view('chimera::page.index', compact('groupedPages'));
     }
 
     public function create()
     {
-        return view('chimera::page.create');
+        return view('chimera::page.create', ['pageableTypes' => PageableTypes::cases(), 'page' => new Page()]);
     }
 
     public function store(PageRequest $request)
     {
-        Page::create($request->only(['title',  'description', 'published', 'rank']));
+        Page::create($request->only(['title',  'description', 'for', 'published', 'rank']));
         return redirect()->route('page.index')->withMessage('Page created');
     }
 
@@ -32,12 +37,13 @@ class PageController extends Controller
         $page->load(['indicators' => function ($query) {
             $query->where('published', true);
         }]);
-        return view('chimera::page.edit', compact('page'));
+        $pageableTypes = PageableTypes::cases();
+        return view('chimera::page.edit', compact('page', 'pageableTypes'));
     }
 
     public function update(Page $page, PageRequest $request)
     {
-        $page->update($request->only(['title', 'description', 'published', 'rank']));
+        $page->update($request->only(['title', 'description', 'for', 'published', 'rank']));
         foreach ($request->get('indicators', []) as $indicatorRank => $indicatorId) {
             $page->indicators()->updateExistingPivot(
                 $indicatorId,

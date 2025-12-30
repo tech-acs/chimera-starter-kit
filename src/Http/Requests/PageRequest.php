@@ -17,6 +17,13 @@ class PageRequest extends FormRequest
         return true;
     }
 
+    protected function passedValidation()
+    {
+        $this->merge([
+            'for' => $this->type,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,6 +33,7 @@ class PageRequest extends FormRequest
     {
         return [
             'title' => 'required',
+            'type' => 'required',
         ];
     }
 }

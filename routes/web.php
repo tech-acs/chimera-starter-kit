@@ -39,10 +39,11 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
 
     Route::get("page/{page:slug}", [ChartsController::class, 'page'])->name('page');
     Route::get('indicator/{indicator:slug}', [ChartsController::class, 'indicator'])->name('indicator');
-    Route::get('map', MapController::class)->name('map');
+    Route::get('map', [MapController::class, 'index'])->name('map');
+    Route::get('map/{page:slug}', [MapController::class, 'show'])->name('map.page');
     Route::get('report', [ReportController::class, 'index'])->name('report');
+    Route::get('report/{page:slug}', [ReportController::class, 'show'])->name('report.page');
     Route::get('report/{report}/download', [ReportController::class, 'download'])->name('report.download');
-    Route::get('report/{report}/generate', [ReportController::class, 'generate'])->name('report.generate');
     Route::get('notification', NotificationController::class)->name('notification.index');
 
     Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {

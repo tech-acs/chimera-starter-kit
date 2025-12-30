@@ -3,39 +3,56 @@
 namespace Uneca\Chimera\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Enums\PageableTypes;
+use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Models\Report;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Uneca\Chimera\Services\APCA;
+use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 
 class ReportController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $filter = $request->get('filter');
-        $records = Report::published()
-            ->when($request->has('filter'), function ($query) use ($filter) {
-                return $query->where('data_source', $filter);
+        $currentPalette = ColorPalette::current()->colors;
+        $totalColors = count($currentPalette);
+        $pages = Page::for(PageableTypes::Reports)
+            ->get()
+            ->map(function ($page, $index) use ($totalColors, $currentPalette) {
+                return [
+                    'title' => $page->title,
+                    'description' => $page->description,
+                    'link' => route('report.page', $page),
+                    'slug' => $page->slug,
+                    'bg-color' => $currentPalette[$index % $totalColors],
+                    'fg-color' => APCA::decideBlackOrWhiteTextColor($currentPalette[$index]),
+                ];
             })
+            ->all();
+
+        return view('chimera::report.index', compact('pages'));
+    }
+
+    public function show(Page $page)
+    {
+        $records = $page->reports()
             ->orderBy('rank')
             ->paginate(settings('records_per_page'));
         $records->setCollection(
-            $records->getCollection()->filter(function ($report) {
-                return Gate::allows($report->permission_name);
-            })
-            ->map(function ($report) {
-                $implementedReport = DashboardComponentFactory::makeReport($report);
-                $path = auth()->user()->areaRestrictions->first()?->path ?? '';
-                $report->fileExists = Storage::disk('reports')->exists($implementedReport->filename($path));
-                $report->data_source_title = $report->getDataSource()->title;
-                return $report;
-            })
+            $records->getCollection()
+                ->filter(fn($report) => Gate::allows($report->permission_name))
+                ->map(function ($report) {
+                    $implementedReport = DashboardComponentFactory::makeReport($report);
+                    $path = auth()->user()->areaRestrictions->first()?->path ?? '';
+                    $report->fileExists = Storage::disk('reports')->exists($implementedReport->filename($path));
+                    $report->data_source_title = $report->getDataSource()->title;
+                    return $report;
+                })
         );
-        $filter = !is_null($filter) ? DataSource::where('name', $filter)->first()->title ?? null : null;
-        return view('chimera::report.index', compact('records', 'filter'));
+        return view('chimera::report.show', compact('records'));
     }
 
     public function download(Report $report)
@@ -50,14 +67,4 @@ class ReportController extends Controller
                 ->withErrors(new MessageBag(['Unable to download the requested report at this time']));
         }
     }
-
-    /*public function generate(Report $report)
-    {
-        try {
-            $report->blueprintInstance->generate();
-            return redirect()->back()->withMessage('The report is now being generated');
-        } catch (\Exception $exception) {
-            return redirect()->back()->withErrors(new MessageBag(['Unable to generate the requested report at this time. Make sure the getCollection method returns data.']));
-        }
-    }*/
 }

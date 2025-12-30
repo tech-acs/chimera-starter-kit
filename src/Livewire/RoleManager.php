@@ -2,9 +2,8 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Uneca\Chimera\Models\MapIndicator;
+use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Models\Page;
-use Uneca\Chimera\Models\Report;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\Models\Scorecard;
@@ -19,7 +18,8 @@ class RoleManager extends Component
     {
         $groups = collect();
 
-        $pages = Page::with('indicators')
+        $indicatorPages = Page::for(PageableTypes::Indicators)
+            ->with('indicators')
             ->withCount('indicators')
             ->get()
             ->map(function ($page) {
@@ -37,9 +37,9 @@ class RoleManager extends Component
                     'count' => $page->indicators_count,
                 ];
             });
-        $groups = $groups->merge($pages);
+        $groups = $groups->merge($indicatorPages);
 
-        Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'reports']);
+        /*Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'reports']);
         $reports = [
             [
                 'title' => 'Reports',
@@ -55,7 +55,67 @@ class RoleManager extends Component
                 'count' => Report::all()->count(),
             ]
         ];
-        $groups = $groups->merge($reports);
+        $groups = $groups->merge($reports);*/
+
+        $reportPages = Page::for(PageableTypes::Reports)
+            ->with('reports')
+            ->withCount('reports')
+            ->get()
+            ->map(function ($page) {
+                return [
+                    'title' => $page->title,
+                    'description' => $page->description,
+                    'permission_name' => $page->permission_name,
+                    'permissionables' => $page->reports->map(function ($report) {
+                        return [
+                            'title' => $report->title,
+                            'description' => $report->description,
+                            'permission_name' => $report->permission_name,
+                        ];
+                    }),
+                    'count' => $page->reports_count,
+                ];
+            });
+        $groups = $groups->merge($reportPages);
+
+        /*Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'maps']);
+        $maps = [
+            [
+                'title' => 'Map Indicators',
+                'description' => 'This is the maps page',
+                'permission_name' => 'maps',
+                'permissionables' => MapIndicator::all()->map(function ($record) {
+                    return [
+                        'title' => $record->title,
+                        'description' => $record->description,
+                        'permission_name' => $record->permission_name,
+                    ];
+                }),
+                'count' => MapIndicator::count(),
+            ]
+        ];
+        $groups = $groups->merge($maps);*/
+
+        $mapIndicatorPages = Page::for(PageableTypes::MapIndicators)
+            ->with('mapIndicators')
+            ->withCount('mapIndicators')
+            ->get()
+            ->map(function ($page) {
+                return [
+                    'title' => $page->title,
+                    'description' => $page->description,
+                    'permission_name' => $page->permission_name,
+                    'permissionables' => $page->mapIndicators->map(function ($mapIndicator) {
+                        return [
+                            'title' => $mapIndicator->title,
+                            'description' => $mapIndicator->description,
+                            'permission_name' => $mapIndicator->permission_name,
+                        ];
+                    }),
+                    'count' => $page->map_indicators_count,
+                ];
+            });
+        $groups = $groups->merge($mapIndicatorPages);
 
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'scorecards']);
         $scorecards = [
@@ -75,24 +135,6 @@ class RoleManager extends Component
         ];
         $groups = $groups->merge($scorecards);
 
-        Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'maps']);
-        $maps = [
-            [
-                'title' => 'Map Indicators',
-                'description' => 'This is the maps page',
-                'permission_name' => 'maps',
-                'permissionables' => MapIndicator::all()->map(function ($record) {
-                    return [
-                        'title' => $record->title,
-                        'description' => $record->description,
-                        'permission_name' => $record->permission_name,
-                    ];
-                }),
-                'count' => MapIndicator::count(),
-            ]
-        ];
-        $groups = $groups->merge($maps);
-
         $this->permissionGroups = $groups;
         foreach (($this->permissionGroups ?? []) as $permissionGroup) {
             Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionGroup['permission_name']]);
@@ -102,6 +144,7 @@ class RoleManager extends Component
                 $this->permissions[$permissionable['permission_name']] = $this->role->hasPermissionTo($permissionable['permission_name']);
             }
         }
+        //dump($this->permissions);
     }
 
     public function save()

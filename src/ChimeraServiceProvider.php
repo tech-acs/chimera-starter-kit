@@ -49,7 +49,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_pages_table',
                 'create_data_sources_table',
                 'create_indicators_table',
-                'create_indicator_page_table',
+                'create_pageables_table',
                 'create_scorecards_table',
                 'create_reports_table',
                 'create_notifications_table',

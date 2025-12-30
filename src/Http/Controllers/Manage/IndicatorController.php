@@ -5,6 +5,7 @@ namespace Uneca\Chimera\Http\Controllers\Manage;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\IndicatorRequest;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Page;
@@ -39,7 +40,7 @@ class IndicatorController extends Controller
 
     public function edit(Indicator $indicator)
     {
-        $pages = Page::pluck('title', 'id');
+        $pages = Page::for(PageableTypes::Indicators)->pluck('title', 'id');
         $tags = config('chimera.cache.tags', []);
         return view('chimera::indicator.edit', compact('indicator', 'pages', 'tags'));
     }
