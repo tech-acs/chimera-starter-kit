@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('indicator_page', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('indicator_id');
             $table->foreignId('page_id');
+            $table->foreignId('pageable_id');
+            $table->string('pageable_type');
             $table->unsignedSmallInteger('rank')->default(0);
             $table->timestamps();
         });

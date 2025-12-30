@@ -5,6 +5,7 @@ namespace Uneca\Chimera\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
@@ -24,6 +25,13 @@ class Report extends Model
     public function users()
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    public function pages(): MorphToMany
+    {
+        return $this->morphToMany(Page::class, 'pageable')
+            ->withPivot('rank')
+            ->withTimestamps();
     }
 
     public function schedule(): array

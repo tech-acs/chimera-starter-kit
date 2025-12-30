@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Services;
 
+use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Models\Page;
 
 class PageBuilder
@@ -10,6 +11,7 @@ class PageBuilder
     {
         try {
             $pages = Page::select('title', 'slug', 'description')
+                ->for(PageableTypes::Indicators)
                 ->published()
                 ->orderBy('rank')
                 ->get()

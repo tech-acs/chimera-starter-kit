@@ -3,7 +3,9 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
+use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\ReportRequest;
+use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Models\Report;
 
 class ReportManagementController extends Controller
@@ -25,12 +27,13 @@ class ReportManagementController extends Controller
     {
         $hourOptions = $this->getHourOptions();
         $frequencyOptions = [24, 12, 6, 3];
-        return view('chimera::report.manage.edit', compact('report', 'hourOptions', 'frequencyOptions'));
+        $pages = Page::for(PageableTypes::Reports)->pluck('title', 'id');
+        return view('chimera::report.manage.edit', compact('report', 'hourOptions', 'frequencyOptions', 'pages'));
     }
 
     public function update(ReportRequest $request, Report $report)
     {
-        //dump($request->all());
+        $report->pages()->sync($request->get('pages', []));
         $report->update($request->only(['title', 'description', 'run_at', 'run_every', 'rank', 'enabled', 'published']));
         return redirect()->route('manage.report.index')
             ->withMessage('The report has been updated');
