@@ -20,6 +20,7 @@ return new class extends Migration
 
             /*$table->string('where_column')->nullable();
             $table->string('select_column')->nullable();*/
+
             $table->tinyInteger('zero_pad_length')->default(0);
             $table->float('simplification_tolerance')->default(0);
             $table->jsonb('map_zoom_levels')->nullable();

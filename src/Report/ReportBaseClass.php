@@ -5,7 +5,6 @@ namespace Uneca\Chimera\Report;
 use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\Report;
-use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
@@ -74,7 +73,7 @@ abstract class ReportBaseClass
         ->addHeader($columnHeaders)
         ->addRows($data, $style);
 
-        $this->fileType = 'csv';
+        $this->fileType = 'xlsx';
     }
 
     protected function writeCsvFile(array $data, string $filename)

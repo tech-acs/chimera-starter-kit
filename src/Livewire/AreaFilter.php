@@ -12,9 +12,11 @@ class AreaFilter extends Component
 
     public array $dropdowns;
 
+    public int $removeLastNLevels = 1;
+
     public function mount()
     {
-        $areaTree = new AreaTree(removeLastNLevels: 1);
+        $areaTree = new AreaTree(removeLastNLevels: $this->removeLastNLevels);
         $selectionsFromSession = session()->get('area-filter', []);
         $restrictions = auth()->user()->areaRestrictionAsFilter();
         $subject = null;
