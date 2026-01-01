@@ -28,13 +28,13 @@
                                     <option class="p-2 rounded-md" value="{{ $name }}" @selected(old('data_source') == $name)>{{ $title }}</option>
                                 @endforeach
                             </select>
-                            <x-input-hint-error for="data_source" class="mt-2" />
+                            <x-input-error for="data_source" class="mt-2" />
                         </div>
 
                         <div>
                             <x-label for="scorecard_name" value="{{ __('Report name') }} *" />
                             <x-input value="{{ old('report_name') }}" x-ref="report_name" id="report_name" name="report_name" type="text" class="mt-1 block w-full lg:w-1/2" placeholder="E.g. HouseholdsEnumeratedByDay or Household/BirthRate" />
-                            <x-input-hint-error for="report_name" class="mt-2">This will serve as the component name and has to be in camel case</x-input-hint-error>
+                            <x-chimera::input-hint-error for="report_name" class="mt-2">This will serve as the component name and has to be in camel case</x-chimera::input-hint-error>
                         </div>
 
                         <div class="mt-1 w-full lg:w-1/2">

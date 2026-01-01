@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Laravel\Fortify\Fortify;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -176,17 +177,28 @@ class ChimeraServiceProvider extends PackageServiceProvider
         }
 
         $this->app->singleton('settings', function () {
-            return Cache::rememberForever('settings', fn() => Setting::all()->pluck('value', 'key'));
+            if (Schema::hasTable('settings')) {
+                return Cache::rememberForever('settings', fn() => Setting::all()->pluck('value', 'key'));
+            } else {
+                return collect();
+            }
         });
-        config([
-            'mail.mailers.smtp.host'       => settings('mail_host'),
-            'mail.mailers.smtp.port'       => settings('mail_port'),
-            'mail.mailers.smtp.encryption' => settings('mail_encryption'),
-            'mail.mailers.smtp.username'   => settings('mail_username'),
-            'mail.mailers.smtp.password'   => settings('mail_password'),
-            'mail.from.address'            => settings('mail_from_address'),
-            'mail.from.name'               => settings('mail_from_name'),
-        ]);
-        \Illuminate\Support\Facades\Mail::forgetMailers();
+
+        $settings = app('settings');
+        if ($settings->isNotEmpty()) {
+            config([
+                'mail.default'   => 'chimera_smtp',
+                'mail.mailers.chimera_smtp' => [
+                    'transport'  => 'smtp',
+                    'host'       => $settings->get('mail_host'),
+                    'port'       => $settings->get('mail_port'),
+                    'encryption' => $settings->get('mail_encryption'),
+                    'username'   => $settings->get('mail_username'),
+                    'password'   => $settings->get('mail_password'),
+                ],
+                'mail.from.address' => $settings->get('mail_from_address'),
+                'mail.from.name'    => $settings->get('mail_from_name'),
+            ]);
+        }
     }
 }

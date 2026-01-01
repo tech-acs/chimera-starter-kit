@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('indicator_page', function (Blueprint $table) {
+        Schema::create('pageables', function (Blueprint $table) {
             $table->id();
             $table->foreignId('page_id');
             $table->foreignId('pageable_id');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('indicator_page');
+        Schema::dropIfExists('pageables');
     }
 };

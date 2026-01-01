@@ -29,13 +29,13 @@
                                     <option class="p-2 rounded-md" value="{{ $name }}" @selected(old('data_source') == $name)>{{ $title }}</option>
                                 @endforeach
                             </select>
-                            <x-input-hint-error for="data_source" class="mt-2" />
+                            <x-input-error for="data_source" class="mt-2" />
                         </div>
 
                         <div>
                             <x-label for="indicator_name" value="{{ __('Indicator name') }} *" />
                             <x-input value="{{ old('indicator_name') }}" x-ref="indicator_name" id="indicator_name" name="indicator_name" type="text" class="mt-1 block w-full lg:w-1/2" placeholder="E.g. HouseholdsEnumeratedByDay or Household/BirthRate" />
-                            <x-input-hint-error for="indicator_name" class="mt-2">This will serve as the component name and has to be in camel case</x-input-hint-error>
+                            <x-chimera::input-hint-error for="indicator_name" class="mt-2">This will serve as the component name and has to be in camel case</x-chimera::input-hint-error>
                         </div>
 
                         @if ($availableTemplates->isNotEmpty())
@@ -60,7 +60,7 @@
                                         <span class="text-sm text-gray-900">{{ __('Yes') }}</span>
                                     </label>
                                 </div>
-                                <x-input-hint-error for="use_template" class="mt-2">There are {{ $availableTemplates->count() }} templates to choose from</x-input-hint-error>
+                                <x-chimera::input-hint-error for="use_template" class="mt-2">There are {{ $availableTemplates->count() }} templates to choose from</x-chimera::input-hint-error>
                             </div>
 
                             <div x-cloak x-show="useTemplate">
@@ -96,7 +96,7 @@
                                     <span class="text-sm text-gray-900">{{ __('Yes') }}</span>
                                 </label>
                             </div>
-                            <x-input-hint-error for="includeSampleCode" class="mt-2">The sample code will help you to develop your own indicator logic</x-input-hint-error>
+                            <x-chimera::input-hint-error for="includeSampleCode" class="mt-2">The sample code will help you to develop your own indicator logic</x-chimera::input-hint-error>
                         </div>
 
                         <div class="mt-1 w-full lg:w-1/2">

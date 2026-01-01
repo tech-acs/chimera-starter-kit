@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('directly_editable')->default(true);
             $table->timestamps();
         });
-        $defaultSettings = [
+        $defaultSettings = collect([
             ['key' => 'color_palette',
                 'value' => env('COLOR_PALETTE', 'Chimera'),
                 'directly_editable' => false],
@@ -119,7 +119,11 @@ return new class extends Migration
                 'label' => "From name|The display name recipients see",
                 'input_type' => 'text',
                 'group' => 'Mail settings|Settings related to email sending via SMTP.'],
-        ];
+        ])->map(function ($setting) {
+            $setting['value'] = Crypt::encryptString($setting['value'])
+            return $setting;
+        });
+
         foreach ($defaultSettings as $setting) {
             Setting::create($setting);
         }
