@@ -65,7 +65,7 @@ class Page extends Model
     protected static function booted()
     {
         static::creating(function ($page) {
-            $page->slug = Str::slug($page->title);
+            $page->slug = Str::slug($page->title) . '-' . strtolower($page->for->name);
         });
 
         static::created(function ($page) {

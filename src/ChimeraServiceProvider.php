@@ -190,14 +190,14 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'mail.default'   => 'chimera_smtp',
                 'mail.mailers.chimera_smtp' => [
                     'transport'  => 'smtp',
-                    'host'       => $settings->get('mail_host'),
-                    'port'       => $settings->get('mail_port'),
-                    'encryption' => $settings->get('mail_encryption'),
-                    'username'   => $settings->get('mail_username'),
-                    'password'   => $settings->get('mail_password'),
+                    'host'       => settings('mail_host'),
+                    'port'       => (int) settings('mail_port'),
+                    'encryption' => settings('mail_encryption'),
+                    'username'   => settings('mail_username'),
+                    'password'   => settings('mail_password'),
                 ],
-                'mail.from.address' => $settings->get('mail_from_address'),
-                'mail.from.name'    => $settings->get('mail_from_name'),
+                'mail.from.address' => settings('mail_from_address'),
+                'mail.from.name'    => settings('mail_from_name'),
             ]);
         }
     }
