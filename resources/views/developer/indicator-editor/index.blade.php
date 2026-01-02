@@ -1,8 +1,9 @@
-@pushonce('scripts')
-    @viteReactRefresh
-    @vite('resources/js/ChartEditor/index.jsx')
-@endpushonce
-
+@if(! app()->isProduction())
+    @pushonce('scripts')
+        @viteReactRefresh
+        @vite('resources/js/ChartEditor/index.jsx')
+    @endpushonce
+@endif
 <x-app-layout>
 
     <div class="relative pr-3" style="height: calc(100vh - 210px);">
