@@ -95,6 +95,14 @@ trait PackageTasksTrait
         }
     }
 
+    protected function copyActionClasses(): void
+    {
+        $this->components->info("Copying action classes");
+        $this->components->task('Actions', function () {
+            return File::copyDirectory(__DIR__ . '/../../deploy/actions/Maker', app_path('Actions/Maker'));
+        });
+    }
+
     protected function configureJetstreamFeatures(): void
     {
         $this->components->info("Configuring jetstream features");

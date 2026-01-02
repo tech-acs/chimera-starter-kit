@@ -196,7 +196,7 @@ class BreakoutQueryBuilder
         });
     }
 
-    private function areaCrossJoinData(Collection $result, ?string $referenceValueToInclude, array $lookup = [], string $columnName = null): Collection
+    private function areaCrossJoinData(Collection $result, ?string $referenceValueToInclude, array $lookup = [], ?string $columnName = null): Collection
     {
         // Return early if the input data is empty
         if ($result->isEmpty()) {

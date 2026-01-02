@@ -4,22 +4,6 @@
         @foreach($dataSources as $dataSource)
             <x-chimera-summary :data-source="$dataSource" />
         @endforeach
-
-        {{--<div class="px-4 xl:px-0">
-            <div class="mt-2 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                @foreach($graphicalMenu as $menu)
-                    @can($menu['slug'])
-                        <x-chimera::graphical-menu
-                            :title="$menu['title']"
-                            :description="$menu['description']"
-                            :link="$menu['link']"
-                            :bg-color="$menu['bg-color']"
-                            :fg-color="$menu['fg-color']"
-                        />
-                    @endcan
-                @endforeach
-            </div>
-        </div>--}}
     </div>
 
 </x-app-layout>

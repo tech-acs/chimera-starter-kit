@@ -14,6 +14,7 @@ class Update extends Command
         {--chimera-config : Publishes chimera.php config file}
         {--migrations : Publishes migration files from chimera}
         {--packages : Installs php dependencies via composer}
+        {--action-classes : Copies action classes from chimera to app/Actions}
         {--jetstream-customizations : Copies customized jetstream files from chimera}
         {--assets : Copies assets (css, js, images and stubs)}
         {--color-palettes : Copies color palettes from chimera}
@@ -47,6 +48,9 @@ class Update extends Command
         }
         if ($runAll || $this->option('packages')) {
             $this->installPhpDependencies();
+        }
+        if ($runAll || $this->option('action-classes')) {
+            $this->copyActionClasses();
         }
         if ($runAll || $this->option('jetstream-customizations')) {
             $this->copyCustomizedJetstreamFiles();

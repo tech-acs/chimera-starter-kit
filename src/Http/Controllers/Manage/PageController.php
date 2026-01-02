@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\PageRequest;
 use Uneca\Chimera\Models\Page;
-use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 
 class PageController extends Controller
