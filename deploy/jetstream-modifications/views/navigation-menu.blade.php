@@ -39,6 +39,16 @@
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <div class="flex space-x-4">
+
+                    @can('developer-mode')
+                        <div title="{{ __('Warning') }}"
+                             onclick="Livewire.dispatch('notify', {'content': 'You are in developer mode. If this is a production server, make sure to turn it off right away.', 'type': 'error'})"
+                             class="inline-flex relative items-center animate-ping flex-shrink-0 rounded-full p-1 cursor-pointer"
+                        >
+                            <x-chimera::icon.exclamation-triangle />
+                        </div>
+                    @endcan
+
                     <x-dropdown align="right" contentClasses="py-0 bg-white overflow-hidden w-96">
                         <x-slot name="trigger">
                             <livewire:notification-bell />
