@@ -13,6 +13,10 @@ class {{ class }} extends Chart
 
     public function getData(string $filterPath): Collection
     {
-        // TODO: Implement getData() method.
+        try {
+            // TODO: Implement getData() method.
+        } catch (\Exception $exception) {
+            return collect();
+        }
     }
 }
