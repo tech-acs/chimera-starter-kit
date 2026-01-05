@@ -19,6 +19,7 @@ use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Livewire\Livewire;
 
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Setting;
 use Uneca\Chimera\Services\ConnectionLoader;
 use Uneca\Chimera\Services\PageBuilder;
@@ -63,6 +64,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_settings_table',
                 'add_is_suspended_and_last_login_at_columns_to_users_table',
                 'create_chart_templates_table',
+                'create_inapplicables_table',
             ])
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,
@@ -117,6 +119,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('artisan-runner', \Uneca\Chimera\Livewire\ArtisanRunner::class);
         Livewire::component('cache-clearer', \Uneca\Chimera\Livewire\CacheClearer::class);
         Livewire::component('x-ray', \Uneca\Chimera\Livewire\XRay::class);
+        Livewire::component('score-gauge', \Uneca\Chimera\Livewire\ScoreGaugeComponent::class);
     }
 
     public function packageBooted()
@@ -200,5 +203,13 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'mail.from.name'    => settings('mail_from_name'),
             ]);
         }
+
+        $this->app->singleton('hierarchies', function () {
+            if (Schema::hasTable('area_hierarchies')) {
+                return AreaHierarchy::orderBy('index')->pluck('name');
+            } else {
+                return collect();
+            }
+        });
     }
 }

@@ -30,6 +30,13 @@
     >
         {{ __('There is no data to display at this level') }}
     </div>
+
+    <div
+        x-show="tracesStatus == 'inapplicable'" x-cloak x-transition.duration.500ms
+        class="flex min-h-96 justify-center items-center text-4xl text-gray-600 z-60 opacity-90 bg-white px-4 py-5 sm:px-6"
+    >
+        {{ __('The current level is inapplicable to this indicator') }}
+    </div>
 </div>
 
 

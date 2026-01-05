@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 
 class Indicator extends Model
@@ -22,13 +23,7 @@ class Indicator extends Model
         'data' => 'array',
         'layout' => 'array'
     ];
-
-    /*public function pages()
-    {
-        return $this->belongsToMany(Page::class)
-            ->withPivot('rank')
-            ->withTimestamps();
-    }*/
+    protected $with = ['inapplicableLevels'];
 
     public function pages(): MorphToMany
     {
@@ -41,6 +36,21 @@ class Indicator extends Model
     {
         return $this->morphMany(Analytics::class, 'analyzable')
             ->orderBy('started_at');
+    }
+
+    public function inapplicableLevels(): MorphToMany
+    {
+        return $this->morphToMany(AreaHierarchy::class, 'inapplicable')
+            ->withTimestamps();
+    }
+
+    public function supportsLevel(string $filterPath): bool
+    {
+        if ($this->inapplicableLevels->isEmpty()) {
+            return true;
+        }
+        $level = empty($filterPath) ? 0 : AreaTree::levelFromPath($filterPath) + 1;
+        return $this->inapplicableLevels->pluck('name')->doesntContain(app('hierarchies')[$level]);
     }
 
     protected function component(): Attribute
