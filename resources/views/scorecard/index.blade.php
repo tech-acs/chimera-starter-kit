@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Homepage Scorecards') }}
+            {{ __('Scorecards') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage homepage scorecards here') }}
+            {{ __('Manage scorecards here') }}
         </p>
     </x-slot>
 
