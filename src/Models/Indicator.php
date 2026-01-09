@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
-use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
+use Uneca\Chimera\Traits\HasLevelDiscrimination;
 
 class Indicator extends Model
 {
     use HasTranslations;
     use HasDashboardEntityCommonalities;
+    use HasLevelDiscrimination;
 
     protected $guarded = ['id'];
     public $translatable = ['title', 'description', 'help'];
@@ -38,7 +39,7 @@ class Indicator extends Model
             ->orderBy('started_at');
     }
 
-    public function inapplicableLevels(): MorphToMany
+    /*public function inapplicableLevels(): MorphToMany
     {
         return $this->morphToMany(AreaHierarchy::class, 'inapplicable')
             ->withTimestamps();
@@ -51,7 +52,7 @@ class Indicator extends Model
         }
         $level = empty($filterPath) ? 0 : AreaTree::levelFromPath($filterPath) + 1;
         return $this->inapplicableLevels->pluck('name')->doesntContain(app('hierarchies')[$level]);
-    }
+    }*/
 
     protected function component(): Attribute
     {

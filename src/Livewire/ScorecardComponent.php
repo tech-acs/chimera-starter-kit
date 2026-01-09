@@ -36,8 +36,19 @@ abstract class ScorecardComponent extends Component
         $this->bgColor = $currentPalette->colors[$index % $totalColors];
         $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
 
+        $this->resolveAreaAndCheckData();
+        /*list($this->filterPath,) = $this->areaResolver();
+        $this->checkData();*/
+    }
+
+    private function resolveAreaAndCheckData()
+    {
         list($this->filterPath,) = $this->areaResolver();
-        $this->checkData();
+        if ($this->scorecard->supportsLevel($this->filterPath)) {
+            $this->checkData();
+        } else {
+            $this->dataStatus = DataStatus::INAPPLICABLE->value;
+        }
     }
 
     public function placeholder()
@@ -47,7 +58,7 @@ abstract class ScorecardComponent extends Component
 
     public function cacheKey(): string
     {
-        return implode(':', ['score-card', $this->scorecard->id, $this->filterPath]);
+        return implode(':', ['scorecard', $this->scorecard->id, $this->filterPath]);
     }
 
     public function setPropertiesFromData(): void
