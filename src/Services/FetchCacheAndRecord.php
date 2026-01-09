@@ -6,11 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Uneca\Chimera\Livewire\CaseStats;
 use Uneca\Chimera\Livewire\Chart;
+use Uneca\Chimera\Livewire\GaugeComponent;
 use Uneca\Chimera\Livewire\ScorecardComponent;
 
 class FetchCacheAndRecord
 {
-    public function __invoke(CaseStats|ScorecardComponent|Chart $artefact, string $key, string $filterPath, bool $cacheForever = false)
+    public function __invoke(CaseStats|ScorecardComponent|Chart|GaugeComponent $artefact, string $key, string $filterPath, bool $cacheForever = false)
     {
         try {
             $startTime = time();

@@ -7,8 +7,10 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\IndicatorRequest;
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Page;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\SmartTableColumn;
 use Uneca\Chimera\Services\SmartTableData;
 
@@ -41,13 +43,15 @@ class IndicatorController extends Controller
     public function edit(Indicator $indicator)
     {
         $pages = Page::for(PageableTypes::Indicators)->pluck('title', 'id');
+        $areaHierarchies = AreaHierarchy::orderBy('index')->pluck('name', 'id')->all();
         $tags = config('chimera.cache.tags', []);
-        return view('chimera::indicator.edit', compact('indicator', 'pages', 'tags'));
+        return view('chimera::indicator.edit', compact('indicator', 'pages', 'areaHierarchies', 'tags'));
     }
 
     public function update(Indicator $indicator, IndicatorRequest $request)
     {
         $indicator->pages()->sync($request->get('pages', []));
+        $indicator->inapplicableLevels()->sync($request->get('inapplicable_levels', []));
         $request->merge(['featured_at' => $request->get('is_featured', false) ? Carbon::now() : null]);
         $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag', 'featured_at']));
         return redirect()->route('indicator.index')->withMessage('Record updated');

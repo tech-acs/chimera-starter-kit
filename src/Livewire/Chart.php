@@ -37,11 +37,22 @@ abstract class Chart extends Component
 
     public function mount()
     {
-        $this->graphDiv = $this->indicator->id;
+        $this->graphDiv = "indicator-{$this->indicator->id}";
         $this->config = $this->getConfig();
-        list($this->filterPath,) = $this->areaResolver();
-        $this->checkData();
+
+        $this->resolveAreaAndCheckData();
+
         // ToDo: call property validator for $aggregateAppendedTraces
+    }
+
+    private function resolveAreaAndCheckData()
+    {
+        list($this->filterPath,) = $this->areaResolver();
+        if ($this->indicator->supportsLevel($this->filterPath)) {
+            $this->checkData();
+        } else {
+            $this->dataStatus = DataStatus::INAPPLICABLE->value;
+        }
     }
 
     public function placeholder()
@@ -65,14 +76,13 @@ abstract class Chart extends Component
     #[On(['filterChanged'])]
     public function update()
     {
-        list($this->filterPath,) = $this->areaResolver();
-        $this->checkData();
+        $this->resolveAreaAndCheckData();
     }
 
     #[On(['dataReady'])]
     public function sendUpdates()
     {
-        $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
+        $this->dispatch("updateResponse.{$this->graphDiv}", $this->data, $this->layout);
     }
 
     public function getConfig(): array

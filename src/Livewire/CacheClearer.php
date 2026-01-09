@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Scorecard;
+use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 
 class CacheClearer extends Component
@@ -18,6 +19,7 @@ class CacheClearer extends Component
         return match ($this->artefact) {
             'indicator' => DashboardComponentFactory::makeIndicator(Indicator::find($this->id)),
             'scorecard' => DashboardComponentFactory::makeScorecard(Scorecard::find($this->id)),
+            'gauge' => DashboardComponentFactory::makeGauge(Gauge::find($this->id)),
         };
     }
 

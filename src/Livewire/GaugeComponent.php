@@ -8,33 +8,29 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
-use Uneca\Chimera\Models\Scorecard;
-use Uneca\Chimera\Services\APCA;
-use Uneca\Chimera\Services\ColorPalette;
+use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Traits\AreaResolver;
 use Uneca\Chimera\Traits\Cachable;
 
-abstract class ScorecardComponent extends Component
+abstract class GaugeComponent extends Component
 {
     use Cachable;
     use AreaResolver;
 
-    public Scorecard $scorecard;
+    public Gauge $gauge;
     public string $title;
+    public string $subtitle;
     public int|float|string $value = '';
-    public int|float|string|null $diff = null;
     public string $unit = '%';
-    public string $bgColor;
-    public string $fgColor;
+    public int $outOf = 100;
+    public array $colorThresholds = [70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500'];
+    public string $scoreColor = 'text-gray-500';
     public Carbon $dataTimestamp;
 
-    public function mount(int $index)
+    public function mount()
     {
-        $this->title = $this->scorecard->title;
-        $currentPalette = ColorPalette::palette(settings('color_palette'));
-        $totalColors = count($currentPalette->colors);
-        $this->bgColor = $currentPalette->colors[$index % $totalColors];
-        $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
+        $this->title = $this->gauge->title;
+        $this->subtitle = $this->gauge->subtitle;
 
         $this->resolveAreaAndCheckData();
         /*list($this->filterPath,) = $this->areaResolver();
@@ -44,7 +40,7 @@ abstract class ScorecardComponent extends Component
     private function resolveAreaAndCheckData()
     {
         list($this->filterPath,) = $this->areaResolver();
-        if ($this->scorecard->supportsLevel($this->filterPath)) {
+        if ($this->gauge->supportsLevel($this->filterPath)) {
             $this->checkData();
         } else {
             $this->dataStatus = DataStatus::INAPPLICABLE->value;
@@ -53,19 +49,26 @@ abstract class ScorecardComponent extends Component
 
     public function placeholder()
     {
-        return view('chimera::livewire.placeholders.scorecard');
+        return view('chimera::livewire.placeholders.gauge');
     }
 
     public function cacheKey(): string
     {
-        return implode(':', ['scorecard', $this->scorecard->id, $this->filterPath]);
+        return implode(':', ['gauge', $this->gauge->id, $this->filterPath]);
+    }
+
+    public function assignColor($value)
+    {
+        return collect($this->colorThresholds)
+            ->first(fn($color, $threshold) => $value <= $threshold, 'text-gray-500');
     }
 
     public function setPropertiesFromData(): void
     {
         list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
-        if (($data instanceof Collection) && ($data->count() == 2)) {
-            list($this->value, $this->diff) = $data;
+        if ($data instanceof Collection) {
+            $this->value = $data->first()->value;
+            $this->scoreColor = $this->assignColor($this->value);
             $this->dataStatus = DataStatus::RENDERABLE->value;
         } else {
             $this->dataStatus = DataStatus::EMPTY->value;
@@ -74,11 +77,11 @@ abstract class ScorecardComponent extends Component
 
     public function getDataModel(): Model
     {
-        return $this->scorecard;
+        return $this->gauge;
     }
 
     public function render()
     {
-        return view('chimera::livewire.scorecard');
+        return view('chimera::livewire.gauge');
     }
 }

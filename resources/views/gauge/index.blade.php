@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Scorecards') }}
+            {{ __('Gauges') }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage scorecards here') }}
+            {{ __('Manage gauges here') }}
         </p>
     </x-slot>
 
@@ -16,10 +16,10 @@
 
         @can('developer-mode')
             <div class="text-right">
-                <a href="{{route('developer.scorecard.create')}}"><x-button>{{ __('Create new') }}</x-button></a>
+                <a href="{{route('developer.gauge.create')}}"><x-button>{{ __('Create new') }}</x-button></a>
             </div>
         @endcan
 
-        <x-chimera-smart-table :$smartTableData custom-action-sub-view="chimera::scorecard.custom-action" />
+        <x-chimera-smart-table :$smartTableData custom-action-sub-view="chimera::gauge.custom-action" />
     </div>
 </x-app-layout>

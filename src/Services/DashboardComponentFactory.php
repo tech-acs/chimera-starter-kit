@@ -8,6 +8,7 @@ use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Models\Scorecard;
 use Uneca\Chimera\Models\Report;
+use Uneca\Chimera\Models\Gauge;
 
 class DashboardComponentFactory
 {
@@ -31,6 +32,19 @@ class DashboardComponentFactory
         try {
             $instance = new $classPath;
             $instance->scorecard = $scorecard;
+            return $instance;
+        } catch (\Exception $exception) {
+            logger("Exception in DashboardComponentFactory", ['exception' => $exception->getMessage()]);
+            return null;
+        }
+    }
+
+    public static function makeGauge(Gauge $gauge)
+    {
+        $classPath = "App\\Livewire\\Gauge\\" . str_replace('/', '\\', $gauge->name);
+        try {
+            $instance = new $classPath;
+            $instance->gauge = $gauge;
             return $instance;
         } catch (\Exception $exception) {
             logger("Exception in DashboardComponentFactory", ['exception' => $exception->getMessage()]);

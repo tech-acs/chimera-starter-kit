@@ -39,5 +39,11 @@
         </div>
     </div>
 
+    <div x-show="status == 'inapplicable'" x-cloak>
+        <div class="min-h-24 flex flex-col p-3 text-center items-center justify-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
+            {{ __('The current area level is inapplicable to this scorecard') }}
+        </div>
+    </div>
+
 </div>
 

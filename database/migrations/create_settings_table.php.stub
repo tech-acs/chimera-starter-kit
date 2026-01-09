@@ -120,7 +120,7 @@ return new class extends Migration
                 'input_type' => 'text',
                 'group' => 'Mail settings|Settings related to email sending via SMTP.'],
         ])->map(function ($setting) {
-            $setting['value'] = Crypt::encryptString($setting['value'])
+            $setting['value'] = Crypt::encryptString($setting['value']);
             return $setting;
         });
 

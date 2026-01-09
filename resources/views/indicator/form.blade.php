@@ -21,16 +21,35 @@
                 <textarea name="help" rows="5" class='w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm'>{{old('description', $indicator->help ?? null)}}</textarea>
                 <x-input-error for="help" class="mt-2" />
             </div>
-            <div>
-                <x-label for="pages" value="{{ __('Page') }}" />
-                <select name="pages[]" multiple class="space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
-                    <option disabled>{{ __('You can add the indicator to multiple pages') }}</option>
-                    @foreach($pages as $id => $pageTitle)
-                        <option class="p-2 rounded-md" value="{{ $id }}" @selected(in_array($id, $indicator->pages->pluck('id')->all()))>{{ $pageTitle }}</option>
-                    @endforeach
-                </select>
-                <x-input-error for="page_id" class="mt-2" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-1">
+                    <div>
+                        <x-label for="pages" value="{{ __('Page') }}" />
+                        <select name="pages[]" multiple class="space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <option disabled>{{ __('You can add the indicator to multiple pages') }}</option>
+                            @foreach($pages as $id => $pageTitle)
+                                <option class="p-2 rounded-md" value="{{ $id }}" @selected(in_array($id, $indicator->pages->pluck('id')->all()))>{{ $pageTitle }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="page_id" class="mt-2" />
+                    </div>
+                </div>
+                <div class="col-span-1">
+                    <div>
+                        <x-label for="inapplicable_levels" value="{{ __('Unsupported area levels') }}" />
+                        <select name="inapplicable_levels[]" multiple class="space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <option disabled>{{ __('You can select multiple levels') }}</option>
+                            @foreach($areaHierarchies as $id => $name)
+                                <option class="p-2 rounded-md" value="{{ $id }}" @selected(in_array($id, $indicator->inapplicableLevels->pluck('id')->all()))>{{ $name }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="inapplicable_levels" class="mt-2" />
+                    </div>
+                </div>
             </div>
+
+
             <div>
                 <x-label for="tag" value="{{ __('Cache Tag') }}" />
                 <select name="tag" class="space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
