@@ -9,6 +9,8 @@ export default class PlotlyChart {
     config = [];
 
     constructor(rootElementId) {
+        if (!rootElementId) return;
+
         this.id = rootElementId;
         const el = document.getElementById(this.id)
         this.config = JSON.parse(el.dataset['config'])
@@ -17,14 +19,13 @@ export default class PlotlyChart {
         } else if (this.config.locale === 'pt') {
             Plotly.register(ptPT);
         }
-        //Plotly.newPlot(el, this.data, this.layout, this.config);
-        console.log('1 - (alpine init), 2 - PlotlyChart constructor with id: ' + this.id);
+        //console.log('1 - (alpine init), 2 - PlotlyChart constructor with id: ' + this.id);
         this.registerLivewireEventListeners();
     }
 
     registerLivewireEventListeners() {
         Livewire.on(`updateResponse.${this.id}`, (dataAndLayout) => {
-            console.log('3 - Received updateResponse: ' + this.id, dataAndLayout);
+            //console.log('3 - Received updateResponse: ' + this.id, dataAndLayout);
             Plotly.react(this.id, ...dataAndLayout, this.config)
         });
     }

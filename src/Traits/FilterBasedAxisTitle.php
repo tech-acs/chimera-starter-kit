@@ -9,9 +9,8 @@ trait FilterBasedAxisTitle
     protected function getAreaBasedAxisTitle(string $filterPath, bool $includeParent = false): string
     {
         $areaTree = new AreaTree();
-        //$path = AreaTree::getFinestResolutionFilterPath($filter);
         $depth = collect(explode('.', $filterPath))->filter()->count();
-        $levelName = $areaTree->hierarchies[$depth]??($depth > 0 ? $areaTree->hierarchies[$depth-1]:'');
+        $levelName = $areaTree->hierarchies[$depth] ?? ($depth > 0 ? $areaTree->hierarchies[$depth-1] : '');
         $title = str($levelName)->plural()->title();
         if ($depth > 0 && $includeParent) {
             $previousLevel = $areaTree->getArea($filterPath);

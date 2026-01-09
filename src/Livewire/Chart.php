@@ -37,7 +37,7 @@ abstract class Chart extends Component
 
     public function mount()
     {
-        $this->graphDiv = $this->indicator->id;
+        $this->graphDiv = "indicator-{$this->indicator->id}";
         $this->config = $this->getConfig();
 
         $this->resolveAreaAndCheckData();
@@ -82,7 +82,7 @@ abstract class Chart extends Component
     #[On(['dataReady'])]
     public function sendUpdates()
     {
-        $this->dispatch("updateResponse.{$this->indicator->id}", $this->data, $this->layout);
+        $this->dispatch("updateResponse.{$this->graphDiv}", $this->data, $this->layout);
     }
 
     public function getConfig(): array

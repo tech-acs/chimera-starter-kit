@@ -1,6 +1,5 @@
 <div class="relative px-4 py-5 sm:px-6"
      x-data="{ tracesStatus: $wire.entangle('dataStatus') }"
-     x-init="new PlotlyChart($wire.graphDiv)"
 >
     <div x-show="tracesStatus == 'pending'" x-cloak>
         <div wire:poll.visible.3s="checkData"></div>
@@ -21,6 +20,7 @@
             wire:ignore
             id="{{ $graphDiv }}"
             data-config='@json($config)'
+            x-init="new PlotlyChart('{{ $graphDiv }}')"
         ></div>
     </div>
 
@@ -35,7 +35,7 @@
         x-show="tracesStatus == 'inapplicable'" x-cloak x-transition.duration.500ms
         class="flex min-h-96 justify-center items-center text-4xl text-gray-600 z-60 opacity-90 bg-white px-4 py-5 sm:px-6"
     >
-        {{ __('The current level is inapplicable to this indicator') }}
+        {{ __('The current area level is inapplicable to this indicator') }}
     </div>
 </div>
 
