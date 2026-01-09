@@ -16,20 +16,47 @@
                 <x-chimera::multi-lang-input id="title" name="title" value="{{ old('title', $scorecard->title ?? null) }}" />
                 <x-input-error for="title" class="mt-2" />
             </div>
-            <div>
-                <x-label for="rank" value="{{ __('Rank') }}" />
-                <x-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $scorecard->rank) }}" />
-                <x-input-error for="rank" class="mt-2" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-1">
+                    <div>
+                        <x-label for="inapplicable_levels" value="{{ __('Unsupported area levels') }}" />
+                        <select name="inapplicable_levels[]" multiple class="mt-1 space-y-1 text-base p-1 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <option disabled>{{ __('You can select multiple levels') }}</option>
+                            @foreach($areaHierarchies as $id => $name)
+                                <option class="p-2 rounded-md" value="{{ $id }}" @selected(in_array($id, $scorecard->inapplicableLevels->pluck('id')->all()))>{{ $name }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="inapplicable_levels" class="mt-2" />
+                    </div>
+                </div>
+                <div class="col-span-1 gap-6 grid">
+                    <div>
+                        <x-label for="rank" value="{{ __('Rank') }}" />
+                        <x-input id="rank" name="rank" type="number" class="w-20 mt-1" value="{{ old('rank', $scorecard->rank) }}" />
+                        <x-input-error for="rank" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-label for="linked_indicator" value="{{ __('Linked Indicator') }}" />
+                        <select name="linked_indicator" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">{{ __('None') }}</option>
+                            @foreach($indicators as $slug => $title)
+                                <option value="{{ $slug }}" {{old('linked_indicator', $scorecard->linked_indicator ?? null) === $slug ? 'selected' : ''}}>{{ $title }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="linked_indicator" class="mt-2" />
+                    </div>
+                </div>
             </div>
+
             <div>
-                <x-label for="linked_indicator" value="{{ __('Linked Indicator') }}" />
-                <select name="linked_indicator" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                    <option value="">{{ __('None') }}</option>
-                    @foreach($indicators as $slug => $title)
-                        <option value="{{ $slug }}" {{old('linked_indicator', $scorecard->linked_indicator ?? null) === $slug ? 'selected' : ''}}>{{ $title }}</option>
+                <x-label for="scope" value="{{ __('Scope') }} *" />
+                <select name="scope" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                    <option value="">{{ __('Select scope') }}</option>
+                    @foreach(\Uneca\Chimera\Enums\ScorecardScope::cases() as $scope)
+                        <option class="p-2 rounded-md" value="{{ $scope }}" @selected($scope === $scorecard?->scope ?? null)>{{ $scope }}</option>
                     @endforeach
                 </select>
-                <x-input-error for="linked_indicator" class="mt-2" />
+                <x-chimera::input-hint-error for="scope" class="mt-2">Where it gets displayed</x-chimera::input-hint-error>
             </div>
             <div>
                 <x-label for="page" value="{{ __('Status') }}" />
