@@ -1,0 +1,23 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Support\Collection;
+use Uneca\Chimera\Livewire\GaugeComponent;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class {{ class }} extends GaugeComponent
+{
+    // public string $unit = '%';
+    // public array $colorThresholds = [30 => 'text-red-500', 40 => 'text-amber-500', 50 => 'text-green-500'];
+    // public int $outOf = 100;
+
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            // TODO: Implement getData() method.
+        } catch (\Exception $exception) {
+            return collect();
+        }
+    }
+}

@@ -17,6 +17,7 @@ class Delete extends Command
         $modelTypeMenu = [
             'Indicator' => "App\Livewire",
             'Scorecard' => "App\Livewire\Scorecard",
+            'Gauge' => "App\Livewire\Gauge",
             'Report' => "App\Reports",
             'MapIndicator' => "App\MapIndicators",
         ];

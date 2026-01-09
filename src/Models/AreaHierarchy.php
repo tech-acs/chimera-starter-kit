@@ -20,4 +20,14 @@ class AreaHierarchy extends Model
     {
         return $this->morphedByMany(Indicator::class, 'inapplicable');
     }
+
+    public function inapplicableScorecards(): MorphToMany
+    {
+        return $this->morphedByMany(Scorecard::class, 'inapplicable');
+    }
+
+    public function inapplicableGauges(): MorphToMany
+    {
+        return $this->morphedByMany(Gauge::class, 'inapplicable');
+    }
 }

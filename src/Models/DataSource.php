@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Translatable\HasTranslations;
+use Uneca\Chimera\Enums\ScorecardScope;
 
 class DataSource extends Model
 {
@@ -28,11 +29,35 @@ class DataSource extends Model
     public function getScorecardsAttribute()
     {
         return Scorecard::published()
+            ->scope(ScorecardScope::Dashboard)
             ->where('data_source', $this->name)
             ->orderBy('rank')
             ->get()
             ->filter(function ($scorecard) {
                 return Gate::allows($scorecard->permission_name);
+            });
+    }
+
+    public function getAreaInsightsScorecardsAttribute()
+    {
+        return Scorecard::published()
+            ->scope(ScorecardScope::AreaInsights)
+            ->where('data_source', $this->name)
+            ->orderBy('rank')
+            ->get()
+            ->filter(function ($scorecard) {
+                return Gate::allows($scorecard->permission_name);
+            });
+    }
+
+    public function getGaugesAttribute()
+    {
+        return Gauge::published()
+            ->where('data_source', $this->name)
+            ->orderBy('rank')
+            ->get()
+            ->filter(function ($gauge) {
+                return Gate::allows($gauge->permission_name);
             });
     }
 

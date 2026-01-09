@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Uneca\Chimera\Livewire\CaseStats;
 use Uneca\Chimera\Livewire\Chart;
+use Uneca\Chimera\Livewire\GaugeComponent;
 use Uneca\Chimera\Livewire\ScorecardComponent;
 use Uneca\Chimera\Services\FetchCacheAndRecord;
 
@@ -23,7 +24,7 @@ class QueryRunnerJob implements ShouldQueue, ShouldBeUnique
     public $uniqueFor = 600;
 
     public function __construct(
-        private readonly CaseStats|ScorecardComponent|Chart $artefact,
+        private readonly CaseStats|ScorecardComponent|GaugeComponent|Chart $artefact,
         private readonly string $key,
         private readonly string $filterPath,
         private readonly bool $cacheForever = false

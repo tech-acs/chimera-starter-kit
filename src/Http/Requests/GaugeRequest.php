@@ -5,7 +5,7 @@ namespace Uneca\Chimera\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StatRequest extends FormRequest
+class GaugeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,6 +26,7 @@ class StatRequest extends FormRequest
     {
         return [
             'title' => 'required',
+            'subtitle' => 'required',
         ];
     }
 }
