@@ -1,9 +1,12 @@
 <?php
 
+use Uneca\Chimera\Http\Controllers\AreaInsightsController;
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaImportTemplateDownloadController;
+use Uneca\Chimera\Http\Controllers\Manage\AreaInsightsManagementController;
 use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
+use Uneca\Chimera\Http\Controllers\Manage\GaugeController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueImportTemplateDownloadController;
 use Uneca\Chimera\Http\Controllers\Manage\SettingController;
@@ -37,6 +40,8 @@ Route::get('/', function () {
 Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])->group(function () {
     Route::get('home', HomeController::class)->name('home');
 
+    Route::get('area-insights', AreaInsightsController::class)->name('area-insights');
+
     Route::get("page/{page:slug}", [ChartsController::class, 'page'])->name('page');
     Route::get('indicator/{indicator:slug}', [ChartsController::class, 'indicator'])->name('indicator');
     Route::get('map', [MapController::class, 'index'])->name('map');
@@ -66,9 +71,12 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
                 Route::delete('area/truncate', [AreaController::class, 'destroy'])->name('area.destroy');
                 Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
                 Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
+                Route::get('area-insights/edit', [AreaInsightsManagementController::class, 'edit'])->name('area-insights.edit');
+                Route::patch('area-insights', [AreaInsightsManagementController::class, 'update'])->name('area-insights.update');
 
                 Route::resource('indicator', \Uneca\Chimera\Http\Controllers\Manage\IndicatorMakerController::class)->only(['create', 'store']);
                 Route::resource('scorecard', \Uneca\Chimera\Http\Controllers\Manage\ScorecardMakerController::class)->only(['create', 'store']);
+                Route::resource('gauge', \Uneca\Chimera\Http\Controllers\Manage\GaugeMakerController::class)->only(['create', 'store']);
                 Route::resource('map_indicator', \Uneca\Chimera\Http\Controllers\Manage\MapIndicatorMakerController::class)->only(['create', 'store']);
                 Route::resource('report', \Uneca\Chimera\Http\Controllers\Manage\ReportMakerController::class)->only(['create', 'store']);
 
@@ -85,9 +93,10 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
         Route::post('setting', [SettingController::class, 'update'])->name('setting.update');
         Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
         Route::resource('page', PageController::class)->except(['show']);
-        Route::resource('indicator', IndicatorController::class)->except(['show', 'create', 'store', 'destroy']);
+        Route::resource('indicator', IndicatorController::class)->only(['index', 'edit', 'update']);
         Route::resource('chart-template', ChartTemplateController::class)->only(['index', 'destroy']);
-        Route::resource('scorecard', ScorecardController::class)->except(['show', 'create', 'store', 'destroy']);
+        Route::resource('scorecard', ScorecardController::class)->only(['index', 'edit', 'update']);
+        Route::resource('gauge', GaugeController::class)->only(['index', 'edit', 'update']);
         Route::name('manage.')->group(function () {
             Route::get('report/{report}/run_now', ReportManagementRunNowController::class)->name('report.run_now');
             Route::resource('report', ReportManagementController::class)->except(['show']);

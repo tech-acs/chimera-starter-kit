@@ -14,10 +14,14 @@ class AreaFilter extends Component
 
     public int $removeLastNLevels = 1;
 
+    public string $sessionKey = 'area-filter';
+
+    public string $changeEvent = 'filterChanged';
+
     public function mount()
     {
         $areaTree = new AreaTree(removeLastNLevels: $this->removeLastNLevels);
-        $selectionsFromSession = session()->get('area-filter', []);
+        $selectionsFromSession = session()->get($this->sessionKey, []);
         $restrictions = auth()->user()->areaRestrictionAsFilter();
         $subject = null;
         $this->dropdowns = array_map(function ($level) use ($selectionsFromSession, $restrictions, $areaTree, &$subject) {
@@ -75,15 +79,15 @@ class AreaFilter extends Component
             fn ($dropdown) => $this->removeChecksumSafety($dropdown['selected']),
             array_filter($this->dropdowns, fn ($dropdown) => $dropdown['selected'])
         );
-        session()->put('area-filter', $filter);
-        $this->dispatch('filterChanged');
+        session()->put($this->sessionKey, $filter);
+        $this->dispatch($this->changeEvent);
     }
 
     public function clear()
     {
-        session()->forget('area-filter');
+        session()->forget($this->sessionKey);
         $this->mount();
-        $this->dispatch('filterChanged');
+        $this->dispatch($this->changeEvent);
     }
 
     public function render()

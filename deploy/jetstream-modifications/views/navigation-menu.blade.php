@@ -32,6 +32,11 @@
                         {{ __('Reports') }}
                     </x-nav-link>
                 @endif
+                @if(settings('show_area_insights_menu', true))
+                    <x-nav-link href="{{ route('area-insights') }}" class="!text-base" :active="request()->routeIs('area-insights')">
+                        {{ __('Area Insights') }}
+                    </x-nav-link>
+                @endif
 
                     <livewire:command-palette />
                 </div>
@@ -79,11 +84,13 @@
                                     <x-dropdown-link class="px-6" href="{{route('developer.area-hierarchy.index')}}">{{ __('Area Hierarchy') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-dropdown-link>
+                                    <x-dropdown-link class="px-6" href="{{ route('developer.area-insights.edit') }}">{{ __('Area Insights') }}</x-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Dashboard Artefacts') }}</div>
                                     <x-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('indicator.index') }}">{{ __('Indicators') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('scorecard.index') }}">{{ __('Scorecards') }}</x-dropdown-link>
+                                    <x-dropdown-link class="px-6" href="{{ route('gauge.index') }}">{{ __('Gauges') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('manage.report.index') }}">{{ __('Reports') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('manage.map_indicator.index') }}">{{ __('Map Indicators') }}</x-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
