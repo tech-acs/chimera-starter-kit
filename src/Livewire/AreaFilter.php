@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Livewire\Attributes\On;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\ChecksumSafetyTrait;
 use Livewire\Component;
@@ -17,6 +18,8 @@ class AreaFilter extends Component
     public string $sessionKey = 'area-filter';
 
     public string $changeEvent = 'filterChanged';
+
+    public string $mode = 'select';
 
     public function mount()
     {
@@ -44,6 +47,11 @@ class AreaFilter extends Component
             }
             return $dropdown;
         }, array_flip($areaTree->hierarchies));
+    }
+
+    public function switchMode()
+    {
+        $this->mode = $this->mode === 'select' ? 'search' : 'select';
     }
 
     public function changeHandler($changedLevelName, $selectedPath)
@@ -83,6 +91,16 @@ class AreaFilter extends Component
         $this->dispatch($this->changeEvent);
     }
 
+    #[On(['searchedAreaUpdated'])]
+    public function applySearchFilter($path)
+    {
+        $filter = AreaTree::pathAsFilter($path, returnedColumn: 'path');
+        session()->put($this->sessionKey, $filter);
+        $this->mount();
+        $this->dispatch($this->changeEvent);
+    }
+
+    #[On(['searchedAreaCleared'])]
     public function clear()
     {
         session()->forget($this->sessionKey);

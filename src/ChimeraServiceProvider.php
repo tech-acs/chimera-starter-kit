@@ -123,6 +123,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('cache-clearer', \Uneca\Chimera\Livewire\CacheClearer::class);
         Livewire::component('x-ray', \Uneca\Chimera\Livewire\XRay::class);
         Livewire::component('gauge', \Uneca\Chimera\Livewire\GaugeComponent::class);
+        Livewire::component('live-search', \Uneca\Chimera\Livewire\LiveSearch::class);
     }
 
     public function packageBooted()
