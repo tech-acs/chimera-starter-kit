@@ -40,8 +40,6 @@ Route::get('/', function () {
 Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])->group(function () {
     Route::get('home', HomeController::class)->name('home');
 
-    Route::get('area-insights', AreaInsightsController::class)->name('area-insights');
-
     Route::get("page/{page:slug}", [ChartsController::class, 'page'])->name('page');
     Route::get('indicator/{indicator:slug}', [ChartsController::class, 'indicator'])->name('indicator');
     Route::get('map', [MapController::class, 'index'])->name('map');
@@ -49,6 +47,8 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
     Route::get('report', [ReportController::class, 'index'])->name('report');
     Route::get('report/{page:slug}', [ReportController::class, 'show'])->name('report.page');
     Route::get('report/{report}/download', [ReportController::class, 'download'])->name('report.download');
+    Route::get('area-insights', [AreaInsightsController::class, 'index'])->name('area-insights');
+    Route::get('area-insights/{dataSource:name}', [AreaInsightsController::class, 'show'])->name('area-insights.show');
     Route::get('notification', NotificationController::class)->name('notification.index');
 
     Route::middleware(['can:Super Admin'])->prefix('manage')->group(function () {

@@ -1,5 +1,5 @@
 @props(['indicator' => null])
-<div class="flex-grow basis-1/2 bg-white border overflow-hidden sm:rounded-lg" x-data="{ show_help: false }">
+<div class="flex-grow basis-1/2 bg-white border overflow-hidden sm:rounded-lg break-inside-avoid" x-data="{ show_help: false }">
     <div class="flex justify-between px-4 py-2 sm:px-4 bg-indigo-50">
         <div class="w-full overflow-hidden">
             <h3 class="text-lg leading-6 font-medium text-gray-900 whitespace-nowrap">

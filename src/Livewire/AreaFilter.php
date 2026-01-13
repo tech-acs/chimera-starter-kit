@@ -11,15 +11,22 @@ class AreaFilter extends Component
 {
     use ChecksumSafetyTrait;
 
+    public const SESSION_KEY = 'area-filter';
+    public const CHANGE_EVENT = 'filterChanged';
+
+    public const AREA_INSIGHTS_SESSION_KEY = 'area-insights-filter';
+    public const AREA_INSIGHTS_CHANGE_EVENT = 'areaInsightsfilterChanged';
+
     public array $dropdowns;
 
     public int $removeLastNLevels = 1;
 
-    public string $sessionKey = 'area-filter';
+    public string $sessionKey = self::SESSION_KEY;
 
-    public string $changeEvent = 'filterChanged';
+    public string $changeEvent = self::CHANGE_EVENT;
 
     public string $mode = 'select';
+
 
     public function mount()
     {

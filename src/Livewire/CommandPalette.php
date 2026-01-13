@@ -22,8 +22,8 @@ class CommandPalette extends Component
                 ->published()
                 ->when(! empty($this->search), function ($builder) use ($locale) {
                     $builder->where(function ($builder) use ($locale) {
-                        $builder->whereRaw("title->>'{$locale}' ilike '%{$this->search}%'")
-                            ->orWhereRaw("description->>'{$locale}' ilike '%{$this->search}%'");
+                        $builder->where("title->{$locale}", 'ilike', '%' . $this->search . '%')
+                            ->orWhere("description->{$locale}", 'ilike', '%' . $this->search . '%');
                     });
                 })
                 ->orderByRaw("title->>'{$locale}'")
