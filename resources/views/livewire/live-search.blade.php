@@ -1,4 +1,4 @@
-<div class="relative gap-4" x-data="{ open: true }" @click.away="open = false">
+<div class="relative gap-4 space-y-4" x-data="{ open: true }" @click.away="open = false">
 
     <input
         type="text"
