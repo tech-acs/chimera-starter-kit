@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 use Uneca\Chimera\Services\MapIndicatorCaching;
@@ -25,6 +26,7 @@ class Map extends Component
     public array $simplification;
     public array $allStyles;
     public array $levels;
+    public Page $page;
 
     protected function getListeners()
     {
@@ -33,6 +35,52 @@ class Map extends Component
             'mapClicked' => 'updateMap',
             'indicatorSelected' => 'setIndicatorAndUpdateMap',
         ];
+    }
+
+    public function mount()
+    {
+        $this->leafletMapOptions = [
+            'center' => [settings('map_center_lat'), settings('map_center_lon')],
+            'zoom' => settings('map_starting_zoom'),
+            'minZoom' => 6,
+            'zoomControl' => false,
+            'attributionControl' => false,
+            'preferCanvas' => true,
+            'locale' => app()->getLocale(),
+        ];
+        $allStyles['default'] = MapIndicatorBaseClass::DEFAULT_STYLE;
+        /*$this->indicators = MapIndicator::published()
+            ->orderBy('rank')
+            ->get()
+            ->filter(function ($mapIndicator) {
+                return Gate::allows($mapIndicator->permission_name);
+            })
+            ->mapWithKeys(function ($mapIndicator) use (&$allStyles) {
+                $implementation = DashboardComponentFactory::makeMapIndicator($mapIndicator);
+                $allStyles[$implementation::SELECTED_COLOR_CHART] = $implementation->getStyles();
+                return [$mapIndicator->fully_qualified_classname => $mapIndicator->title];
+            })
+            ->all();*/
+        $this->indicators = Page::mapIndicators()
+            ->orderBy('rank')
+            ->get()
+            ->filter(function ($mapIndicator) {
+                return Gate::allows($mapIndicator->permission_name);
+            })
+            ->mapWithKeys(function ($mapIndicator) use (&$allStyles) {
+                $implementation = DashboardComponentFactory::makeMapIndicator($mapIndicator);
+                $allStyles[$implementation::SELECTED_COLOR_CHART] = $implementation->getStyles();
+                return [$mapIndicator->fully_qualified_classname => $mapIndicator->title];
+            })
+            ->all();
+        $areaHierarchies = AreaHierarchy::orderBy('index')->get();
+        $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
+        $this->allStyles = $allStyles;
+        $this->levels = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
+
+        /*if (! empty($this->indicators)) {
+            $this->setCurrentIndicator(array_key_first($this->indicators));
+        }*/
     }
 
     protected function getGeoJson(string $parentPath, int $level)
@@ -126,40 +174,6 @@ class Map extends Component
             $this->setCurrentIndicator($mapIndicator);
         }
         $this->updateMap('');
-    }
-
-    public function mount()
-    {
-        $this->leafletMapOptions = [
-            'center' => [settings('map_center_lat'), settings('map_center_lon')],
-            'zoom' => settings('map_starting_zoom'),
-            'minZoom' => 6,
-            'zoomControl' => false,
-            'attributionControl' => false,
-            'preferCanvas' => true,
-            'locale' => app()->getLocale(),
-        ];
-        $allStyles['default'] = MapIndicatorBaseClass::DEFAULT_STYLE;
-        $this->indicators = MapIndicator::published()
-            ->orderBy('rank')
-            ->get()
-            ->filter(function ($mapIndicator) {
-                return Gate::allows($mapIndicator->permission_name);
-            })
-            ->mapWithKeys(function ($mapIndicator) use (&$allStyles) {
-                $implementation = DashboardComponentFactory::makeMapIndicator($mapIndicator);
-                $allStyles[$implementation::SELECTED_COLOR_CHART] = $implementation->getStyles();
-                return [$mapIndicator->fully_qualified_classname => $mapIndicator->title];
-            })
-            ->all();
-        $areaHierarchies = AreaHierarchy::orderBy('index')->get();
-        $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
-        $this->allStyles = $allStyles;
-        $this->levels = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
-
-        /*if (! empty($this->indicators)) {
-            $this->setCurrentIndicator(array_key_first($this->indicators));
-        }*/
     }
 
     public function render()
