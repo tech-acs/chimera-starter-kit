@@ -28,3 +28,10 @@
     }
 }
 
+@media print {
+    /* 1. Hide unwanted UI elements */
+    nav, footer, .no-print {
+        display: none !important;
+    }
+}
+

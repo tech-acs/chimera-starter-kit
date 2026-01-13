@@ -27,7 +27,6 @@ class AreaFilter extends Component
 
     public string $mode = 'select';
 
-
     public function mount()
     {
         $areaTree = new AreaTree(removeLastNLevels: $this->removeLastNLevels);

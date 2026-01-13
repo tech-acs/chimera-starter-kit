@@ -10,10 +10,13 @@ if (! function_exists('settings')) {
         if (is_null($key)) {
             return app('settings');
         }
-        //return app('settings')->get($key, $default);
         $setting = app('settings')->get($key);
         if (! is_null($setting)) {
-            return Crypt::decryptString($setting);
+            try {
+                return Crypt::decryptString($setting);
+            } catch (\Exception) {
+                return null;
+            }
         } else {
             return $default;
         }

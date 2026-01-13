@@ -16,7 +16,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($stats ?? [] as $name => $value)
-                    <div class="flex rounded-md shadow bg-white p-2">
+                    <div class="flex rounded-md shadow bg-white p-2 print:border">
                         <x-chimera::case-icon :type="$name" class="opacity-75" />
                         <div class="flex-1 truncate px-4">
                             <div class="font-medium text-2xl text-gray-900 hover:text-gray-600">{{ Number::format((float)$value) }}</div>

@@ -61,7 +61,9 @@ class Map extends Component
                 return [$mapIndicator->fully_qualified_classname => $mapIndicator->title];
             })
             ->all();*/
-        $this->indicators = Page::mapIndicators()
+        $this->indicators = $this->page
+            ->mapIndicators()
+            ->published()
             ->orderBy('rank')
             ->get()
             ->filter(function ($mapIndicator) {

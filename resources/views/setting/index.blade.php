@@ -64,18 +64,18 @@
                                                             <input id="{{ $setting->key }}" name="{{ $setting->key }}" @checked($setting->value) type="checkbox" class="h-6 w-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                                         </div>
                                                         <div class="ml-3 text-base leading-6">
-                                                            <label for="is_featured" class="font-medium text-gray-900">{{ $setting->label }}</label>
+                                                            <label for="{{ $setting->key }}" class="font-medium text-gray-900">{{ $setting->label }}</label>
                                                             <p class="text-gray-500 text-xs">{{ $setting->help }}</p>
                                                         </div>
                                                     </div>
                                                 @else
                                                     <div class="col-span-full">
-                                                        <label for="email" class="block text-sm/6 font-medium text-gray-900 dark:text-white">{{ $setting->label }}</label>
+                                                        <label for="{{ $setting->key }}" class="block text-sm/6 font-medium text-gray-900 dark:text-white">{{ $setting->label }}</label>
                                                         <div class="mt-2">
                                                             <input id="{{ $setting->key }}" name="{{ $setting->key }}" value="{{ $setting->value }}"
                                                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block {{ $setting->input_type === 'text' ? 'w-full' : '' }}" />
                                                         </div>
-                                                        <p id="email-description" class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ $setting->help }}</p>
+                                                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ $setting->help }}</p>
                                                     </div>
                                                 @endif
                                             @endforeach
@@ -87,6 +87,7 @@
                                     </div>--}}
                                 </div>
                             @endforeach
+
                             <div id="group0" x-show="isSelected('group0')" class="bg-white p-6 shadow-xs border border-gray-900/10 sm:rounded-xl md:col-span-2"
                                 x-data="{ selectedPalette: '{{ settings('color_palette') }}' }"
                             >
