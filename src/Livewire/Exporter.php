@@ -16,6 +16,7 @@ class Exporter extends Component
 
     public $indicator;
     public string $filterPath = '';
+    public string $placement = 'page';
 
     public function mount()
     {

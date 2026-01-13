@@ -27,6 +27,7 @@ class IndicatorRequest extends FormRequest
         return [
             'title' => 'required',
             'description' => 'required',
+            'scope' => 'required'
         ];
     }
 }

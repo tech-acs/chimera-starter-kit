@@ -53,7 +53,7 @@ class IndicatorController extends Controller
         $indicator->pages()->sync($request->get('pages', []));
         $indicator->inapplicableLevels()->sync($request->get('inapplicable_levels', []));
         $request->merge(['featured_at' => $request->get('is_featured', false) ? Carbon::now() : null]);
-        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag', 'featured_at']));
+        $indicator->update($request->only(['title', 'description', 'help', 'published', 'tag', 'featured_at', 'scope']));
         return redirect()->route('indicator.index')->withMessage('Record updated');
     }
 }

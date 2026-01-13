@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
+use Uneca\Chimera\Enums\IndicatorScope;
 use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 use Uneca\Chimera\Traits\HasLevelDiscrimination;
 
@@ -22,7 +23,8 @@ class Indicator extends Model
     public $permissionSuffix = ':indicator';
     protected $casts = [
         'data' => 'array',
-        'layout' => 'array'
+        'layout' => 'array',
+        'scope' => IndicatorScope::class
     ];
     protected $with = ['inapplicableLevels'];
 
@@ -39,21 +41,6 @@ class Indicator extends Model
             ->orderBy('started_at');
     }
 
-    /*public function inapplicableLevels(): MorphToMany
-    {
-        return $this->morphToMany(AreaHierarchy::class, 'inapplicable')
-            ->withTimestamps();
-    }
-
-    public function supportsLevel(string $filterPath): bool
-    {
-        if ($this->inapplicableLevels->isEmpty()) {
-            return true;
-        }
-        $level = empty($filterPath) ? 0 : AreaTree::levelFromPath($filterPath) + 1;
-        return $this->inapplicableLevels->pluck('name')->doesntContain(app('hierarchies')[$level]);
-    }*/
-
     protected function component(): Attribute
     {
         return new Attribute(
@@ -69,5 +56,10 @@ class Indicator extends Model
     public function scopeUntagged(Builder $query)
     {
         return $query->where('tag', null);
+    }
+
+    public function scopeScope($query, $type = IndicatorScope::Pages)
+    {
+        return $query->whereIn('scope', [$type, IndicatorScope::Everywhere]);
     }
 }

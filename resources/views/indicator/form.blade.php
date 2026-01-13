@@ -49,17 +49,29 @@
                 </div>
             </div>
 
-
-            <div>
-                <x-label for="tag" value="{{ __('Cache Tag') }}" />
-                <select name="tag" class="space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
-                    <option value="">{{ __('Assign a cache tag') }}</option>
-                    @foreach($tags as $tag)
-                        <option class="p-2 rounded-md" value="{{ $tag }}" @selected($tag == $indicator->tag)>{{ $tag }}</option>
-                    @endforeach
-                </select>
-                <x-input-error for="tag" class="mt-2" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-1">
+                    <x-label for="scope" value="{{ __('Scope') }} *" />
+                    <select name="scope" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                        <option value="">{{ __('Select scope') }}</option>
+                        @foreach(\Uneca\Chimera\Enums\IndicatorScope::cases() as $scope)
+                            <option class="p-2 rounded-md" value="{{ $scope }}" @selected($scope === $indicator?->scope ?? null)>{{ $scope }}</option>
+                        @endforeach
+                    </select>
+                    <x-chimera::input-hint-error for="scope" class="mt-2">Where it gets displayed</x-chimera::input-hint-error>
+                </div>
+                <div class="col-span-1">
+                    <x-label for="tag" value="{{ __('Cache Tag') }}" />
+                    <select name="tag" class="space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                        <option value="">{{ __('Assign a cache tag') }}</option>
+                        @foreach($tags as $tag)
+                            <option class="p-2 rounded-md" value="{{ $tag }}" @selected($tag == $indicator->tag)>{{ $tag }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error for="tag" class="mt-2" />
+                </div>
             </div>
+
             <div>
                 <x-label for="page" value="{{ __('Status') }}" />
                 <div class="flex items-center mt-3 ml-3" x-data="{enabled: @json($indicator->published ?? false) }">

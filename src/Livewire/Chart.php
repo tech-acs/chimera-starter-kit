@@ -31,6 +31,7 @@ abstract class Chart extends Component
     public array $config = [];
     public Carbon $dataTimestamp;
 
+    public string $placement = 'page';
     public bool $isBeingFeatured = false;
     public bool $useDynamicAreaXAxisTitles = false;
     public array $aggregateAppendedTraces = []; // ['trace name' => 'avg'] ... sum, count, min, max, mode, median
@@ -73,7 +74,7 @@ abstract class Chart extends Component
         return implode(':', ['indicator', $this->indicator->id, $this->filterPath]);
     }
 
-    #[On(['filterChanged'])]
+    #[On(['filterChanged', 'areaInsightsfilterChanged'])]
     public function update()
     {
         $this->resolveAreaAndCheckData();

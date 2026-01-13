@@ -3,5 +3,5 @@
 @endpush
 
 <x-app-layout>
-    <livewire:map />
+    <livewire:map :page="$page" />
 </x-app-layout>

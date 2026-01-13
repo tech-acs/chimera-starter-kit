@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\Scorecard;
@@ -27,6 +28,7 @@ abstract class ScorecardComponent extends Component
     public string $bgColor;
     public string $fgColor;
     public Carbon $dataTimestamp;
+    public string $placement = 'dashboard';
 
     public function mount(int $index)
     {
@@ -37,8 +39,6 @@ abstract class ScorecardComponent extends Component
         $this->fgColor = APCA::decideBlackOrWhiteTextColor($this->bgColor);
 
         $this->resolveAreaAndCheckData();
-        /*list($this->filterPath,) = $this->areaResolver();
-        $this->checkData();*/
     }
 
     private function resolveAreaAndCheckData()
@@ -49,6 +49,12 @@ abstract class ScorecardComponent extends Component
         } else {
             $this->dataStatus = DataStatus::INAPPLICABLE->value;
         }
+    }
+
+    #[On(['areaInsightsfilterChanged'])]
+    public function update()
+    {
+        $this->resolveAreaAndCheckData();
     }
 
     public function placeholder()

@@ -1,12 +1,12 @@
-<div x-data="{ status: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
+<div class="relative grid grid-cols-1 grid-rows-1" x-data="{ status: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
 
-    <div x-show="status == 'pending'" x-cloak>
+    <div x-show="status == 'pending'" x-cloak class="col-start-1 row-start-1">
         <div wire:poll.visible.3s="checkData"></div>
 
         @include('chimera::livewire.placeholders.scorecard')
     </div>
 
-    <div x-show="status == 'renderable'" x-cloak x-transition.duration.1000ms>
+    <div x-show="status == 'renderable'" x-cloak x-transition.duration.1000ms x-transition.leave.duration.150ms class="col-start-1 row-start-1">
         <div class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
             @if(! empty($scorecard->linked_indicator))
                 <a href="{{ route('indicator', $scorecard->linked_indicator) }}?linked_from_scorecard" class="absolute right-1 top-1">
@@ -20,7 +20,7 @@
                 {{ $title }}
             </dt>
             <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center">
-                <div class="mr-2"><span wire:loading>...</span>{{ $value }}</div>
+                <div class="mr-2">{{ $value }}</div>
                 @if (! is_null($diff))
                     <x-chimera::stock-ticker diff="{{ $diff }}" diff-title="" unit="{{ $unit }}" />
                 @endif
@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div x-show="status == 'empty'" x-cloak>
+    <div x-show="status == 'empty'" x-cloak x-transition.duration.500ms class="col-start-1 row-start-1">
         <div class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
             <dt class="order-2 mt-2 text-lg leading-6 font-medium truncate {{ $fgColor }}">
                 {{ $title }}
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <div x-show="status == 'inapplicable'" x-cloak>
+    <div x-show="status == 'inapplicable'" x-cloak x-transition.duration.500ms class="col-start-1 row-start-1">
         <div class="min-h-24 flex flex-col p-3 text-center items-center justify-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
             {{ __('The current area level is inapplicable to this scorecard') }}
         </div>

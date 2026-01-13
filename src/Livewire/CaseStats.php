@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\DataSource;
@@ -21,14 +22,26 @@ class CaseStats extends Component
     public DataSource $dataSource;
     public Collection $stats;
     public Carbon $dataTimestamp;
+    public string $placement = 'dashboard';
 
     public function mount(DataSource $dataSource)
     {
         $this->dataTimestamp = Carbon::now();
         $this->dataSource = $dataSource;
 
+        $this->resolveAreaAndCheckData();
+    }
+
+    private function resolveAreaAndCheckData()
+    {
         list($this->filterPath,) = $this->areaResolver();
         $this->checkData();
+    }
+
+    #[On(['areaInsightsfilterChanged'])]
+    public function update()
+    {
+        $this->resolveAreaAndCheckData();
     }
 
     public function placeholder()
