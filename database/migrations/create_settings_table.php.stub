@@ -84,6 +84,12 @@ return new class extends Migration
                 'input_type' => 'checkbox',
                 'group' => 'Report settings|Settings related to report behavior.'],
 
+            ['key' => 'show_area_insights_menu',
+                'value' => env('AREA_INSIGHTS_MENU', 'on'),
+                'label' => "Show Area Insights menu|Whether to show the Area Insights menu in the main navbar or not.",
+                'input_type' => 'checkbox',
+                'group' => 'Area insights settings|Settings related to area insights behavior.'],
+
             ['key' => 'mail_host',
                 'value' => env('MAIL_HOST', '127.0.0.1'),
                 'label' => "Host|SMTP server IP address or host name",

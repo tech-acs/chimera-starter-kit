@@ -8,7 +8,7 @@
             <div class="flex justify-between px-4 py-5 sm:px-6">
                 <div class="overflow-hidden">
                     <h3 class="text-lg leading-6 font-base text-gray-700">
-                        Area Insights: <livewire:level-area-name-display />
+                        {{ __('Area Insights') }}: <livewire:level-area-name-display />
                     </h3>
                     <p class="mt-1 max-w-2xl truncate text-sm text-gray-500">
                         {{ $dataSource->title }} | {{ $dataSource->start_date->toFormattedDateString() }} - {{ $dataSource->end_date->toFormattedDateString() }}

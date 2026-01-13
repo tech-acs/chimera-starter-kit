@@ -10,7 +10,6 @@
     <div
         x-cloak
         x-show="tracesStatus == 'renderable'"
-        x-transition.enter.duration.1000ms
         x-transition.leave.duration.150ms
     >
         <div class="opacity-25 absolute z-20 cursor-pointer" title="Calculated {{ $dataTimestamp?->diffForHumans() }} ({{ $dataTimestamp?->toDayDateTimeString() }})">
@@ -19,6 +18,7 @@
         <div
             wire:ignore
             id="{{ $graphDiv }}"
+            wire:key="{{ $graphDiv }}-{{ $dataTimestamp?->timestamp }}"
             data-config='@json($config)'
             x-init="new PlotlyChart('{{ $graphDiv }}')"
         ></div>
@@ -38,5 +38,4 @@
         {{ __('The current area level is inapplicable to this indicator') }}
     </div>
 </div>
-
 

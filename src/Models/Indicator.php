@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 use Uneca\Chimera\Enums\IndicatorScope;
+use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 use Uneca\Chimera\Traits\HasLevelDiscrimination;
 
@@ -33,6 +34,15 @@ class Indicator extends Model
         return $this->morphToMany(Page::class, 'pageable')
             ->withPivot('rank')
             ->withTimestamps();
+    }
+
+    public function supportsLevel(string $filterPath): bool
+    {
+        $level = empty($filterPath) ? 0 : AreaTree::levelFromPath($filterPath) + 1;
+        $levels = collect(app('hierarchies'))->prepend('National');
+        $eaLevel = AreaHierarchy::orderBy('index', 'DESC')->take(1)->get();
+        $inapplicableLevels = $this->inapplicableLevels->merge($eaLevel);
+        return $inapplicableLevels->pluck('name')->doesntContain($levels[$level]);
     }
 
     public function analytics()

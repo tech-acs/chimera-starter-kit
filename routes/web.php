@@ -4,7 +4,6 @@ use Uneca\Chimera\Http\Controllers\AreaInsightsController;
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaImportTemplateDownloadController;
-use Uneca\Chimera\Http\Controllers\Manage\AreaInsightsManagementController;
 use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
 use Uneca\Chimera\Http\Controllers\Manage\GaugeController;
 use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
@@ -71,8 +70,6 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
                 Route::delete('area/truncate', [AreaController::class, 'destroy'])->name('area.destroy');
                 Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
                 Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
-                Route::get('area-insights/edit', [AreaInsightsManagementController::class, 'edit'])->name('area-insights.edit');
-                Route::patch('area-insights', [AreaInsightsManagementController::class, 'update'])->name('area-insights.update');
 
                 Route::resource('indicator', \Uneca\Chimera\Http\Controllers\Manage\IndicatorMakerController::class)->only(['create', 'store']);
                 Route::resource('scorecard', \Uneca\Chimera\Http\Controllers\Manage\ScorecardMakerController::class)->only(['create', 'store']);

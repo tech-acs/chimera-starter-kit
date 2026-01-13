@@ -84,7 +84,6 @@
                                     <x-dropdown-link class="px-6" href="{{route('developer.area-hierarchy.index')}}">{{ __('Area Hierarchy') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.area.index') }}">{{ __('Areas') }}</x-dropdown-link>
                                     <x-dropdown-link class="px-6" href="{{ route('developer.reference-value.index') }}">{{ __('Reference Values') }}</x-dropdown-link>
-                                    <x-dropdown-link class="px-6" href="{{ route('developer.area-insights.edit') }}">{{ __('Area Insights') }}</x-dropdown-link>
                                     <div class="border-t border-gray-100"></div>
                                     <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Dashboard Artefacts') }}</div>
                                     <x-dropdown-link class="px-6" href="{{ route('page.index') }}">{{ __('Pages') }}</x-dropdown-link>

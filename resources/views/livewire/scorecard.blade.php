@@ -1,4 +1,4 @@
-<div class="relative grid grid-cols-1 grid-rows-1" x-data="{ status: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
+<div class="relative grid grid-cols-1 grid-rows-1 break-inside-avoid" x-data="{ status: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
 
     <div x-show="status == 'pending'" x-cloak class="col-start-1 row-start-1">
         <div wire:poll.visible.3s="checkData"></div>
@@ -7,19 +7,19 @@
     </div>
 
     <div x-show="status == 'renderable'" x-cloak x-transition.duration.1000ms x-transition.leave.duration.150ms class="col-start-1 row-start-1">
-        <div class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative" style="background-color: {{ $bgColor }};">
+        <div class="flex flex-col p-3 text-center rounded-md shadow-sm opacity-90 relative print:border" style="background-color: {{ $bgColor }};">
             @if(! empty($scorecard->linked_indicator))
-                <a href="{{ route('indicator', $scorecard->linked_indicator) }}?linked_from_scorecard" class="absolute right-1 top-1">
+                <a href="{{ route('indicator', $scorecard->linked_indicator) }}?linked_from_scorecard" class="absolute right-1 top-1 no-print">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                 </a>
             @endif
-            <div class="absolute left-1 top-1 opacity-60 cursor-pointer" title="Calculated {{ $dataTimestamp?->diffForHumans() }} ({{ $dataTimestamp?->toDayDateTimeString() }})">
+            <div class="absolute left-1 top-1 opacity-60 cursor-pointer no-print" title="Calculated {{ $dataTimestamp?->diffForHumans() }} ({{ $dataTimestamp?->toDayDateTimeString() }})">
                 <x-chimera::icon.stamp class="text-gray-600" />
             </div>
-            <dt class="order-2 mt-2 text-lg leading-6 font-medium truncate {{ $fgColor }}">
+            <dt class="order-2 mt-2 text-lg leading-6 font-medium truncate {{ $fgColor }} print:text-gray-800">
                 {{ $title }}
             </dt>
-            <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center">
+            <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center print:text-gray-800">
                 <div class="mr-2">{{ $value }}</div>
                 @if (! is_null($diff))
                     <x-chimera::stock-ticker diff="{{ $diff }}" diff-title="" unit="{{ $unit }}" />

@@ -32,8 +32,8 @@ class MapController extends Controller
         return view('chimera::map.index', compact('pages'));
     }
 
-    public function show()
+    public function show(Page $page)
     {
-        return view('chimera::map.show');
+        return view('chimera::map.show', compact('page'));
     }
 }
