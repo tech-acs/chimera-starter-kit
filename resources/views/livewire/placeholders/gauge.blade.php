@@ -1,4 +1,4 @@
-<div class="animate-pulse flex p-3 text-center items-center rounded-md shadow-sm opacity-90 relative bg-gray-100 min-w-64">
+<div class="animate-pulse flex h-[106px] text-center items-center rounded-md shadow-sm opacity-90 relative bg-gray-100 min-w-64">
     <dd class="text-3xl font-extrabold flex justify-center items-center">
         <div class="size-24 bg-slate-300 rounded-full"></div>
     </dd>

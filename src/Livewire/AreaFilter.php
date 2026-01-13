@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Livewire\Attributes\On;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\ChecksumSafetyTrait;
 use Livewire\Component;
@@ -10,13 +11,22 @@ class AreaFilter extends Component
 {
     use ChecksumSafetyTrait;
 
+    public const SESSION_KEY = 'area-filter';
+    public const CHANGE_EVENT = 'filterChanged';
+
+    public const AREA_INSIGHTS_SESSION_KEY = 'area-insights-filter';
+    public const AREA_INSIGHTS_CHANGE_EVENT = 'areaInsightsfilterChanged';
+
     public array $dropdowns;
 
     public int $removeLastNLevels = 1;
 
-    public string $sessionKey = 'area-filter';
+    public string $sessionKey = self::SESSION_KEY;
 
-    public string $changeEvent = 'filterChanged';
+    public string $changeEvent = self::CHANGE_EVENT;
+
+    public string $mode = 'select';
+
 
     public function mount()
     {
@@ -44,6 +54,11 @@ class AreaFilter extends Component
             }
             return $dropdown;
         }, array_flip($areaTree->hierarchies));
+    }
+
+    public function switchMode()
+    {
+        $this->mode = $this->mode === 'select' ? 'search' : 'select';
     }
 
     public function changeHandler($changedLevelName, $selectedPath)
@@ -83,6 +98,16 @@ class AreaFilter extends Component
         $this->dispatch($this->changeEvent);
     }
 
+    #[On(['searchedAreaUpdated'])]
+    public function applySearchFilter($path)
+    {
+        $filter = AreaTree::pathAsFilter($path, returnedColumn: 'path');
+        session()->put($this->sessionKey, $filter);
+        $this->mount();
+        $this->dispatch($this->changeEvent);
+    }
+
+    #[On(['searchedAreaCleared'])]
     public function clear()
     {
         session()->forget($this->sessionKey);

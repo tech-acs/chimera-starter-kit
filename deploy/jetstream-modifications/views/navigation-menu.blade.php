@@ -33,7 +33,7 @@
                     </x-nav-link>
                 @endif
                 @if(settings('show_area_insights_menu', true))
-                    <x-nav-link href="{{ route('area-insights') }}" class="!text-base" :active="request()->routeIs('area-insights')">
+                    <x-nav-link href="{{ route('area-insights') }}" class="!text-base" :active="request()->routeIs('area-insights', 'area-insights.show')">
                         {{ __('Area Insights') }}
                     </x-nav-link>
                 @endif

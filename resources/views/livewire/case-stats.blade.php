@@ -1,12 +1,12 @@
-<div x-data="{ status: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
+<div class="relative grid grid-cols-1 grid-rows-1" x-data="{ status: $wire.entangle('dataStatus') }" x-init="dataStatus = 'pending'">
 
-    <div x-show="status == 'pending'" x-cloak>
+    <div x-show="status == 'pending'" x-cloak class="col-start-1 row-start-1">
         <div wire:poll.visible.2s="checkData"></div>
 
         @include('chimera::livewire.placeholders.case-stats')
     </div>
 
-    <div x-show="status == 'renderable'" x-cloak x-transition.duration.1000ms>
+    <div x-show="status == 'renderable'" x-cloak x-transition.duration.1000ms x-transition.leave.duration.150ms class="col-start-1 row-start-1">
         <div class="mb-2">
             <div class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider mb-1 flex align-middle ">
                 <div>{{ __('Interview stats') }}</div>
@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div x-show="status == 'empty'" x-cloak class="mb-2">
+    <div x-show="status == 'empty'" x-cloak x-transition.duration.500ms class="col-start-1 row-start-1 mb-2">
         <div class="text-sm font-semibold uppercase text-left text-gray-600 tracking-wider mb-1 flex align-middle ">
             <div>{{ __('Interview stats') }}</div>
         </div>

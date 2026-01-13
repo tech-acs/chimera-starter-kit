@@ -50,6 +50,17 @@ class DataSource extends Model
             });
     }
 
+    public function getAreaInsightsIndicatorsAttribute()
+    {
+        return Indicator::published()
+            ->scope(ScorecardScope::AreaInsights)
+            ->where('data_source', $this->name)
+            ->get()
+            ->filter(function ($indicator) {
+                return Gate::allows($indicator->permission_name);
+            });
+    }
+
     public function getGaugesAttribute()
     {
         return Gauge::published()

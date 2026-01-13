@@ -30,7 +30,7 @@ class AreaTree
         }, $paths);
     }
 
-    public static function pathAsFilter(string $path): array
+    public static function pathAsFilter(string $path, string $returnedColumn = 'code'): array
     {
         $ancestorsInclusive = [$path];
         $keepMovingUp = true;
@@ -44,10 +44,10 @@ class AreaTree
                 $keepMovingUp = false;
             }
         }
-        $areas = Area::whereIn('path', $ancestorsInclusive)->get(['code', 'level']);
+        $areas = Area::whereIn('path', $ancestorsInclusive)->get([$returnedColumn, 'level']);
         $hierarchies = (new AreaTree())->hierarchies;
-        return $areas->mapWithKeys(function ($area) use ($hierarchies) {
-            return [$hierarchies[$area->level] => $area->code];
+        return $areas->mapWithKeys(function ($area) use ($hierarchies, $returnedColumn) {
+            return [$hierarchies[$area->level] => $area->{$returnedColumn}];
         })->all();
     }
 

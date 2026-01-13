@@ -1,52 +1,29 @@
 <x-app-layout>
-    <livewire:area-insights-filter />
 
-    <div class="grid grid-cols-1 gap-6 sm:p-6 sm:pt-0 pb-6 sm:pb-0 bg-gray-100">
+    <div class="flex flex-col max-w-7xl mx-auto py-6 space-y-6">
+        <x-chimera::message-display />
 
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div class="flex justify-between px-4 py-5 sm:px-6">
-                <div class="overflow-hidden">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        Erontalga District
-                    </h3>
-                    <p class="mt-1 max-w-2xl truncate text-sm text-gray-500">
-                        Sub-title... not sure what goes here.
-                    </p>
-                </div>
-                <div class="flex items-center text-nowrap text-2xl text-zinc-500 font-bold">
-                    Area Insights
-                </div>
-            </div>
-            <div>
-                {{-- Case stats and score gauges --}}
-                <div class="grid grid-cols-1 xl:grid-cols-2 px-6 py-4 border-t border-gray-200">
-                    <div>
-                        @foreach($dataSources as $dataSource)
-                            @livewire($dataSource->case_stats_component, ['dataSource' => $dataSource])
-                        @endforeach
-                    </div>
-                    <div class="flex justify-end gap-6">
-                        @foreach($gauges ?? [] as $gauge)
-                            @livewire('gauge.' . $gauge->slug, ['gauge' => $gauge, 'index' => $loop->index, 'lazy' => true])
+        <div class="mt-2 flex flex-col">
+            <div class="inline-block min-w-full py-2 align-middle">
+
+                <div class="px-4 xl:px-0">
+                    <div class="mt-2 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        @foreach($dataSources as $menu)
+                            @can($menu['slug'])
+                                <x-chimera::graphical-menu
+                                    icon="clipboard-document-list"
+                                    :title="$menu['title']"
+                                    :description="$menu['description']"
+                                    :link="$menu['link']"
+                                    :bg-color="$menu['bg-color']"
+                                    :fg-color="$menu['fg-color']"
+                                />
+                            @endcan
                         @endforeach
                     </div>
                 </div>
-                <!-- Scorecards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 py-4">
-                    @foreach($scorecards ?? [] as $scorecard)
-                        @livewire('scorecard.' . $scorecard->slug, ['scorecard' => $scorecard, 'index' => $loop->index, 'lazy' => true])
-                    @endforeach
-                </div>
-                <!-- Indicators -->
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 px-6 py-4">
-                    @foreach($indicators as $indicator)
-                        <x-chimera::featured-chart-card :indicator="$indicator">
-                            @livewire($indicator->component, ['indicator' => $indicator, 'isBeingFeatured' => true, 'lazy' => true])
-                        </x-chimera::featured-chart-card>
-                    @endforeach
-                </div>
-            </div>
 
+            </div>
         </div>
     </div>
 

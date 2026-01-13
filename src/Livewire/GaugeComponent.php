@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
 use Uneca\Chimera\Models\Gauge;
@@ -26,6 +27,7 @@ abstract class GaugeComponent extends Component
     public array $colorThresholds = [70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500'];
     public string $scoreColor = 'text-gray-500';
     public Carbon $dataTimestamp;
+    public string $placement = 'area-insights';
 
     public function mount()
     {
@@ -33,8 +35,6 @@ abstract class GaugeComponent extends Component
         $this->subtitle = $this->gauge->subtitle;
 
         $this->resolveAreaAndCheckData();
-        /*list($this->filterPath,) = $this->areaResolver();
-        $this->checkData();*/
     }
 
     private function resolveAreaAndCheckData()
@@ -45,6 +45,12 @@ abstract class GaugeComponent extends Component
         } else {
             $this->dataStatus = DataStatus::INAPPLICABLE->value;
         }
+    }
+
+    #[On(['areaInsightsfilterChanged'])]
+    public function update()
+    {
+        $this->resolveAreaAndCheckData();
     }
 
     public function placeholder()

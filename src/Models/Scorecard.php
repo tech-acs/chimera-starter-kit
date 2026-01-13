@@ -30,21 +30,6 @@ class Scorecard extends Model
         return $this->morphMany(Analytics::class, 'analyzable')->orderBy('started_at');
     }
 
-    /*public function inapplicableLevels(): MorphToMany
-    {
-        return $this->morphToMany(AreaHierarchy::class, 'inapplicable')
-            ->withTimestamps();
-    }
-
-    public function supportsLevel(string $filterPath): bool
-    {
-        if ($this->inapplicableLevels->isEmpty()) {
-            return true;
-        }
-        $level = empty($filterPath) ? 0 : AreaTree::levelFromPath($filterPath) + 1;
-        return $this->inapplicableLevels->pluck('name')->doesntContain(app('hierarchies')[$level]);
-    }*/
-
     public function scopeScope($query, $type = ScorecardScope::Dashboard)
     {
         return $query->whereIn('scope', [$type, ScorecardScope::Everywhere]);

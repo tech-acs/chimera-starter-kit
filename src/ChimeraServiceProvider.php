@@ -92,7 +92,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\DeployHorizon::class,
                 \Uneca\Chimera\Commands\MakeReferenceValueSynthesizer::class,
                 \Uneca\Chimera\Commands\TransferReferenceValues::class,
-                \Uneca\Chimera\Commands\ChimeraArtefactGenerator::class
+                \Uneca\Chimera\Commands\ChimeraArtefactGenerator::class,
             ]);
     }
 
@@ -123,6 +123,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('cache-clearer', \Uneca\Chimera\Livewire\CacheClearer::class);
         Livewire::component('x-ray', \Uneca\Chimera\Livewire\XRay::class);
         Livewire::component('gauge', \Uneca\Chimera\Livewire\GaugeComponent::class);
+        Livewire::component('live-search', \Uneca\Chimera\Livewire\LiveSearch::class);
+        Livewire::component('level-area-name-display', \Uneca\Chimera\Livewire\LevelAreaNameDisplay::class);
     }
 
     public function packageBooted()
