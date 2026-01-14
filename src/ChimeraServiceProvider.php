@@ -193,7 +193,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         });
 
         $settings = app('settings');
-        if ($settings->isNotEmpty()) {
+        if ($settings->isNotEmpty() && settings('mail_enabled', false)) {
             config([
                 'mail.default'   => 'chimera_smtp',
                 'mail.mailers.chimera_smtp' => [

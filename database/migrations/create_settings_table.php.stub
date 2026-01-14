@@ -90,6 +90,11 @@ return new class extends Migration
                 'input_type' => 'checkbox',
                 'group' => 'Area insights settings|Settings related to area insights behavior.'],
 
+            ['key' => 'mail_enabled',
+                'value' => env('MAIL_ENABLED', 'off'),
+                'label' => "Enable email sending via SMTP|If enabled, emails will be sent by default via SMTP using the details below",
+                'input_type' => 'checkbox',
+                'group' => 'Mail settings|Settings related to email sending via SMTP.'],
             ['key' => 'mail_host',
                 'value' => env('MAIL_HOST', '127.0.0.1'),
                 'label' => "Host|SMTP server IP address or host name",
