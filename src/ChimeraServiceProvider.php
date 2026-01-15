@@ -125,6 +125,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
         Livewire::component('gauge', \Uneca\Chimera\Livewire\GaugeComponent::class);
         Livewire::component('live-search', \Uneca\Chimera\Livewire\LiveSearch::class);
         Livewire::component('level-area-name-display', \Uneca\Chimera\Livewire\LevelAreaNameDisplay::class);
+        Livewire::component('user-page-size-adjuster', \Uneca\Chimera\Livewire\UserPageSizeAdjuster::class);
     }
 
     public function packageBooted()
