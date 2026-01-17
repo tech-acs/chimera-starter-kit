@@ -21,7 +21,7 @@ abstract class GaugeComponent extends Component
     public Gauge $gauge;
     public string $title;
     public string $subtitle;
-    public int|float|string $value = '';
+    public null|int|float|string $value = '';
     public string $unit = '%';
     public int $outOf = 100;
     public array $colorThresholds = [70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500'];
@@ -73,7 +73,7 @@ abstract class GaugeComponent extends Component
     {
         list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
         if ($data instanceof Collection) {
-            $this->value = $data->first()->value;
+            $this->value = $data->first()?->value;
             $this->scoreColor = $this->assignColor($this->value);
             $this->dataStatus = DataStatus::RENDERABLE->value;
         } else {

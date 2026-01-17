@@ -1,4 +1,4 @@
-<div class="relative gap-4 space-y-4" x-data="{ open: true }" @click.away="open = false">
+<div class="relative flex flex-wrap gap-4" x-data="{ open: true }" @click.away="open = false">
 
     <input
         type="text"
@@ -7,7 +7,6 @@
         @input="open = true"
         class='w-96 mt-1 mr-4 text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm'
     >
-
     <div class="inline-flex items-baseline space-x-4">
         <x-button wire:click="apply" wire:loading.attr="disabled" wire:target="updatedQuery">
             {{ __('Apply') }}
