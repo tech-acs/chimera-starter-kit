@@ -8,7 +8,7 @@ return [
     //'indicators_per_page' => env('INDICATORS_PER_PAGE', 2),
     //'records_per_page' => env('RECORDS_PER_PAGE', 20),
     'secure' => env('SECURE', false),
-    'emailing_enabled' => env('EMAILING_ENABLED', false),
+    //'mail_enabled' => env('MAIL_ENABLED', false),
     'enforce_2fa' => env('ENFORCE_2FA', false),
     'invitation' => [
         'ttl_hours' => (int) env('INVITATION_TTL_HOURS', 72)

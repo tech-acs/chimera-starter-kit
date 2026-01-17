@@ -50,7 +50,7 @@
                                                 @foreach($dropdown['list'] as $path => $areaName)
                                                     <option
                                                         value="{{$path}}"
-                                                        @selected($path === ($dropdown['selected'] ?? null))
+                                                        @selected($path == ($dropdown['selected'] ?? null))
                                                     >{{ $areaName }}</option>
                                                 @endforeach
                                             </select>

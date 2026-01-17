@@ -28,13 +28,7 @@ class Production extends Command
 
         $this->components->task('Check env variables are set for production (APP_ENV=production & APP_DEBUG=false)', function () {
             $productionEnvValues = ['app.env' => 'production', 'app.debug' => false];
-            return collect($productionEnvValues)
-                ->map(function ($value, $key) {
-                    return config($key) === $value;
-                })
-                ->reduce(function ($carry, $item) {
-                    return $carry && $item;
-                }, true);
+            return collect($productionEnvValues)->every(fn($value, $key) => config($key) === $value);
         });
 
         $this->components->task('Check foundational data presence (area hierarchies, areas and reference values)', function () {
@@ -96,7 +90,8 @@ class Production extends Command
 
         $this->components->task('Check email has been properly configured and is sending', function () {
             try {
-                if (! in_array(env('MAIL_MAILER'), ['log', 'mailhog'])) {
+                //if (! in_array(env('MAIL_MAILER'), ['log', 'mailhog'])) {
+                if (settings('mail_enabled')) {
                     Mail::raw('This is a test email from the dashboard', function($msg) {
                         $msg->to(User::first()->email ?? 'admin@example.com')
                             ->subject('Test Email');
