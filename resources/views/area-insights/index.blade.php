@@ -9,16 +9,14 @@
                 <div class="px-4 xl:px-0">
                     <div class="mt-2 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                         @foreach($dataSources as $menu)
-                            @can($menu['slug'])
-                                <x-chimera::graphical-menu
-                                    icon="clipboard-document-list"
-                                    :title="$menu['title']"
-                                    :description="$menu['description']"
-                                    :link="$menu['link']"
-                                    :bg-color="$menu['bg-color']"
-                                    :fg-color="$menu['fg-color']"
-                                />
-                            @endcan
+                            <x-chimera::graphical-menu
+                                icon="clipboard-document-list"
+                                :title="$menu['title']"
+                                :description="$menu['description']"
+                                :link="$menu['link']"
+                                :bg-color="$menu['bg-color']"
+                                :fg-color="$menu['fg-color']"
+                            />
                         @endforeach
                     </div>
                 </div>

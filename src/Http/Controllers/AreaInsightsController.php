@@ -41,6 +41,7 @@ class AreaInsightsController extends Controller
 
     public function show(DataSource $dataSource)
     {
+        // Filtering by permission is being done in the DataSource model (the attributes: gauges, indicators, area_insights_scorecards...)
         return view('chimera::area-insights.show', compact('dataSource'));
     }
 }

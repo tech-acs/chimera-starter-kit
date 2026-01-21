@@ -34,6 +34,7 @@ class MapController extends Controller
 
     public function show(Page $page)
     {
+        // Filtering by permission is being done in the Map livewire component
         return view('chimera::map.show', compact('page'));
     }
 }
