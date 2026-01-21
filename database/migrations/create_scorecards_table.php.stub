@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('data_source')->nullable();
             $table->boolean('published')->default(false);
             $table->string('linked_indicator')->nullable();
-            $table->string('scope')->default(\Uneca\Chimera\Enums\ScorecardScope::Dashboard);
+            //$table->string('scope')->default(\Uneca\Chimera\Enums\ScorecardScope::Dashboard);
             $table->unsignedTinyInteger('rank')->nullable();
             $table->timestamps();
         });

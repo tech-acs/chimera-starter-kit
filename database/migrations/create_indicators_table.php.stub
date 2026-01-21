@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('data_source')->nullable();
             $table->boolean('published')->default(false);
             $table->string('type')->nullable();
-            $table->string('scope')->default(\Uneca\Chimera\Enums\IndicatorScope::Pages);
+            //$table->string('scope')->default(\Uneca\Chimera\Enums\IndicatorScope::Pages);
             $table->string('tag', 100)->nullable();
             $table->timestamp('featured_at')->nullable();
             $table->jsonb('data')->default('[]');

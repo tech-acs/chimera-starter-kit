@@ -66,6 +66,9 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_chart_templates_table',
                 'create_inapplicables_table',
                 'create_gauges_table',
+                'add_for_column_to_pages_table',
+                'add_scope_column_to_indicators_table',
+                'add_scope_column_to_scorecards_table'
             ])
             ->hasCommands([
                 \Uneca\Chimera\Commands\CacheIndicators::class,
