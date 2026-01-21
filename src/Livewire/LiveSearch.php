@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Livewire;
 
 use Livewire\Component;
 use Uneca\Chimera\Models\Area;
+use Uneca\Chimera\Services\AreaTree;
 
 class LiveSearch extends Component
 {
@@ -12,6 +13,7 @@ class LiveSearch extends Component
     public $selectedResult = '';
     public $removeLastNLevels = 1;
     public $excludedLevels = [];
+    public $restrictedPath = '';
 
     public function mount()
     {
@@ -19,6 +21,7 @@ class LiveSearch extends Component
             ->take(-1 * $this->removeLastNLevels)
             ->keys()
             ->toArray();
+        $this->restrictedPath = AreaTree::getFinestResolutionFilterPath(auth()->user()->areaRestrictionAsFilter());
     }
 
     public function updatedQuery()
@@ -32,6 +35,9 @@ class LiveSearch extends Component
             ->where("name->{$locale}", 'ilike', $this->query . '%')
             ->when(! empty($this->excludedLevels), function ($query) {
                 $query->whereNotIn('level', $this->excludedLevels);
+            })
+            ->when(! empty($this->restrictedPath), function ($query) {
+                $query->whereRaw("path <@ '{$this->restrictedPath}'");
             })
             ->orderBy('level')
             ->take(10)

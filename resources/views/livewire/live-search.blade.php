@@ -16,7 +16,7 @@
         </x-danger-button>
     </div>
 
-    <div x-cloak x-show="open && $wire.query.length >= 2" class="absolute z-[10000] w-96 bg-white border mt-1 shadow-lg rounded overflow-hidden">
+    <div x-cloak x-show="open && $wire.query.length >= 2" class="absolute z-[10000] translate-y-10 w-96 bg-white border mt-1 shadow-lg rounded overflow-hidden">
         @if(count($results) > 0)
             <ul>
                 @foreach($results as $result)
