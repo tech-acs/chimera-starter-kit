@@ -37,11 +37,10 @@ class Adminify extends Command
         if ($this->option('auto')) {
             $name = env('SUPER_ADMIN_NAME');
             $email = env('SUPER_ADMIN_EMAIL');
-            $mobile = env('SUPER_ADMIN_MOBILE');
             $password = env('SUPER_ADMIN_PASSWORD');
             if ($name) {
                 $user = User::updateOrCreate(
-                    ['email' => $email, 'mobile' => $mobile],
+                    ['email' => $email],
                     ['name' => $name, 'password' => Hash::make($password)]
                 );
                 $user->assignRole(self::ROLE);
@@ -60,16 +59,6 @@ class Adminify extends Command
             required: true,
             validate: fn (string $value): ?string => match (true) {
                 (filter_var($value, FILTER_VALIDATE_EMAIL) === false) => 'The value you entered is not a valid email address',
-                default => null
-            },
-            hint: 'This can be changed later',
-        );
-        $mobile = text(
-            label: 'Mobile phone',
-            placeholder: 'E.g. 0912345678',
-            required: true,
-            validate: fn (string $value): ?string => match (true) {
-                (filter_var($value, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => '/^(09|07)\d{8}$/']]) === false) => 'The value you entered is not a mobile phone number',
                 default => null
             },
             hint: 'This can be changed later',
@@ -96,7 +85,7 @@ class Adminify extends Command
             hint: 'Minimum 8 characters.',
         );
         $user = User::updateOrCreate(
-            ['email' => $email, 'mobile' => $mobile],
+            ['email' => $email],
             ['name' => $name, 'password' => Hash::make($password)]
         );
 
