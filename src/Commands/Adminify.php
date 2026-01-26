@@ -43,10 +43,10 @@ class Adminify extends Command
                     ['email' => $email],
                     ['name' => $name, 'password' => Hash::make($password)]
                 );
-                Role::updateOrCreate([
+                Role::updateOrCreate(
                     ['name' => self::ROLE],
-                    ['guard_name' => 'web', 'description' => 'The name says it all!']
-                ]);
+                    ['guard_name' => 'web']
+                );
                 $user->assignRole(self::ROLE);
                 info('Super Admin created as per values in env');
             } else {
