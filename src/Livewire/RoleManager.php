@@ -124,82 +124,10 @@ class RoleManager extends Component
         ];
         $groups = $groups->merge($pages);
 
-        /*$indicatorPages = Page::for(PageableTypes::Indicators)
-            ->with('indicators')
-            ->withCount('indicators')
-            ->get()
-            ->map(function ($page) {
-                return [
-                    'title' => $page->title . ' [Indicators page]',
-                    'description' => $page->description,
-                    'permission_name' => $page->permission_name,
-                    'permissionables' => $page->indicators->map(function ($indicator) {
-                        return [
-                            'title' => $indicator->title,
-                            'description' => $indicator->description,
-                            'permission_name' => $indicator->permission_name,
-                        ];
-                    }),
-                    'count' => $page->indicators_count,
-                ];
-            });
-        $groups = $groups->merge($indicatorPages);*/
-
-        //Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'reports']);
-
-
-        /*$reportPages = Page::for(PageableTypes::Reports)
-            ->with('reports')
-            ->withCount('reports')
-            ->get()
-            ->map(function ($page) {
-                return [
-                    'title' => $page->title . ' [Reports page]',
-                    'description' => $page->description,
-                    'permission_name' => $page->permission_name,
-                    'permissionables' => $page->reports->map(function ($report) {
-                        return [
-                            'title' => $report->title,
-                            'description' => $report->description,
-                            'permission_name' => $report->permission_name,
-                        ];
-                    }),
-                    'count' => $page->reports_count,
-                ];
-            });
-        $groups = $groups->merge($reportPages);*/
-
-        //Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'maps']);
-
-
-        /*$mapIndicatorPages = Page::for(PageableTypes::MapIndicators)
-            ->with('mapIndicators')
-            ->withCount('mapIndicators')
-            ->get()
-            ->map(function ($page) {
-                return [
-                    'title' => $page->title . ' [Map indicators page]',
-                    'description' => $page->description,
-                    'permission_name' => $page->permission_name,
-                    'permissionables' => $page->mapIndicators->map(function ($mapIndicator) {
-                        return [
-                            'title' => $mapIndicator->title,
-                            'description' => $mapIndicator->description,
-                            'permission_name' => $mapIndicator->permission_name,
-                        ];
-                    }),
-                    'count' => $page->map_indicators_count,
-                ];
-            });
-        $groups = $groups->merge($mapIndicatorPages);*/
-
-        //Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'scorecards']);
-
-
         $this->permissionGroups = $groups;
         foreach (($this->permissionGroups ?? []) as $permissionGroup) {
-            Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionGroup['permission_name']]);
-            $this->permissions[$permissionGroup['permission_name']] = $this->role->hasPermissionTo($permissionGroup['permission_name']);
+            //Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionGroup['permission_name']]);
+            //$this->permissions[$permissionGroup['permission_name']] = $this->role->hasPermissionTo($permissionGroup['permission_name']);
             foreach ($permissionGroup['permissionables'] as $permissionable) {
                 Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionable['permission_name']]);
                 $this->permissions[$permissionable['permission_name']] = $this->role->hasPermissionTo($permissionable['permission_name']);
