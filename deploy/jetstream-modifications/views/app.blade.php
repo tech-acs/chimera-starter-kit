@@ -100,6 +100,7 @@
 
         <script>
             document.addEventListener('livewire:init', () => {
+                let stopToast = false;
                 Livewire.hook('request', ({ fail }) => {
                     fail(({ status, content, preventDefault }) => {
                         const message = {"content": "", "type": "error"}
@@ -110,7 +111,12 @@
                         } else {
                             message.content = "Server or connection error."
                         }
-                        Livewire.dispatch('notify', message)
+                        if (!stopToast) {
+                            Livewire.dispatch('notify', message)
+                        }
+                        if (message.content === "Server or connection error.") {
+                            stopToast = true;
+                        }
                         preventDefault()
                     })
                 })
