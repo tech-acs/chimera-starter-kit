@@ -16,7 +16,7 @@
                 <select name="type" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
                     <option value="">{{ __('Select type') }}</option>
                     @foreach($pageableTypes as $pageableType)
-                        <option class="p-2 rounded-md" value="{{ $pageableType }}" @selected($pageableType === $page?->for ?? null)>{{ $pageableType }}</option>
+                        <option class="p-2 rounded-md" value="{{ $pageableType }}" @selected( $pageableType->value === old('type', $page?->for?->value) )>{{ $pageableType }}</option>
                     @endforeach
                 </select>
                 <x-input-error for="type" class="mt-2" />
