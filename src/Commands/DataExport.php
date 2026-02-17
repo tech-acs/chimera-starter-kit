@@ -17,13 +17,15 @@ class DataExport extends Command
         'area_hierarchies',
         'areas',
         'reference_values',
-        'scorecards',
-        'pages',
-        'indicator_page',
         'indicators',
         'reports',
         'map_indicators',
-        'permissions', // ???
+        'scorecards',
+        'gauges',
+        'pages',
+        'pageables',
+        'inapplicables',
+        'permissions',
     ];
 
     private function dumpTable(array $pgsqlConfig, string $exportFolder, string $tableName)
