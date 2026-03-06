@@ -30,7 +30,6 @@ trait Cachable
             $this->setPropertiesFromData();
             $this->dispatch('dataReady')->self();
         } else {
-            $this->dataStatus = DataStatus::PENDING->value;
             $this->getDataAndCacheIt($this->cacheKey(), $this->filterPath);
         }
     }
