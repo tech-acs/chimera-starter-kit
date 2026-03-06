@@ -171,8 +171,8 @@ trait PackageTasksTrait
         $this->components->task('Writing to bootstrap/app.php', function () {
             $bootstrapApp = file_get_contents(base_path('bootstrap/app.php'));
             $bootstrapApp = str_replace(
-                '->withExceptions(function (Exceptions $exceptions) {',
-                '->withExceptions(function (Exceptions $exceptions) {'
+                '->withExceptions(function (Exceptions $exceptions): void {',
+                '->withExceptions(function (Exceptions $exceptions): void {'
                 .PHP_EOL."        \$exceptions->render(function (\Illuminate\Routing\Exceptions\InvalidSignatureException \$e, \Illuminate\Http\Request \$request) {"
                 .PHP_EOL."            return response()->view('chimera::error.link-invalid', [], 403);"
                 .PHP_EOL.'        });'

@@ -53,7 +53,7 @@ class Report extends Model
         return new Attribute(
             get: function () {
                 if (! $this->enabled) {
-                    return 'N/A';
+                    return __('Not Enabled');
                 }
                 return collect($this->schedule())
                     ->map(fn($time) => str($time)->beforeLast(':'))
