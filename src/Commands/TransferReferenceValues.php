@@ -45,6 +45,9 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
                 WHERE reference_values.indicator = '{$indicator}' AND reference_values.level = $level
                 GROUP BY indicator, subpath(areas.path, 0, $level)
             ) AS agg INNER JOIN areas ON agg.path = areas.path
+            ON CONFLICT (indicator, path) DO UPDATE SET
+                value = EXCLUDED.value,
+                updated_at = EXCLUDED.updated_at
         ");
     }
 
