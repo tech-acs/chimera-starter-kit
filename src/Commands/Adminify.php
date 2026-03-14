@@ -97,7 +97,6 @@ class Adminify extends Command
             Role::firstOrCreate([
                 'name' => self::ROLE,
                 'guard_name' => 'web',
-                'description' => 'The name says it all!',
             ]);
             if ($user->hasRole(self::ROLE)) {
                 info(sprintf("The user account, with email address %s, is already assigned the '", $email).self::ROLE."' role\n");
