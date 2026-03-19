@@ -54,7 +54,7 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                         } else {
                             $name = json_encode([$fallbackLocale => $name]);
                         }
-                        $code = Str::padLeft($row[$columnMapping['code']], $columnMapping['zeroPadding'], '0');
+                        $code = Str::padLeft(trim($row[$columnMapping['code']]), $columnMapping['zeroPadding'], '0');
                         $path = (str($path)->isEmpty() ? $path : str($path)->append('.')) . $code;
                         $areas[] = [
                             'name' => $name,
