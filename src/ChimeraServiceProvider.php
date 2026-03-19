@@ -189,11 +189,14 @@ class ChimeraServiceProvider extends PackageServiceProvider
         }
 
         $this->app->singleton('settings', function () {
-            if (Schema::hasTable('settings')) {
-                return Cache::rememberForever('settings', fn() => Setting::all()->pluck('value', 'key'));
-            } else {
-                return collect();
+            try {
+                if (Schema::hasTable('settings')) {
+                    return Cache::rememberForever('settings', fn() => Setting::all()->pluck('value', 'key'));
+                }
+            } catch (\Exception) {
+                //
             }
+            return collect();
         });
 
         $settings = app('settings');
