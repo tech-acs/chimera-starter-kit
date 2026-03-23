@@ -55,6 +55,6 @@ class User extends \App\Models\User
             $area = $areaTree->getArea($areaRestriction->path);
             return [$areaTree->hierarchies[$areaRestriction->level] => $area?->name];
         })->mapWithKeys(fn ($areaName, $levelName) => ["$areaName $levelName"])->join(', ');
-        return empty($restrictionAsString) ? "No restriction (national)" : $restrictionAsString;
+        return empty($restrictionAsString) ? __("No restriction (national)") : $restrictionAsString;
     }
 }

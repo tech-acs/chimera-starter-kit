@@ -7,13 +7,13 @@
 
     <x-dialog-modal wire:model="modalOpen">
         <x-slot name="title">
-            User's indicators per page setting
+            {{ __("User's indicators per page setting")}}
         </x-slot>
         <x-slot name="content">
-            <p class="my-2">You can change the number of indicators per page here. The default value is <span class="font-semibold">{{ $defaultPageSize }}</span>.</p>
-            <p class="my-2">Once you save your preference, it will be stored in your browser and will remain until you change it again or the cookie gets cleared.</p>
+            <p class="my-2">{{ __('You can change the number of indicators per page here. The default value is') }} <span class="font-semibold">{{ $defaultPageSize }}</span>.</p>
+            <p class="my-2">{{ __('Once you save your preference, it will be stored in your browser and will remain until you change it again or the cookie gets cleared.') }}</p>
             <div class="py-4">
-                <label class="text-base">Indicator per page </label>
+                <label class="text-base">{{ __('Indicators per page') }} </label>
                 <select wire:model="pageSize" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     @foreach($pageSizeOptions as $size)
                         <option value="{{ $size }}" @selected($size === ($pageSize ?? null))>{{ $size }}</option>
