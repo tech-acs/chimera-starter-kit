@@ -61,7 +61,7 @@ class DataSourceController extends Controller
             'username', 'password', 'connection_active', 'case_stats_component', 'driver'
         ]));
         if ($request->boolean('create_queryfragment')) {
-            Artisan::call('chimera:make-queryfragment', ['--data-source' => $request->title]);
+            Artisan::call('chimera:make-queryfragment', ['--data-source' => $request->name]);
         }
         return redirect()->route('developer.data-source.index')->withMessage('Record created');
     }
