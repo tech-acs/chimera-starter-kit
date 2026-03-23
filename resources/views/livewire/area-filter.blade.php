@@ -6,7 +6,7 @@
                     {{ __('Filter the data based on geographic area') }}
                 </h3>
                 <div class="flex items-center gap-2">
-                    <div class="hidden sm:block text-gray-400 text-sm">Switch mode</div>
+                    <div class="hidden sm:block text-gray-400 text-sm">{{ __('Switch mode') }}</div>
                     <button title="{{ __('Drilldown <-> Search') }}" wire:click="switchMode" type="button" class="rounded-full inline-flex items-center gap-2 bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:ring-white/5 dark:hover:bg-white/20">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                             <path fill-rule="evenodd" d="M5.22 10.22a.75.75 0 0 1 1.06 0L8 11.94l1.72-1.72a.75.75 0 1 1 1.06 1.06l-2.25 2.25a.75.75 0 0 1-1.06 0l-2.25-2.25a.75.75 0 0 1 0-1.06ZM10.78 5.78a.75.75 0 0 1-1.06 0L8 4.06 6.28 5.78a.75.75 0 0 1-1.06-1.06l2.25-2.25a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />

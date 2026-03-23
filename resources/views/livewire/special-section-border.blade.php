@@ -16,10 +16,10 @@
 
             <x-slot name="form">
                 <div class="col-span-6 sm:col-span-4 text-lg space-x-4">
-                    <x-danger-button wire:click.prevent="deactivate()">Deactivate</x-danger-button>
+                    <x-danger-button wire:click.prevent="deactivate()">{{ __('Deactivate') }}</x-danger-button>
                     <livewire:artisan-runner />
-                    <x-button><a href="{{ url('/log-viewer') }}" target="_blank">Log viewer</a></x-button>
-                    <x-button><a href="{{ route('developer.x-ray') }}" target="_blank">X-Ray</a></x-button>
+                    <x-button><a href="{{ url('/log-viewer') }}" target="_blank">{{ __('Log viewer') }}</a></x-button>
+                    <x-button><a href="{{ route('developer.x-ray') }}" target="_blank">{{ __('X-Ray') }}</a></x-button>
                     {{--<x-button><a href="{{ url('/horizon') }}" target="_blank">Horizon</a></x-button>--}}
                 </div>
             </x-slot>

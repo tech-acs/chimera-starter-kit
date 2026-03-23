@@ -47,7 +47,7 @@
                         <span class="block text-indigo-600 xl:inline">{{ __('your digital census & survey') }}</span>
                     </h1>
                     <p class="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl">
-                    {{ __('A dashboard is an information management tool that visually tracks, analyzes and displays key performance indicators (KPI), metrics and key data points to monitor the progress of a digital census and survey.') }}
+                    {{ __('description of dashboard on landing page') }}
                     </p>
                     <div class="mt-10 sm:flex sm:justify-center lg:justify-start">
                         <div class="rounded-md shadow">
