@@ -52,6 +52,14 @@ abstract class ScorecardComponent extends Component
     }
 
     #[On(['areaInsightsfilterChanged'])]
+    public function handleFilterChanged()
+    {
+        $this->dataStatus = DataStatus::PENDING->value;
+        // We dispatch to 'self' to break the request cycle, allowing the 'PENDING' state to render immediately.
+        $this->dispatch('update')->self();
+    }
+
+    #[On(['update'])]
     public function update()
     {
         $this->resolveAreaAndCheckData();
