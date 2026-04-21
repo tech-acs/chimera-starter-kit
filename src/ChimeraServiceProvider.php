@@ -96,6 +96,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 \Uneca\Chimera\Commands\MakeReferenceValueSynthesizer::class,
                 \Uneca\Chimera\Commands\TransferReferenceValues::class,
                 \Uneca\Chimera\Commands\ChimeraArtefactGenerator::class,
+                \Uneca\Chimera\Commands\ExportAreas::class,
             ]);
     }
 
