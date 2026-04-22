@@ -25,7 +25,7 @@ abstract class Chart extends Component
     use FilterBasedAxisTitle;
 
     public Indicator $indicator;
-    public string $graphDiv;
+    public string $graphDiv = '';
     public array $data = [];
     public array $layout = [];
     public array $config = [];
