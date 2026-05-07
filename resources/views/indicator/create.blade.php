@@ -23,7 +23,7 @@
 
                         <div>
                             <x-label for="data_source" value="{{ __('Which data source will this indicator be using?') }} *" />
-                            <select name="data_source" @change="if ($el.value != '') { $refs.indicator_name.value = $el.selectedOptions[0].text.concat('/'); $refs.indicator_name.focus(); } else { $refs.indicator_name.value = '' }" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <select name="data_source" @change="if ($el.value != '') { $refs.indicator_name.value = $el.selectedOptions[0].text.replace(/\s+/g, '').concat('/'); $refs.indicator_name.focus(); } else { $refs.indicator_name.value = '' }" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
                                 <option value="">Select the data source</option>
                                 @foreach($dataSources as $name => $title)
                                     <option class="p-2 rounded-md" value="{{ $name }}" @selected(old('data_source') == $name)>{{ $title }}</option>

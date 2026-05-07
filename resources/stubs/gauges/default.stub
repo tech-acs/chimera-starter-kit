@@ -9,7 +9,7 @@ use Uneca\Chimera\Services\BreakoutQueryBuilder;
 class {{ class }} extends GaugeComponent
 {
     // public string $unit = '%';
-    // public array $colorThresholds = [30 => 'text-red-500', 40 => 'text-amber-500', 50 => 'text-green-500'];
+    // public array $colorThresholds = [70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500'];
     // public int $outOf = 100;
 
     public function getData(string $filterPath): Collection

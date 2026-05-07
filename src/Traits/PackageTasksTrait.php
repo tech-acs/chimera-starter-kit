@@ -11,8 +11,8 @@ trait PackageTasksTrait
 {
     public array $requiredNodePackages = [
         "leaflet" => "^1.9",
-        "plotly.js-dist" => "^2.30",
-        "plotly.js-locales" => "^2.30",
+        "plotly.js-dist" => "^3.5",
+        "plotly.js-locales" => "^3.5",
         "alpinejs" => "^3.14",
         "@tailwindcss/aspect-ratio" => "^0.4.2",
         "lodash" => "^4.17.21",
@@ -21,17 +21,17 @@ trait PackageTasksTrait
         "react-dom" => "^16.14.0",
         "react-modal" => "^3.16.1",
         "@vitejs/plugin-react" => "^4.2.1",
-        "ag-grid-react" => "^31.3.2",
+        "ag-grid-react" => "^35.2.1",
     ];
 
     public array $phpDependencies = [
         'ext-zip:*',
         'ext-pgsql:*',
         'gasparesganga/php-shapefile:^3.4',
-        'spatie/laravel-permission:^6.4',
+        'spatie/laravel-permission:^7.4',
         'spatie/simple-excel:^3.5',
         'spatie/laravel-translatable:^6.1',
-        'spatie/db-dumper:^3.5',
+        'spatie/db-dumper:^4.1',
     ];
 
     public array $vendorPublish = [
