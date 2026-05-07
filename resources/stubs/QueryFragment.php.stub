@@ -6,15 +6,48 @@ use Uneca\Chimera\Services\AreaTree;
 
 class {{ class }}
 {
+    /*
+        This is just a sample to show how varied the area columns can be.
+        Order (highest to lowest) is important, and it is assumed that
+        the columns are from the level-1 table, if not,
+        you can include the table names like so: ea_frame.county
+    */
+    protected array $levels = [
+        /*
+        'County'      => "LPAD(county, 2, '0')",
+        'Subcounty'   => "LPAD(subcounty, 2, '0')",
+        'Division'    => 'division',
+        'Location'    => 'location',
+        'Sublocation' => "LPAD(sublocation, 2, '0')",
+        'EA'          => "LPAD(ea, 3, '0')"
+        */
+    ];
+
     public function getSqlFragments(string $filterPath) : array
     {
-        /*$filter = AreaTree::pathAsFilter($filterPath);
+        $filter = AreaTree::pathAsFilter($filterPath);
+        $hierarchy = array_keys($this->levels);
+
+        // Assume filter is empty (Select the highest level, no conditions)
+        $selectColumns = [current($this->levels) . " AS area_code"];
         $fromTables = [];
-        if () {
+        $whereConditions = [];
 
+        for ($i = 0; $i < count($hierarchy); $i++) {
+            $currentLevel = $hierarchy[$i];
+            $nextLevel = $hierarchy[$i + 1] ?? null;
+
+            // If the filter for this level is blank, stop accumulating
+            if (blank($filter[$currentLevel] ?? null)) {
+                break;
+            }
+
+            if ($nextLevel) {
+                $selectColumns = ["{$this->levels[$nextLevel]} AS area_code"];
+            }
+            $whereConditions[] = "{$this->levels[$currentLevel]} = '{$filter[$currentLevel]}'";
         }
-        return [$selectColumns, $whereConditions, $fromTables];*/
 
-        return [[], [], []];
+        return [$selectColumns, $whereConditions, $fromTables];
     }
 }
