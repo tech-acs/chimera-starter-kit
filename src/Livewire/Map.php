@@ -160,7 +160,13 @@ class Map extends Component
             } else {
                 $currentIndicator = new $this->currentIndicator;
                 $key = $currentIndicator->cacheKey($path);
-                $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($key, $path), $path));
+                $codeToPath = collect($geojson->features)->keyBy(fn ($f) => $f->properties->code)->map(fn ($f) => $f->properties->path);
+                $data = $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($key, $path), $path);
+                $data = $data->map(function ($row) use ($codeToPath) {
+                    $row->path = $codeToPath[$row->area_code] ?? null;
+                    return $row;
+                });
+                $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $data);
             }
         } else {
             $this->dispatch('backendResponse', geojson: null, level: $nextLevel, data: []);
@@ -175,6 +181,7 @@ class Map extends Component
         if (! empty($mapIndicator)) {
             $this->setCurrentIndicator($mapIndicator);
         }
+        $this->previouslySentPaths = [];
         $this->updateMap('');
     }
 

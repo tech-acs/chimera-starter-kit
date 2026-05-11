@@ -259,14 +259,9 @@ export default class LeafletMap {
             this.selectedStyle = style;
             this.setLegend(legend);
 
-            const levelLayers = this.geojsonLayerGroup.getLayers();
-            const bounds = levelLayers[0].getBounds();
-            if (bounds.isValid()) {
-                this.nav.reset();
-                this.nav.fitTo = bounds;
-                this.switchLayers();
-                this.infoBox.hide();
-            }
+            this.geojsonLayerGroup.getLayers().forEach(layer => layer.clearLayers());
+            this.nav.reset();
+            this.infoBox.hide();
         });
 
         Livewire.on('backendResponse', ({geojson, level, data}) => {
@@ -278,6 +273,9 @@ export default class LeafletMap {
                 this.render(geojson, level);
                 this.switchLayers();
                 this.applyIndicatorDataToMap(level, data);
+                if (level === 0) {
+                    this.map.fitBounds(this.geojsonLayerGroup.getLayers()[0].getBounds());
+                }
             } else {
                 console.log('No sub-maps found');
             }
@@ -286,11 +284,9 @@ export default class LeafletMap {
 
     applyIndicatorDataToMap(level, data) {
         const currentLayer = this.geojsonLayerGroup.getLayers()[level];
-        //currentLayer.resetStyle();
-        const areaKeyedData = keyBy(data, 'area_code');
+        const areaKeyedData = keyBy(data, 'path');
         currentLayer.getLayers().forEach(feature => {
-            let data = areaKeyedData[feature.feature.properties.code];
-            //console.log({data, areaKeyedData, code: feature.feature.properties.code, data})
+            let data = areaKeyedData[feature.feature.properties.path];
             if (! isUndefined(data)) {
                 feature.setStyle(this.styles[this.selectedStyle][data.style]);
                 const displayValue = isNull(data.display_value) ? data.value : data.display_value;
@@ -303,6 +299,5 @@ export default class LeafletMap {
     render(geojson, level) {
         const targetLayer = this.geojsonLayerGroup.getLayers()[level];
         targetLayer.addData(geojson);
-        //console.log({targetLayer:level, currentLevel:this.nav.current(), geojson, count:Object.keys(targetLayer._layers).length})
     };
 }
