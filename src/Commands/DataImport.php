@@ -37,7 +37,7 @@ class DataImport extends Command
     public function handle()
     {
         $pgsqlConfig = config('database.connections.pgsql');
-        $exportFolder = base_path() . '/data-export';
+        $exportFolder = base_path() . DIRECTORY_SEPARATOR . 'data-export';
 
         if (! file_exists($exportFolder)) {
             error('No data-export directory found');
@@ -68,7 +68,7 @@ class DataImport extends Command
         );
 
         foreach ($selectedFiles as $file) {
-            $this->restoreTable($pgsqlConfig, $truncate, "$exportFolder/$file");
+            $this->restoreTable($pgsqlConfig, $truncate, $exportFolder . DIRECTORY_SEPARATOR . $file);
         }
 
         info('Data import completed');

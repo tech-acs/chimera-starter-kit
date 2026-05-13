@@ -33,8 +33,8 @@ class BulkInviter extends Component
         $this->fileAccepted = false;
         $this->validateOnly('file');
         $filename = collect([Str::random(40), $this->file->getClientOriginalExtension()])->join('.');
-        $this->file->storeAs('/spreadsheets', $filename, 'imports');
-        $this->filePath = Storage::disk('imports')->path('spreadsheets/' . $filename);
+        $this->file->storeAs('spreadsheets', $filename, 'imports');
+        $this->filePath = Storage::disk('imports')->path('spreadsheets' . DIRECTORY_SEPARATOR . $filename);
         $columnHeaders = SimpleExcelReader::create($this->filePath)->getHeaders();
         if (! in_array('email', $columnHeaders)) {
             throw ValidationException::withMessages([

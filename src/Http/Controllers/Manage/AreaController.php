@@ -57,10 +57,10 @@ class AreaController extends Controller
         $filename = Str::random(40);
         foreach ($files as $file) {
             $filenameWithExt = collect([$filename, $file->getClientOriginalExtension()])->join('.');
-            $file->storeAs('/shapefiles', $filenameWithExt, 'imports');
+            $file->storeAs('shapefiles', $filenameWithExt, 'imports');
         }
         $shpFile = collect([$filename, 'shp'])->join('.');
-        $filePath = Storage::disk('imports')->path('shapefiles/' . $shpFile);
+        $filePath = Storage::disk('imports')->path('shapefiles' . DIRECTORY_SEPARATOR . $shpFile);
 
         $importer = new ShapefileImporter();
         $sampleFeature = $importer->sample($filePath);
