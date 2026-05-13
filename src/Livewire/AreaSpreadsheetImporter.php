@@ -75,8 +75,8 @@ class AreaSpreadsheetImporter extends Component
     {
         $this->validateOnly('spreadsheet');
         $filename = collect([Str::random(40), $this->spreadsheet->getClientOriginalExtension()])->join('.');
-        $this->spreadsheet->storeAs('/spreadsheets', $filename, 'imports');
-        $this->filePath = Storage::disk('imports')->path('spreadsheets/' . $filename);
+        $this->spreadsheet->storeAs('spreadsheets', $filename, 'imports');
+        $this->filePath = Storage::disk('imports')->path('spreadsheets' . DIRECTORY_SEPARATOR . $filename);
         $this->columnHeaders = SimpleExcelReader::create($this->filePath)->getHeaders();
         $this->fileAccepted = true;
     }

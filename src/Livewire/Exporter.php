@@ -37,7 +37,7 @@ class Exporter extends Component
         if (Cache::has($indicatorInstance->cacheKey())) {
             list(, $data) = Cache::get($indicatorInstance->cacheKey());
 
-            $file = sys_get_temp_dir() . '/' . Str::replace('.', '_', $this->indicator->slug) . '.csv';
+            $file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . Str::replace('.', '_', $this->indicator->slug) . '.csv';
             $writer = SimpleExcelWriter::create($file);
             foreach ($data as $record) {
                 $writer->addRow((array)$record);
