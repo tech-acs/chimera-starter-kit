@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
-export default defineConfig(({mode}) => {
+export default defineConfig(() => {
     const inputs = [
         'resources/css/app.css',
         'resources/js/app.js',
@@ -18,9 +18,6 @@ export default defineConfig(({mode}) => {
         ],
         define: {
             global: {}
-        },
-        build: {
-            target: "ES2022",
-        },
+        }
     };
 });
