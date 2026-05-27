@@ -14,13 +14,15 @@ use Uneca\Chimera\Livewire\GaugeComponent;
 use Uneca\Chimera\Livewire\ScorecardComponent;
 use Uneca\Chimera\Services\FetchCacheAndRecord;
 
-class QueryRunnerJob implements ShouldQueue, ShouldBeUnique
+class QueryRunnerJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 1;
+
     // ToDo: This needs to be raised
     public $timeout = 600;
+
     public $uniqueFor = 600;
 
     public function __construct(
@@ -28,8 +30,7 @@ class QueryRunnerJob implements ShouldQueue, ShouldBeUnique
         private readonly string $key,
         private readonly string $filterPath,
         private readonly bool $cacheForever = false
-    )
-    {}
+    ) {}
 
     public function handle()
     {

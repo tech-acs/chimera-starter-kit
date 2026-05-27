@@ -25,6 +25,7 @@ class AreaTree
     public static function translatePathToCode(array $paths): array
     {
         $areas = Area::whereIn('path', array_values($paths))->pluck('code', 'path')->all();
+
         return array_map(function ($path) use ($areas) {
             return $areas[$path];
         }, $paths);
@@ -45,7 +46,8 @@ class AreaTree
             }
         }
         $areas = Area::whereIn('path', $ancestorsInclusive)->get([$returnedColumn, 'level']);
-        $hierarchies = (new AreaTree())->hierarchies;
+        $hierarchies = (new AreaTree)->hierarchies;
+
         return $areas->mapWithKeys(function ($area) use ($hierarchies, $returnedColumn) {
             return [$hierarchies[$area->level] => $area->{$returnedColumn}];
         })->all();

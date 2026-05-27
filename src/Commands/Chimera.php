@@ -4,6 +4,7 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Uneca\Chimera\Traits\PackageTasksTrait;
+
 use function Laravel\Prompts\info;
 
 class Chimera extends Command
@@ -30,7 +31,8 @@ class Chimera extends Command
         $this->installJsDependencies();
         $this->cleanup();
 
-        info("Installation complete");
+        info('Installation complete');
+
         return self::SUCCESS;
     }
 }

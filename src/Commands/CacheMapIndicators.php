@@ -3,8 +3,8 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Area;
+use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\DashboardComponentFactory;
@@ -13,7 +13,7 @@ class CacheMapIndicators extends Command
 {
     protected $signature = 'chimera:cache-mapindicators {--max-level=0} {--data-source=}';
 
-    protected $description = "Calculate and cache (published) map indicators";
+    protected $description = 'Calculate and cache (published) map indicators';
 
     public function __construct()
     {
@@ -22,11 +22,11 @@ class CacheMapIndicators extends Command
 
     private function cacheMapIndicators()
     {
-        //if ($this->option('tag')) {
-        //$builder = MapIndicator::published()->ofTag($this->option('tag'));
-        //} else {
+        // if ($this->option('tag')) {
+        // $builder = MapIndicator::published()->ofTag($this->option('tag'));
+        // } else {
         $builder = MapIndicator::published();
-        //}
+        // }
 
         if ($this->option('data-source')) {
             $indicatorsToCache = $builder->ofDataSource($this->option('data-source'))->get();
@@ -37,6 +37,7 @@ class CacheMapIndicators extends Command
         if ($indicatorsToCache->isEmpty()) {
             $this->newLine()->error('No matching map indicators found');
             $this->newLine();
+
             return self::FAILURE;
         }
 
@@ -52,9 +53,9 @@ class CacheMapIndicators extends Command
             // National level for non-restricted users
             $startTime = time();
             $artefact->getDataAndCacheIt($artefact->cacheKey(''), '', true);
-            $this->info("Level 0 completed in " . (time() - $startTime) . " seconds");
+            $this->info('Level 0 completed in '.(time() - $startTime).' seconds');
 
-            $hierarchies = (new AreaTree())->hierarchies;
+            $hierarchies = (new AreaTree)->hierarchies;
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
                 $paths = Area::ofLevel($level)->pluck('path');
                 foreach ($paths as $filterPath) {
@@ -62,9 +63,10 @@ class CacheMapIndicators extends Command
                 }
                 $this->info(" - cached {$hierarchies[$level]} level");
             }
-            $this->info("Completed in " . (time() - $startTime) . " seconds");
+            $this->info('Completed in '.(time() - $startTime).' seconds');
         }
         $this->newLine();
+
         return self::SUCCESS;
     }
 

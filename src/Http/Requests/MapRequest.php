@@ -2,8 +2,8 @@
 
 namespace Uneca\Chimera\Http\Requests;
 
-use Uneca\Chimera\Rules\ValidShapefileSet;
 use Illuminate\Foundation\Http\FormRequest;
+use Uneca\Chimera\Rules\ValidShapefileSet;
 
 class MapRequest extends FormRequest
 {
@@ -27,9 +27,9 @@ class MapRequest extends FormRequest
         return [
             'shapefile' => [
                 'required',
-                new ValidShapefileSet()
+                new ValidShapefileSet,
             ],
-            'level' => 'required'
+            'level' => 'required',
         ];
     }
 }

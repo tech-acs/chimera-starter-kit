@@ -4,8 +4,16 @@ namespace Uneca\Chimera\Jobs;
 
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Throwable;
 use Uneca\Chimera\Models\AreaHierarchy;
@@ -15,14 +23,6 @@ use Uneca\Chimera\Notifications\TaskProgressNotification;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\ShapefileImporter;
 use Uneca\Chimera\Traits\Geospatial;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Auth\User;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Validator;
 
 class ImportShapefileJob implements ShouldQueue
 {
@@ -46,29 +46,34 @@ class ImportShapefileJob implements ShouldQueue
                 $feature['attribs'],
                 ['code' => ['required', 'max:255', 'regex:/^[A-Za-z0-9_]+$/i'], 'name' => 'required|min:1']
             );
+
             /*if ($codeValidator->fails()) {
                 logger('Shapefile validation error', ['Error' => $codeValidator->errors()->all()]);
             }*/
             return $codeValidator->fails();
         });
         if (! empty($featuresWithInvalidCode)) {
-            logger('Here are the ' . count($featuresWithInvalidCode) . ' problematic features: ', ['Problematic features' => $featuresWithInvalidCode]);
+            logger('Here are the '.count($featuresWithInvalidCode).' problematic features: ', ['Problematic features' => $featuresWithInvalidCode]);
+
             return false;
         }
+
         return true;
     }
 
     private function addParentInfo(array $features, int $level): array
     {
-        $hierarchies = (new AreaTree())->hierarchies; $locale = app()->getLocale();
+        $hierarchies = (new AreaTree)->hierarchies;
+        $locale = app()->getLocale();
         $thisAreaHierarchy = AreaHierarchy::whereRaw("name->>'{$locale}' = '{$hierarchies[$level]}'")->first();
+
         return array_map(function ($feature) use ($level, $thisAreaHierarchy) {
             $slimFeature = [
                 'attribs' => [
                     'code' => $feature['attribs']['code'],
                     'name' => $feature['attribs']['name'],
                 ],
-                'geom' => $feature['geom']
+                'geom' => $feature['geom'],
             ];
             if ($level > 0) {
                 $ancestor = self::findContainingGeometry($level - 1, $feature['geom']);
@@ -77,37 +82,38 @@ class ImportShapefileJob implements ShouldQueue
                 $slimFeature['path'] = $this->makePath(null, $feature['attribs']['code']);
             }
             $slimFeature['zero_padded_code'] = Str::padLeft($feature['attribs']['code'], $thisAreaHierarchy->zero_pad_length, '0');
+
             return $slimFeature;
         }, $features);
     }
 
     private function makePath($ancestor, $code): string
     {
-        return is_null($ancestor) ? $code : $ancestor->path . '.' . $code;
+        return is_null($ancestor) ? $code : $ancestor->path.'.'.$code;
     }
 
     public function handle()
     {
-        $importer = new ShapefileImporter();
+        $importer = new ShapefileImporter;
         $features = $importer->import($this->filePath); // Returns LazyCollection
         $user = $this->user;
 
         $batch = Bus::batch([])->before(function (Batch $batch) use ($user) { // The batch has been created but no jobs have been added...
             Cache::put("batch_{$batch->id}", 0);
-            Cache::put("batch_progress", time());
+            Cache::put('batch_progress', time());
             Notification::sendNow($user, new TaskProgressNotification(
                 'Task initiated',
                 'The shapefile has been upload and is now being processed.'
             ));
 
         })->progress(function (Batch $batch) use ($user) { // A single job has completed successfully...
-            $lastTimestamp = Cache::get("batch_progress");
+            $lastTimestamp = Cache::get('batch_progress');
             if (time() - $lastTimestamp > config('chimera.progress_update_interval_seconds')) {
                 Notification::sendNow($user, new TaskProgressNotification(
                     'Task ongoing',
                     "The shapefile is being processed. The work is {$batch->progress()}% complete."
                 ));
-                Cache::put("batch_progress", time());
+                Cache::put('batch_progress', time());
             }
 
         })->then(function (Batch $batch) { // All jobs completed successfully...
@@ -121,7 +127,7 @@ class ImportShapefileJob implements ShouldQueue
                 "The shapefile has been completely processed. $count areas in total were imported."
             ));
             Cache::forget("batch_{$batch->id}");
-        }); //->allowFailures()
+        }); // ->allowFailures()
 
         $processBatch = true;
         foreach ($features->chunk(config('chimera.shapefile.import_chunk_size')) as $index => $featuresChunk) {
@@ -134,7 +140,7 @@ class ImportShapefileJob implements ShouldQueue
                 $orphanFeatures = array_filter($augmentedFeaturesChunk, fn ($feature) => empty($feature['path']));
                 if (! empty($orphanFeatures)) {
                     $orphans = collect($orphanFeatures)->pluck('attribs.name')->join(', ', ' and ');
-                    logger(count($orphanFeatures) . " orphan area(s) found in chunk " . ($index + 1), ['Names' => $orphans]);
+                    logger(count($orphanFeatures).' orphan area(s) found in chunk '.($index + 1), ['Names' => $orphans]);
                 }
 
                 if (empty($orphanFeatures) || ! config('chimera.shapefile.stop_import_if_orphans_found')) {
@@ -154,15 +160,15 @@ class ImportShapefileJob implements ShouldQueue
 
         if ($processBatch) {
             $batch->dispatch();
-        }else {
+        } else {
             Notification::sendNow($user, new TaskFailedNotification(
                 'Task failed',
-                "The shapefile could not be imported because there were some errors found in it. Please check the logs for details."
+                'The shapefile could not be imported because there were some errors found in it. Please check the logs for details.'
             ));
         }
     }
 
-    public function failed(\Throwable $exception)
+    public function failed(Throwable $exception)
     {
         logger('ImportShapefile Job Failed', ['Exception: ' => $exception->getMessage()]);
         Notification::sendNow($this->user, new TaskFailedNotification(

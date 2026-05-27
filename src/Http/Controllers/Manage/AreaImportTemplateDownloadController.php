@@ -15,6 +15,7 @@ class AreaImportTemplateDownloadController extends Controller
             $columnHeaders[] = "{$level}_name";
             $columnHeaders[] = "{$level}_code";
         }
+
         return SimpleExcelWriter::streamDownload('area_import_template.xlsx')
             ->addHeader($columnHeaders)
             ->toBrowser();

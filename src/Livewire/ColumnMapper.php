@@ -2,12 +2,13 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Uneca\Chimera\Models\AreaHierarchy;
 use Livewire\Component;
+use Uneca\Chimera\Models\AreaHierarchy;
 
 class ColumnMapper extends Component
 {
     public $areaHierarchies;
+
     public string $message = '';
 
     protected $rules = [

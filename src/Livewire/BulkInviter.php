@@ -2,8 +2,6 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Livewire\Features\SupportStreaming\HandlesStreaming;
-use Uneca\Chimera\Jobs\BulkInvitationJob;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -11,22 +9,27 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use Uneca\Chimera\Jobs\BulkInvitationJob;
 
 class BulkInviter extends Component
 {
     use WithFileUploads;
 
     public bool $showBulkInviteForm = false;
+
     public $file;
+
     public $fileAccepted = false;
+
     public string $filePath = '';
+
     public bool $sendEmails = false;
 
     protected $rules = [
-        'file' => 'required|file|mimes:csv,xlsx'
+        'file' => 'required|file|mimes:csv,xlsx',
     ];
 
-    protected $listeners = [ 'pleaseHideForm' => 'hideForm'];
+    protected $listeners = ['pleaseHideForm' => 'hideForm'];
 
     public function updatedFile()
     {
@@ -34,7 +37,7 @@ class BulkInviter extends Component
         $this->validateOnly('file');
         $filename = collect([Str::random(40), $this->file->getClientOriginalExtension()])->join('.');
         $this->file->storeAs('spreadsheets', $filename, 'imports');
-        $this->filePath = Storage::disk('imports')->path('spreadsheets' . DIRECTORY_SEPARATOR . $filename);
+        $this->filePath = Storage::disk('imports')->path('spreadsheets'.DIRECTORY_SEPARATOR.$filename);
         $columnHeaders = SimpleExcelReader::create($this->filePath)->getHeaders();
         if (! in_array('email', $columnHeaders)) {
             throw ValidationException::withMessages([
@@ -69,6 +72,7 @@ class BulkInviter extends Component
     {
         $pathToCsv = Storage::disk('local')->path('bulk_invitations_template.xlsx');
         SimpleExcelWriter::create($pathToCsv)->addHeader(['email', 'role']);
+
         return response()->download($pathToCsv);
     }
 

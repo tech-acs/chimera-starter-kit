@@ -2,10 +2,10 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use Illuminate\Routing\Controller;
-use Uneca\Chimera\Models\ReferenceValue;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use Uneca\Chimera\Models\ReferenceValue;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\SmartTableColumn;
 use Uneca\Chimera\Services\SmartTableData;
@@ -14,9 +14,9 @@ class ReferenceValueController extends Controller
 {
     public function index(Request $request)
     {
-        view()->share('hierarchies', (new AreaTree())->hierarchies);
+        view()->share('hierarchies', (new AreaTree)->hierarchies);
         $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
-        $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], "? reference values across ? " . Str::plural('indicator', $stats->no_of_indicators));
+        $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], '? reference values across ? '.Str::plural('indicator', $stats->no_of_indicators));
 
         return (new SmartTableData(ReferenceValue::query(), $request))
             ->columns([
@@ -45,14 +45,16 @@ class ReferenceValueController extends Controller
     public function update(ReferenceValue $referenceValue, Request $request)
     {
         $referenceValue->update($request->only(['value']));
+
         return redirect()->route('developer.reference-value.index')
-            ->withMessage("The reference value has been updated");
+            ->withMessage('The reference value has been updated');
     }
 
     public function destroy()
     {
         ReferenceValue::truncate();
+
         return redirect()->route('developer.reference-value.index')
-            ->withMessage("The reference values table has been truncated");
+            ->withMessage('The reference values table has been truncated');
     }
 }

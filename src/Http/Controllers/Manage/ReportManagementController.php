@@ -14,12 +14,13 @@ class ReportManagementController extends Controller
     {
         return collect()
             ->range(0, 23)
-            ->map(fn ($hour) => str($hour)->padLeft(2, '0') . ':00:00');
+            ->map(fn ($hour) => str($hour)->padLeft(2, '0').':00:00');
     }
 
     public function index()
     {
         $records = Report::orderBy('rank')->get();
+
         return view('chimera::report.manage.index', compact('records'));
     }
 
@@ -28,6 +29,7 @@ class ReportManagementController extends Controller
         $hourOptions = $this->getHourOptions();
         $frequencyOptions = [24, 12, 6, 3];
         $pages = Page::for(PageableTypes::Reports)->pluck('title', 'id');
+
         return view('chimera::report.manage.edit', compact('report', 'hourOptions', 'frequencyOptions', 'pages'));
     }
 
@@ -35,6 +37,7 @@ class ReportManagementController extends Controller
     {
         $report->pages()->sync($request->get('pages', []));
         $report->update($request->only(['title', 'description', 'run_at', 'run_every', 'rank', 'enabled', 'published']));
+
         return redirect()->route('manage.report.index')
             ->withMessage('The report has been updated');
     }
@@ -42,6 +45,7 @@ class ReportManagementController extends Controller
     public function destroy(Report $report)
     {
         $report->delete();
+
         return redirect()->route('manage.report.index')
             ->withMessage('The report has been deleted');
     }

@@ -7,26 +7,43 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
 use function DeepCopy\deep_copy;
 
 class BreakoutQueryBuilder
 {
     private ConnectionInterface $dbConnection;
+
     private string $partialCaseIdentifyingCondition;
+
     private bool $excludePartials;
+
     private bool $excludeDeleted;
+
     private string $filterPath;
+
     private string $select;
+
     protected array $columns;
+
     private string $from;
+
     protected array $tables;
+
     private string $where;
+
     protected array $conditions;
+
     private string $groupBy;
+
     private string $having;
+
     private string $orderBy;
+
     private string $leftJoin = '';
+
     private string $joinColumn = 'area_code';
+
     private ?string $referenceValueToInclude = null;
 
     public function __construct(
@@ -35,10 +52,9 @@ class BreakoutQueryBuilder
         bool $excludePartials = true,
         bool $excludeDeleted = true,
         string $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL'
-    )
-    {
+    ) {
         $this->filterPath = $filterPath;
-        list($selectColumns, $whereConditions, $concernedTables) = QueryFragmentFactory::make($dataSource)->getSqlFragments($filterPath);
+        [$selectColumns, $whereConditions, $concernedTables] = QueryFragmentFactory::make($dataSource)->getSqlFragments($filterPath);
 
         try {
             $this->dbConnection = DB::connection($dataSource);
@@ -66,66 +82,75 @@ class BreakoutQueryBuilder
         $this->orderBy = '';
     }
 
-    public function select(array $items) : self
+    public function select(array $items): self
     {
-        $this->select = "SELECT " . implode(', ', array_merge($this->columns, $items));
+        $this->select = 'SELECT '.implode(', ', array_merge($this->columns, $items));
+
         return $this;
     }
 
-    public function from(array $items) : self
+    public function from(array $items): self
     {
-        $fromClause = "(`level-1` INNER JOIN cases ON `level-1`.`case-id` = cases.id)";
+        $fromClause = '(`level-1` INNER JOIN cases ON `level-1`.`case-id` = cases.id)';
         foreach (array_merge($this->tables, $items) as $item) {
             $fromClause .= " INNER JOIN $item ON `level-1`.`level-1-id` = $item.`level-1-id`";
         }
         $this->from = "FROM $fromClause";
+
         return $this;
     }
 
-    public function where(array $items) : self
+    public function where(array $items): self
     {
         $this->conditions = array_merge($this->conditions, $items);
+
         return $this;
     }
 
-    public function groupBy(array $items) : self
+    public function groupBy(array $items): self
     {
-        $this->groupBy = "GROUP BY " . implode(', ', $items);
+        $this->groupBy = 'GROUP BY '.implode(', ', $items);
+
         return $this;
     }
 
-    public function having(array $items) : self
+    public function having(array $items): self
     {
-        $this->having = "HAVING " . implode(' AND ', $items);
+        $this->having = 'HAVING '.implode(' AND ', $items);
+
         return $this;
     }
 
-    public function orderBy(array $items) : self
+    public function orderBy(array $items): self
     {
-        $this->orderBy = "ORDER BY " . implode(', ', $items);
+        $this->orderBy = 'ORDER BY '.implode(', ', $items);
+
         return $this;
     }
 
     public function dump(): self
     {
         dump($this->toSql());
+
         return $this;
     }
 
     public function debugLog(): self
     {
         logger($this->toSql());
+
         return $this;
     }
 
-    public function toSql() : string
+    public function toSql(): string
     {
         if (empty($this->from) && (count($this->tables) > 0)) {
             $this->from([]);
         }
         if (count($this->conditions) > 0) {
-            $this->where = "WHERE " . implode(' AND ', $this->conditions);
+            $this->where = 'WHERE '.implode(' AND ', $this->conditions);
         }
+
         return "{$this->select} {$this->from} {$this->where} {$this->groupBy} {$this->having} {$this->orderBy}";
     }
 
@@ -136,6 +161,7 @@ class BreakoutQueryBuilder
         foreach ($columns as $column) {
             $template[$column] = null;
         }
+
         return (object) $template;
     }
 
@@ -146,7 +172,7 @@ class BreakoutQueryBuilder
         }
         $data = deep_copy($result);
 
-        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+        $areas = (new AreaTree)->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
         $areasKeyByAreaCode = $areas->keyBy('code');
         $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
             $area = $areasKeyByAreaCode->get($row->{$this->joinColumn});
@@ -156,6 +182,7 @@ class BreakoutQueryBuilder
             if ($referenceValueToInclude) {
                 $row->ref_value = $area->ref_value ?? null;
             }
+
             return $row;
         });
 
@@ -172,6 +199,7 @@ class BreakoutQueryBuilder
             }
             $areaEnhancedData[] = $newRowSkeleton;
         }
+
         return $areaEnhancedData->sortBy('area_name');
     }
 
@@ -182,8 +210,9 @@ class BreakoutQueryBuilder
         }
         $data = deep_copy($result);
 
-        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+        $areas = (new AreaTree)->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
         $areasKeyByAreaCode = $areas->keyBy('code');
+
         return $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude) {
             $area = $areasKeyByAreaCode->get($row->{$this->joinColumn});
             $area ??= (object) ['name' => 'Unknown'];
@@ -192,6 +221,7 @@ class BreakoutQueryBuilder
             if ($referenceValueToInclude) {
                 $row->ref_value = $area->ref_value ?? null;
             }
+
             return $row;
         });
     }
@@ -203,23 +233,23 @@ class BreakoutQueryBuilder
             return $result;
         }
         $data = deep_copy($result);
-        $areas = (new AreaTree())->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
+        $areas = (new AreaTree)->areas($this->filterPath, referenceValueToInclude: $referenceValueToInclude);
 
         // Cross-join lookup with areas to create a Cartesian product
         $lookupCollection = collect($lookup)->map(function ($value, $key) {
             return [
                 'key' => $key,
-                'value' => $value
+                'value' => $value,
             ];
         });
         $crossJoinedData = $lookupCollection->crossJoin($areas);
         // Transform cross-joined data into enriched rows
         $newRowTemplate = $this->makeTemplateRow($data->first());
-        $crossJoinedRows = $crossJoinedData->map(function ($pair) use ($columnName, $referenceValueToInclude,$newRowTemplate) {
+        $crossJoinedRows = $crossJoinedData->map(function ($pair) use ($columnName, $referenceValueToInclude, $newRowTemplate) {
             [$lookupItem, $area] = $pair;
             $newRow = clone $newRowTemplate;
             $newRow->{$columnName} = $lookupItem['key'] ?? null;
-            $newRow->{$columnName . '_name'} = $lookupItem['value'] ?? null;
+            $newRow->{$columnName.'_name'} = $lookupItem['value'] ?? null;
             $newRow->area_name = $area->name;
             $newRow->area_code = $area->code;
             $newRow->area_path = $area->path;
@@ -231,7 +261,7 @@ class BreakoutQueryBuilder
         });
         // Enrich existing data with area and lookup details
         $areasKeyByAreaCode = $areas->keyBy('code');
-        $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude,$columnName,$lookup) {
+        $areaEnhancedData = $data->map(function ($row) use ($areasKeyByAreaCode, $referenceValueToInclude, $columnName, $lookup) {
             $area = $areasKeyByAreaCode->get($row->{$this->joinColumn});
             $area ??= (object) ['name' => 'Unknown'];
             $row->area_name = $area->name ?? null;
@@ -239,7 +269,8 @@ class BreakoutQueryBuilder
             if ($referenceValueToInclude) {
                 $row->ref_value = $area->ref_value;
             }
-            $row->{$columnName . '_name'} = $lookup[$row->{$columnName}] ?? null;
+            $row->{$columnName.'_name'} = $lookup[$row->{$columnName}] ?? null;
+
             return $row;
         });
         // Filter cross-joined rows to exclude existing records
@@ -250,10 +281,11 @@ class BreakoutQueryBuilder
 
         // Combine existing data with the filtered cross-joined rows
         $combinedData = $areaEnhancedData->merge($filteredCrossJoinedRows);
+
         // Sort the combined data by area name and return it
         return $combinedData->sortBy([
             ['area_name', 'asc'],
-            [$columnName ,'asc']
+            [$columnName, 'asc'],
         ]);
     }
 
@@ -262,6 +294,7 @@ class BreakoutQueryBuilder
         $this->leftJoin = 'area-left-join-data';
         $this->joinColumn = $joinColumnOnDataSide;
         $this->referenceValueToInclude = $referenceValueToInclude;
+
         return $this;
     }
 
@@ -270,21 +303,25 @@ class BreakoutQueryBuilder
         $this->leftJoin = 'data-left-join-area';
         $this->joinColumn = $joinColumnOnDataSide;
         $this->referenceValueToInclude = $referenceValueToInclude;
+
         return $this;
     }
 
-    public function lastlyAreaCrossJoinData(string $secondaryJoinColumnOnDataSide,array $secondaryDataToJoin,string $joinColumnOnDataSide = 'area_code',?string $referenceValueToInclude = null,): self{
+    public function lastlyAreaCrossJoinData(string $secondaryJoinColumnOnDataSide, array $secondaryDataToJoin, string $joinColumnOnDataSide = 'area_code', ?string $referenceValueToInclude = null): self
+    {
         $this->leftJoin = 'area-cross-join-data';
         $this->joinColumn = $joinColumnOnDataSide;
         $this->secondaryJoinColumn = $secondaryJoinColumnOnDataSide;
         $this->secondaryDataToJoin = $secondaryDataToJoin;
         $this->referenceValueToInclude = $referenceValueToInclude;
+
         return $this;
     }
 
     public function getCallingClassName($level)
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
         // level 0 is this method (immediate caller), 1 is this class (BreakoutQueryBuilder) and 2 is the dashboard artefact
         return $trace[$level]['class'] ?? null;
     }
@@ -297,10 +334,10 @@ class BreakoutQueryBuilder
             'queryResult' => $queryResult,
             'joinType' => $joinType,
             'finalResult' => $finalResult,
-        ]) . '\n');
+        ]).'\n');
     }
 
-    public function get($sql = null) : Collection
+    public function get($sql = null): Collection
     {
         $query = '';
         $result = collect();
@@ -319,14 +356,13 @@ class BreakoutQueryBuilder
                 $finalResult = $result;
             }
         } catch (\Exception $exception) {
-            logger('From ' . $this->getCallingClassName(2) . ' in BreakoutQueryBuilder', ['Exception' => $exception->getMessage(), 'Line' => $exception->getLine()]);
+            logger('From '.$this->getCallingClassName(2).' in BreakoutQueryBuilder', ['Exception' => $exception->getMessage(), 'Line' => $exception->getLine()]);
         } finally {
             if (Context::hasHidden('x-ray')) {
                 $this->xRay($query, $result, $this->leftJoin, $finalResult);
             }
         }
+
         return $finalResult;
     }
-
-
 }

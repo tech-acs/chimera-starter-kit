@@ -11,7 +11,9 @@ use Uneca\Chimera\Services\DashboardComponentFactory;
 class IndicatorTester extends Component
 {
     public bool $modalOpen = false;
+
     public Indicator $indicator;
+
     public array $tests = [
         'is_data_source_connectible' => [
             'test' => 'The data source is accessible',
@@ -36,13 +38,14 @@ class IndicatorTester extends Component
             'test_description' => 'All traces should have column names assigned',
             'result' => 'pending',
             'result_description' => '',
-        ]
+        ],
     ];
 
     private function isDataSourceConnectible(): array
     {
         try {
             DB::connection($this->indicator->data_source)->getPdo();
+
             return ['result' => 'passed', 'result_description' => 'The database is connectable'];
         } catch (\Exception $exception) {
             return ['result' => 'failed', 'result_description' => $exception->getMessage()];
@@ -56,7 +59,7 @@ class IndicatorTester extends Component
         if ($data->isEmpty()) {
             return ['result' => 'failed', 'result_description' => 'No data returned'];
         } else {
-            return ['result' => 'passed', 'result_description' => $data->count() . ' rows returned'];
+            return ['result' => 'passed', 'result_description' => $data->count().' rows returned'];
         }
     }
 
@@ -66,7 +69,7 @@ class IndicatorTester extends Component
         $traces = $instance->getTraces($instance->getData(''), '');
         $traceCount = count($traces);
         if ($traceCount > 0) {
-            return ['result' => 'passed', 'result_description' => $traceCount . ' ' . str('trace')->plural($traceCount) . " returned"];
+            return ['result' => 'passed', 'result_description' => $traceCount.' '.str('trace')->plural($traceCount).' returned'];
         } else {
             return ['result' => 'failed', 'result_description' => 'No traces returned'];
         }

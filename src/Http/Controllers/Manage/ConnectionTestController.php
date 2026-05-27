@@ -2,9 +2,9 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Uneca\Chimera\Models\DataSource;
-use Illuminate\Http\RedirectResponse;
 
 class ConnectionTestController extends Controller
 {

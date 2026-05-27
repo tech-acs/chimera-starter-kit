@@ -14,11 +14,13 @@ class DataSource extends Model
     use HasTranslations;
 
     protected $guarded = ['id'];
+
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'password' => 'encrypted',
     ];
+
     public $translatable = ['title'];
 
     public function analytics()
@@ -95,6 +97,7 @@ class DataSource extends Model
     {
         try {
             DB::connection($this->name)->getPdo();
+
             return ['passes' => true, 'message' => ''];
         } catch (\Exception $exception) {
             return ['passes' => false, 'message' => $exception->getMessage()];
@@ -105,6 +108,7 @@ class DataSource extends Model
     {
         $result = collect([]);
         $result->add($this->testCanConnect());
+
         return $result;
     }
 }

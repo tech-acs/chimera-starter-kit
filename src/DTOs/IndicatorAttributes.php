@@ -9,9 +9,9 @@ readonly class IndicatorAttributes
         public string $title,
         public string $dataSource,
         public string $type,
-        public ?string $description = null,
-        public array $data = [],
-        public array $layout = [],
+        public ?string $description,
+        public array $data,
+        public array $layout,
         public string $stub
     ) {}
 

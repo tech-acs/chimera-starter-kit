@@ -10,7 +10,7 @@ class User extends \App\Models\User
     use HasRoles;
 
     protected $fillable = [
-        'name', 'email', 'password', 'is_suspended'
+        'name', 'email', 'password', 'is_suspended',
     ];
 
     protected $guard_name = 'web';
@@ -42,7 +42,8 @@ class User extends \App\Models\User
 
     public function areaRestrictionAsFilter()
     {
-        $areaTree = new AreaTree();
+        $areaTree = new AreaTree;
+
         return $this->areaRestrictions->mapWithKeys(function ($areaRestriction) use ($areaTree) {
             return [$areaTree->hierarchies[$areaRestriction->level] => $areaRestriction->path];
         })->all();
@@ -50,11 +51,13 @@ class User extends \App\Models\User
 
     public function areaRestrictionAsString()
     {
-        $areaTree = new AreaTree();
+        $areaTree = new AreaTree;
         $restrictionAsString = $this->areaRestrictions->mapWithKeys(function ($areaRestriction) use ($areaTree) {
             $area = $areaTree->getArea($areaRestriction->path);
+
             return [$areaTree->hierarchies[$areaRestriction->level] => $area?->name];
         })->mapWithKeys(fn ($areaName, $levelName) => ["$areaName $levelName"])->join(', ');
-        return empty($restrictionAsString) ? __("No restriction (national)") : $restrictionAsString;
+
+        return empty($restrictionAsString) ? __('No restriction (national)') : $restrictionAsString;
     }
 }

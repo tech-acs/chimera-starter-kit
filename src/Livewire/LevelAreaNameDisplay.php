@@ -5,15 +5,18 @@ namespace Uneca\Chimera\Livewire;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Services\AreaTree;
-use \Uneca\Chimera\Traits\AreaResolver;
+use Uneca\Chimera\Traits\AreaResolver;
 
 class LevelAreaNameDisplay extends Component
 {
     use AreaResolver;
 
     public string $placement = 'area-insights';
+
     public string $filterPath = '';
+
     public string $areaName = '';
+
     public string $levelName = '';
 
     public function mount()
@@ -23,7 +26,7 @@ class LevelAreaNameDisplay extends Component
 
     private function resolveDisplayName()
     {
-        list($this->filterPath,) = $this->areaResolver();
+        [$this->filterPath] = $this->areaResolver();
         if (empty($this->filterPath)) {
             $this->levelName = 'National';
             $this->areaName = '';

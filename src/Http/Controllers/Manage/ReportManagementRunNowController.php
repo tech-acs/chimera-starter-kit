@@ -18,6 +18,7 @@ class ReportManagementRunNowController extends Controller
             $reportArtefact->generate();
             Notification::send($user, new ReportGeneratedNotification($report));
         });
+
         return redirect()->route('manage.report.index')
             ->withMessage('The report is being generated. Please check back later.');
     }

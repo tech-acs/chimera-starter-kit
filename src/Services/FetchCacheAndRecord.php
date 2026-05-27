@@ -29,7 +29,7 @@ class FetchCacheAndRecord
                     'user_id' => auth()->id(),
                     'path' => $filterPath,
                     'started_at' => Carbon::createFromTimestamp($startTime),
-                    'elapsed_seconds' => $elapsedSeconds
+                    'elapsed_seconds' => $elapsedSeconds,
                 ]);
             }
         } catch (\Exception $exception) {

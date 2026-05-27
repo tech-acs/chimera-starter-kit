@@ -8,11 +8,17 @@ use Uneca\Chimera\Enums\SortDirection;
 class SmartTableColumn
 {
     private SmartTableData $table;
+
     private ?string $label = null;
+
     private bool $isSortable = false;
+
     private SortDirection $sortDirection = SortDirection::ASC;
+
     private string $bladeTemplate;
+
     public string $attribute;
+
     public string $classes = '';
 
     public function __construct(string $attribute)
@@ -44,6 +50,7 @@ class SmartTableColumn
     public function setLabel(string $label): self
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -52,18 +59,21 @@ class SmartTableColumn
         if (is_null($this->label)) {
             $this->label = $this->attribute;
         }
+
         return $this->applyLabelFormatting($this->label);
     }
 
     public function sortable(): self
     {
         $this->isSortable = true;
+
         return $this;
     }
 
     public function tdClasses(string $classes): self
     {
         $this->classes = $classes;
+
         return $this;
     }
 
@@ -89,14 +99,17 @@ class SmartTableColumn
                     return Blade::render('<x-chimera::icon.sort-desc class="text-blue-600" />');
                 }
             }
+
             return Blade::render('<x-chimera::icon.sort-asc />');
         }
+
         return '';
     }
 
     public function setBladeTemplate(string $bladeTemplate): self
     {
         $this->bladeTemplate = $bladeTemplate;
+
         return $this;
     }
 

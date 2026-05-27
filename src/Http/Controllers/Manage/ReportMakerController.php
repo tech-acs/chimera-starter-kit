@@ -17,6 +17,7 @@ class ReportMakerController extends Controller
             return redirect()->route('manage.report.index')
                 ->withMessage('You have not yet added data sources to your dashboard. Please do so first.');
         }
+
         return view('chimera::report.manage.create', [
             'dataSources' => $dataSources->pluck('title', 'name')->toArray(),
         ]);
@@ -29,10 +30,11 @@ class ReportMakerController extends Controller
             title: $request->title,
             description: $request->description,
             dataSource: $request->data_source,
-            stub: resource_path("stubs/reports/default.stub")
+            stub: resource_path('stubs/reports/default.stub')
         );
         try {
             $createReportAction->execute($reportAttributes);
+
             return redirect()->route('manage.report.index')->withMessage('Report created');
 
         } catch (\Exception) {

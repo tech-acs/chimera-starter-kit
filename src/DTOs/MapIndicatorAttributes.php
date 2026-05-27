@@ -7,7 +7,7 @@ readonly class MapIndicatorAttributes
     public function __construct(
         public string $name,
         public string $title,
-        public ?string $description = null,
+        public ?string $description,
         public string $dataSource,
         public string $stub
     ) {}

@@ -3,7 +3,6 @@
 namespace Uneca\Chimera\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class GaugeRequest extends FormRequest
 {

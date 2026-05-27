@@ -17,6 +17,7 @@ class MapIndicatorMakerController extends Controller
             return redirect()->route('manage.map_indicator.index')
                 ->withMessage('You have not yet added data sources to your dashboard. Please do so first.');
         }
+
         return view('chimera::map_indicator.create', [
             'dataSources' => $dataSources->pluck('title', 'name')->toArray(),
         ]);
@@ -29,10 +30,11 @@ class MapIndicatorMakerController extends Controller
             title: $request->title,
             description: $request->description,
             dataSource: $request->data_source,
-            stub: resource_path("stubs/map_indicators/default.stub")
+            stub: resource_path('stubs/map_indicators/default.stub')
         );
         try {
             $createMapIndicatorAction->execute($mapIndicatorAttributes);
+
             return redirect()->route('manage.map_indicator.index')->withMessage('Map indicator created');
 
         } catch (\Exception) {

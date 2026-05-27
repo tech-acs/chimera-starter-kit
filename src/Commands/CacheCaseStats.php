@@ -12,7 +12,7 @@ class CacheCaseStats extends Command
 {
     protected $signature = 'chimera:cache-casestats {--data-source=}';
 
-    protected $description = "Calculate and cache (active and shown-on-home-page data source) case stats";
+    protected $description = 'Calculate and cache (active and shown-on-home-page data source) case stats';
 
     public function __construct()
     {
@@ -31,6 +31,7 @@ class CacheCaseStats extends Command
         if ($toCache->isEmpty()) {
             $this->newLine()->error('No matching case-stats found');
             $this->newLine();
+
             return self::FAILURE;
         }
 
@@ -42,17 +43,18 @@ class CacheCaseStats extends Command
             // National level for non-restricted users (filter = [])
             $startTime = time();
             (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), '', true);
-            $this->info("Level 0 completed in " . (time() - $startTime) . " seconds");
+            $this->info('Level 0 completed in '.(time() - $startTime).' seconds');
 
             // Get all user area restrictions and loop them as filter
             $paths = AreaRestriction::distinct('path')->pluck('path');
             foreach ($paths as $path) {
                 $startTime = time();
                 (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), $path, true);
-                $this->info("Restriction path $path completed in " . (time() - $startTime) . " seconds");
+                $this->info("Restriction path $path completed in ".(time() - $startTime).' seconds');
             }
         }
         $this->newLine();
+
         return self::SUCCESS;
     }
 }

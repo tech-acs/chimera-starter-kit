@@ -34,7 +34,7 @@ class AnnouncementRequest extends FormRequest
     {
         return [
             'body.required' => 'The message field is required',
-            'body.max' => 'The message must not be greater than 1000 characters.'
+            'body.max' => 'The message must not be greater than 1000 characters.',
         ];
     }
 }

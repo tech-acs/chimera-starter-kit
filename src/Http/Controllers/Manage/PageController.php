@@ -3,10 +3,10 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\MessageBag;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\PageRequest;
 use Uneca\Chimera\Models\Page;
-use Illuminate\Support\MessageBag;
 
 class PageController extends Controller
 {
@@ -17,17 +17,19 @@ class PageController extends Controller
             ->orderBy('rank')
             ->get()
             ->groupBy('for');
+
         return view('chimera::page.index', compact('groupedPages'));
     }
 
     public function create()
     {
-        return view('chimera::page.create', ['pageableTypes' => PageableTypes::cases(), 'page' => new Page()]);
+        return view('chimera::page.create', ['pageableTypes' => PageableTypes::cases(), 'page' => new Page]);
     }
 
     public function store(PageRequest $request)
     {
         Page::create($request->only(['title',  'description', 'for', 'published', 'rank']));
+
         return redirect()->route('page.index')->withMessage('Page created');
     }
 
@@ -37,6 +39,7 @@ class PageController extends Controller
             $query->where('published', true);
         }]);
         $pageableTypes = PageableTypes::cases();
+
         return view('chimera::page.edit', compact('page', 'pageableTypes'));
     }
 
@@ -49,6 +52,7 @@ class PageController extends Controller
                 ['rank' => $indicatorRank]
             );
         }
+
         return redirect()->route('page.index')->withMessage('Page updated');
     }
 
@@ -58,6 +62,7 @@ class PageController extends Controller
             return redirect()->back()->withErrors(new MessageBag(['The page contains indicators and thus can not be deleted. Move the indicators to another page before trying again.']));
         }
         $page->delete();
+
         return redirect()->route('page.index')->withMessage('Page deleted');
     }
 }

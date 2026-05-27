@@ -2,10 +2,9 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\Http\Requests\GaugeRequest;
-use Uneca\Chimera\Http\Requests\ScorecardRequest;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Models\Indicator;
@@ -38,6 +37,7 @@ class GaugeController extends Controller
     {
         $areaHierarchies = AreaHierarchy::orderBy('index')->pluck('name', 'id')->all();
         $indicators = Indicator::where('data_source', $gauge->data_source)->get()->pluck('title', 'slug');
+
         return view('chimera::gauge.edit', compact('gauge', 'indicators', 'areaHierarchies'));
     }
 
@@ -45,6 +45,7 @@ class GaugeController extends Controller
     {
         $gauge->update($request->only(['title', 'subtitle', 'description', 'linked_indicator', 'published', 'rank']));
         $gauge->inapplicableLevels()->sync($request->get('inapplicable_levels', []));
+
         return redirect()->route('gauge.index')->withMessage('Record updated');
     }
 }

@@ -11,33 +11,33 @@ trait PlotlyDefaults
     ];
 
     public const DEFAULT_LAYOUT = [
-        "showlegend" => true,
-        "legend" => [
-            "orientation" => "h",
-            "x" => 0,
-            "y" => 1.12,
+        'showlegend' => true,
+        'legend' => [
+            'orientation' => 'h',
+            'x' => 0,
+            'y' => 1.12,
         ],
-        "xaxis" => [
-            "type" => "category",
-            "tickmode" => "auto",
-            "automargin" => true,
+        'xaxis' => [
+            'type' => 'category',
+            'tickmode' => 'auto',
+            'automargin' => true,
         ],
-        "yaxis2" => [
-            "side" => "right",
-            "overlaying" => "y",
-            "showgrid" => false,
+        'yaxis2' => [
+            'side' => 'right',
+            'overlaying' => 'y',
+            'showgrid' => false,
         ],
-        "margin" => [
-            "l" => 60,
-            "r" => 30,
-            "t" => 15,
-            "b" => 40,
+        'margin' => [
+            'l' => 60,
+            'r' => 30,
+            't' => 15,
+            'b' => 40,
         ],
-        "modebar" => [
-            "orientation" => "v",
-            "color" => "white",
-            "bgcolor" => "darkgray",
+        'modebar' => [
+            'orientation' => 'v',
+            'color' => 'white',
+            'bgcolor' => 'darkgray',
         ],
-        "dragmode" => "pan",
+        'dragmode' => 'pan',
     ];
 }

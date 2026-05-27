@@ -2,32 +2,39 @@
 
 namespace Uneca\Chimera\Livewire;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Spatie\SimpleExcel\SimpleExcelReader;
 use Uneca\Chimera\Jobs\ImportAreaSpreadsheetJob;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Notifications\TaskCompletedNotification;
 use Uneca\Chimera\Notifications\TaskFailedNotification;
 use Uneca\Chimera\Services\AreaTree;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Livewire\Component;
-use Livewire\WithFileUploads;
-use Spatie\SimpleExcel\SimpleExcelReader;
 
 class AreaSpreadsheetImporter extends Component
 {
     use WithFileUploads;
 
     public $spreadsheet;
+
     public bool $fileAccepted = false;
+
     public array $areaLevels = [];
+
     public array $columnHeaders = [];
+
     public array $columnMapping = [];
+
     public string $filePath = '';
+
     public string $message = '';
+
     const CHUNK_SIZE = 4000;
 
     protected function rules()
@@ -39,11 +46,12 @@ class AreaSpreadsheetImporter extends Component
                     return [$level => [
                         'name' => 'required',
                         'code' => 'required',
-                        'zeroPadding' => 'numeric|min:0'
+                        'zeroPadding' => 'numeric|min:0',
                     ]];
                 })
                 ->all()
         );
+
         return array_merge(['spreadsheet' => 'required|file|mimes:csv'], $columnMappingRules);
     }
 
@@ -56,7 +64,7 @@ class AreaSpreadsheetImporter extends Component
                     return [$level => [
                         'name' => 'required',
                         'code' => 'required',
-                        'zeroPadding' => 'invalid'
+                        'zeroPadding' => 'invalid',
                     ]];
                 })
                 ->all()
@@ -65,7 +73,7 @@ class AreaSpreadsheetImporter extends Component
 
     public function mount()
     {
-        $this->areaLevels = (new AreaTree())->hierarchies;
+        $this->areaLevels = (new AreaTree)->hierarchies;
         $this->columnMapping = AreaHierarchy::orderBy('index')->get()->mapWithKeys(function ($areaHierarchy) {
             return [$areaHierarchy->name => ['name' => '', 'code' => '', 'zeroPadding' => $areaHierarchy->zero_pad_length]];
         })->all();
@@ -76,7 +84,7 @@ class AreaSpreadsheetImporter extends Component
         $this->validateOnly('spreadsheet');
         $filename = collect([Str::random(40), $this->spreadsheet->getClientOriginalExtension()])->join('.');
         $this->spreadsheet->storeAs('spreadsheets', $filename, 'imports');
-        $this->filePath = Storage::disk('imports')->path('spreadsheets' . DIRECTORY_SEPARATOR . $filename);
+        $this->filePath = Storage::disk('imports')->path('spreadsheets'.DIRECTORY_SEPARATOR.$filename);
         $this->columnHeaders = SimpleExcelReader::create($this->filePath)->getHeaders();
         $this->fileAccepted = true;
     }
@@ -94,7 +102,7 @@ class AreaSpreadsheetImporter extends Component
     {
         $this->validate();
 
-        $fileHandle = fopen($this->filePath, "r");
+        $fileHandle = fopen($this->filePath, 'r');
         $user = auth()->user();
         $jobs = [];
         $line = 0;
@@ -115,19 +123,19 @@ class AreaSpreadsheetImporter extends Component
         }
         fclose($fileHandle);
 
-        //$pathFormula = $this->makePathFormulaForExcel();
+        // $pathFormula = $this->makePathFormulaForExcel();
         Bus::chain(array_merge(
-                $jobs,
-                [
-                    function () use ($line, $user, $areasTotalPreImport) {
-                        $insertedCount = Area::count() - $areasTotalPreImport;
-                        Notification::send($user, new TaskCompletedNotification(
-                            'Task completed',
-                            "$insertedCount areas have been imported."
-                        ));
-                    }
-                ]
-            ))
+            $jobs,
+            [
+                function () use ($user, $areasTotalPreImport) {
+                    $insertedCount = Area::count() - $areasTotalPreImport;
+                    Notification::send($user, new TaskCompletedNotification(
+                        'Task completed',
+                        "$insertedCount areas have been imported."
+                    ));
+                },
+            ]
+        ))
             ->catch(function (\Throwable $e) use ($user) {
                 logger('ImportAreaSpreadsheet Job Failed', ['Exception: ' => $e->getMessage()]);
                 Notification::send($user, new TaskFailedNotification(
@@ -137,7 +145,7 @@ class AreaSpreadsheetImporter extends Component
             })
             ->dispatch();
 
-        $this->message = "The file is being imported. You will receive a notification when the process is complete.";
+        $this->message = 'The file is being imported. You will receive a notification when the process is complete.';
     }
 
     public function render()

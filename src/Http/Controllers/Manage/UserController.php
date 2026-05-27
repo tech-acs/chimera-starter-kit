@@ -2,11 +2,11 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Spatie\Permission\Models\Role;
 use Uneca\Chimera\Models\Invitation;
 use Uneca\Chimera\Models\User;
-use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 use Uneca\Chimera\Services\SmartTableColumn;
 use Uneca\Chimera\Services\SmartTableData;
 
@@ -43,12 +43,14 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
+
         return view('chimera::user.manage', compact('user', 'roles'));
     }
 
     public function update(User $user, Request $request)
     {
         $user->syncRoles([$request->get('role')]);
+
         return redirect()->route('user.index')->withMessage('User role updated');
     }
 
@@ -60,10 +62,11 @@ class UserController extends Controller
         $user->announcements()->delete();
 
         // ToDo: finish this!
-        //$user->reports()->dissociate();
-        //$user->permissions;
+        // $user->reports()->dissociate();
+        // $user->permissions;
 
         $user->delete();
+
         return redirect()->route('user.index')
             ->withMessage('The user and all related resources have been removed from the application');
     }

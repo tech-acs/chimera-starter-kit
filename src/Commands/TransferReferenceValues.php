@@ -3,14 +3,14 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\ReferenceValue;
+
 use function Laravel\Prompts\error;
-use function Laravel\Prompts\select;
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\select;
 
 class TransferReferenceValues extends Command implements PromptsForMissingInput
 {
@@ -20,13 +20,14 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
 
     protected function promptForMissingArgumentsUsing(): array
     {
-        $availableSynthesizers = collect(glob(app_path('ReferenceValueSynthesizers') . '/*.php'))
+        $availableSynthesizers = collect(glob(app_path('ReferenceValueSynthesizers').'/*.php'))
             ->mapWithKeys(function (string $file) {
                 return [basename($file, '.php') => basename($file, '.php')];
             })->toArray();
+
         return [
             'class' => fn () => select(
-                label: "Please provide a ReferenceValueSynthesizer class to use",
+                label: 'Please provide a ReferenceValueSynthesizer class to use',
                 options: $availableSynthesizers,
                 hint: 'If there is nothing listed, then define some ReferenceValueSynthesizer classes.'
             ),
@@ -38,7 +39,7 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
         $aggMethod = $isAdditive ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
         DB::insert("
             INSERT INTO reference_values(path, level, indicator, value, created_at, updated_at)
-            SELECT areas.path, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value, '" . now() . "', '" . now() . "'
+            SELECT areas.path, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value, '".now()."', '".now()."'
             FROM (
                 SELECT $aggMethod, subpath(areas.path, 0, $level) AS path, reference_values.indicator
                 FROM reference_values INNER JOIN areas ON reference_values.path = areas.path
@@ -57,6 +58,7 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
         $class = str("\\App\\ReferenceValueSynthesizers\\$classArg")->rtrim('.php')->toString();
         if (! class_exists($class)) {
             error("$class class not found");
+
             return Command::FAILURE;
         }
         $synthesizer = app($class);
@@ -72,7 +74,7 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
                         'path' => $ref->area_path,
                         'indicator' => $synthesizer->indicator,
                         'value' => $ref->value,
-                        'level' => $synthesizer->level
+                        'level' => $synthesizer->level,
                     ];
                 })->all();
                 foreach ($refData as $data) {
@@ -89,7 +91,7 @@ class TransferReferenceValues extends Command implements PromptsForMissingInput
         }
 
         $finalCount = ReferenceValue::count();
-        info(($finalCount - $initialCount) . " reference values have been added/updated");
+        info(($finalCount - $initialCount).' reference values have been added/updated');
 
         return Command::SUCCESS;
     }

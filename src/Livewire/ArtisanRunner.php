@@ -3,7 +3,6 @@
 namespace Uneca\Chimera\Livewire;
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Stringable;
 use Livewire\Component;
 
 class ArtisanRunner extends Component
@@ -45,8 +44,8 @@ class ArtisanRunner extends Component
         $output = str(Artisan::output())
             ->trim()
             ->before("\n")
-            ->replace("INFO", "SUCCESS: ")
-            ->replace("ERROR", "ERROR: ")
+            ->replace('INFO', 'SUCCESS: ')
+            ->replace('ERROR', 'ERROR: ')
             ->trim()
             ->value();
         $this->dispatch('happening', message: $output);

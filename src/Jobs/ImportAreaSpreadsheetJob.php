@@ -2,20 +2,18 @@
 
 namespace Uneca\Chimera\Jobs;
 
-use Illuminate\Bus\Batchable;
-use Illuminate\Support\Facades\Notification;
-use Uneca\Chimera\Models\Area;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Notifications\TaskFailedNotification;
 
 class ImportAreaSpreadsheetJob implements ShouldQueue
@@ -36,13 +34,13 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
 
     public function handle()
     {
-        DB::transaction(function() {
+        DB::transaction(function () {
             $insertedCount = 0;
             SimpleExcelReader::create($this->filePath)
                 ->skip($this->start)
                 ->take($this->chunkSize + 1)
                 ->getRows()
-                ->each(function($row) use (&$insertedCount) {
+                ->each(function ($row) use (&$insertedCount) {
                     $areas = [];
                     $path = '';
                     $timestamp = Carbon::now();
@@ -55,7 +53,7 @@ class ImportAreaSpreadsheetJob implements ShouldQueue
                             $name = json_encode([$fallbackLocale => $name]);
                         }
                         $code = Str::padLeft(trim($row[$columnMapping['code']]), $columnMapping['zeroPadding'], '0');
-                        $path = (str($path)->isEmpty() ? $path : str($path)->append('.')) . $code;
+                        $path = (str($path)->isEmpty() ? $path : str($path)->append('.')).$code;
                         $areas[] = [
                             'name' => $name,
                             'code' => $code,

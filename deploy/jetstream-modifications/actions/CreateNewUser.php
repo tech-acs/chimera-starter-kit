@@ -2,8 +2,6 @@
 
 namespace App\Actions\Fortify;
 
-use Uneca\Chimera\Models\Invitation;
-use Uneca\Chimera\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +11,8 @@ use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Spatie\Permission\Models\Role;
+use Uneca\Chimera\Models\Invitation;
+use Uneca\Chimera\Models\User;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -29,7 +29,7 @@ class CreateNewUser implements CreatesNewUsers
                     'required', 'string', 'email', 'max:255', 'unique:users',
                     Rule::exists('invitations')->where(function ($query) use ($input) {
                         return $query->where('email', $input['email']);
-                    })
+                    }),
                 ],
                 'password' => $this->passwordRules(),
                 'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
@@ -55,9 +55,9 @@ class CreateNewUser implements CreatesNewUsers
                 }
             }
             if (! empty($invitation->areaRestriction)) {
-                //$user->imposeAreRestriction($invitation->areaRestriction);
+                // $user->imposeAreRestriction($invitation->areaRestriction);
                 $user->areaRestrictions()->create([
-                    'path' => $invitation->areaRestriction
+                    'path' => $invitation->areaRestriction,
                 ]);
             }
             $invitation->delete();

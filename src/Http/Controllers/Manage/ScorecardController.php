@@ -2,8 +2,8 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\Http\Requests\ScorecardRequest;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Indicator;
@@ -40,6 +40,7 @@ class ScorecardController extends Controller
     {
         $areaHierarchies = AreaHierarchy::orderBy('index')->pluck('name', 'id')->all();
         $indicators = Indicator::where('data_source', $scorecard->data_source)->get()->pluck('title', 'slug');
+
         return view('chimera::scorecard.edit', compact('scorecard', 'indicators', 'areaHierarchies'));
     }
 
@@ -47,6 +48,7 @@ class ScorecardController extends Controller
     {
         $scorecard->update($request->only(['title', 'description', 'linked_indicator', 'published', 'rank', 'scope']));
         $scorecard->inapplicableLevels()->sync($request->get('inapplicable_levels', []));
+
         return redirect()->route('scorecard.index')->withMessage('Record updated');
     }
 }

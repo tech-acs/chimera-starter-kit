@@ -16,11 +16,12 @@ class PageBuilder
                 ->orderBy('rank')
                 ->get()
                 ->keyBy('slug')
-                ->map(fn($model) => $model)
+                ->map(fn ($model) => $model)
                 ->all();
         } catch (\Exception $exception) {
             $pages = [];
         }
+
         return $pages;
     }
 }

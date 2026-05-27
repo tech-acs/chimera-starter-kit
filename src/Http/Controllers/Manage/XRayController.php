@@ -9,7 +9,8 @@ class XRayController extends Controller
 {
     public function __invoke()
     {
-        Process::run("echo -n '' > " . config('chimera.xray_file'));
+        Process::run("echo -n '' > ".config('chimera.xray_file'));
+
         return view('chimera::developer.x-ray.index');
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Http\Requests\MapIndicatorRequest;
 use Uneca\Chimera\Models\MapIndicator;
@@ -37,6 +37,7 @@ class MapIndicatorController extends Controller
     public function edit(MapIndicator $mapIndicator)
     {
         $pages = Page::for(PageableTypes::MapIndicators)->pluck('title', 'id');
+
         return view('chimera::map_indicator.edit', compact('mapIndicator', 'pages'));
     }
 
@@ -44,6 +45,7 @@ class MapIndicatorController extends Controller
     {
         $mapIndicator->pages()->sync($request->get('pages', []));
         $mapIndicator->update($request->only(['title', 'description', 'rank', 'published']));
+
         return redirect()->route('manage.map_indicator.index')->withMessage('Record updated');
     }
 }

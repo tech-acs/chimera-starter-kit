@@ -2,9 +2,10 @@
 
 namespace Uneca\Chimera\Services;
 
-use Illuminate\Contracts\Encryption\DecryptException;
-use Uneca\Chimera\Models\DataSource;
 use Exception;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Pdo\Mysql;
+use Uneca\Chimera\Models\DataSource;
 
 class ConnectionLoader
 {
@@ -12,6 +13,7 @@ class ConnectionLoader
     {
         try {
             $connection->password;
+
             return false;
         } catch (DecryptException $e) {
             return true;
@@ -21,20 +23,21 @@ class ConnectionLoader
     private function isNotConnectible(DataSource $connection): bool
     {
         try {
-            $DSN = vsprintf("%s:dbname=%s;host=%s", [
+            $DSN = vsprintf('%s:dbname=%s;host=%s', [
                 $connection['driver'],
                 $connection['database'],
                 $connection['host'],
-                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
             ]);
             $pdo = new \PDO($DSN, $connection['username'], $connection['password']);
+
             return false;
         } catch (\PDOException $e) {
             return true;
         }
     }
 
-    public function __invoke() : void
+    public function __invoke(): void
     {
         try {
             $connections = DataSource::active()->get();
@@ -48,10 +51,10 @@ class ConnectionLoader
                     $defaultConfig = [
                         ...$defaultConfig,
                         'modes' => [
-                            'NO_ENGINE_SUBSTITUTION'
+                            'NO_ENGINE_SUBSTITUTION',
                         ],
                         'options' => extension_loaded('pdo_mysql') ? array_filter([
-                            (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                            (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
                             \PDO::ATTR_PERSISTENT => true,
                         ]) : [],
                     ];
@@ -77,7 +80,7 @@ class ConnectionLoader
             });
 
         } catch (Exception $exception) {
-            logger('Exception in ConnectionLoader: ' . $exception->getMessage());
+            logger('Exception in ConnectionLoader: '.$exception->getMessage());
         }
 
     }

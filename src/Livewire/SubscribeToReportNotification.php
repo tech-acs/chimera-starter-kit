@@ -8,6 +8,7 @@ use Uneca\Chimera\Models\Report;
 class SubscribeToReportNotification extends Component
 {
     public Report $report;
+
     public bool $subscribed;
 
     public function mount()

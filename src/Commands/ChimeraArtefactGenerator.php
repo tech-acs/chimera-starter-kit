@@ -7,15 +7,18 @@ use Illuminate\Console\GeneratorCommand;
 class ChimeraArtefactGenerator extends GeneratorCommand
 {
     protected $signature = 'chimera:make-artefact {name} {--stub} {--namespace}';
+
     protected $description = 'Create a new dashboard artefact';
 
     protected string $artefactName;
+
     protected string $stub;
+
     protected string $relativeNamespace;
 
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . $this->relativeNamespace;
+        return $rootNamespace.$this->relativeNamespace;
     }
 
     protected function getStub()
@@ -38,9 +41,11 @@ class ChimeraArtefactGenerator extends GeneratorCommand
 
         if ($result === false) {
             $this->error('File could not be written.');
+
             return self::FAILURE;
         }
         $this->info('File created successfully.');
+
         return self::SUCCESS;
     }
 }

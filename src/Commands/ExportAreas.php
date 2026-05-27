@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Uneca\Chimera\Services\AreaTree;
+
 use function Laravel\Prompts\info;
 
 class ExportAreas extends Command
@@ -20,14 +21,16 @@ class ExportAreas extends Command
         // Creates: a1.name->>'en' AS "County_name", a1.code AS "County_code"
         $selectColumns = $levels->map(function ($name, $index) {
             $alias = $index + 1;
+
             return "a{$alias}.name->>'en' AS \"{$name}_name\", a{$alias}.code AS \"{$name}_code\"";
-        })->implode(", ");
+        })->implode(', ');
 
         // Creates: LEFT JOIN areas a1 ON a1.path = subpath(a.path, 0, 1)
         $joins = $levels->map(function ($name, $index) {
             $alias = $index + 1;
+
             return "LEFT JOIN areas a{$alias} ON a{$alias}.path = subpath(a.path, 0, {$alias})";
-        })->implode(" ");
+        })->implode(' ');
 
         $leafLevel = $levels->count() - 1;
 
@@ -38,14 +41,14 @@ class ExportAreas extends Command
     {
         info('Exporting areas to CSV file');
 
-        $levels = collect((new AreaTree())->hierarchies);
+        $levels = collect((new AreaTree)->hierarchies);
 
         Storage::makeDirectory('exports');
         $filePath = storage_path('app/areas.csv');
 
         $file = fopen($filePath, 'w');
 
-        $csvHeaders = $levels->map(fn($name) => ["{$name}_name", "{$name}_code"])->flatten()->toArray();
+        $csvHeaders = $levels->map(fn ($name) => ["{$name}_name", "{$name}_code"])->flatten()->toArray();
         fputcsv($file, $csvHeaders);
 
         $sql = $this->generateDynamicAreaSql($levels);
@@ -57,7 +60,8 @@ class ExportAreas extends Command
 
         fclose($file);
 
-        info('The CSV file has been exported to: ' . $filePath);
+        info('The CSV file has been exported to: '.$filePath);
+
         return self::SUCCESS;
     }
 }

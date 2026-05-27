@@ -3,7 +3,6 @@
 namespace Uneca\Chimera\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Services\APCA;

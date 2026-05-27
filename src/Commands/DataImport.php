@@ -3,17 +3,19 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
+
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
+use function Laravel\Prompts\multiselect;
 
 class DataImport extends Command
 {
     protected $signature = 'chimera:data-import';
+
     protected $description = 'Restore postgres data (some tables) from file';
 
     private function restoreTable(array $pgsqlConfig, bool $truncate, string $sourceFile)
@@ -37,10 +39,11 @@ class DataImport extends Command
     public function handle()
     {
         $pgsqlConfig = config('database.connections.pgsql');
-        $exportFolder = base_path() . DIRECTORY_SEPARATOR . 'data-export';
+        $exportFolder = base_path().DIRECTORY_SEPARATOR.'data-export';
 
         if (! file_exists($exportFolder)) {
             error('No data-export directory found');
+
             return self::FAILURE;
         }
 
@@ -49,29 +52,31 @@ class DataImport extends Command
 
         if ($importables->isEmpty()) {
             error('Nothing to import. The "data-export" directory is empty');
+
             return self::FAILURE;
         }
 
         $selectedFiles = multiselect(
             label: 'Select the files (tables) you want to restore',
             options: $importables,
-            required: "You must select at least one file",
+            required: 'You must select at least one file',
             hint: 'Use the space bar to select and press enter when done.'
         );
 
         $truncate = confirm(
-            label: "Do you want to truncate the tables before restoring the data from the export file?",
+            label: 'Do you want to truncate the tables before restoring the data from the export file?',
             default: true,
             yes: 'Yes',
             no: 'No',
-            hint: "Truncating is the safer alternative as it will ensure consistency between dev and prod"
+            hint: 'Truncating is the safer alternative as it will ensure consistency between dev and prod'
         );
 
         foreach ($selectedFiles as $file) {
-            $this->restoreTable($pgsqlConfig, $truncate, $exportFolder . DIRECTORY_SEPARATOR . $file);
+            $this->restoreTable($pgsqlConfig, $truncate, $exportFolder.DIRECTORY_SEPARATOR.$file);
         }
 
         info('Data import completed');
+
         return self::SUCCESS;
     }
 }

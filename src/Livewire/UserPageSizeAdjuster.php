@@ -8,8 +8,11 @@ use Livewire\Component;
 class UserPageSizeAdjuster extends Component
 {
     public bool $modalOpen = false;
+
     public int $defaultPageSize = 2;
+
     public int $pageSize = 2;
+
     public array $pageSizeOptions = [2, 4, 6, 8, 10, 12, 20, 24, 30, 50];
 
     public function mount()

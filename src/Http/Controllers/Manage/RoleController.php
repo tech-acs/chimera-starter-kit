@@ -2,8 +2,8 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
@@ -12,13 +12,14 @@ class RoleController extends Controller
     public function index()
     {
         $records = Role::with('permissions')->get();
+
         return view('chimera::role.index', compact('records'));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:roles,name'
+            'name' => 'required|unique:roles,name',
         ]);
         if ($validator->fails()) {
             return redirect()
@@ -27,6 +28,7 @@ class RoleController extends Controller
                 ->withInput();
         }
         Role::create(['name' => $request->get('name'), 'guard_name' => 'web']);
+
         return redirect()->route('role.index')->withMessage('Role created successfully.');
     }
 
@@ -35,6 +37,7 @@ class RoleController extends Controller
         if ($role->name === 'Super Admin') {
             abort(403, 'Unauthorized action');
         }
+
         return view('chimera::role.manage', compact('role'));
     }
 
@@ -49,6 +52,7 @@ class RoleController extends Controller
             $role->delete();
             $message = 'The role has been deleted';
         }
+
         return redirect()->route('role.index')->withMessage($message);
     }
 }

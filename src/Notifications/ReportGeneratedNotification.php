@@ -13,9 +13,7 @@ class ReportGeneratedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(private Report $report)
-    {
-    }
+    public function __construct(private Report $report) {}
 
     public function via($notifiable)
     {
@@ -25,7 +23,7 @@ class ReportGeneratedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject("Report ready for download")
+            ->subject('Report ready for download')
             ->line("A new version of the {$this->report->title} report has been generated")
             ->action('Download Report', route('report.download', $this->report))
             ->line('You can download the report from the above link');
@@ -36,7 +34,7 @@ class ReportGeneratedNotification extends Notification implements ShouldQueue
         return [
             'icon' => 'completed',
             'from' => 'Dashboard',
-            'title' => "Report ready for download",
+            'title' => 'Report ready for download',
             'body' => "A new version of the {$this->report->title} report has been generated. You can download it from the reports page.",
             'sent_at' => Carbon::now(),
         ];

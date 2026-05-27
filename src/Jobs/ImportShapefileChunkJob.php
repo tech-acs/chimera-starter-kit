@@ -3,17 +3,17 @@
 namespace Uneca\Chimera\Jobs;
 
 use Illuminate\Bus\Batchable;
-use Illuminate\Support\Str;
-use Uneca\Chimera\Models\Area;
-use Uneca\Chimera\Traits\Geospatial;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Uneca\Chimera\Models\Area;
+use Uneca\Chimera\Traits\Geospatial;
 
 class ImportShapefileChunkJob implements ShouldQueue
 {
@@ -21,6 +21,7 @@ class ImportShapefileChunkJob implements ShouldQueue
     use Geospatial;
 
     public $tries = 1;
+
     public $timeout = 300; // 5 minutes
 
     public function __construct(
@@ -36,7 +37,7 @@ class ImportShapefileChunkJob implements ShouldQueue
             return;
         }
 
-        DB::transaction(function() {
+        DB::transaction(function () {
             $results = [];
             foreach ($this->features as $feature) {
                 $name = Str::of($feature['attribs']['name'])->trim()->lower()->limit(80)->title()->toString();

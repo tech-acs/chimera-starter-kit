@@ -9,21 +9,24 @@ use Uneca\Chimera\DTOs\IndicatorAttributes;
 use Uneca\Chimera\Models\ChartTemplate;
 use Uneca\Chimera\Models\DataSource;
 use Uneca\Chimera\Traits\PlotlyDefaults;
+
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\search;
+use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\textarea;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\confirm;
 
 class MakeIndicator extends Command
 {
     use PlotlyDefaults;
 
     protected $signature = 'chimera:make-indicator';
+
     protected $description = 'Create a new indicator component. Creates file from stub and adds entry in indicators table.';
 
     protected $type = 'default';
+
     protected $includeSampleCode = '';
 
     protected function loadIndicatorTemplates(): Collection
@@ -35,22 +38,23 @@ class MakeIndicator extends Command
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
-            error("You have not yet added data sources to your dashboard. Please do so first.");
+            error('You have not yet added data sources to your dashboard. Please do so first.');
+
             return self::FAILURE;
         }
 
         $dataSource = select(
-            label: "Which data source will this indicator be using?",
+            label: 'Which data source will this indicator be using?',
             options: $dataSources->pluck('title', 'name')->toArray(),
-            hint: "You will not be able to change this later"
+            hint: 'You will not be able to change this later'
         );
 
         $name = text(
-            label: "Indicator name",
+            label: 'Indicator name',
             placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
-            default: DataSource::whereName($dataSource)->first()->title . '/',
+            default: DataSource::whereName($dataSource)->first()->title.'/',
             validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']],
-            hint: "This will serve as the component name and has to be in camel case"
+            hint: 'This will serve as the component name and has to be in camel case'
         );
 
         $availableTemplates = $this->loadIndicatorTemplates();
@@ -68,10 +72,11 @@ class MakeIndicator extends Command
                 $templateMenu = $availableTemplates
                     ->map(function ($template) {
                         $template->label = "<fg=gray>{$template->category}:</> {$template->name}";
+
                         return $template;
                     });
                 $selectedTemplateId = search(
-                    label: "Select the indicator template you want to use?",
+                    label: 'Select the indicator template you want to use?',
                     options: fn (string $userInput) => strlen($userInput) > 0
                         ? $templateMenu->filter(function ($item, $key) use ($userInput) {
                             return str_starts_with(strtolower($item->name), strtolower($userInput));
@@ -79,7 +84,7 @@ class MakeIndicator extends Command
                         : $templateMenu->pluck('label', 'id')->toArray(),
                     placeholder: __('Search...'),
                     scroll: 10,
-                    hint: "Type to search and use the arrow keys to select"
+                    hint: 'Type to search and use the arrow keys to select'
                 );
                 $selectedTemplate = ChartTemplate::find($selectedTemplateId);
                 $chosenChartType = 'Template';
@@ -91,11 +96,11 @@ class MakeIndicator extends Command
 
         if ($chosenChartType === 'Default') {
             $includeSampleCode = confirm(
-                label: "Do you want the generated file to include functioning sample code?",
+                label: 'Do you want the generated file to include functioning sample code?',
                 default: true,
                 yes: 'Yes',
                 no: 'No',
-                hint: "The sample code will help you to develop your own indicator logic"
+                hint: 'The sample code will help you to develop your own indicator logic'
             );
             $this->includeSampleCode = $includeSampleCode ? '-with-sample-code' : '';
         }
@@ -103,16 +108,16 @@ class MakeIndicator extends Command
         $stub = resource_path("stubs/indicators/{$this->type}{$this->includeSampleCode}.stub");
 
         $title = text(
-            label: "Please enter a reader friendly title for the indicator",
+            label: 'Please enter a reader friendly title for the indicator',
             placeholder: 'E.g. Households Enumerated by Day or Birth Rate',
             default: $defaultTitle ?? '',
-            hint: "You can leave this empty for now",
+            hint: 'You can leave this empty for now',
         );
         $description = textarea(
-            label: "Please enter a description for the indicator",
-            placeholder: "E.g. This indicator represents the breakdown of the population by gender and age at different geographic levels.",
+            label: 'Please enter a description for the indicator',
+            placeholder: 'E.g. This indicator represents the breakdown of the population by gender and age at different geographic levels.',
             default: $defaultDescription ?? '',
-            hint: "You can leave this empty for now"
+            hint: 'You can leave this empty for now'
         );
 
         $indicatorAttributes = new IndicatorAttributes(
@@ -128,10 +133,12 @@ class MakeIndicator extends Command
         try {
             $createIndicatorAction->execute($indicatorAttributes);
             info('Indicator created successfully.');
+
             return self::SUCCESS;
 
         } catch (\Exception $e) {
             error($e->getMessage());
+
             return self::FAILURE;
         }
     }
