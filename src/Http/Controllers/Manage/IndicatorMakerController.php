@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Actions\Maker\CreateIndicatorAction;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\IndicatorAttributes;
 use Uneca\Chimera\Http\Requests\IndicatorMakerRequest;
 use Uneca\Chimera\Models\ChartTemplate;

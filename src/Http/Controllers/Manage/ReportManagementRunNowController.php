@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Notification;
 use Uneca\Chimera\Models\Report;
 use Uneca\Chimera\Notifications\ReportGeneratedNotification;

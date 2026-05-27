@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class ReferenceValueImportTemplateDownloadController extends Controller

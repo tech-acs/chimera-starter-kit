@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Actions\Maker\CreateScorecardAction;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\ScorecardAttributes;
 use Uneca\Chimera\Http\Requests\ScorecardMakerRequest;
 use Uneca\Chimera\Models\DataSource;

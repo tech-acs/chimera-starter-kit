@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Actions\Maker\CreateMapIndicatorAction;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\MapIndicatorAttributes;
 use Uneca\Chimera\Http\Requests\MapIndicatorMakerRequest;
 use Uneca\Chimera\Models\DataSource;

@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Models\Report;

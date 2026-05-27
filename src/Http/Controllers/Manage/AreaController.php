@@ -2,7 +2,7 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Validation\ValidationException;
 use Uneca\Chimera\Http\Requests\MapRequest;
 use Uneca\Chimera\Jobs\ImportShapefileJob;

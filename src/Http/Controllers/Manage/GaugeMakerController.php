@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Actions\Maker\CreateGaugeAction;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\GaugeAttributes;
 use Uneca\Chimera\Http\Requests\GaugeMakerRequest;
 use Uneca\Chimera\Models\DataSource;
