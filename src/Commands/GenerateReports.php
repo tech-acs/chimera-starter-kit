@@ -2,15 +2,17 @@
 
 namespace Uneca\Chimera\Commands;
 
-use Uneca\Chimera\Models\Report;
 use Illuminate\Console\Command;
+use Uneca\Chimera\Models\Report;
 use Uneca\Chimera\Services\DashboardComponentFactory;
-use function Laravel\Prompts\info;
+
 use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
 
 class GenerateReports extends Command
 {
     protected $signature = 'chimera:generate-reports';
+
     protected $description = 'Generate (save) all reports scheduled for the current time';
 
     public function handle()
@@ -21,7 +23,7 @@ class GenerateReports extends Command
                 return in_array(now()->format('H:00:00'), $report->schedule());
             });
         if ($dueReports->isEmpty()) {
-            error("No due reports found.");
+            error('No due reports found.');
         } else {
             foreach ($dueReports as $dueReport) {
                 $report = DashboardComponentFactory::makeReport($dueReport);
@@ -29,6 +31,7 @@ class GenerateReports extends Command
                 $report->generate();
             }
         }
+
         return self::SUCCESS;
     }
 }

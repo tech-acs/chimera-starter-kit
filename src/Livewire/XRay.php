@@ -11,8 +11,11 @@ use Uneca\Chimera\Services\DashboardComponentFactory;
 class XRay extends Component
 {
     public Collection $groupedIndicators;
+
     public string $output = '';
+
     public int $lineNumber = 0;
+
     public string $filterPath = '';
 
     public function mount()
@@ -20,11 +23,11 @@ class XRay extends Component
         $this->groupedIndicators = Indicator::published()
             ->get()
             ->map(function (Indicator $indicator) {
-                return (object)[
+                return (object) [
                     'id' => $indicator->id,
                     'name' => str($indicator->name)->after('/')->toString(),
                     'title' => $indicator->title,
-                    'data_source' => str($indicator->name)->before('/')->toString()
+                    'data_source' => str($indicator->name)->before('/')->toString(),
                 ];
             })
             ->groupBy('data_source');
@@ -45,7 +48,7 @@ class XRay extends Component
                     'queryResult' => $parsedLine['queryResult'],
                     'joinType' => $parsedLine['joinType'],
                     'finalResult' => $parsedLine['finalResult'],
-                    'index' => $this->lineNumber
+                    'index' => $this->lineNumber,
                 ]);
             }
             $this->lineNumber++;

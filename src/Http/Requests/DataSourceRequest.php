@@ -32,7 +32,7 @@ class DataSourceRequest extends FormRequest
             'port' => 'required',
             'database' => 'required',
             'username' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ];
     }
 }

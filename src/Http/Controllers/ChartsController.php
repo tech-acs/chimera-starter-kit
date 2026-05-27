@@ -2,14 +2,14 @@
 
 namespace Uneca\Chimera\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Uneca\Chimera\Models\Indicator;
-use Uneca\Chimera\Models\Page;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Uneca\Chimera\Models\Indicator;
+use Uneca\Chimera\Models\Page;
 
 class ChartsController extends Controller
 {
@@ -18,9 +18,10 @@ class ChartsController extends Controller
         $list = is_countable($list) ? $list : [];
         $perPage = request()->cookie('indicators_per_page', settings('indicators_per_page', 2));
         $totalCount = count($list);
-        $startingPoint = ((int)$pageNumber * $perPage) - $perPage;
+        $startingPoint = ((int) $pageNumber * $perPage) - $perPage;
         $slice = array_slice($list, $startingPoint, $perPage, true);
         $paginatedList = new LengthAwarePaginator($slice, $totalCount, $perPage, $pageNumber);
+
         return $paginatedList->withPath($route);
     }
 
@@ -28,6 +29,7 @@ class ChartsController extends Controller
     {
         $list = is_countable($list) ? collect($list) : collect();
         $perPage = request()->cookie('indicators_per_page', settings('indicators_per_page', 2));
+
         return $list->map(function ($indicator) {
             return $indicator->title;
         })->values()->chunk($perPage);
@@ -48,6 +50,7 @@ class ChartsController extends Controller
         })->all();
         $preview = $this->generatePreviewContent($indicators);
         $indicators = $this->paginate($indicators, $page->slug, $request->get('page', 1));
+
         return view('chimera::charts.multi', compact('indicators', 'preview'));
     }
 
@@ -61,6 +64,7 @@ class ChartsController extends Controller
         if (request()->has('linked_from_scorecard')) {
             session()->forget('area-filter');
         }
+
         return view('chimera::charts.single', compact('indicator'));
     }
 }

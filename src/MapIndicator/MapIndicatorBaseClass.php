@@ -11,26 +11,28 @@ use Uneca\Chimera\Services\MapIndicatorCaching;
 abstract class MapIndicatorBaseClass
 {
     const LEAFLET_POLYLINE_OPTIONS = [ // https://leafletjs.com/reference.html#polyline-option
-        'stroke'                => true,
-        'color'	                => '#ccc',
-        'weight'                => 1,
-        'opacity'	            => 1,
-        'lineCap'	            => 'round',
-        'lineJoin'	            => 'round',
-        'dashArray'	            => null,
-        'dashOffset'            => null,
-        'fill'	                => true,
-        'fillColor'	            => '#ccc',
-        'fillOpacity'           => 0.2,
-        'fillRule'	            => 'evenodd',
-        'bubblingMouseEvents'   => false,
+        'stroke' => true,
+        'color' => '#ccc',
+        'weight' => 1,
+        'opacity' => 1,
+        'lineCap' => 'round',
+        'lineJoin' => 'round',
+        'dashArray' => null,
+        'dashOffset' => null,
+        'fill' => true,
+        'fillColor' => '#ccc',
+        'fillOpacity' => 0.2,
+        'fillRule' => 'evenodd',
+        'bubblingMouseEvents' => false,
     ];
+
     const DEFAULT_STYLE = [
         ...self::LEAFLET_POLYLINE_OPTIONS,
         'color' => 'white',
         'fillColor' => 'dimgrey',
         'fillOpacity' => 0.65,
     ];
+
     const COLOR_CHARTS = [
         'alizarin' => [
             '#fdedec',
@@ -118,33 +120,40 @@ abstract class MapIndicatorBaseClass
         ],
         'rag' => ['red', 'orange', 'green'],
     ];
+
     const SELECTED_COLOR_CHART = 'nephritis';
 
     public MapIndicator $mapIndicator;
+
     public array $bins = [];
+
     public array $ranges = [];
+
     public array $currentStyle = [];
 
     public string $valueField = 'value';
+
     public string $displayValueField = 'display_value';
+
     public string $areaCodeField = 'area_code';
+
     public string $infoTextField = 'info';
 
     public function __construct()
     {
-        $modelName = str($this::class)->after("App\MapIndicators" . '\\')->replace('\\', '/')->toString();
+        $modelName = str($this::class)->after("App\MapIndicators".'\\')->replace('\\', '/')->toString();
         $this->mapIndicator = MapIndicator::where('name', $modelName)->first();
         if (isset($this->bins)) {
             $this->ranges = $this->generateRanges($this->bins);
         }
 
         if (empty($this->ranges)) {
-            dd('In ' . $this::class . ', you have not provided bins (to make ranges).');
+            dd('In '.$this::class.', you have not provided bins (to make ranges).');
         }
 
         $this->currentStyle = $this->getStyles();
         if (count($this->ranges) > count($this->currentStyle)) {
-            dd('In ' . $this::class . ', you have more ranges (' . count($this->ranges) . ') than you have styles (' . count($this->currentStyle) . '). You need to have enough styles defined for your ranges.');
+            dd('In '.$this::class.', you have more ranges ('.count($this->ranges).') than you have styles ('.count($this->currentStyle).'). You need to have enough styles defined for your ranges.');
         }
     }
 
@@ -166,6 +175,7 @@ abstract class MapIndicatorBaseClass
         for ($i = 0; $i < count($bins) - 1; $i++) {
             array_push($ranges, [$bins[$i], $bins[$i + 1]]);
         }
+
         return $ranges;
     }
 
@@ -183,6 +193,7 @@ abstract class MapIndicatorBaseClass
         if ($value >= end($this->ranges)[1]) { // Above range -> last style
             return array_key_last($this->currentStyle);
         }
+
         return 'default';
     }
 
@@ -228,6 +239,7 @@ abstract class MapIndicatorBaseClass
             $row->display_value = $row->{$this->displayValueField} ?? null;
             $row->info = $row->{$this->infoTextField} ?? null;
             $row->style = $this->assignStyle($row->value);
+
             return $row;
         });
     }
@@ -244,25 +256,28 @@ abstract class MapIndicatorBaseClass
             $lastKey = $legend->keys()->last();
             $legend = $legend->replace([
                 $firstKey => str($legend[$firstKey])->after('-')->trim()->prepend('< ')->toString(),
-                $lastKey => str($legend[$lastKey])->before('-')->trim()->prepend('> ')->toString()
+                $lastKey => str($legend[$lastKey])->before('-')->trim()->prepend('> ')->toString(),
             ]);
+
             return $legend
                 ->merge(['dimgray' => __('No data')])
                 ->all();
         }
+
         return [];
     }
 
     public function getStyles(): array
     {
-         $styles = collect($this::COLOR_CHARTS)
+        $styles = collect($this::COLOR_CHARTS)
             ->map(function ($chart, $name) {
                 return collect($chart)->mapWithKeys(function ($color, $index) use ($name) {
                     return ["$name-$index" => array_merge(self::DEFAULT_STYLE, ['fillColor' => $color])];
                 })->all();
             })
             ->all();
-         return $styles[$this::SELECTED_COLOR_CHART];
+
+        return $styles[$this::SELECTED_COLOR_CHART];
     }
 
     public function getDataModel(): Model

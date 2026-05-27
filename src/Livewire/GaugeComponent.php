@@ -15,18 +15,27 @@ use Uneca\Chimera\Traits\Cachable;
 
 abstract class GaugeComponent extends Component
 {
-    use Cachable;
     use AreaResolver;
+    use Cachable;
 
     public Gauge $gauge;
+
     public string $title;
+
     public string $subtitle;
+
     public null|int|float|string $value = '';
+
     public string $unit = '%';
+
     public int $outOf = 100;
+
     public array $colorThresholds = [70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500'];
+
     public string $scoreColor = 'text-gray-500';
+
     public Carbon $dataTimestamp;
+
     public string $placement = 'area-insights';
 
     public function mount()
@@ -39,7 +48,7 @@ abstract class GaugeComponent extends Component
 
     private function resolveAreaAndCheckData()
     {
-        list($this->filterPath,) = $this->areaResolver();
+        [$this->filterPath] = $this->areaResolver();
         if ($this->gauge->supportsLevel($this->filterPath)) {
             $this->checkData();
         } else {
@@ -74,12 +83,12 @@ abstract class GaugeComponent extends Component
     public function assignColor($value)
     {
         return collect($this->colorThresholds)
-            ->first(fn($color, $threshold) => $value <= $threshold, 'text-gray-500');
+            ->first(fn ($color, $threshold) => $value <= $threshold, 'text-gray-500');
     }
 
     public function setPropertiesFromData(): void
     {
-        list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
+        [$this->dataTimestamp, $data] = Cache::get($this->cacheKey());
         if ($data instanceof Collection) {
             $this->value = $data->first()?->value;
             $this->scoreColor = $this->assignColor($this->value);

@@ -17,17 +17,25 @@ use Uneca\Chimera\Traits\Cachable;
 
 abstract class ScorecardComponent extends Component
 {
-    use Cachable;
     use AreaResolver;
+    use Cachable;
 
     public Scorecard $scorecard;
+
     public string $title;
+
     public int|float|string $value = '';
+
     public int|float|string|null $diff = null;
+
     public string $unit = '%';
+
     public string $bgColor;
+
     public string $fgColor;
+
     public Carbon $dataTimestamp;
+
     public string $placement = 'dashboard';
 
     public function mount(int $index)
@@ -43,7 +51,7 @@ abstract class ScorecardComponent extends Component
 
     private function resolveAreaAndCheckData()
     {
-        list($this->filterPath,) = $this->areaResolver();
+        [$this->filterPath] = $this->areaResolver();
         if ($this->scorecard->supportsLevel($this->filterPath)) {
             $this->checkData();
         } else {
@@ -77,9 +85,9 @@ abstract class ScorecardComponent extends Component
 
     public function setPropertiesFromData(): void
     {
-        list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
+        [$this->dataTimestamp, $data] = Cache::get($this->cacheKey());
         if (($data instanceof Collection) && ($data->count() == 2)) {
-            list($this->value, $this->diff) = $data;
+            [$this->value, $this->diff] = $data;
             $this->dataStatus = DataStatus::RENDERABLE->value;
         } else {
             $this->dataStatus = DataStatus::EMPTY->value;

@@ -10,7 +10,9 @@ class SpecialSectionBorder extends Component
 {
     #[Locked]
     public int $step = 7;
+
     public string $message = '';
+
     #[Locked]
     public bool $developerMode;
 

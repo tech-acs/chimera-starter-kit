@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Command\Command;
 use Uneca\Chimera\DTOs\ScorecardAttributes;
-use Uneca\Chimera\Models\Scorecard;;
+use Uneca\Chimera\Models\Scorecard;
 
 class CreateScorecardAction
 {

@@ -11,13 +11,14 @@ use Uneca\Chimera\Jobs\QueryRunnerJob;
 trait Cachable
 {
     public string $dataStatus = DataStatus::PENDING->value;
+
     public string $filterPath = '';
 
-    public abstract function getData(string $filterPath): Collection;
+    abstract public function getData(string $filterPath): Collection;
 
-    public abstract function cacheKey(): string;
+    abstract public function cacheKey(): string;
 
-    public abstract function setPropertiesFromData(): void;
+    abstract public function setPropertiesFromData(): void;
 
     public function getDataAndCacheIt(string $key, string $filterPath, bool $cacheForever = false): void
     {
@@ -34,5 +35,5 @@ trait Cachable
         }
     }
 
-    public abstract function getDataModel(): Model;
+    abstract public function getDataModel(): Model;
 }

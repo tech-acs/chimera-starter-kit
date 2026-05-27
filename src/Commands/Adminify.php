@@ -2,17 +2,17 @@
 
 namespace Uneca\Chimera\Commands;
 
-use Uneca\Chimera\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Uneca\Chimera\Models\User;
 
+use function Laravel\Prompts\alert;
+use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
-use function Laravel\Prompts\text;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\select;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\alert;
+use function Laravel\Prompts\text;
 
 class Adminify extends Command
 {
@@ -52,10 +52,11 @@ class Adminify extends Command
             } else {
                 alert('Super Admin values not set in env');
             }
+
             return;
         }
 
-        note("This command will create a super admin account for you to use. If the account's email address already exists then the account will be updated with the name and password you provide. It will also assign the account the " . self::ROLE . ' role');
+        note("This command will create a super admin account for you to use. If the account's email address already exists then the account will be updated with the name and password you provide. It will also assign the account the ".self::ROLE.' role');
 
         $email = text(
             label: 'Email address',

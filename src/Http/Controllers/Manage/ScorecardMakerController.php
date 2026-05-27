@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Actions\Maker\CreateScorecardAction;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\ScorecardAttributes;
 use Uneca\Chimera\Http\Requests\ScorecardMakerRequest;
 use Uneca\Chimera\Models\DataSource;
@@ -17,6 +17,7 @@ class ScorecardMakerController extends Controller
             return redirect()->route('scorecard.index')
                 ->withMessage('You have not yet added data sources to your dashboard. Please do so first.');
         }
+
         return view('chimera::scorecard.create', [
             'dataSources' => $dataSources->pluck('title', 'name')->toArray(),
         ]);
@@ -28,10 +29,11 @@ class ScorecardMakerController extends Controller
             name: $request->scorecard_name,
             title: $request->title,
             dataSource: $request->data_source,
-            stub: resource_path("stubs/scorecards/default.stub")
+            stub: resource_path('stubs/scorecards/default.stub')
         );
         try {
             $createScorecardAction->execute($scorecardAttributes);
+
             return redirect()->route('scorecard.index')->withMessage('Scorecard created');
 
         } catch (\Exception) {

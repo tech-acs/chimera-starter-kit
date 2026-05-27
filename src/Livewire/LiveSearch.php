@@ -9,10 +9,15 @@ use Uneca\Chimera\Services\AreaTree;
 class LiveSearch extends Component
 {
     public $query = '';
+
     public $results = [];
+
     public $selectedResult = '';
+
     public $removeLastNLevels = 1;
+
     public $excludedLevels = [];
+
     public $restrictedPath = '';
 
     public function mount()
@@ -32,7 +37,7 @@ class LiveSearch extends Component
         }
         $locale = app()->getLocale();
         $this->results = Area::select('path', 'name', 'level')
-            ->where("name->{$locale}", 'ilike', $this->query . '%')
+            ->where("name->{$locale}", 'ilike', $this->query.'%')
             ->when(! empty($this->excludedLevels), function ($query) {
                 $query->whereNotIn('level', $this->excludedLevels);
             })
@@ -43,7 +48,8 @@ class LiveSearch extends Component
             ->take(10)
             ->get()
             ->map(function (Area $area) {
-                $area->displayName = $area->name . ' (' . app('hierarchies')[$area->level] . ')';
+                $area->displayName = $area->name.' ('.app('hierarchies')[$area->level].')';
+
                 return $area;
             });
     }

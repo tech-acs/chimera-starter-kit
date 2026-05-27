@@ -14,12 +14,14 @@ use Uneca\Chimera\Traits\HasDashboardEntityCommonalities;
 
 class MapIndicator extends Model
 {
+    use HasDashboardEntityCommonalities;
     use HasFactory;
     use HasTranslations;
-    use HasDashboardEntityCommonalities;
 
     protected $guarded = ['id'];
+
     public $translatable = ['title', 'description'];
+
     public $permissionSuffix = ':map-indicator';
 
     public function analytics()
@@ -37,7 +39,7 @@ class MapIndicator extends Model
     protected function fullyQualifiedClassname(): Attribute
     {
         return new Attribute(
-            get: fn () => "App\\MapIndicators\\" . str($this->name)->replace('/', '\\')->toString(),
+            get: fn () => 'App\\MapIndicators\\'.str($this->name)->replace('/', '\\')->toString(),
         );
     }
 

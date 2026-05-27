@@ -19,21 +19,29 @@ use Uneca\Chimera\Traits\PlotlyDefaults;
 
 abstract class Chart extends Component
 {
-    use Cachable;
     use AreaResolver;
-    use PlotlyDefaults;
+    use Cachable;
     use FilterBasedAxisTitle;
+    use PlotlyDefaults;
 
     public Indicator $indicator;
+
     public string $graphDiv = '';
+
     public array $data = [];
+
     public array $layout = [];
+
     public array $config = [];
+
     public Carbon $dataTimestamp;
 
     public string $placement = 'page';
+
     public bool $isBeingFeatured = false;
+
     public bool $useDynamicAreaXAxisTitles = false;
+
     public array $aggregateAppendedTraces = []; // ['trace name' => 'avg'] ... sum, count, min, max, mode, median
 
     public function mount()
@@ -48,7 +56,7 @@ abstract class Chart extends Component
 
     private function resolveAreaAndCheckData()
     {
-        list($this->filterPath,) = $this->areaResolver();
+        [$this->filterPath] = $this->areaResolver();
         if ($this->indicator->supportsLevel($this->filterPath)) {
             $this->checkData();
         } else {
@@ -98,7 +106,7 @@ abstract class Chart extends Component
     {
         return [
             ...self::DEFAULT_CONFIG,
-            'toImageButtonOptions' => ['filename' => $this->graphDiv . ' (' . now()->toDayDateTimeString() . ')'],
+            'toImageButtonOptions' => ['filename' => $this->graphDiv.' ('.now()->toDayDateTimeString().')'],
             'locale' => app()->getLocale(),
         ];
     }
@@ -124,12 +132,12 @@ abstract class Chart extends Component
                     if (strtolower($aggOp) === 'sum') {
                         $newDynamicTrace = [
                             ...$traces[$index],
-                            'name' => $traceName . __(' (across ') . strtolower($this->getAreaBasedAxisTitle($filterPath)) . ')',
+                            'name' => $traceName.__(' (across ').strtolower($this->getAreaBasedAxisTitle($filterPath)).')',
                             'yaxis' => 'y2',
                             'showlegend' => false,
-                            'x' => [__('<b>All') . ' ' . $this->getAreaBasedAxisTitle($filterPath) . '</b>'],
+                            'x' => [__('<b>All').' '.$this->getAreaBasedAxisTitle($filterPath).'</b>'],
                             'y' => [collect($traces[$index]['y'])->{$aggOp}()],
-                            'hovertemplate' => '%{y:.0f}'
+                            'hovertemplate' => '%{y:.0f}',
                         ];
                         unset($newDynamicTrace['meta'], $newDynamicTrace['xsrc'], $newDynamicTrace['ysrc']);
                         $traces[] = $newDynamicTrace;
@@ -145,6 +153,7 @@ abstract class Chart extends Component
         } else {
             $traces = [];
         }
+
         return $traces;
     }
 
@@ -160,21 +169,23 @@ abstract class Chart extends Component
             $layout['yaxis2']['showgrid'] = false;
         }
         $currentPalette = ColorPalette::palette(settings('color_palette'));
+
         return [...$layout, 'colorway' => $currentPalette->colors];
     }
 
     public static function getDefaultLayout(): array
     {
         $currentPalette = ColorPalette::palette(settings('color_palette'));
+
         return [
             ...self::DEFAULT_LAYOUT,
-            'colorway' => $currentPalette->colors
+            'colorway' => $currentPalette->colors,
         ];
     }
 
     public function setPropertiesFromData(): void
     {
-        list($this->dataTimestamp, $data) = Cache::get($this->cacheKey());
+        [$this->dataTimestamp, $data] = Cache::get($this->cacheKey());
         $this->data = $this->getTraces($data, $this->filterPath);
         $this->layout = $this->getLayout($this->filterPath);
         $this->dataStatus = empty($this->data) ?

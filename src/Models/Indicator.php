@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 use Uneca\Chimera\Enums\IndicatorScope;
 use Uneca\Chimera\Services\AreaTree;
@@ -15,18 +14,22 @@ use Uneca\Chimera\Traits\HasLevelDiscrimination;
 
 class Indicator extends Model
 {
-    use HasTranslations;
     use HasDashboardEntityCommonalities;
     use HasLevelDiscrimination;
+    use HasTranslations;
 
     protected $guarded = ['id'];
+
     public $translatable = ['title', 'description', 'help'];
+
     public $permissionSuffix = ':indicator';
+
     protected $casts = [
         'data' => 'array',
         'layout' => 'array',
-        'scope' => IndicatorScope::class
+        'scope' => IndicatorScope::class,
     ];
+
     protected $with = ['inapplicableLevels'];
 
     public function pages(): MorphToMany
@@ -42,6 +45,7 @@ class Indicator extends Model
         $levels = collect(app('hierarchies'))->prepend('National');
         $eaLevel = AreaHierarchy::orderBy('index', 'DESC')->take(1)->get();
         $inapplicableLevels = $this->inapplicableLevels->merge($eaLevel);
+
         return $inapplicableLevels->pluck('name')->doesntContain($levels[$level]);
     }
 

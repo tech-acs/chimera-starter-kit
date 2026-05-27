@@ -3,7 +3,7 @@
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use App\Actions\Maker\CreateIndicatorAction;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\IndicatorAttributes;
 use Uneca\Chimera\Http\Requests\IndicatorMakerRequest;
 use Uneca\Chimera\Models\ChartTemplate;
@@ -21,6 +21,7 @@ class IndicatorMakerController extends Controller
             return redirect()->route('indicator.index')
                 ->withMessage('You have not yet added data sources to your dashboard. Please do so first.');
         }
+
         return view('chimera::indicator.create', [
             'dataSources' => $dataSources->pluck('title', 'name')->toArray(),
             'availableTemplates' => ChartTemplate::orderBy('name')->pluck('name', 'id'),
@@ -45,6 +46,7 @@ class IndicatorMakerController extends Controller
         );
         try {
             $createIndicatorAction->execute($indicatorAttributes);
+
             return redirect()->route('indicator.index')->withMessage('Indicator created');
 
         } catch (\Exception) {

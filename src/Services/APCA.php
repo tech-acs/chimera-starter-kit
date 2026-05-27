@@ -22,6 +22,7 @@ class APCA
         if ($y < 0.022) {
             $y += pow(0.022 - $y, 1.414);
         }
+
         return $y;
     }
 
@@ -39,18 +40,18 @@ class APCA
 
         if (abs($c) < 0.1) {
             return 0;
-        } else if ($c > 0) {
+        } elseif ($c > 0) {
             $c -= 0.027;
         } else {
             $c += 0.027;
         }
 
-        return $returnAbsoluteValue ? abs((int)($c * 100)) : (int)($c * 100);
+        return $returnAbsoluteValue ? abs((int) ($c * 100)) : (int) ($c * 100);
     }
 
     public static function hexToRGB(string $hex): array
     {
-        return sscanf(strtolower($hex), "#%02x%02x%02x");
+        return sscanf(strtolower($hex), '#%02x%02x%02x');
     }
 
     public static function decideBlackOrWhiteTextColor(string $backgroundColor, bool $returnTailwindClassName = true): string

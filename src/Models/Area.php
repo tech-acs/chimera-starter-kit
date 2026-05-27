@@ -13,6 +13,7 @@ class Area extends Model
     use HasTranslations;
 
     protected $guarded = ['id'];
+
     public $translatable = ['name'];
 
     public function scopeOfLevel(Builder $query, $level)

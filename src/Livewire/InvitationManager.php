@@ -2,29 +2,39 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Uneca\Chimera\Mail\InvitationMail;
-use Uneca\Chimera\Models\Invitation;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Spatie\Permission\Models\Role;
+use Uneca\Chimera\Mail\InvitationMail;
+use Uneca\Chimera\Models\Invitation;
 
 class InvitationManager extends Component
 {
     use WithFileUploads;
 
     public $records = [];
+
     public $roles;
+
     public $showLink = false;
+
     public $link;
+
     public $email;
+
     public $role;
+
     public $sendEmail = true;
+
     public $showSingleInviteForm = false;
+
     public $showResult = false;
+
     public $resultTitle;
+
     public $resultBody;
 
     protected $rules = [
@@ -41,11 +51,11 @@ class InvitationManager extends Component
             $this->sendEmail($invitation);
             $this->resultTitle = 'Email sent';
             $this->resultBody = "The invitation email has been resent to {$invitation->email}";
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->resultTitle = 'Error occurred';
-            $this->resultBody = "The invitation email was not sent. Please make sure mail sending has been properly configured. " .
-                "Please refer to the error message below:<br><br>" .
-                "<span style='color: #a93131;'>" . $exception->getMessage() . "</span>";
+            $this->resultBody = 'The invitation email was not sent. Please make sure mail sending has been properly configured. '.
+                'Please refer to the error message below:<br><br>'.
+                "<span style='color: #a93131;'>".$exception->getMessage().'</span>';
         }
         $this->showResult = true;
     }
@@ -84,7 +94,7 @@ class InvitationManager extends Component
         $expiresAt = now()->addHours(24);
         $invitation->update([
             'link' => URL::temporarySignedRoute('register', $expiresAt, ['email' => $invitation->email]),
-            'expires_at' => $expiresAt
+            'expires_at' => $expiresAt,
         ]);
         $this->loadData();
         $this->dispatch('renewed');

@@ -45,9 +45,9 @@ trait HasDashboardEntityCommonalities
                     ->explode('/')
                     ->map(fn ($x) => Str::of($x)->kebab())
                     ->join('.');
-                $model->slug = $path . '.' . $className;
+                $model->slug = $path.'.'.$className;
             } else {
-                $model->slug = (string)$className;
+                $model->slug = (string) $className;
             }
         });
 

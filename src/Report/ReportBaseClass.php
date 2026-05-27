@@ -2,16 +2,18 @@
 
 namespace Uneca\Chimera\Report;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\Style;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\Report;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
-use Spatie\SimpleExcel\SimpleExcelWriter;
 use Uneca\Chimera\Notifications\ReportGeneratedNotification;
 use Uneca\Chimera\Services\AreaTree;
-
-use OpenSpout\Common\Entity\Style\{Style, Border, BorderPart, CellAlignment};
 
 abstract class ReportBaseClass
 {
@@ -30,6 +32,7 @@ abstract class ReportBaseClass
     {
         $filter = AreaTree::pathAsFilter($path);
         $suffix = implode('-', $filter);
+
         return "{$this->report->slug}$suffix.{$this->fileType}";
     }
 
@@ -44,9 +47,9 @@ abstract class ReportBaseClass
             new BorderPart(Border::RIGHT, width: Border::WIDTH_THIN),
             new BorderPart(Border::TOP, width: Border::WIDTH_THIN)
         );
-        $style = (new Style())->setBorder($border);
+        $style = (new Style)->setBorder($border);
 
-        $headerStyle = (new Style())
+        $headerStyle = (new Style)
             ->setFontBold()
             ->setFontSize(12)
             ->setShouldWrapText()
@@ -66,12 +69,12 @@ abstract class ReportBaseClass
                 $options->mergeCells(0, 2, count($columnHeaders) - 1, 2);
             }
         )
-        ->noHeaderRow()
-        ->addRow([$this->report->title], $headerStyle)
-        ->addRow([__("As of ") . now()->toDayDateTimeString()], $headerStyle)
-        ->setHeaderStyle($columnHeaderStyle)
-        ->addHeader($columnHeaders)
-        ->addRows($data, $style);
+            ->noHeaderRow()
+            ->addRow([$this->report->title], $headerStyle)
+            ->addRow([__('As of ').now()->toDayDateTimeString()], $headerStyle)
+            ->setHeaderStyle($columnHeaderStyle)
+            ->addHeader($columnHeaders)
+            ->addRows($data, $style);
 
         $this->fileType = 'xlsx';
     }
@@ -84,7 +87,7 @@ abstract class ReportBaseClass
         SimpleExcelWriter::create(Storage::disk('reports')
             ->path($filename))
             ->addHeader([$this->report->title])
-            ->addHeader(["As of " . now()->toDayDateTimeString()])
+            ->addHeader(['As of '.now()->toDayDateTimeString()])
             ->addHeader(array_keys(reset($data))) // Actual headers (get from the first row)
             ->addRows($data);
         $this->fileType = 'csv';
@@ -98,7 +101,7 @@ abstract class ReportBaseClass
             return;
         }*/
         $rowified = $data->map(function ($obj) {
-            return (array)$obj;
+            return (array) $obj;
         })->all();
         $this->writeFile($rowified, $this->filename($path));
     }
@@ -109,7 +112,7 @@ abstract class ReportBaseClass
         $paths = AreaRestriction::distinct('path')->pluck('path');
         $this->generateForPath(''); // '' means no restriction or national level view
         foreach ($paths as $path) {
-            //$filter = AreaTree::pathAsFilter($path);
+            // $filter = AreaTree::pathAsFilter($path);
             $this->generateForPath($path);
         }
         $this->report->update(['last_generated_at' => now()]);

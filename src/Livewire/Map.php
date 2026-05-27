@@ -2,30 +2,34 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Gate;
-use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
-use Uneca\Chimera\Models\AreaHierarchy;
-use Uneca\Chimera\Models\MapIndicator;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
+use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
+use Uneca\Chimera\Models\AreaHierarchy;
+use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\DashboardComponentFactory;
-use Uneca\Chimera\Services\MapIndicatorCaching;
 
 class Map extends Component
 {
     public array $leafletMapOptions;
+
     public array $indicators = [];
+
     public ?string $currentIndicator = null;
+
     public array $previouslySentPaths = [];
+
     public array $simplification;
+
     public array $allStyles;
+
     public array $levels;
+
     public Page $page;
 
     protected function getListeners()
@@ -72,13 +76,14 @@ class Map extends Component
             ->mapWithKeys(function ($mapIndicator) use (&$allStyles) {
                 $implementation = DashboardComponentFactory::makeMapIndicator($mapIndicator);
                 $allStyles[$implementation::SELECTED_COLOR_CHART] = $implementation->getStyles();
+
                 return [$mapIndicator->fully_qualified_classname => $mapIndicator->title];
             })
             ->all();
         $areaHierarchies = AreaHierarchy::orderBy('index')->get();
         $this->simplification = $areaHierarchies->pluck('simplification_tolerance')->all();
         $this->allStyles = $allStyles;
-        $this->levels = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree())->hierarchies);
+        $this->levels = array_map(fn ($levelName) => ucfirst($levelName), (new AreaTree)->hierarchies);
 
         /*if (! empty($this->indicators)) {
             $this->setCurrentIndicator(array_key_first($this->indicators));
@@ -87,7 +92,7 @@ class Map extends Component
 
     protected function getGeoJson(string $parentPath, int $level)
     {
-        $whereClause = empty($parentPath) ? "level = 0" : "path ~ '$parentPath.*{1}'";
+        $whereClause = empty($parentPath) ? 'level = 0' : "path ~ '$parentPath.*{1}'";
         $simplificationTolerance = $this->simplification[$level];
         $sql = "
             SELECT
@@ -122,19 +127,23 @@ class Map extends Component
             $result = DB::select($sql);
         } catch (Exception $exception) {
             logger('Query error in getGeoJson()', ['exception' => $exception->getMessage()]);
+
             return '';
         }
+
         return $result[0]?->feature_collection ?? '';
     }
 
     private function getShapedData($mapIndicator, array $filter): Collection
     {
         $data = $mapIndicator->getData($filter) ?? collect([]);
+
         return $data->map(function ($row) use ($mapIndicator) {
             $row->value = $row->{$mapIndicator->valueField};
             $row->display_value = $row->{$mapIndicator->displayValueField} ?? null;
             $row->info = $row->{$mapIndicator->infoTextField} ?? null;
             $row->style = $mapIndicator->assignStyle($row->value);
+
             return $row;
         });
     }
@@ -164,6 +173,7 @@ class Map extends Component
                 $data = $currentIndicator->getMappableData($currentIndicator->getDataAndCacheIt($key, $path), $path);
                 $data = $data->map(function ($row) use ($codeToPath) {
                     $row->path = $codeToPath[$row->area_code] ?? null;
+
                     return $row;
                 });
                 $this->dispatch('backendResponse', geojson: $geojson, level: $nextLevel, data: $data);

@@ -16,12 +16,15 @@ use Uneca\Chimera\Traits\Cachable;
 
 class CaseStats extends Component
 {
-    use Cachable;
     use AreaResolver;
+    use Cachable;
 
     public DataSource $dataSource;
+
     public Collection $stats;
+
     public Carbon $dataTimestamp;
+
     public string $placement = 'dashboard';
 
     public function mount(DataSource $dataSource)
@@ -34,7 +37,7 @@ class CaseStats extends Component
 
     private function resolveAreaAndCheckData()
     {
-        list($this->filterPath,) = $this->areaResolver();
+        [$this->filterPath] = $this->areaResolver();
         $this->checkData();
     }
 
@@ -67,31 +70,33 @@ class CaseStats extends Component
         try {
             $l = (new BreakoutQueryBuilder($this->dataSource->name, $filterPath, excludePartials: false))
                 ->select([
-                    "COUNT(*) AS total",
-                    "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete",
-                    "SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 0 ELSE 1 END) AS partial",
-                    "COUNT(*) - COUNT(DISTINCT cases.`key`) AS duplicate"
+                    'COUNT(*) AS total',
+                    'SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 1 ELSE 0 END) AS complete',
+                    'SUM(CASE WHEN cases.partial_save_mode IS NULL THEN 0 ELSE 1 END) AS partial',
+                    'COUNT(*) - COUNT(DISTINCT cases.`key`) AS duplicate',
                 ])
                 ->from([])
                 ->get()
                 ->first();
             $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
-            if (!is_null($l)) {
+            if (! is_null($l)) {
                 $info['total'] = $l->total;
                 $info['complete'] = $l->complete;
                 $info['partial'] = $l->partial;
                 $info['duplicate'] = $l->duplicate;
             }
+
             return collect($info);
         } catch (\Exception $exception) {
             logger('Exception in CaseStats:', ['exception' => $exception->getMessage()]);
+
             return collect();
         }
     }
 
     public function setPropertiesFromData(): void
     {
-        list($this->dataTimestamp, $this->stats) = Cache::get($this->cacheKey());
+        [$this->dataTimestamp, $this->stats] = Cache::get($this->cacheKey());
         $this->dataStatus = $this->stats->isEmpty() ?
             DataStatus::EMPTY->value :
             DataStatus::RENDERABLE->value;

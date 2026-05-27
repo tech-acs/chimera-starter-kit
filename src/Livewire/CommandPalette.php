@@ -2,16 +2,18 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Uneca\Chimera\Models\Indicator;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
+use Uneca\Chimera\Models\Indicator;
 
 class CommandPalette extends Component
 {
     const MAX_RESULTS = 5;
 
     public string $search = '';
+
     public int $resultCount;
+
     public int $activeResult = 0;
 
     public function render()
@@ -22,8 +24,8 @@ class CommandPalette extends Component
                 ->published()
                 ->when(! empty($this->search), function ($builder) use ($locale) {
                     $builder->where(function ($builder) use ($locale) {
-                        $builder->where("title->{$locale}", 'ilike', '%' . $this->search . '%')
-                            ->orWhere("description->{$locale}", 'ilike', '%' . $this->search . '%');
+                        $builder->where("title->{$locale}", 'ilike', '%'.$this->search.'%')
+                            ->orWhere("description->{$locale}", 'ilike', '%'.$this->search.'%');
                     });
                 })
                 ->orderByRaw("title->>'{$locale}'")
@@ -37,6 +39,7 @@ class CommandPalette extends Component
         }
         $this->resultCount = $results->count();
         $this->activeResult = 0;
+
         return view('chimera::livewire.command-palette', compact('results'));
     }
 }

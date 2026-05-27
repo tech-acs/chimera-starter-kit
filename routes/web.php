@@ -1,36 +1,41 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Uneca\Chimera\Http\Controllers\AreaInsightsController;
 use Uneca\Chimera\Http\Controllers\ChartsController;
 use Uneca\Chimera\Http\Controllers\HomeController;
-use Uneca\Chimera\Http\Controllers\Manage\AreaImportTemplateDownloadController;
-use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
-use Uneca\Chimera\Http\Controllers\Manage\GaugeController;
-use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
-use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueImportTemplateDownloadController;
-use Uneca\Chimera\Http\Controllers\Manage\SettingController;
-use Uneca\Chimera\Http\Controllers\Manage\XRayController;
-use Uneca\Chimera\Http\Controllers\MapController;
+use Uneca\Chimera\Http\Controllers\Manage\AnalyticsController;
 use Uneca\Chimera\Http\Controllers\Manage\AnnouncementController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaController;
 use Uneca\Chimera\Http\Controllers\Manage\AreaHierarchyController;
+use Uneca\Chimera\Http\Controllers\Manage\AreaImportTemplateDownloadController;
+use Uneca\Chimera\Http\Controllers\Manage\ChartTemplateController;
 use Uneca\Chimera\Http\Controllers\Manage\ConnectionTestController;
-use Uneca\Chimera\Http\Controllers\Manage\IndicatorController;
-use Uneca\Chimera\Http\Controllers\Manage\AnalyticsController;
-use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
-use Uneca\Chimera\Http\Controllers\Manage\PageController;
 use Uneca\Chimera\Http\Controllers\Manage\DataSourceController;
+use Uneca\Chimera\Http\Controllers\Manage\GaugeController;
+use Uneca\Chimera\Http\Controllers\Manage\GaugeMakerController;
+use Uneca\Chimera\Http\Controllers\Manage\IndicatorController;
+use Uneca\Chimera\Http\Controllers\Manage\IndicatorEditorController;
+use Uneca\Chimera\Http\Controllers\Manage\IndicatorMakerController;
+use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
+use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorMakerController;
+use Uneca\Chimera\Http\Controllers\Manage\PageController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueController;
-use Uneca\Chimera\Http\Controllers\Manage\ReportManagementRunNowController;
+use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueImportTemplateDownloadController;
+use Uneca\Chimera\Http\Controllers\Manage\ReportMakerController;
 use Uneca\Chimera\Http\Controllers\Manage\ReportManagementController;
+use Uneca\Chimera\Http\Controllers\Manage\ReportManagementRunNowController;
 use Uneca\Chimera\Http\Controllers\Manage\RoleController;
 use Uneca\Chimera\Http\Controllers\Manage\ScorecardController;
+use Uneca\Chimera\Http\Controllers\Manage\ScorecardMakerController;
+use Uneca\Chimera\Http\Controllers\Manage\SettingController;
 use Uneca\Chimera\Http\Controllers\Manage\UsageStatsController;
 use Uneca\Chimera\Http\Controllers\Manage\UserController;
 use Uneca\Chimera\Http\Controllers\Manage\UserSuspensionController;
+use Uneca\Chimera\Http\Controllers\Manage\XRayController;
+use Uneca\Chimera\Http\Controllers\MapController;
 use Uneca\Chimera\Http\Controllers\NotificationController;
 use Uneca\Chimera\Http\Controllers\ReportController;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('chimera::welcome');
@@ -39,7 +44,7 @@ Route::get('/', function () {
 Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce_2fa'])->group(function () {
     Route::get('home', HomeController::class)->name('home');
 
-    Route::get("page/{page:slug}", [ChartsController::class, 'page'])->name('page');
+    Route::get('page/{page:slug}', [ChartsController::class, 'page'])->name('page');
     Route::get('indicator/{indicator:slug}', [ChartsController::class, 'indicator'])->name('indicator');
     Route::get('map', [MapController::class, 'index'])->name('map');
     Route::get('map/{page:slug}', [MapController::class, 'show'])->name('map.page');
@@ -71,11 +76,11 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
                 Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
                 Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
 
-                Route::resource('indicator', \Uneca\Chimera\Http\Controllers\Manage\IndicatorMakerController::class)->only(['create', 'store']);
-                Route::resource('scorecard', \Uneca\Chimera\Http\Controllers\Manage\ScorecardMakerController::class)->only(['create', 'store']);
-                Route::resource('gauge', \Uneca\Chimera\Http\Controllers\Manage\GaugeMakerController::class)->only(['create', 'store']);
-                Route::resource('map_indicator', \Uneca\Chimera\Http\Controllers\Manage\MapIndicatorMakerController::class)->only(['create', 'store']);
-                Route::resource('report', \Uneca\Chimera\Http\Controllers\Manage\ReportMakerController::class)->only(['create', 'store']);
+                Route::resource('indicator', IndicatorMakerController::class)->only(['create', 'store']);
+                Route::resource('scorecard', ScorecardMakerController::class)->only(['create', 'store']);
+                Route::resource('gauge', GaugeMakerController::class)->only(['create', 'store']);
+                Route::resource('map_indicator', MapIndicatorMakerController::class)->only(['create', 'store']);
+                Route::resource('report', ReportMakerController::class)->only(['create', 'store']);
 
                 Route::get('indicator/{indicator}/chart-editor', [IndicatorEditorController::class, 'index'])->name('indicator-editor');
                 Route::get('api/indicator/{indicator}', [IndicatorEditorController::class, 'edit']);
@@ -99,7 +104,7 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             Route::resource('report', ReportManagementController::class)->except(['show']);
             Route::resource('map_indicator', MapIndicatorController::class)->except(['show']);
         });
-        //Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
+        // Route::resource('setting', SettingController::class)->only(['index', 'edit', 'update']);
         Route::resource('announcement', AnnouncementController::class)->only(['index', 'create', 'store']);
         Route::get('usage_stats', UsageStatsController::class)->name('usage_stats');
     });

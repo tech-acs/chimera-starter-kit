@@ -12,9 +12,10 @@ class ColorPalette
         return Cache::rememberForever('color-palettes', function () {
             $colorPalettes = collect();
             $colorPalettesDir = resource_path('color_palettes');
-            foreach (glob("$colorPalettesDir/*.json", ) as $paletteFile) {
+            foreach (glob("$colorPalettesDir/*.json") as $paletteFile) {
                 $colorPalettes[] = json_decode(file_get_contents($paletteFile));
             }
+
             return $colorPalettes;
         });
     }
@@ -27,6 +28,7 @@ class ColorPalette
         if ($index !== false) {
             return self::all()[$index];
         }
+
         return null;
     }
 

@@ -9,7 +9,6 @@ use Symfony\Component\Console\Command\Command;
 use Uneca\Chimera\DTOs\ReportAttributes;
 use Uneca\Chimera\Models\Report;
 
-
 class CreateReportAction
 {
     public function execute(ReportAttributes $reportAttributes): void

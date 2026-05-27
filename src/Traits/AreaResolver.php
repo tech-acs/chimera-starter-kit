@@ -9,7 +9,7 @@ trait AreaResolver
 {
     public function shouldIgnoreFilterInSession(string $placement): bool
     {
-        //return ($this?->isBeingFeatured ?? false) || $this instanceof CaseStats || $this instanceof ScorecardComponent;
+        // return ($this?->isBeingFeatured ?? false) || $this instanceof CaseStats || $this instanceof ScorecardComponent;
         return ($this?->isBeingFeatured ?? false) || $placement === 'dashboard';
     }
 
@@ -22,6 +22,7 @@ trait AreaResolver
         ];
         $path = AreaTree::getFinestResolutionFilterPath($filtersToApply);
         $expandedPath = AreaTree::pathAsFilter($path);
+
         return [$path, $expandedPath];
     }
 }

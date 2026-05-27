@@ -2,20 +2,21 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Uneca\Chimera\Enums\PageableTypes;
+use Livewire\Component;
+use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\Page;
-use Livewire\Component;
-use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\Models\Report;
 use Uneca\Chimera\Models\Scorecard;
 
 class RoleManager extends Component
 {
     public $permissionGroups;
+
     public $role;
+
     public array $permissions = [];
 
     public function mount()
@@ -30,12 +31,12 @@ class RoleManager extends Component
                 'permissionables' => Indicator::all()->map(function ($record) {
                     return [
                         'title' => $record->title,
-                        'description' => "Scope: {$record->scope->value}<br />Pages: " . $record->pages()->pluck('title')->join(', ', ', and '),
+                        'description' => "Scope: {$record->scope->value}<br />Pages: ".$record->pages()->pluck('title')->join(', ', ', and '),
                         'permission_name' => $record->permission_name,
                     ];
                 }),
                 'count' => Indicator::count(),
-            ]
+            ],
         ];
         $groups = $groups->merge($indicators);
 
@@ -52,7 +53,7 @@ class RoleManager extends Component
                     ];
                 }),
                 'count' => MapIndicator::count(),
-            ]
+            ],
         ];
         $groups = $groups->merge($mapIndicators);
 
@@ -69,7 +70,7 @@ class RoleManager extends Component
                     ];
                 }),
                 'count' => Report::all()->count(),
-            ]
+            ],
         ];
         $groups = $groups->merge($reports);
 
@@ -86,7 +87,7 @@ class RoleManager extends Component
                     ];
                 }),
                 'count' => Gauge::all()->count(),
-            ]
+            ],
         ];
         $groups = $groups->merge($gauges);
 
@@ -98,12 +99,12 @@ class RoleManager extends Component
                 'permissionables' => Scorecard::all()->map(function ($scorecard) {
                     return [
                         'title' => $scorecard->title,
-                        'description' => 'Scope: ' . $scorecard->scope->value,
+                        'description' => 'Scope: '.$scorecard->scope->value,
                         'permission_name' => $scorecard->permission_name,
                     ];
                 }),
                 'count' => Scorecard::all()->count(),
-            ]
+            ],
         ];
         $groups = $groups->merge($scorecards);
 
@@ -114,31 +115,31 @@ class RoleManager extends Component
                 'permission_name' => 'pages',
                 'permissionables' => Page::all()->map(function ($page) {
                     return [
-                        'title' => $page->title . " ({$page->for->value})",
+                        'title' => $page->title." ({$page->for->value})",
                         'description' => $page->description,
                         'permission_name' => $page->permission_name,
                     ];
                 }),
                 'count' => Page::all()->count(),
-            ]
+            ],
         ];
         $groups = $groups->merge($pages);
 
         $this->permissionGroups = $groups;
         foreach (($this->permissionGroups ?? []) as $permissionGroup) {
-            //Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionGroup['permission_name']]);
-            //$this->permissions[$permissionGroup['permission_name']] = $this->role->hasPermissionTo($permissionGroup['permission_name']);
+            // Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionGroup['permission_name']]);
+            // $this->permissions[$permissionGroup['permission_name']] = $this->role->hasPermissionTo($permissionGroup['permission_name']);
             foreach ($permissionGroup['permissionables'] as $permissionable) {
                 Permission::firstOrCreate(['guard_name' => 'web', 'name' => $permissionable['permission_name']]);
                 $this->permissions[$permissionable['permission_name']] = $this->role->hasPermissionTo($permissionable['permission_name']);
             }
         }
-        //dump($this->permissions);
+        // dump($this->permissions);
     }
 
     public function save()
     {
-        $filtered = collect($this->permissions)->filter(fn($value, $key) => $value)->keys();
+        $filtered = collect($this->permissions)->filter(fn ($value, $key) => $value)->keys();
         $this->role->syncPermissions($filtered);
         $this->dispatch('roleUpdated');
     }

@@ -2,13 +2,13 @@
 
 namespace Uneca\Chimera\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\MessageBag;
 use Uneca\Chimera\Enums\PageableTypes;
 use Uneca\Chimera\Models\Page;
 use Uneca\Chimera\Models\Report;
-use Illuminate\Support\MessageBag;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Uneca\Chimera\Services\APCA;
 use Uneca\Chimera\Services\ColorPalette;
 use Uneca\Chimera\Services\DashboardComponentFactory;
@@ -43,15 +43,17 @@ class ReportController extends Controller
             ->paginate(settings('records_per_page'));
         $records->setCollection(
             $records->getCollection()
-                ->filter(fn($report) => Gate::allows($report->permission_name))
+                ->filter(fn ($report) => Gate::allows($report->permission_name))
                 ->map(function ($report) {
                     $implementedReport = DashboardComponentFactory::makeReport($report);
                     $path = auth()->user()->areaRestrictions->first()?->path ?? '';
                     $report->fileExists = Storage::disk('reports')->exists($implementedReport->filename($path));
                     $report->data_source_title = $report->getDataSource()->title;
+
                     return $report;
                 })
         );
+
         return view('chimera::report.show', compact('records'));
     }
 
@@ -60,6 +62,7 @@ class ReportController extends Controller
         try {
             $implementedReport = DashboardComponentFactory::makeReport($report);
             $path = auth()->user()->areaRestrictions->first()?->path ?? '';
+
             return Storage::disk('reports')
                 ->download($implementedReport->filename($path));
         } catch (\Exception $exception) {

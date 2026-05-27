@@ -2,18 +2,18 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Uneca\Chimera\Http\Requests\AreaHierarchyRequest;
 use Uneca\Chimera\Models\AreaHierarchy;
-use Illuminate\Http\Request;
 
 class AreaHierarchyController extends Controller
 {
     public function index()
     {
         $records = AreaHierarchy::orderBy('index')->get();
+
         return view('chimera::developer.area-hierarchy.index', compact('records'));
     }
 
@@ -41,8 +41,8 @@ class AreaHierarchyController extends Controller
 
     public function store(AreaHierarchyRequest $request)
     {
-        //$this->validateZoomRange($request);
-        //$zoomLevels = range($request->integer('zoom_start'), $request->integer('zoom_end'));
+        // $this->validateZoomRange($request);
+        // $zoomLevels = range($request->integer('zoom_start'), $request->integer('zoom_end'));
         try {
             AreaHierarchy::create([
                 'index' => AreaHierarchy::count(),
@@ -53,28 +53,31 @@ class AreaHierarchyController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('developer.area-hierarchy.index')->withErrors('There was a problem creating the area hierarchy');
         }
+
         return redirect()->route('developer.area-hierarchy.index')->withMessage('Area hierarchy created');
     }
 
     public function edit(AreaHierarchy $areaHierarchy)
     {
-        //$areaHierarchy->zoom_start = min($areaHierarchy->map_zoom_levels ?? [6]);
-        //$areaHierarchy->zoom_end = max($areaHierarchy->map_zoom_levels ?? [6]);
+        // $areaHierarchy->zoom_start = min($areaHierarchy->map_zoom_levels ?? [6]);
+        // $areaHierarchy->zoom_end = max($areaHierarchy->map_zoom_levels ?? [6]);
         return view('chimera::developer.area-hierarchy.edit', compact('areaHierarchy'));
     }
 
     public function update(AreaHierarchy $areaHierarchy, AreaHierarchyRequest $request)
     {
-        //$this->validateZoomRange($request);
-        //$zoomLevels = range($request->integer('zoom_start'), $request->integer('zoom_end'));
-        //$areaHierarchy->update($request->merge(['map_zoom_levels' => $zoomLevels])->only(['name', 'zero_pad_length', 'simplification_tolerance', 'map_zoom_levels']));
+        // $this->validateZoomRange($request);
+        // $zoomLevels = range($request->integer('zoom_start'), $request->integer('zoom_end'));
+        // $areaHierarchy->update($request->merge(['map_zoom_levels' => $zoomLevels])->only(['name', 'zero_pad_length', 'simplification_tolerance', 'map_zoom_levels']));
         $areaHierarchy->update($request->only(['name', 'zero_pad_length', 'simplification_tolerance']));
+
         return redirect()->route('developer.area-hierarchy.index')->withMessage('Area hierarchy updated');
     }
 
     public function destroy(AreaHierarchy $areaHierarchy)
     {
         $areaHierarchy->delete();
+
         return redirect()->route('developer.area-hierarchy.index')->withMessage('Area hierarchy deleted');
     }
 }

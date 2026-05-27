@@ -2,8 +2,6 @@
 
 namespace Uneca\Chimera\Commands;
 
-
-
 use Laravel\Jetstream\Console\InstallCommand;
 
 class CustomJetstreamInstallCommand extends InstallCommand

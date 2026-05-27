@@ -4,8 +4,9 @@ namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
 use Uneca\Chimera\Traits\PackageTasksTrait;
-use function Laravel\Prompts\info;
+
 use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
 
 class Update extends Command
 {
@@ -30,19 +31,20 @@ class Update extends Command
     {
         if (collect($this->options())->filter()->except('composer')->isEmpty()) {
             error('You have not specified any options');
+
             return self::FAILURE;
         }
 
         $runAll = $this->option('all') ?? false;
-        $this->components->info("Updating Dashboard Starter Kit");
+        $this->components->info('Updating Dashboard Starter Kit');
 
         if ($runAll || $this->option('chimera-config')) {
-            $this->components->task('Publishing chimera config...', function () use ($runAll) {
+            $this->components->task('Publishing chimera config...', function () {
                 $this->callSilent('vendor:publish', ['--tag' => 'chimera-config', '--force' => true]);
             });
         }
         if ($runAll || $this->option('migrations')) {
-            $this->components->task('Publishing chimera migrations...', function () use ($runAll) {
+            $this->components->task('Publishing chimera migrations...', function () {
                 $this->callSilent('vendor:publish', ['--tag' => 'chimera-migrations', '--force' => true]);
             });
         }
@@ -72,7 +74,7 @@ class Update extends Command
         }
 
         info('Update complete');
+
         return self::SUCCESS;
     }
-
 }

@@ -3,9 +3,9 @@
 namespace Uneca\Chimera\Commands;
 
 use Illuminate\Console\Command;
+use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Indicator;
-use Uneca\Chimera\Models\Area;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 use Uneca\Chimera\Services\FetchCacheAndRecord;
@@ -13,7 +13,8 @@ use Uneca\Chimera\Services\FetchCacheAndRecord;
 class CacheIndicators extends Command
 {
     protected $signature = 'chimera:cache-indicators {--max-level=0} {--data-source=} {--tag=}';
-    protected $description = "Calculate and cache (published) indicators";
+
+    protected $description = 'Calculate and cache (published) indicators';
 
     public function __construct()
     {
@@ -37,6 +38,7 @@ class CacheIndicators extends Command
         if ($indicatorsToCache->isEmpty()) {
             $this->newLine()->error('No matching indicators found');
             $this->newLine();
+
             return self::FAILURE;
         }
 
@@ -53,9 +55,9 @@ class CacheIndicators extends Command
             // National level for non-restricted users
             $startTime = time();
             (new FetchCacheAndRecord)($artefact, $artefact->cacheKey(), '', true);
-            $this->info("Level 0 completed in " . (time() - $startTime) . " seconds");
+            $this->info('Level 0 completed in '.(time() - $startTime).' seconds');
 
-            $hierarchies = (new AreaTree())->hierarchies;
+            $hierarchies = (new AreaTree)->hierarchies;
             for ($level = 0; $level <= $maxLevel; $level++) { // Loop over more levels, if specified (first level included by default)
                 $paths = Area::ofLevel($level)->pluck('path');
                 foreach ($paths as $path) {
@@ -63,9 +65,10 @@ class CacheIndicators extends Command
                 }
                 $this->info(" - cached {$hierarchies[$level]} level");
             }
-            $this->info("Completed in " . (time() - $startTime) . " seconds");
+            $this->info('Completed in '.(time() - $startTime).' seconds');
         }
         $this->newLine();
+
         return self::SUCCESS;
     }
 }

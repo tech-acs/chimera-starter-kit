@@ -21,6 +21,7 @@ trait HasLevelDiscrimination
         }
         $level = empty($filterPath) ? 0 : AreaTree::levelFromPath($filterPath) + 1;
         $levels = collect(app('hierarchies'))->prepend('National');
+
         return $this->inapplicableLevels->pluck('name')->doesntContain($levels[$level]);
     }
 }

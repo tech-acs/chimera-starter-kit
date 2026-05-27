@@ -4,14 +4,15 @@ namespace Uneca\Chimera\Livewire;
 
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\Scorecard;
-use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Services\DashboardComponentFactory;
 
 class CacheClearer extends Component
 {
     public string $artefact;
+
     public int $id;
 
     private function makeArtefact()

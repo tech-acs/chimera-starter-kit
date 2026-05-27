@@ -11,8 +11,11 @@ use Throwable;
 class ShapefileImporter
 {
     protected $fromSrid;
+
     protected $toSrid;
+
     protected $debug;
+
     protected $debugInfo = [];
 
     const OPTIONS = [
@@ -22,7 +25,7 @@ class ShapefileImporter
         Shapefile::OPTION_DBF_FORCE_ALL_CAPS => true,
         Shapefile::OPTION_DBF_IGNORED_FIELDS => ['ID', 'FID'],
         Shapefile::OPTION_POLYGON_CLOSED_RINGS_ACTION => Shapefile::ACTION_FORCE,
-        //Shapefile::OPTION_POLYGON_OUTPUT_ORIENTATION => Shapefile::ORIENTATION_CLOCKWISE,
+        // Shapefile::OPTION_POLYGON_OUTPUT_ORIENTATION => Shapefile::ORIENTATION_CLOCKWISE,
     ];
 
     public function __construct($fromSrid = 3857, $toSrid = 4326, $debug = false)
@@ -34,15 +37,16 @@ class ShapefileImporter
 
     private function castDataArray($shapefile, $attribs)
     {
-        foreach($attribs as $key => $value) {
-            switch($shapefile->getFieldType($key)) {
+        foreach ($attribs as $key => $value) {
+            switch ($shapefile->getFieldType($key)) {
                 case Shapefile::DBF_TYPE_NUMERIC:
-                    $attribs[$key] = (int)$value;
+                    $attribs[$key] = (int) $value;
                     break;
                 case Shapefile::DBF_TYPE_FLOAT:
-                    $attribs[$key] = (double)number_format((double)$value,2, '.', '');
+                    $attribs[$key] = (float) number_format((float) $value, 2, '.', '');
             }
         }
+
         return $attribs;
     }
 
@@ -53,6 +57,7 @@ class ShapefileImporter
         try {
             $shapefile = new ShapefileReader($filePath, self::OPTIONS);
             $totalRecords = $shapefile->getTotRecords();
+
             return LazyCollection::make(function () use ($shapefile, $totalRecords) {
                 for ($i = 1; $i <= $totalRecords; $i++) {
                     $shapefile->setCurrentRecord($i);
@@ -73,13 +78,13 @@ class ShapefileImporter
                         ];
 
                     } catch (Throwable $e) {
-                        logger("Error fetching record $i: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
+                        logger("Error fetching record $i: [Err Code: ".$e->getCode().'] '.$e->getMessage());
                     }
                 }
             });
 
         } catch (Throwable $e) {
-            logger("Error instantiating ShapefileReader: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
+            logger('Error instantiating ShapefileReader: [Err Code: '.$e->getCode().'] '.$e->getMessage());
         }
     }
 
@@ -90,7 +95,9 @@ class ShapefileImporter
         try {
             $shapefile = new ShapefileReader($filePath, self::OPTIONS);
             $totalRecords = $shapefile->getTotRecords();
-            $sampleFeatureNotAcquired = true; $currentRecord = 1; $sample = null;
+            $sampleFeatureNotAcquired = true;
+            $currentRecord = 1;
+            $sample = null;
             while ($sampleFeatureNotAcquired && ($currentRecord <= $totalRecords)) {
                 $shapefile->setCurrentRecord($currentRecord);
                 try {
@@ -98,6 +105,7 @@ class ShapefileImporter
 
                     if ($sampleFeature->isDeleted()) {
                         $currentRecord++;
+
                         continue;
                     }
 
@@ -112,13 +120,15 @@ class ShapefileImporter
                     $sampleFeatureNotAcquired = false;
 
                 } catch (Throwable $e) {
-                    logger("Error fetching record $currentRecord: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
+                    logger("Error fetching record $currentRecord: [Err Code: ".$e->getCode().'] '.$e->getMessage());
                 }
             }
+
             return $sample;
         } catch (Throwable $e) {
-            logger("Error instantiating ShapefileReader: [Err Code: " . $e->getCode() . "] " . $e->getMessage());
+            logger('Error instantiating ShapefileReader: [Err Code: '.$e->getCode().'] '.$e->getMessage());
         }
+
         return null;
     }
 }

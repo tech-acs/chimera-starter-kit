@@ -2,12 +2,9 @@
 
 namespace Uneca\Chimera\Livewire;
 
-use Uneca\Chimera\Models\AreaRestriction;
 use Uneca\Chimera\Models\User;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\ChecksumSafetyTrait;
-use Illuminate\Support\Collection;
-use Livewire\Component;
 
 class AreaRestrictionManager extends AreaFilter
 {
@@ -34,6 +31,7 @@ class AreaRestrictionManager extends AreaFilter
                 $subject = $previousRestrictions[$levelName];
                 $dropdown['selected'] = $this->addChecksumSafety($subject);
             }
+
             return $dropdown;
         }, array_flip($areaTree->hierarchies));
     }

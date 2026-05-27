@@ -32,8 +32,9 @@ class PageRequest extends FormRequest
      */
     public function rules()
     {
-        $slug = str()->slug($this->title) . '-' . strtolower($this->type);
+        $slug = str()->slug($this->title).'-'.strtolower($this->type);
         $existingPage = $this->route('page');
+
         return [
             'title' => [
                 'required',

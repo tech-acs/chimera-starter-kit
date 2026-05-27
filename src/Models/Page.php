@@ -18,6 +18,7 @@ class Page extends Model
     use HasTranslations;
 
     protected $guarded = ['id'];
+
     public $translatable = ['title', 'description'];
 
     protected $casts = ['for' => PageableTypes::class];
@@ -58,14 +59,14 @@ class Page extends Model
     {
         $query->addSelect(['artefact_count' => DB::table('pageables')
             ->selectRaw('COUNT(*)')
-            ->whereColumn('page_id', 'pages.id')
+            ->whereColumn('page_id', 'pages.id'),
         ]);
     }
 
     protected static function booted()
     {
         static::creating(function ($page) {
-            $page->slug = Str::slug($page->title) . '-' . strtolower($page->for->name);
+            $page->slug = Str::slug($page->title).'-'.strtolower($page->for->name);
         });
 
         static::created(function ($page) {

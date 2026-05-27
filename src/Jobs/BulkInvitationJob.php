@@ -2,12 +2,7 @@
 
 namespace Uneca\Chimera\Jobs;
 
-use Uneca\Chimera\Mail\InvitationMail;
-use Uneca\Chimera\Models\Invitation;
-use Uneca\Chimera\Notifications\TaskCompletedNotification;
-use Uneca\Chimera\Notifications\TaskFailedNotification;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,6 +13,10 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Uneca\Chimera\Mail\InvitationMail;
+use Uneca\Chimera\Models\Invitation;
+use Uneca\Chimera\Notifications\TaskCompletedNotification;
+use Uneca\Chimera\Notifications\TaskFailedNotification;
 
 class BulkInvitationJob implements ShouldQueue
 {
@@ -25,9 +24,7 @@ class BulkInvitationJob implements ShouldQueue
 
     public $timeout = 600;
 
-    public function __construct(private string $filePath, private bool $sendEmails, private User $user)
-    {
-    }
+    public function __construct(private string $filePath, private bool $sendEmails, private User $user) {}
 
     public function handle()
     {
@@ -43,7 +40,7 @@ class BulkInvitationJob implements ShouldQueue
                     ['email' => $email, 'role' => $role],
                     [
                         'email' => 'required|email|unique:Uneca\Chimera\Models\Invitation,email|unique:Uneca\Chimera\Models\User,email',
-                        'role' => 'nullable'
+                        'role' => 'nullable',
                     ]
                 );
                 if ($rowValidator->passes()) {
@@ -63,7 +60,7 @@ class BulkInvitationJob implements ShouldQueue
         $errors = $successCount < $totalCount ? ' There were some invalid rows with invalid data. Please check your file.' : '';
         Notification::sendNow($this->user, new TaskCompletedNotification(
             'Task completed',
-            "$successCount invitations have been created from the $totalCount rows present in the file." . $errors
+            "$successCount invitations have been created from the $totalCount rows present in the file.".$errors
         ));
     }
 

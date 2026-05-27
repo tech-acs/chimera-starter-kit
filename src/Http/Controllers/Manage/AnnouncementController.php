@@ -2,19 +2,20 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Models\Role;
 use Uneca\Chimera\Http\Requests\AnnouncementRequest;
 use Uneca\Chimera\Models\Announcement;
 use Uneca\Chimera\Models\User;
 use Uneca\Chimera\Notifications\BroadcastMessageNotification;
-use Illuminate\Support\Facades\Notification;
-use Spatie\Permission\Models\Role;
 
 class AnnouncementController extends Controller
 {
     public function index()
     {
         $records = Announcement::paginate(settings('records_per_page'));
+
         return view('chimera::announcement.index', compact('records'));
     }
 
@@ -30,6 +31,7 @@ class AnnouncementController extends Controller
     public function create()
     {
         $recipients = $this->recipientsList();
+
         return view('chimera::announcement.create', compact('recipients'));
     }
 
@@ -51,8 +53,10 @@ class AnnouncementController extends Controller
             } catch (\Exception $exception) {
                 //
             }
+
             return redirect()->route('announcement.index')->withMessage('The announcement has been sent to the specified recipients group.');
         }
+
         return redirect()->route('announcement.index')->withMessage('No users found for specified recipients group.');
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ReferenceValue extends Model
 {
     use HasFactory;
+
     protected $guarded = ['id'];
 
     public function scopeOfLevel(Builder $query, $level)

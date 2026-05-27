@@ -3,18 +3,20 @@
 namespace Uneca\Chimera\Livewire;
 
 use Livewire\Attributes\On;
+use Livewire\Component;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Traits\ChecksumSafetyTrait;
-use Livewire\Component;
 
 class AreaFilter extends Component
 {
     use ChecksumSafetyTrait;
 
     public const SESSION_KEY = 'area-filter';
+
     public const CHANGE_EVENT = 'filterChanged';
 
     public const AREA_INSIGHTS_SESSION_KEY = 'area-insights-filter';
+
     public const AREA_INSIGHTS_CHANGE_EVENT = 'areaInsightsfilterChanged';
 
     public array $dropdowns;
@@ -51,6 +53,7 @@ class AreaFilter extends Component
                 $subject = $restrictions[$levelName];
                 $dropdown['restricted'] = $this->addChecksumSafety($subject);
             }
+
             return $dropdown;
         }, array_flip($areaTree->hierarchies));
     }
@@ -69,6 +72,7 @@ class AreaFilter extends Component
             if ($resetDownstream) {
                 $this->dropdowns[$levelName]['list'] = [];
                 $this->dropdowns[$levelName]['selected'] = null;
+
                 continue;
             }
             if ($shouldUpdate) {

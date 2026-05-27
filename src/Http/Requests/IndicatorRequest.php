@@ -3,7 +3,6 @@
 namespace Uneca\Chimera\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class IndicatorRequest extends FormRequest
 {
@@ -27,7 +26,7 @@ class IndicatorRequest extends FormRequest
         return [
             'title' => 'required',
             'description' => 'required',
-            'scope' => 'required'
+            'scope' => 'required',
         ];
     }
 }

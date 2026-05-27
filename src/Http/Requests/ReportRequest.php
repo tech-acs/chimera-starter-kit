@@ -22,7 +22,7 @@ class ReportRequest extends FormRequest
             'title' => 'required',
             'description' => 'required',
             'run_at' => 'required_if:enabled,true',
-            'run_every' => 'required_if:enabled,true'
+            'run_every' => 'required_if:enabled,true',
         ];
     }
 
@@ -30,7 +30,7 @@ class ReportRequest extends FormRequest
     {
         return [
             'run_at.required_if' => 'The run at field is required when scheduling is enabled.',
-            'run_every.required_if' => 'The run every field is required when scheduling is enabled.'
+            'run_every.required_if' => 'The run every field is required when scheduling is enabled.',
         ];
     }
 }

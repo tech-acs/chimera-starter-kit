@@ -13,7 +13,9 @@ class AreaHierarchy extends Model
     use HasTranslations;
 
     protected $guarded = ['id'];
+
     public $translatable = ['name'];
+
     protected $casts = ['map_zoom_levels' => 'array'];
 
     public function inapplicableIndicators(): MorphToMany

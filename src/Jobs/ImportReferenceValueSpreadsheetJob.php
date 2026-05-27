@@ -2,12 +2,8 @@
 
 namespace Uneca\Chimera\Jobs;
 
-use Uneca\Chimera\Models\ReferenceValue;
-use Uneca\Chimera\Notifications\TaskCompletedNotification;
-use Uneca\Chimera\Notifications\TaskFailedNotification;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,8 +11,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Uneca\Chimera\Models\ReferenceValue;
+use Uneca\Chimera\Notifications\TaskCompletedNotification;
+use Uneca\Chimera\Notifications\TaskFailedNotification;
 
 class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 {
@@ -24,9 +22,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 
     public $timeout = 1200;
 
-    public function __construct(private string $filePath, private array $columnMapping, private User $user)
-    {
-    }
+    public function __construct(private string $filePath, private array $columnMapping, private User $user) {}
 
     private function writeHigherLevelValues(array $indicatorMapping, int $level)
     {
@@ -46,7 +42,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     private function insertInitialValues($indicatorMapping)
     {
         SimpleExcelReader::create($this->filePath)->getRows()
-            ->map(function($row) use ($indicatorMapping) {
+            ->map(function ($row) use ($indicatorMapping) {
                 return [
                     'path' => $row[$indicatorMapping['path']],
                     'level' => $indicatorMapping['level'],
@@ -67,7 +63,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
         $initialCount = ReferenceValue::count();
         foreach ($this->columnMapping as $mapping) {
             $this->insertInitialValues($mapping);
-            for ($level = $mapping['level']; $level > 0; $level--){
+            for ($level = $mapping['level']; $level > 0; $level--) {
                 $this->writeHigherLevelValues($mapping, $level);
             }
         }
@@ -75,7 +71,7 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 
         Notification::sendNow($this->user, new TaskCompletedNotification(
             'Task completed',
-            "$insertedCount reference values have been imported across " . count($this->columnMapping) . ' ' .
+            "$insertedCount reference values have been imported across ".count($this->columnMapping).' '.
                 str('indicator')->plural(count($this->columnMapping))
         ));
     }

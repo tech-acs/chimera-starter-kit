@@ -54,7 +54,7 @@
                         <span class="block xl:inline">{{ __('Better Decisions.') }}</span>
                         <span class="block text-indigo-600 xl:inline">{{ __('Stronger Impact.') }}</span>
                     </h1>
-                    <p class="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl">
+                    <p class="mt-3 mx-auto text-lg text-gray-500 sm:text-xl md:mt-5">
                     {{ __('description of dashboard on landing page') }}
                     </p>
                     <div class="mt-10 sm:flex sm:justify-center lg:justify-start">
@@ -79,7 +79,7 @@
                 </div>
             </div>
             <div class="relative w-full h-64 sm:h-72 md:h-96 lg:absolute lg:inset-y-0 lg:right-0 lg:w-3/5 lg:h-full">
-                <img class="absolute inset-0 w-full h-full object-center object-cover min-w-96" src="{{ asset('images/hero.png', config('chimera.secure')) }}" alt="">
+                <img class="absolute inset-0 w-full h-full object-center object-contain min-w-96" src="{{ asset('images/hero.png', config('chimera.secure')) }}" alt="">
             </div>
         </main>
 

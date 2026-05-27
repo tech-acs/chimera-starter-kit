@@ -7,7 +7,9 @@ use Livewire\Component;
 class NotificationInbox extends Component
 {
     public $notifications;
+
     public $unreadCount;
+
     public $selectedNotification;
 
     public function mount()

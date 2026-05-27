@@ -9,7 +9,9 @@ use Livewire\Component;
 class LanguageSwitcher extends Component
 {
     public string $locale;
+
     public array $languages;
+
     public string $route;
 
     public function mount()
@@ -24,6 +26,7 @@ class LanguageSwitcher extends Component
         Cookie::queue('locale', $lang);
         App::setLocale($lang);
         $this->locale = app()->getLocale();
+
         return redirect($this->route);
     }
 
