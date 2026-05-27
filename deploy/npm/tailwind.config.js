@@ -12,7 +12,6 @@ module.exports = {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './app/MapIndicators/**/*.php',
-        './resources/js/ChartEditor/*.jsx'
     ],
 
     theme: {
