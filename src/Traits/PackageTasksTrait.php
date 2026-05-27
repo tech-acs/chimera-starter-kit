@@ -10,18 +10,12 @@ use Symfony\Component\Process\Process;
 trait PackageTasksTrait
 {
     public array $requiredNodePackages = [
-        "leaflet" => "^1.9",
-        "plotly.js-dist" => "^3.5",
-        "plotly.js-locales" => "^3.5",
-        "alpinejs" => "^3.14",
-        "@tailwindcss/aspect-ratio" => "^0.4.2",
-        "lodash" => "^4.17.21",
-        "react" => "^16.14.0",
-        "react-chart-editor" => "^0.46.1",
-        "react-dom" => "^16.14.0",
-        "react-modal" => "^3.16.1",
-        "@vitejs/plugin-react" => "^4.2.1",
-        "ag-grid-react" => "^35.2.1",
+        'leaflet' => '^1.9',
+        'plotly.js-dist' => '^3.5',
+        'plotly.js-locales' => '^3.5',
+        'alpinejs' => '^3.14',
+        '@tailwindcss/aspect-ratio' => '^0.4.2',
+        'lodash' => '^4.17.21',
     ];
 
     public array $phpDependencies = [
@@ -32,6 +26,7 @@ trait PackageTasksTrait
         'spatie/simple-excel:^3.5',
         'spatie/laravel-translatable:^6.1',
         'spatie/db-dumper:^4.1',
+        'uneca/plotly-chart-editor:^1.0',
     ];
 
     public array $vendorPublish = [
@@ -50,12 +45,12 @@ trait PackageTasksTrait
         'guest.blade.php' => 'views/layouts/guest.blade.php',
         'navigation-menu.blade.php' => 'views/navigation-menu.blade.php',
         'show.blade.php' => 'views/profile/show.blade.php',
-        'area-restriction.blade.php' => 'views/profile/area-restriction.blade.php'
+        'area-restriction.blade.php' => 'views/profile/area-restriction.blade.php',
     ];
 
     protected function installJetstream(): void
     {
-        $this->components->info("This kit is built on top of Laravel Jetstream");
+        $this->components->info('This kit is built on top of Laravel Jetstream');
         $this->components->task('Installing Laravel Jetstream (takes time)', function () {
             return $this->callSilently('jetstream:custom-install', ['stack' => 'livewire', '--quiet' => true]);
         });
@@ -63,7 +58,7 @@ trait PackageTasksTrait
 
     protected function installPhpDependencies(): void
     {
-        $this->components->info("Php dependencies");
+        $this->components->info('Php dependencies');
         $this->components->bulletList($this->phpDependencies);
         $this->components->task('Installing composer packages (takes time)', function () {
             return $this->requireComposerPackages($this->phpDependencies);
@@ -72,7 +67,7 @@ trait PackageTasksTrait
 
     protected function publishVendorFiles(): void
     {
-        $this->components->info("Publishing vendor files");
+        $this->components->info('Publishing vendor files');
         foreach ($this->vendorPublish as $vendorItem => $options) {
             $this->components->task($vendorItem, function () use ($options) {
                 return (new Process(array_merge(['php', 'artisan', 'vendor:publish'], $options), base_path()))
@@ -84,40 +79,40 @@ trait PackageTasksTrait
 
     protected function copyCustomizedJetstreamFiles(): void
     {
-        $this->components->info("Copying customized Jetstream files");
+        $this->components->info('Copying customized Jetstream files');
         $this->components->task('Jetstream actions', function () {
-            return $this->copyFilesInDir(__DIR__ . '/../../deploy/jetstream-modifications/actions', app_path('Actions/Fortify'));
+            return $this->copyFilesInDir(__DIR__.'/../../deploy/jetstream-modifications/actions', app_path('Actions/Fortify'));
         });
         foreach ($this->customizedJetstreamViews as $source => $destination) {
             $this->components->task($source, function () use ($source, $destination) {
-                return copy(__DIR__ . "/../../deploy/jetstream-modifications/views/$source", resource_path($destination));
+                return copy(__DIR__."/../../deploy/jetstream-modifications/views/$source", resource_path($destination));
             });
         }
     }
 
     protected function copyActionClasses(): void
     {
-        $this->components->info("Copying action classes");
+        $this->components->info('Copying action classes');
         $this->components->task('Actions', function () {
-            return File::copyDirectory(__DIR__ . '/../../deploy/actions/Maker', app_path('Actions/Maker'));
+            return File::copyDirectory(__DIR__.'/../../deploy/actions/Maker', app_path('Actions/Maker'));
         });
     }
 
     protected function configureJetstreamFeatures(): void
     {
-        $this->components->info("Configuring jetstream features");
+        $this->components->info('Configuring jetstream features');
         $options = [
             'Enable terms and privacy policy' => [
                 'search' => '// Features::termsAndPrivacyPolicy(),',
-                'replace' => 'Features::termsAndPrivacyPolicy(),'
+                'replace' => 'Features::termsAndPrivacyPolicy(),',
             ],
             'Enable profile photos' => [
                 'search' => '// Features::profilePhotos(),',
-                'replace' => 'Features::profilePhotos(),'
+                'replace' => 'Features::profilePhotos(),',
             ],
             'Disable account deletion' => [
                 'search' => 'Features::accountDeletion(),',
-                'replace' => '// Features::accountDeletion(),'
+                'replace' => '// Features::accountDeletion(),',
             ],
         ];
         foreach ($options as $feature => $option) {
@@ -132,20 +127,22 @@ trait PackageTasksTrait
 
     protected function copyAssets(): void
     {
-        $this->components->info("Copying assets and related config files");
-        $this->components->task("Css and js", function () {
-            $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/css', resource_path('css'), '*.css');
-            $this->copyFilesInDir(__DIR__ . '/../../deploy/resources/js', resource_path('js'), '*.js');
-            File::copyDirectory(__DIR__ . '/../../deploy/resources/js/ChartEditor', resource_path('js/ChartEditor'));
+        $this->components->info('Copying assets and related config files');
+        $this->components->task('Css and js', function () {
+            $this->copyFilesInDir(__DIR__.'/../../deploy/resources/css', resource_path('css'), '*.css');
+            $this->copyFilesInDir(__DIR__.'/../../deploy/resources/js', resource_path('js'), '*.js');
+
             return true;
         });
-        $this->components->task("Images", function () {
-            $this->copyFilesInDir(__DIR__ . '/../../deploy/assets/images', public_path('images'), '*.*');
+        $this->components->task('Images', function () {
+            $this->copyFilesInDir(__DIR__.'/../../deploy/assets/images', public_path('images'), '*.*');
+
             return true;
         });
-        $this->components->task("Tailwind and vite config files", function () {
+        $this->components->task('Tailwind and vite config files', function () {
             copy(__DIR__.'/../../deploy/npm/tailwind.config.js', base_path('tailwind.config.js'));
             copy(__DIR__.'/../../deploy/npm/vite.config.js', base_path('vite.config.js'));
+
             return true;
         });
     }
@@ -159,15 +156,15 @@ trait PackageTasksTrait
 
     protected function copyColorPalettes(): void
     {
-        $this->components->info("Color palettes");
-        $this->components->task("Copying color_palettes to resources directory", function () {
-            return File::copyDirectory(__DIR__ . '/../../deploy/color_palettes', resource_path('color_palettes'));
+        $this->components->info('Color palettes');
+        $this->components->task('Copying color_palettes to resources directory', function () {
+            return File::copyDirectory(__DIR__.'/../../deploy/color_palettes', resource_path('color_palettes'));
         });
     }
 
     protected function customizeExceptionRendering(): void
     {
-        $this->components->info("Customize exception rendering (invalid invitation links and expired login pages)");
+        $this->components->info('Customize exception rendering (invalid invitation links and expired login pages)');
         $this->components->task('Writing to bootstrap/app.php', function () {
             $bootstrapApp = file_get_contents(base_path('bootstrap/app.php'));
             $bootstrapApp = str_replace(
@@ -198,7 +195,7 @@ trait PackageTasksTrait
 
     protected function installEnvFiles(): void
     {
-        $this->components->info("Install new environment files");
+        $this->components->info('Install new environment files');
         $this->components->task('.env', function () {
             return copy(__DIR__.'/../../deploy/.env.example', base_path('.env'));
         });
@@ -207,37 +204,40 @@ trait PackageTasksTrait
         });
         $this->components->task('Generate application key', function () {
             config(['app.key' => '']);
+
             return $this->callSilently('key:generate');
         });
     }
 
     protected function installEmptyWebRoutesFile(): void
     {
-        $this->components->info("Install empty web routes file (web.php)");
+        $this->components->info('Install empty web routes file (web.php)');
         $this->components->task('Writing to routes/web.php', function () {
-            (new Filesystem)->replace(base_path('routes/web.php'), "<?php" . PHP_EOL);
+            (new Filesystem)->replace(base_path('routes/web.php'), '<?php'.PHP_EOL);
         });
     }
 
     protected function installJsDependencies(): void
     {
-        $this->components->info("Npm packages");
+        $this->components->info('Npm packages');
         $this->components->task('Updating package.json', function () {
             $this->updateNodePackages(function ($packages) {
                 return $this->requiredNodePackages + $packages;
             });
+
             return true;
         });
         $this->components->task('Running npm install & npm run build (takes time)', function () {
             $commands = ['npm install', 'npm run build'];
             $process = Process::fromShellCommandline(implode(' && ', $commands), null, null, null, null);
+
             return $process->run();
         });
     }
 
     protected function cleanup(): void
     {
-        $this->components->info("Cleanup and finalization");
+        $this->components->info('Cleanup and finalization');
         $this->components->task('Removing unused files', function () {
             $filesToDelete = [
                 resource_path('views/welcome.blade.php'),
@@ -248,6 +248,7 @@ trait PackageTasksTrait
                     unlink($file);
                 }
             }
+
             return true;
         });
     }
@@ -275,11 +276,11 @@ trait PackageTasksTrait
         $fs = new Filesystem;
         $fs->ensureDirectoryExists($destDir);
         foreach (glob("$srcDir/$fileType") as $file) {
-            $fs->copy($file, "$destDir/" . basename($file));
+            $fs->copy($file, "$destDir/".basename($file));
         }
     }
 
-    protected static function updateNodePackages(callable $callback, $dev = true): false | int
+    protected static function updateNodePackages(callable $callback, $dev = true): false|int
     {
         if (! file_exists(base_path('package.json'))) {
             return false;
@@ -311,7 +312,7 @@ trait PackageTasksTrait
         });
     }
 
-    protected function replaceInFile($search, $replace, $path): false | int
+    protected function replaceInFile($search, $replace, $path): false|int
     {
         return file_put_contents($path, str_replace($search, $replace, file_get_contents($path)));
     }
