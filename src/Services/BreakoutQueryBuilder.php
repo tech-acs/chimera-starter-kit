@@ -26,6 +26,8 @@ class BreakoutQueryBuilder
 
     protected array $columns;
 
+    protected array $chosenSelectColumns = [];
+
     private string $from;
 
     protected array $tables;
@@ -84,6 +86,7 @@ class BreakoutQueryBuilder
 
     public function select(array $items): self
     {
+        $this->chosenSelectColumns = $items;
         $this->select = 'SELECT '.implode(', ', array_merge($this->columns, $items));
 
         return $this;
@@ -364,5 +367,17 @@ class BreakoutQueryBuilder
         }
 
         return $finalResult;
+    }
+
+    public function getSingleRow(?string $sql = null): ?object
+    {
+        $this->columns = [];
+        $this->select = 'SELECT '.implode(', ', $this->chosenSelectColumns);
+        $this->groupBy = '';
+        $this->having = '';
+        $this->orderBy = '';
+        $this->leftJoin = '';
+
+        return $this->get($sql)->first();
     }
 }

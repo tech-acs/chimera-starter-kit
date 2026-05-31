@@ -76,8 +76,7 @@ class CaseStats extends Component
                     'COUNT(*) - COUNT(DISTINCT cases.`key`) AS duplicate',
                 ])
                 ->from([])
-                ->get()
-                ->first();
+                ->getSingleRow();
             $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
             if (! is_null($l)) {
                 $info['total'] = $l->total;
