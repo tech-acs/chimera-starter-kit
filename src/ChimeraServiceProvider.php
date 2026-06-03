@@ -82,6 +82,8 @@ use Uneca\Chimera\Livewire\UserPageSizeAdjuster;
 use Uneca\Chimera\Livewire\XRay;
 use Uneca\Chimera\Models\AreaHierarchy;
 use Uneca\Chimera\Models\Setting;
+use Laravel\Mcp\Facades\Mcp;
+use Uneca\Chimera\Mcp\Servers\DashboardArtefactGenerator;
 use Uneca\Chimera\Services\ConnectionLoader;
 use Uneca\Chimera\Services\PageBuilder;
 
@@ -246,6 +248,8 @@ class ChimeraServiceProvider extends PackageServiceProvider
             $schedule = $this->app->make(Schedule::class);
             $schedule->command('chimera:generate-reports')->hourly();
         });
+
+        Mcp::local('dashboard-artefact-generator', DashboardArtefactGenerator::class);
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
