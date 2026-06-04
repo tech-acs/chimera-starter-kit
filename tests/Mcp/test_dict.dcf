@@ -1,0 +1,39 @@
+[Dictionary]
+Version=CSPro 7.6
+Label=Test Dictionary
+Name=TEST_DICT
+
+[Level]
+Label=Household Level
+Name=HOUSEHOLD
+
+[IdItems]
+
+[Record]
+Label=Population Record
+Name=POP_REC
+RecordTypeValue='70'
+Required=No
+MaxRecords=500
+RecordLen=422
+
+[Item]
+Label=P00. Name
+Name=P00
+Start=73
+Len=50
+DataType=Alpha
+
+[Item]
+Label=P11. Sex
+Name=P11
+Start=125
+Len=1
+
+[ValueSet]
+Label=P11. Sex
+Name=P11_VS1
+Value=1;Male
+Note=#male
+Value=2;Female
+Note=#female

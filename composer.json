@@ -24,12 +24,14 @@
         "laravel/jetstream": "^5.0",
         "livewire/livewire": "^3.4",
         "spatie/laravel-translatable": "^6.2",
-        "opcodesio/log-viewer": "^3.10"
+        "opcodesio/log-viewer": "^3.10",
+        "laravel/mcp": "v0.7.0"
     },
     "require-dev": {
         "laravel/boost": "^2.0",
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-arch": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0"

@@ -1,10 +1,11 @@
 <?php
 
-namespace Uneca\CensusDashboardStarterKit\Tests;
+namespace Uneca\Chimera\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Uneca\CensusDashboardStarterKit\ChimeraServiceProvider;
+use Uneca\Chimera\ChimeraServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -21,6 +22,7 @@ class TestCase extends Orchestra
     {
         return [
             ChimeraServiceProvider::class,
+            McpServiceProvider::class,
         ];
     }
 

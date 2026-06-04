@@ -36,6 +36,7 @@ use Uneca\Chimera\Commands\ExportAreas;
 use Uneca\Chimera\Commands\GenerateReports;
 use Uneca\Chimera\Commands\MakeGauge;
 use Uneca\Chimera\Commands\MakeIndicator;
+use Uneca\Chimera\Commands\McpInstall;
 use Uneca\Chimera\Commands\MakeMapIndicator;
 use Uneca\Chimera\Commands\MakeQueryFragment;
 use Uneca\Chimera\Commands\MakeReferenceValueSynthesizer;
@@ -155,6 +156,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 Production::class,
                 CustomJetstreamInstallCommand::class,
                 MakeQueryFragment::class,
+                McpInstall::class,
                 DeployHorizon::class,
                 MakeReferenceValueSynthesizer::class,
                 TransferReferenceValues::class,
@@ -209,9 +211,11 @@ class ChimeraServiceProvider extends PackageServiceProvider
             return session('developer_mode_enabled', false) || $this->app->environment('local');
         });
 
-        LogViewer::auth(function ($request) {
-            return session('developer_mode_enabled', false);
-        });
+        if ($this->app->bound('log-viewer')) {
+            $this->app->make('log-viewer')->auth(function ($request) {
+                return session('developer_mode_enabled', false);
+            });
+        }
 
         (new ConnectionLoader)();
 

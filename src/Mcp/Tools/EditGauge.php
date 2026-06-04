@@ -14,11 +14,14 @@ class EditGauge extends Tool
 {
     public function handle(Request $request): Response
     {
-        $id = $request->integer('id');
-        $gauge = Gauge::find($id);
+        try {
+            $gauge = $this->resolveModel($request);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Response::error('Database table not found. Migrations may need to be run.');
+        }
 
         if (! $gauge) {
-            return Response::error("Gauge with ID {$id} not found.");
+            return Response::error('Gauge not found. Provide either an id or a name.');
         }
 
         $updates = [];
@@ -34,24 +37,30 @@ class EditGauge extends Tool
 
         $gauge->update($updates);
 
-        return Response::text("Gauge '{$gauge->title}' (ID: {$id}) updated.");
+        return Response::text("Gauge '{$gauge->title}' (ID: {$gauge->id}) updated.");
+    }
+
+    private function resolveModel(Request $request): ?Gauge
+    {
+        if ($request->has('id')) {
+            return Gauge::find($request->integer('id'));
+        }
+
+        if ($request->has('name')) {
+            return Gauge::where('name', $request->string('name'))->first();
+        }
+
+        return null;
     }
 
     public function schema(JsonSchema $schema): array
     {
         return [
-            'id' => $schema->integer(
-                description: 'ID of the gauge to update',
-            ),
-            'title' => $schema->string(
-                description: 'New title',
-            ),
-            'subtitle' => $schema->string(
-                description: 'New subtitle',
-            ),
-            'data_source' => $schema->string(
-                description: 'New data source name',
-            ),
+            'id' => $schema->integer()->description('ID of the gauge to update (provide either id or name)'),
+            'name' => $schema->string()->description('Name of the gauge to update (provide either id or name)'),
+            'title' => $schema->string()->description('New title'),
+            'subtitle' => $schema->string()->description('New subtitle'),
+            'data_source' => $schema->string()->description('New data source name'),
         ];
     }
 }

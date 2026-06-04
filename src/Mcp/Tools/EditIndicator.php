@@ -14,11 +14,14 @@ class EditIndicator extends Tool
 {
     public function handle(Request $request): Response
     {
-        $id = $request->integer('id');
-        $indicator = Indicator::find($id);
+        try {
+            $indicator = $this->resolveModel($request);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Response::error('Database table not found. Migrations may need to be run.');
+        }
 
         if (! $indicator) {
-            return Response::error("Indicator with ID {$id} not found.");
+            return Response::error('Indicator not found. Provide either an id or a name.');
         }
 
         $updates = [];
@@ -41,31 +44,32 @@ class EditIndicator extends Tool
 
         $indicator->update($updates);
 
-        return Response::text("Indicator '{$indicator->title}' (ID: {$id}) updated.");
+        return Response::text("Indicator '{$indicator->title}' (ID: {$indicator->id}) updated.");
+    }
+
+    private function resolveModel(Request $request): ?Indicator
+    {
+        if ($request->has('id')) {
+            return Indicator::find($request->integer('id'));
+        }
+
+        if ($request->has('name')) {
+            return Indicator::where('name', $request->string('name'))->first();
+        }
+
+        return null;
     }
 
     public function schema(JsonSchema $schema): array
     {
         return [
-            'id' => $schema->integer(
-                description: 'ID of the indicator to update',
-            ),
-            'title' => $schema->string(
-                description: 'New title',
-            ),
-            'description' => $schema->string(
-                description: 'New description',
-            ),
-            'data_source' => $schema->string(
-                description: 'New data source name',
-            ),
-            'data' => $schema->array(
-                description: 'New Plotly traces array. Each trace: type (bar|line|scatter|pie|histogram|area|box|sunburst), x, y, name, meta.columnNames',
-                items: $schema->object(),
-            ),
-            'layout' => $schema->object(
-                description: 'New Plotly layout object (title, xaxis, yaxis, legend, margin, colorway, etc.)',
-            ),
+            'id' => $schema->integer()->description('ID of the indicator to update (provide either id or name)'),
+            'name' => $schema->string()->description('Name of the indicator to update (provide either id or name)'),
+            'title' => $schema->string()->description('New title'),
+            'description' => $schema->string()->description('New description'),
+            'data_source' => $schema->string()->description('New data source name'),
+            'data' => $schema->array()->description('New Plotly traces array. Each trace: type (bar|line|scatter|pie|histogram|area|box|sunburst), x, y, name, meta.columnNames')->items($schema->object()),
+            'layout' => $schema->object()->description('New Plotly layout object (title, xaxis, yaxis, legend, margin, colorway, etc.)'),
         ];
     }
 }
