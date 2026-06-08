@@ -18,18 +18,20 @@
     "require": {
         "php": "^8.2",
         "ext-intl": "*",
-        "ext-zip": "*",
         "ext-redis": "*",
-        "spatie/laravel-package-tools": "^1.16",
+        "ext-zip": "*",
         "laravel/jetstream": "^5.0",
+        "laravel/mcp": "^0.7.0",
         "livewire/livewire": "^3.4",
-        "spatie/laravel-translatable": "^6.2",
-        "opcodesio/log-viewer": "^3.10"
+        "opcodesio/log-viewer": "^3.10",
+        "spatie/laravel-package-tools": "^1.16",
+        "spatie/laravel-translatable": "^6.2"
     },
     "require-dev": {
         "laravel/boost": "^2.0",
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^11.1",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-arch": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0"
@@ -44,13 +46,32 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Uneca\\Chimera\\Tests\\": "tests"
+            "App\\Actions\\Maker\\": "deploy/actions/Maker",
+            "Uneca\\Chimera\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },
     "scripts": {
         "analyse": "vendor/bin/phpstan analyse",
-        "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest coverage"
+        "test": "vendor/bin/pest --no-coverage",
+        "test-coverage": "vendor/bin/pest coverage",
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "lint": [
+            "@php vendor/bin/pint --ansi"
+        ]
     },
     "config": {
         "sort-packages": true,

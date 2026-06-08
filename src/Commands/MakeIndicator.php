@@ -2,13 +2,15 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Actions\Maker\CreateIndicatorAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Uneca\Chimera\DTOs\IndicatorAttributes;
 use Uneca\Chimera\Models\ChartTemplate;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Traits\PlotlyDefaults;
+use Uneca\Chimera\Validation\IndicatorValidationRules;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
@@ -34,7 +36,7 @@ class MakeIndicator extends Command
         return ChartTemplate::orderBy('name')->get();
     }
 
-    public function handle(CreateIndicatorAction $createIndicatorAction)
+    public function handle(CreateArtefactAction $createArtefactAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -53,7 +55,7 @@ class MakeIndicator extends Command
             label: 'Indicator name',
             placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
             default: DataSource::whereName($dataSource)->first()->title.'/',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:indicators,name']],
+            validate: ['name' => IndicatorValidationRules::rules()['name']],
             hint: 'This will serve as the component name and has to be in camel case'
         );
 
@@ -120,7 +122,7 @@ class MakeIndicator extends Command
             hint: 'You can leave this empty for now'
         );
 
-        $indicatorAttributes = new IndicatorAttributes(
+        $attributes = new IndicatorAttributes(
             name: $name,
             title: $title,
             dataSource: $dataSource,
@@ -130,16 +132,15 @@ class MakeIndicator extends Command
             layout: $selectedTemplate?->layout ?? self::DEFAULT_LAYOUT,
             stub: $stub
         );
-        try {
-            $createIndicatorAction->execute($indicatorAttributes);
+        $result = $createArtefactAction->execute(modelClass: Indicator::class, baseNamespace: '\Livewire', attributes: $attributes);
+        if ($result->success) {
             info('Indicator created successfully.');
 
             return self::SUCCESS;
-
-        } catch (\Exception $e) {
-            error($e->getMessage());
-
-            return self::FAILURE;
         }
+
+        error($result->errorMessage);
+
+        return self::FAILURE;
     }
 }

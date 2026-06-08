@@ -2,11 +2,12 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Actions\Maker\CreateReportAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\ReportAttributes;
 use Uneca\Chimera\Http\Requests\ReportMakerRequest;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\Report;
 
 class ReportMakerController extends Controller
 {
@@ -23,22 +24,21 @@ class ReportMakerController extends Controller
         ]);
     }
 
-    public function store(ReportMakerRequest $request, CreateReportAction $createReportAction)
+    public function store(ReportMakerRequest $request, CreateArtefactAction $createArtefactAction)
     {
-        $reportAttributes = new ReportAttributes(
-            name: $request->report_name,
-            title: $request->title,
-            description: $request->description,
-            dataSource: $request->data_source,
+        $validated = $request->validated();
+        $attributes = new ReportAttributes(
+            name: $validated['name'],
+            title: $validated['title'],
+            description: $validated['description'] ?? null,
+            dataSource: $validated['data_source'],
             stub: resource_path('stubs/reports/default.stub')
         );
-        try {
-            $createReportAction->execute($reportAttributes);
-
+        $result = $createArtefactAction->execute(modelClass: Report::class, baseNamespace: '\Reports', attributes: $attributes);
+        if ($result->success) {
             return redirect()->route('manage.report.index')->withMessage('Report created');
-
-        } catch (\Exception) {
-            return redirect()->route('manage.report.index')->withErrors('There was a problem creating the report.');
         }
+
+        return redirect()->route('manage.report.index')->withErrors('There was a problem creating the report.');
     }
 }

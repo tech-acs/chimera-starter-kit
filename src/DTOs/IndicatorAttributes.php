@@ -2,7 +2,9 @@
 
 namespace Uneca\Chimera\DTOs;
 
-readonly class IndicatorAttributes
+use Uneca\Chimera\Contracts\ArtefactAttributes;
+
+readonly class IndicatorAttributes implements ArtefactAttributes
 {
     public function __construct(
         public string $name,
@@ -14,6 +16,16 @@ readonly class IndicatorAttributes
         public array $layout,
         public string $stub
     ) {}
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getStub(): string
+    {
+        return $this->stub;
+    }
 
     public function toArray(): array
     {

@@ -2,11 +2,13 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Actions\Maker\CreateGaugeAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\DTOs\GaugeAttributes;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\Gauge;
+use Uneca\Chimera\Validation\GaugeValidationRules;
 
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
@@ -24,7 +26,7 @@ class MakeGauge extends Command
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'gauges']);
     }
 
-    public function handle(CreateGaugeAction $createGaugeAction)
+    public function handle(CreateArtefactAction $createArtefactAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -43,7 +45,7 @@ class MakeGauge extends Command
             label: 'Gauge name',
             placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
             default: DataSource::whereName($dataSource)->first()->title.'/',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:gauges,name']],
+            validate: ['name' => GaugeValidationRules::rules()['name']],
             hint: 'This will serve as the component name and has to be in camel case'
         );
 
@@ -68,16 +70,16 @@ class MakeGauge extends Command
             dataSource: $dataSource,
             stub: resource_path('stubs/gauges/default.stub')
         );
-        try {
-            $createGaugeAction->execute($gaugeAttributes);
+
+        $result = $createArtefactAction->execute(modelClass: Gauge::class, baseNamespace: 'Livewire\Gauge', attributes: $gaugeAttributes);
+
+        if ($result->success) {
             info('Gauge created successfully.');
 
             return self::SUCCESS;
-
-        } catch (\Exception $e) {
-            error($e->getMessage());
-
-            return self::FAILURE;
         }
+
+        error($result->errorMessage);
+        return self::FAILURE;
     }
 }

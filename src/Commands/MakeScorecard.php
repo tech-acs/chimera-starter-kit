@@ -2,12 +2,14 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Actions\Maker\CreateScorecardAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\DTOs\ScorecardAttributes;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\Scorecard;
 
+use Uneca\Chimera\Validation\ScorecardValidationRules;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\select;
@@ -24,7 +26,7 @@ class MakeScorecard extends Command
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'scorecards']);
     }
 
-    public function handle(CreateScorecardAction $createScorecardAction)
+    public function handle(CreateArtefactAction $createArtefactAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -43,7 +45,7 @@ class MakeScorecard extends Command
             label: 'Scorecard name',
             placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
             default: DataSource::whereName($dataSource)->first()->title.'/',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:scorecards,name']],
+            validate: ['name' => ScorecardValidationRules::rules()['name']],
             hint: 'This will serve as the component name and has to be in camel case'
         );
 
@@ -61,16 +63,16 @@ class MakeScorecard extends Command
             dataSource: $dataSource,
             stub: resource_path('stubs/scorecards/default.stub')
         );
-        try {
-            $createScorecardAction->execute($scorecardAttributes);
+
+        $result = $createArtefactAction->execute(modelClass: Scorecard::class, baseNamespace: 'Livewire\Scorecard', attributes: $scorecardAttributes);
+
+        if ($result->success) {
             info('Scorecard created successfully.');
 
             return self::SUCCESS;
-
-        } catch (\Exception $e) {
-            error($e->getMessage());
-
-            return self::FAILURE;
         }
+
+        error($result->errorMessage);
+        return self::FAILURE;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Uneca\Chimera\DTOs;
 
-readonly class ReportAttributes
+use Uneca\Chimera\Contracts\ArtefactAttributes;
+
+readonly class ReportAttributes implements ArtefactAttributes
 {
     public function __construct(
         public string $name,
@@ -11,6 +13,16 @@ readonly class ReportAttributes
         public string $dataSource,
         public string $stub
     ) {}
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getStub(): string
+    {
+        return $this->stub;
+    }
 
     public function toArray(): array
     {

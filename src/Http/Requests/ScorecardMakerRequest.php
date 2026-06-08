@@ -3,6 +3,7 @@
 namespace Uneca\Chimera\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Uneca\Chimera\Validation\ScorecardValidationRules;
 
 class ScorecardMakerRequest extends FormRequest
 {
@@ -23,10 +24,6 @@ class ScorecardMakerRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'scorecard_name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*[A-Za-z]$/', 'unique:scorecards,name'],
-            'title' => 'required',
-            'data_source' => 'required',
-        ];
+        return ScorecardValidationRules::rules();
     }
 }

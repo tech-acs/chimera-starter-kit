@@ -23,7 +23,7 @@
 
                         <div>
                             <x-label for="data_source" value="{{ __('Which data source will this indicator be using?') }} *" />
-                            <select name="data_source" @change="if ($el.value != '') { $refs.indicator_name.value = $el.selectedOptions[0].text.replace(/\s+/g, '').concat('/'); $refs.indicator_name.focus(); } else { $refs.indicator_name.value = '' }" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                            <select name="data_source" @change="if ($el.value != '') { $refs.name.value = $el.selectedOptions[0].text.replace(/\s+/g, '').concat('/'); $refs.name.focus(); } else { $refs.name.value = '' }" class="mt-1 space-y-1 text-base p-1 pr-10 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
                                 <option value="">Select the data source</option>
                                 @foreach($dataSources as $name => $title)
                                     <option class="p-2 rounded-md" value="{{ $name }}" @selected(old('data_source') == $name)>{{ $title }}</option>
@@ -33,9 +33,9 @@
                         </div>
 
                         <div>
-                            <x-label for="indicator_name" value="{{ __('Indicator name') }} *" />
-                            <x-input value="{{ old('indicator_name') }}" x-ref="indicator_name" id="indicator_name" name="indicator_name" type="text" class="mt-1 block w-full lg:w-1/2" placeholder="E.g. HouseholdsEnumeratedByDay or Household/BirthRate" />
-                            <x-chimera::input-hint-error for="indicator_name" class="mt-2">This will serve as the component name and has to be in camel case</x-chimera::input-hint-error>
+                            <x-label for="name" value="{{ __('Indicator name') }} *" />
+                            <x-input value="{{ old('name') }}" x-ref="name" id="name" name="name" type="text" class="mt-1 block w-full lg:w-1/2" placeholder="E.g. HouseholdsEnumeratedByDay or Household/BirthRate" />
+                            <x-chimera::input-hint-error for="name" class="mt-2">This will serve as the component name and has to be in camel case</x-chimera::input-hint-error>
                         </div>
 
                         @if ($availableTemplates->isNotEmpty())

@@ -1,13 +1,16 @@
 <?php
 
-namespace Uneca\CensusDashboardStarterKit\Tests;
+namespace Uneca\Chimera\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Uneca\CensusDashboardStarterKit\ChimeraServiceProvider;
+use Uneca\Chimera\ChimeraServiceProvider;
 
 class TestCase extends Orchestra
 {
+    use WithWorkbench;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -21,16 +24,13 @@ class TestCase extends Orchestra
     {
         return [
             ChimeraServiceProvider::class,
+            \Opcodes\LogViewer\LogViewerServiceProvider::class,
+            \Laravel\Mcp\Server\McpServiceProvider::class,
         ];
     }
 
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_census-dashboard-starter-kit_table.php.stub';
-        $migration->up();
-        */
     }
 }

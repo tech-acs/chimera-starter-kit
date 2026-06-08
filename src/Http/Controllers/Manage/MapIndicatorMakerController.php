@@ -2,11 +2,12 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Actions\Maker\CreateMapIndicatorAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\MapIndicatorAttributes;
 use Uneca\Chimera\Http\Requests\MapIndicatorMakerRequest;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\MapIndicator;
 
 class MapIndicatorMakerController extends Controller
 {
@@ -23,22 +24,21 @@ class MapIndicatorMakerController extends Controller
         ]);
     }
 
-    public function store(MapIndicatorMakerRequest $request, CreateMapIndicatorAction $createMapIndicatorAction)
+    public function store(MapIndicatorMakerRequest $request, CreateArtefactAction $createArtefactAction)
     {
-        $mapIndicatorAttributes = new MapIndicatorAttributes(
-            name: $request->map_indicator_name,
-            title: $request->title,
-            description: $request->description,
-            dataSource: $request->data_source,
+        $validated = $request->validated();
+        $attributes = new MapIndicatorAttributes(
+            name: $validated['name'],
+            title: $validated['title'],
+            description: $validated['description'] ?? null,
+            dataSource: $validated['data_source'],
             stub: resource_path('stubs/map_indicators/default.stub')
         );
-        try {
-            $createMapIndicatorAction->execute($mapIndicatorAttributes);
-
+        $result = $createArtefactAction->execute(modelClass: MapIndicator::class, baseNamespace: '\MapIndicators', attributes: $attributes);
+        if ($result->success) {
             return redirect()->route('manage.map_indicator.index')->withMessage('Map indicator created');
-
-        } catch (\Exception) {
-            return redirect()->route('manage.map_indicator.index')->withErrors('There was a problem creating the scorecard.');
         }
+
+        return redirect()->route('manage.map_indicator.index')->withErrors('There was a problem creating the map indicator.');
     }
 }

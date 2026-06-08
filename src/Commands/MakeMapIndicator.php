@@ -2,11 +2,13 @@
 
 namespace Uneca\Chimera\Commands;
 
-use App\Actions\Maker\CreateMapIndicatorAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Permission;
 use Uneca\Chimera\DTOs\MapIndicatorAttributes;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\MapIndicator;
+use Uneca\Chimera\Validation\MapIndicatorValidationRules;
 
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
@@ -25,7 +27,7 @@ class MakeMapIndicator extends Command
         Permission::firstOrCreate(['guard_name' => 'web', 'name' => 'map_indicators']);
     }
 
-    public function handle(CreateMapIndicatorAction $createMapIndicatorAction)
+    public function handle(CreateArtefactAction $createArtefactAction)
     {
         $dataSources = DataSource::all();
         if ($dataSources->isEmpty()) {
@@ -42,7 +44,7 @@ class MakeMapIndicator extends Command
             label: 'Map indicator name',
             placeholder: 'E.g. HouseholdsEnumeratedByDay or Household/BirthRate',
             default: DataSource::whereName($dataSource)->first()->title.'/',
-            validate: ['name' => ['required', 'string', 'regex:/^[A-Z][A-Za-z\/]*$/', 'unique:map_indicators,name']],
+            validate: ['name' => MapIndicatorValidationRules::rules()['name']],
             hint: 'This will serve as the component name and has to be in camel case'
         );
         $title = text(
@@ -64,16 +66,15 @@ class MakeMapIndicator extends Command
             dataSource: $dataSource,
             stub: resource_path('stubs/map_indicators/default.stub')
         );
-        try {
-            $createMapIndicatorAction->execute($indicatorAttributes);
+        $result = $createArtefactAction->execute(modelClass: MapIndicator::class, baseNamespace: '\MapIndicators', attributes: $indicatorAttributes);
+        if ($result->success) {
             info('Map indicator created successfully.');
 
             return self::SUCCESS;
-
-        } catch (\Exception $e) {
-            error($e->getMessage());
-
-            return self::FAILURE;
         }
+
+        error($result->errorMessage);
+
+        return self::FAILURE;
     }
 }

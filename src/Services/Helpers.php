@@ -5,6 +5,17 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Uneca\Chimera\Models\Setting;
 
+if (! function_exists('namespaceToPath')) {
+    function namespaceToPath(string $namespace, ?string $filename = null): string
+    {
+        // Remove leading/trailing backslashes and convert to path
+        $namespace = trim($namespace, '\\');
+        $path = str_replace('\\', '/', $namespace);
+
+        return app_path(rtrim("{$path}/{$filename}", '/'));
+    }
+}
+
 if (! function_exists('settings')) {
     function settings(?string $key = null, $default = null)
     {

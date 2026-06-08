@@ -1,5 +1,5 @@
 <?php
 
-use Uneca\CensusDashboardStarterKit\Tests\TestCase;
+use Uneca\Chimera\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

@@ -2,6 +2,7 @@
 
 namespace Uneca\Chimera;
 
+use Uneca\Chimera\Mcp\Servers\DashboardStarterKit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Laravel\Fortify\Fortify;
+use Laravel\Mcp\Facades\Mcp;
 use Livewire\Livewire;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Spatie\LaravelPackageTools\Package;
@@ -289,5 +291,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 return collect();
             }
         });
+
+        Mcp::local('dashboard-starter-kit', DashboardStarterKit::class);
     }
 }

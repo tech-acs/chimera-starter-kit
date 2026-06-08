@@ -2,11 +2,12 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Actions\Maker\CreateGaugeAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\GaugeAttributes;
 use Uneca\Chimera\Http\Requests\GaugeMakerRequest;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\Gauge;
 
 class GaugeMakerController extends Controller
 {
@@ -23,22 +24,20 @@ class GaugeMakerController extends Controller
         ]);
     }
 
-    public function store(GaugeMakerRequest $request, CreateGaugeAction $createGaugeAction)
+    public function store(GaugeMakerRequest $request, CreateArtefactAction $createArtefactAction)
     {
+        $validated = $request->validated();
         $gaugeAttributes = new GaugeAttributes(
-            name: $request->gauge_name,
-            title: $request->title,
-            subtitle: $request->subtitle,
-            dataSource: $request->data_source,
+            name: $validated['name'],
+            title: $validated['title'],
+            subtitle: $validated['subtitle'],
+            dataSource: $validated['data_source'],
             stub: resource_path('stubs/gauges/default.stub')
         );
-        try {
-            $createGaugeAction->execute($gaugeAttributes);
-
+        $result = $createArtefactAction->execute(modelClass: Gauge::class, baseNamespace: 'Livewire\Gauge', attributes: $gaugeAttributes);
+        if ($result->success) {
             return redirect()->route('gauge.index')->withMessage('Gauge created');
-
-        } catch (\Exception) {
-            return redirect()->route('gauge.index')->withErrors('There was a problem creating the gauge.');
         }
+        return redirect()->route('gauge.index')->withErrors('There was a problem creating the gauge.');
     }
 }

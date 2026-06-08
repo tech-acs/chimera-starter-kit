@@ -2,7 +2,9 @@
 
 namespace Uneca\Chimera\DTOs;
 
-readonly class ScorecardAttributes
+use Uneca\Chimera\Contracts\ArtefactAttributes;
+
+readonly class ScorecardAttributes implements ArtefactAttributes
 {
     public function __construct(
         public string $name,
@@ -10,6 +12,16 @@ readonly class ScorecardAttributes
         public string $dataSource,
         public string $stub
     ) {}
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getStub(): string
+    {
+        return $this->stub;
+    }
 
     public function toArray(): array
     {

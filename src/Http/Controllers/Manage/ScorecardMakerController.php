@@ -2,11 +2,12 @@
 
 namespace Uneca\Chimera\Http\Controllers\Manage;
 
-use App\Actions\Maker\CreateScorecardAction;
+use App\Actions\Maker\CreateArtefactAction;
 use Illuminate\Routing\Controller;
 use Uneca\Chimera\DTOs\ScorecardAttributes;
 use Uneca\Chimera\Http\Requests\ScorecardMakerRequest;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Models\Scorecard;
 
 class ScorecardMakerController extends Controller
 {
@@ -23,21 +24,19 @@ class ScorecardMakerController extends Controller
         ]);
     }
 
-    public function store(ScorecardMakerRequest $request, CreateScorecardAction $createScorecardAction)
+    public function store(ScorecardMakerRequest $request, CreateArtefactAction $createArtefactAction)
     {
+        $validated = $request->validated();
         $scorecardAttributes = new ScorecardAttributes(
-            name: $request->scorecard_name,
-            title: $request->title,
-            dataSource: $request->data_source,
+            name: $validated['name'],
+            title: $validated['title'],
+            dataSource: $validated['data_source'],
             stub: resource_path('stubs/scorecards/default.stub')
         );
-        try {
-            $createScorecardAction->execute($scorecardAttributes);
-
+        $result = $createArtefactAction->execute(modelClass: Scorecard::class, baseNamespace: 'Livewire\Scorecard', attributes: $scorecardAttributes);
+        if ($result->success) {
             return redirect()->route('scorecard.index')->withMessage('Scorecard created');
-
-        } catch (\Exception) {
-            return redirect()->route('scorecard.index')->withErrors('There was a problem creating the scorecard.');
         }
+        return redirect()->route('scorecard.index')->withErrors('There was a problem creating the scorecard.');
     }
 }
