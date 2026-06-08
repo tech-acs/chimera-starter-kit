@@ -36,8 +36,11 @@ class Summary extends Component
         }
     }
 
-    private function makeProgressStatement(Carbon $s, Carbon $e, Carbon $now)
+    private function makeProgressStatement(?Carbon $s, ?Carbon $e, Carbon $now)
     {
+        if (is_null($s) || is_null($e)) {
+            return '-';
+        }
         if ($now->isBefore($s)) {
             $progress = __(':diff days to go', ['diff' => (int) $now->diffInDays($s, absolute: true)]);
         } elseif ($now->isBetween($s, $e)) {

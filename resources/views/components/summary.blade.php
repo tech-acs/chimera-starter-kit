@@ -5,9 +5,11 @@
                 <p class="text-2xl font-semibold text-gray-700">{{ $title }} @if (! is_null($area)) ({{ $area->name }}) @endif</p>
             </dt>
             <dd class="flex items-baseline">
+                @if ($dates['start'] && $dates['end'])
                 <p class="flex items-baseline text-sm font-semibold">
                     {{$dates['start']->locale(app()->getLocale())->isoFormat('ll')}} - {{$dates['end']->locale(app()->getLocale())->isoFormat('ll')}}
                 </p>
+                @endif
             </dd>
         </div>
         <div class="flex flex-col">
