@@ -56,7 +56,11 @@ class BreakoutQueryBuilder
         string $partialCaseIdentifyingCondition = 'cases.partial_save_mode is NULL'
     ) {
         $this->filterPath = $filterPath;
-        [$selectColumns, $whereConditions, $concernedTables] = QueryFragmentFactory::make($dataSource)->getSqlFragments($filterPath);
+        $fragment = QueryFragmentFactory::make($dataSource);
+        if (is_null($fragment)) {
+            throw new \Exception("Query fragments not defined for data source '{$dataSource}'.");
+        }
+        [$selectColumns, $whereConditions, $concernedTables] = $fragment->getSqlFragments($filterPath);
 
         try {
             $this->dbConnection = DB::connection($dataSource);
