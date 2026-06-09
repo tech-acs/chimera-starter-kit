@@ -28,6 +28,10 @@ abstract class ScorecardComponent extends Component
 
     public int|float|string|null $diff = null;
 
+    public string $valueField = 'value';
+
+    public string $diffField = 'diff';
+
     public string $unit = '%';
 
     public string $bgColor;
@@ -86,8 +90,10 @@ abstract class ScorecardComponent extends Component
     public function setPropertiesFromData(): void
     {
         [$this->dataTimestamp, $data] = Cache::get($this->cacheKey());
-        if (($data instanceof Collection) && ($data->count() == 2)) {
-            [$this->value, $this->diff] = $data;
+        if ($data instanceof Collection && $data->isNotEmpty()) {
+            $row = $data->first();
+            $this->value = $row->{$this->valueField} ?? '';
+            $this->diff = $row->{$this->diffField} ?? null;
             $this->dataStatus = DataStatus::RENDERABLE->value;
         } else {
             $this->dataStatus = DataStatus::EMPTY->value;

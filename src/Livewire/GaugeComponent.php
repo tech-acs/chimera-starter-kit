@@ -26,6 +26,8 @@ abstract class GaugeComponent extends Component
 
     public null|int|float|string $value = '';
 
+    public string $valueField = 'value';
+
     public string $unit = '%';
 
     public int $outOf = 100;
@@ -89,8 +91,9 @@ abstract class GaugeComponent extends Component
     public function setPropertiesFromData(): void
     {
         [$this->dataTimestamp, $data] = Cache::get($this->cacheKey());
-        if ($data instanceof Collection) {
-            $this->value = $data->first()?->value;
+        if ($data instanceof Collection && $data->isNotEmpty()) {
+            $row = $data->first();
+            $this->value = $row->{$this->valueField} ?? '';
             $this->scoreColor = $this->assignColor($this->value);
             $this->dataStatus = DataStatus::RENDERABLE->value;
         } else {

@@ -78,11 +78,12 @@ class CaseStats extends Component
                 ->from([])
                 ->getSingleRow();
             $info = ['total' => 'NA', 'complete' => 'NA', 'partial' => 'NA', 'duplicate' => 'NA'];
-            if (! is_null($l)) {
-                $info['total'] = $l->total;
-                $info['complete'] = $l->complete;
-                $info['partial'] = $l->partial;
-                $info['duplicate'] = $l->duplicate;
+            if ($l->isNotEmpty()) {
+                $row = $l->first();
+                $info['total'] = $row->total;
+                $info['complete'] = $row->complete;
+                $info['partial'] = $row->partial;
+                $info['duplicate'] = $row->duplicate;
             }
 
             return collect($info);
