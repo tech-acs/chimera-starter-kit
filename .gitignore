@@ -5,10 +5,13 @@
 build
 composer.lock
 coverage
-docs
 phpunit.xml
 phpstan.neon
 testbench.yaml
 vendor
 node_modules
 .php-cs-fixer.cache
+
+# VitePress specific
+/docs/.vitepress/dist
+/docs/.vitepress/cache
