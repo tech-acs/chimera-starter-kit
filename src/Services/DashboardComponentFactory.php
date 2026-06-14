@@ -14,7 +14,7 @@ class DashboardComponentFactory
 {
     public static function makeIndicator(Indicator $indicator)
     {
-        $classPath = 'App\\Livewire\\'.str_replace('/', '\\', $indicator->name);
+        $classPath = 'App\\Livewire\\Indicator\\'.str_replace('/', '\\', $indicator->name);
         try {
             $instance = new $classPath;
             $instance->indicator = $indicator;

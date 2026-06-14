@@ -369,7 +369,7 @@ class BreakoutQueryBuilder
         return $finalResult;
     }
 
-    public function getSingleRow(?string $sql = null): ?object
+    public function getSingleRow(?string $sql = null): Collection
     {
         $this->columns = [];
         $this->select = 'SELECT '.implode(', ', $this->chosenSelectColumns);
@@ -378,6 +378,6 @@ class BreakoutQueryBuilder
         $this->orderBy = '';
         $this->leftJoin = '';
 
-        return $this->get($sql)->first();
+        return $this->get($sql);
     }
 }

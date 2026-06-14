@@ -6,6 +6,7 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
 use Uneca\Chimera\Models\DataSource;
@@ -16,7 +17,7 @@ class GetDataSources extends Tool
     /**
      * Handle the tool request.
      */
-    public function handle(Request $request): Response
+    public function handle(Request $request): Response|ResponseFactory
     {
         if (! Schema::hasTable('data_sources')) {
             return Response::text('No data sources found. The data_sources table does not exist.');
@@ -48,23 +49,23 @@ class GetDataSources extends Tool
             'data' => $schema->array()
                 ->description('A list of active data sources.')
                 ->items(
-                    $schema->object()->properties([
-                        'name' => $schema->string()
-                            ->description('The unique system identifier or slug of the data source.')
-                            ->required(),
+                $schema->object([
+                    'name' => $schema->string()
+                        ->description('The unique system identifier or slug of the data source.')
+                        ->required(),
 
-                        'title' => $schema->string()
-                            ->description('The human-readable display title.')
-                            ->required(),
+                    'title' => $schema->string()
+                        ->description('The human-readable display title.')
+                        ->required(),
 
-                        'start_date' => $schema->string()
-                            ->description('The exercise (census, survey, etc.) start date.')
-                            ->required(),
+                    'start_date' => $schema->string()
+                        ->description('The exercise (census, survey, etc.) start date.')
+                        ->required(),
 
-                        'end_date' => $schema->string()
-                            ->description('The exercise (census, survey, etc.) end date.')
-                            ->required(),
-                    ])
+                    'end_date' => $schema->string()
+                        ->description('The exercise (census, survey, etc.) end date.')
+                        ->required(),
+                ])
                 ),
         ];
     }

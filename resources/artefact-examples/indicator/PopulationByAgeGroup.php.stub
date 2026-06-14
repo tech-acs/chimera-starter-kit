@@ -1,0 +1,32 @@
+<?php
+// Description: Multiple CASE WHEN aggregates for age groups. Demonstrates map() percentage computation with safeDivide().
+
+namespace App\Livewire\Indicator\Demographics;
+
+use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
+use Uneca\Chimera\Livewire\Chart;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class PopulationByAgeGroup extends Chart
+{
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
+                ->select([
+                    'COUNT(*) AS total',
+                    'SUM(CASE WHEN p12 < 15 THEN 1 ELSE 0 END) AS children',
+                    'SUM(CASE WHEN p12 >= 15 AND p12 < 65 THEN 1 ELSE 0 END) AS adults',
+                    'SUM(CASE WHEN p12 >= 65 THEN 1 ELSE 0 END) AS elderly',
+                ])
+                ->from(['pop_rec'])
+                ->groupBy(['area_code'])
+                ->lastlyAreaLeftJoinData()
+                ->get()
+                ->map(fn ($item) => tap($item, fn ($i) => $i->children_pct = Number::format(safeDivide($i->children, $i->total) * 100, 1)));
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

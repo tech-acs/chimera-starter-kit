@@ -1,0 +1,27 @@
+<?php
+// Description: Simple SELECT for tabular Excel export. Demonstrates plain row retrieval with get() for reports.
+
+namespace App\Reports\Households;
+
+use Illuminate\Support\Collection;
+use Uneca\Chimera\Report\ReportBaseClass;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class HouseholdListing extends ReportBaseClass
+{
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->report->data_source, $filterPath))
+                ->select([
+                    'h01 AS household_id',
+                    'h02 AS head_of_household',
+                    'total_household_members AS members',
+                ])
+                ->from(['housing_rec'])
+                ->get();
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

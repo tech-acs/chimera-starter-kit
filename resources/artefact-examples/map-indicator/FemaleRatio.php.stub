@@ -1,0 +1,33 @@
+<?php
+// Description: Ratio computation with groupBy and lastlyAreaLeftJoinData. Demonstrates map() post-processing for map indicator values.
+
+namespace App\MapIndicators\Demographics;
+
+use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
+use Uneca\Chimera\MapIndicator\MapIndicatorBaseClass;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class FemaleRatio extends MapIndicatorBaseClass
+{
+    public array $bins = [0, 50, 75, 100, 125, 150];
+    public const SELECTED_COLOR_CHART = 'pumpkin';
+
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->mapIndicator->data_source, $filterPath))
+                ->select([
+                    'SUM(total_number_of_females) AS females',
+                    'SUM(total_number_of_males) AS males',
+                ])
+                ->from(['housing_rec'])
+                ->groupBy(['area_code'])
+                ->lastlyAreaLeftJoinData()
+                ->get()
+                ->map(fn ($row) => tap($row, fn ($r) => $r->value = Number::format(safeDivide($r->females, $r->males) * 100, 1)));
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

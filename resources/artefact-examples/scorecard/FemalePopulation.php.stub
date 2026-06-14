@@ -1,0 +1,25 @@
+<?php
+// Description: Query with a WHERE clause filter. Demonstrates filtering by coded value (P11 = 2).
+
+namespace App\Livewire\Scorecard\Demographics;
+
+use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
+use Uneca\Chimera\Livewire\ScorecardComponent;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class FemalePopulation extends ScorecardComponent
+{
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->scorecard->data_source, $filterPath))
+                ->select(['COUNT(*) AS value', 'NULL AS diff'])
+                ->from(['pop_rec'])
+                ->where(['P11 = 2'])
+                ->getSingleRow();
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

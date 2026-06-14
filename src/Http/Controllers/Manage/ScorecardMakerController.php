@@ -33,7 +33,7 @@ class ScorecardMakerController extends Controller
             dataSource: $validated['data_source'],
             stub: resource_path('stubs/scorecards/default.stub')
         );
-        $result = $createArtefactAction->execute(modelClass: Scorecard::class, baseNamespace: 'Livewire\Scorecard', attributes: $scorecardAttributes);
+        $result = $createArtefactAction->execute(modelClass: Scorecard::class, baseNamespace: '\Livewire\Scorecard', attributes: $scorecardAttributes);
         if ($result->success) {
             return redirect()->route('scorecard.index')->withMessage('Scorecard created');
         }

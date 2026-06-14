@@ -66,11 +66,11 @@ class ManagePageAssignment extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'artefact_type' => $schema->string('Type of artefact: indicator, map_indicator, or report'),
-            'artefact_name' => $schema->string('Name of the artefact to assign'),
-            'page_slug' => $schema->string('Slug of the page to assign the artefact to'),
-            'rank' => $schema->integer('Sort order on the page (optional, default 0)')->optional(),
-            'action' => $schema->string("Action to perform: 'attach' or 'detach' (optional, default 'attach')")->optional(),
+            'artefact_type' => $schema->string()->description('Type of artefact: indicator, map_indicator, or report'),
+            'artefact_name' => $schema->string()->description('Name of the artefact to assign'),
+            'page_slug' => $schema->string()->description('Slug of the page to assign the artefact to'),
+            'rank' => $schema->integer()->description('Sort order on the page (optional, default 0)')->nullable(),
+            'action' => $schema->string()->description("Action to perform: 'attach' or 'detach' (optional, default 'attach')")->nullable(),
         ];
     }
 }

@@ -1,0 +1,39 @@
+<?php
+// Description: Two-aggregate query with safeDivide() for percentage completion. Demonstrates getSingleRow() with map() for gauges.
+
+namespace App\Livewire\Gauge\Households;
+
+use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
+use Uneca\Chimera\Livewire\GaugeComponent;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class Completion extends GaugeComponent
+{
+    public string $unit = '/50';
+    public array $colorThresholds = [30 => 'text-red-500', 40 => 'text-amber-500', 50 => 'text-green-500'];
+    public int $outOf = 50;
+
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->gauge->data_source, $filterPath))
+                ->select([
+                    'COUNT(*) AS total_households',
+                    'SUM(hh_end_interview_time - hh_start_interview_time) AS total_time',
+                ])
+                ->from(['housing_rec'])
+                ->where([
+                    'hh_start_interview_time IS NOT NULL',
+                    'hh_end_interview_time IS NOT NULL',
+                    '(hh_end_interview_time - hh_start_interview_time) > 600',
+                ])
+                ->getSingleRow()
+                ->map(fn ($row) => (object) [
+                    'value' => Number::format(safeDivide($row->total_time, $row->total_households) / 60, 1),
+                ]);
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

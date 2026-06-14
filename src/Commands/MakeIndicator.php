@@ -132,7 +132,7 @@ class MakeIndicator extends Command
             layout: $selectedTemplate?->layout ?? self::DEFAULT_LAYOUT,
             stub: $stub
         );
-        $result = $createArtefactAction->execute(modelClass: Indicator::class, baseNamespace: 'Livewire\Indicator', attributes: $attributes);
+        $result = $createArtefactAction->execute(modelClass: Indicator::class, baseNamespace: '\Livewire\Indicator', attributes: $attributes);
         if ($result->success) {
             info('Indicator created successfully.');
 

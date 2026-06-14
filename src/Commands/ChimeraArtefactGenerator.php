@@ -6,7 +6,7 @@ use Illuminate\Console\GeneratorCommand;
 
 class ChimeraArtefactGenerator extends GeneratorCommand
 {
-    protected $signature = 'chimera:make-artefact {name} {--stub} {--namespace}';
+    protected $signature = 'chimera:make-artefact {name} {--stub=} {--namespace=}';
 
     protected $description = 'Create a new dashboard artefact';
 

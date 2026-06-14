@@ -1,0 +1,29 @@
+<?php
+// Description: Aggregated summary query for report export. Demonstrates GROUP BY with computed columns.
+
+namespace App\Reports\Demographics;
+
+use Illuminate\Support\Collection;
+use Uneca\Chimera\Report\ReportBaseClass;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class PopulationSummary extends ReportBaseClass
+{
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->report->data_source, $filterPath))
+                ->select([
+                    'area_code',
+                    'COUNT(*) AS total_population',
+                    'SUM(CASE WHEN p11 = 1 THEN 1 ELSE 0 END) AS males',
+                    'SUM(CASE WHEN p11 = 2 THEN 1 ELSE 0 END) AS females',
+                ])
+                ->from(['pop_rec'])
+                ->groupBy(['area_code'])
+                ->get();
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

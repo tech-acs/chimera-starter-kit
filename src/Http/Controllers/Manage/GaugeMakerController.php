@@ -34,7 +34,7 @@ class GaugeMakerController extends Controller
             dataSource: $validated['data_source'],
             stub: resource_path('stubs/gauges/default.stub')
         );
-        $result = $createArtefactAction->execute(modelClass: Gauge::class, baseNamespace: 'Livewire\Gauge', attributes: $gaugeAttributes);
+        $result = $createArtefactAction->execute(modelClass: Gauge::class, baseNamespace: '\Livewire\Gauge', attributes: $gaugeAttributes);
         if ($result->success) {
             return redirect()->route('gauge.index')->withMessage('Gauge created');
         }

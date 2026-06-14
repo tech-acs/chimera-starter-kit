@@ -280,6 +280,19 @@ describe('CLI Path', function () {
 
 describe('MCP Path', function () {
     beforeEach(function () {
+        Schema::create('data_sources', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('title');
+            $table->boolean('active')->default(true);
+            $table->timestamps();
+        });
+        \DB::table('data_sources')->insert([
+            'name' => 'households',
+            'title' => json_encode(['en' => 'Households']),
+            'active' => true,
+        ]);
+
         Schema::create('scorecards', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
@@ -291,6 +304,7 @@ describe('MCP Path', function () {
     });
 
     afterEach(function () {
+        Schema::dropIfExists('data_sources');
         Schema::dropIfExists('scorecards');
     });
 

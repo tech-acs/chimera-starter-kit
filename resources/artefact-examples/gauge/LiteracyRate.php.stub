@@ -1,0 +1,32 @@
+<?php
+// Description: CASE WHEN aggregates for percentage. Demonstrates conditional counting in SELECT with getSingleRow().
+
+namespace App\Livewire\Gauge\Education;
+
+use Illuminate\Support\Collection;
+use Illuminate\Support\Number;
+use Uneca\Chimera\Livewire\GaugeComponent;
+use Uneca\Chimera\Services\BreakoutQueryBuilder;
+
+class LiteracyRate extends GaugeComponent
+{
+    public array $colorThresholds = [50 => 'text-red-500', 70 => 'text-amber-500', 90 => 'text-green-500'];
+
+    public function getData(string $filterPath): Collection
+    {
+        try {
+            return (new BreakoutQueryBuilder($this->gauge->data_source, $filterPath))
+                ->select([
+                    'COUNT(*) AS total'),
+                    'SUM(CASE WHEN can_read = 1 THEN 1 ELSE 0 END) AS literate',
+                ])
+                ->from(['pop_rec'])
+                ->getSingleRow()
+                ->map(fn ($row) => (object) [
+                    'value' => Number::format(safeDivide($row->literate, $row->total) * 100, 1),
+                ]);
+        } catch (\Exception $e) {
+            return collect();
+        }
+    }
+}

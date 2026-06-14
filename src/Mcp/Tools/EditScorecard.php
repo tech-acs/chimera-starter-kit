@@ -10,7 +10,7 @@ use Laravel\Mcp\Server\Tool;
 use Uneca\Chimera\Mcp\Tools\Concerns\ForceModelUpdate;
 use Uneca\Chimera\Models\Scorecard;
 
-#[Description('Update a scorecard\'s metadata after creation. Finds the scorecard by name and updates only the provided fields.')]
+#[Description('Update a scorecard\'s metadata after creation. Finds the scorecard by name and updates only the provided fields. If this tool fails, report the error and stop — do not fall back to workarounds.')]
 class EditScorecard extends Tool
 {
     use ForceModelUpdate;
@@ -53,11 +53,11 @@ class EditScorecard extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'name' => $schema->string('Name of the scorecard to edit'),
-            'title' => $schema->string('New title (optional)')->optional(),
-            'description' => $schema->string('New description (optional)')->optional(),
-            'published' => $schema->boolean('Published status (optional)')->optional(),
-            'scope' => $schema->string('Scope (optional)')->optional(),
+            'name' => $schema->string()->description('Name of the scorecard to edit'),
+            'title' => $schema->string()->description('New title (optional)')->nullable(),
+            'description' => $schema->string()->description('New description (optional)')->nullable(),
+            'published' => $schema->boolean()->description('Published status (optional)')->nullable(),
+            'scope' => $schema->string()->description('Scope (optional)')->nullable(),
         ];
     }
 }

@@ -71,7 +71,7 @@ class MakeGauge extends Command
             stub: resource_path('stubs/gauges/default.stub')
         );
 
-        $result = $createArtefactAction->execute(modelClass: Gauge::class, baseNamespace: 'Livewire\Gauge', attributes: $gaugeAttributes);
+        $result = $createArtefactAction->execute(modelClass: Gauge::class, baseNamespace: '\Livewire\Gauge', attributes: $gaugeAttributes);
 
         if ($result->success) {
             info('Gauge created successfully.');

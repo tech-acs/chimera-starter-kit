@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HANDLE="dashboard-starter-kit"
+ARTISAN="${ARTISAN:-php artisan}"
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") <method> [json-arguments]
+
+Call an MCP tool on the dashboard-starter-kit server.
+
+Methods:
+  tools/list                         List all available tools
+  tools/call <tool-name> <json>      Call a tool with JSON arguments
+  resources/list                     List all resources
+  resources/read <uri>               Read a resource by URI
+
+Examples:
+  $(basename "$0") tools/list
+  $(basename "$0") tools/call get-data-sources '{}'
+  $(basename "$0") tools/call read-dictionary '{"data_source": "Households", "summary": true}'
+  $(basename "$0") tools/call create-indicator '{"name":"Test","title":"Test Indicator","data_source":"Households","chart_type":"bar"}'
+  $(basename "$0") resources/list
+  $(basename "$0") resources/read examples://artefact/indicator
+EOF
+  exit 1
+}
+
+if [ $# -lt 1 ]; then
+  usage
+fi
+
+METHOD="$1"
+shift
+
+case "$METHOD" in
+  tools/list|resources/list)
+    REQUEST=$(cat <<-EOF
+{"jsonrpc":"2.0","id":2,"method":"$METHOD","params":{}}
+EOF
+    )
+    ;;
+  tools/call)
+    if [ $# -lt 2 ]; then
+      echo "Usage: $(basename "$0") tools/call <tool-name> <json-arguments>"
+      exit 1
+    fi
+    TOOL_NAME="$1"
+    ARGS="$2"
+    REQUEST=$(cat <<-EOF
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"$TOOL_NAME","arguments":$ARGS}}
+EOF
+    )
+    ;;
+  resources/read)
+    if [ $# -lt 1 ]; then
+      echo "Usage: $(basename "$0") resources/read <uri>"
+      exit 1
+    fi
+    URI="$1"
+    REQUEST=$(cat <<-EOF
+{"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"uri":"$URI"}}
+EOF
+    )
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+INIT=$(cat <<'EOF'
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","clientInfo":{"name":"mcp-call","version":"1.0"},"capabilities":{}}}
+{"jsonrpc":"2.0","method":"notifications/initialized"}
+EOF
+)
+
+# Pipe initialize + initialized + actual request into the server
+# The server reads line by line from stdin
+printf '%s\n%s\n' "$INIT" "$REQUEST" | eval "$ARTISAN mcp:start $HANDLE" 2>/dev/null

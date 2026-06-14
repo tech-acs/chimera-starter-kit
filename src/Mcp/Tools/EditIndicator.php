@@ -11,7 +11,7 @@ use Uneca\Chimera\Enums\IndicatorScope;
 use Uneca\Chimera\Mcp\Tools\Concerns\ForceModelUpdate;
 use Uneca\Chimera\Models\Indicator;
 
-#[Description('Update an indicator\'s metadata, Plotly traces, or layout after creation. Finds the indicator by name and updates only the provided fields.')]
+#[Description('Update an indicator\'s metadata after creation. For Plotly traces and layout, use EditChart instead. Finds the indicator by name and updates only the provided fields. If this tool fails, report the error and stop — do not fall back to workarounds.')]
 class EditIndicator extends Tool
 {
     use ForceModelUpdate;
@@ -58,7 +58,7 @@ class EditIndicator extends Tool
             $scope = $request->get('scope');
             $validScopes = array_column(IndicatorScope::cases(), 'value');
             if (! in_array($scope, $validScopes)) {
-                return Response::error("Invalid scope '{$scope}'. Valid values: " . implode(', ', $validScopes));
+                return Response::error("Invalid scope '{$scope}'. Valid values: ".implode(', ', $validScopes));
             }
             $update['scope'] = $scope;
         }
@@ -71,14 +71,14 @@ class EditIndicator extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'name' => $schema->string('Name of the indicator to edit'),
-            'title' => $schema->string('New title (optional)')->optional(),
-            'description' => $schema->string('New description (optional)')->optional(),
-            'help' => $schema->string('New help text (optional)')->optional(),
-            'data' => $schema->array('Plotly trace data JSON array (optional)')->optional(),
-            'layout' => $schema->object('Plotly layout JSON object (optional)')->optional(),
-            'published' => $schema->boolean('Published status (optional)')->optional(),
-            'scope' => $schema->string("Scope: 'Pages only', 'Area insights only', or 'Everywhere' (optional)")->optional(),
+            'name' => $schema->string()->description('Name of the indicator to edit'),
+            'title' => $schema->string()->description('New title (optional)')->nullable(),
+            'description' => $schema->string()->description('New description (optional)')->nullable(),
+            'help' => $schema->string()->description('New help text (optional)')->nullable(),
+            'data' => $schema->array()->nullable(),
+            'layout' => $schema->object()->nullable(),
+            'published' => $schema->boolean()->description('Published status (optional)')->nullable(),
+            'scope' => $schema->string()->description("Scope: 'Pages only', 'Area insights only', or 'Everywhere' (optional)")->nullable(),
         ];
     }
 }

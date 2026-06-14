@@ -6,464 +6,304 @@ use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
+use Uneca\Chimera\Mcp\Resources\ArtefactExampleFile;
+use Uneca\Chimera\Mcp\Resources\ArtefactExampleIndex;
 use Uneca\Chimera\Mcp\Tools\CreateGauge;
 use Uneca\Chimera\Mcp\Tools\CreateIndicator;
 use Uneca\Chimera\Mcp\Tools\CreateMapIndicator;
 use Uneca\Chimera\Mcp\Tools\CreateReport;
 use Uneca\Chimera\Mcp\Tools\CreateScorecard;
+use Uneca\Chimera\Mcp\Tools\EditChart;
 use Uneca\Chimera\Mcp\Tools\EditGauge;
+use Uneca\Chimera\Mcp\Tools\GetArtefactExamples;
+use Uneca\Chimera\Mcp\Tools\GetDataSources;
 use Uneca\Chimera\Mcp\Tools\EditIndicator;
 use Uneca\Chimera\Mcp\Tools\EditMapIndicator;
 use Uneca\Chimera\Mcp\Tools\EditReport;
 use Uneca\Chimera\Mcp\Tools\EditScorecard;
 use Uneca\Chimera\Mcp\Tools\ManagePageAssignment;
+use Uneca\Chimera\Mcp\Tools\ReadDictionary;
+use Uneca\Chimera\Mcp\Tools\ValidateArtefact;
 
 #[Name('Dashboard Starter Kit')]
 #[Version('0.0.1')]
 #[Instructions(<<<'MARKDOWN'
-This MCP server helps AI coding agents create and edit dashboard artefacts for the Chimera Dashboard Starter Kit.
+This MCP server helps AI coding agents create and edit dashboard artefacts.
+
+## Failure protocol
+
+Every artefact tool (`create-*`, `edit-*`) depends on a running MCP server, the
+database, and the `chimera:make-artefact` generator command. If any tool call
+fails — whether from a connection error, validation error, or runtime exception —
+report the error verbatim to the user and stop. Do NOT fall back to Artisan
+commands, manual file/Database writes, or any other workaround. Bypassing the
+tools skips permission creation, transaction safety, and stub generation, leaving
+the project in an inconsistent state.
 
 ## Artefacts
 
-The dashboard has five artefact types: **Indicator** (Plotly chart), **Scorecard** (numeric card), **Gauge** (visual threshold), **MapIndicator** (colored map), and **Report** (Excel export).
+Five types:
+- **Indicator** (Plotly chart — "indicator" alone in a user request means this specific chart type, not the generic concept of a dashboard metric)
+- **Scorecard** (numeric summary card)
+- **Gauge** (visual threshold card)
+- **MapIndicator** (colored map area)
+- **Report** (Excel export)
 
-Every artefact lives in **two places**:
-1. **Database** — an Eloquent model record with metadata
-2. **Filesystem** — a PHP class that extends a base component and implements `getData()`
+Every artefact lives in two places: a database record and a PHP class file.
 
-## Required Workflow — ALWAYS follow this order
+## Available Resources
 
-### Step 0: List data sources and ask the user
-Call `list-data-sources` first to see what questionnaires are available.
-The response shows each data source's ID, name, title, active status, and date range.
-If multiple are listed, tell the user which ones are available and ask which one to use.
-If only one exists, confirm with the user anyway.
-Always let the user choose — never assume a data source.
+This server exposes two MCP Resources with example implementations:
 
-The data source's **name** (from the `data_sources` table, case-sensitive) is what
-you pass as the `data_source` parameter to create_* tools. For example, if the
-name is "households", use exactly `"households"` — not "Households" or "Household".
+| URI Pattern | Description |
+|-------------|-------------|
+| `examples://artefact/{type}` | Lists available examples for a type (`scorecard`, `gauge`, `indicator`, `map-indicator`, `report`). Returns JSON with name and description. |
+| `examples://artefact/{type}/{name}` | Returns the complete PHP source of a single example as `text/x-php`. |
 
-### Step 1: Parse the dictionary
-Call `parse-dictionary` with the chosen data source name (the `data_source`
-parameter) to learn the questionnaire structure: levels, records (tables), items
-(columns), types, lengths, and value sets. Records become tables and items become
-columns in the breakout database. The value sets tell you what coded values mean
-(e.g. P11=1 means "Male", P11=2 means "Female").
+## Critical Rules
 
-To avoid overwhelming output (some INI dictionaries can produce 475K+ lines):
-1. First use `summary: true` to see just the record and item names/types
-2. Then drill into specific fields with `record_name` and/or `item_name`
+- "Indicator" means a Plotly chart. If the user says "indicator" generically, ask: do you mean a chart, scorecard, gauge, map, or report?
+- **Complete Steps 0-1-2 in order. Do not skip to creation (Step 3) before reading examples (Step 2).**
+- **Do NOT explore consumer app files (`app/`, `vendor/`, `config/`) for code patterns.** Call `get-artefact-examples` instead — it is the ONLY source of code patterns.
+- Example files show complete `getData()` implementations. Use them as templates and adapt `select`/`from`/`where`/`groupBy` to your specific data.
 
-Each record in the output has a `breakoutTable` property — the table name in the
-breakout database (e.g. `"POP_REC"` → `"pop_rec"`). Use this in your
-`BreakoutQueryBuilder->from()` calls.
+## Required Workflow
 
-Use the parsed structure to design your queries and Plotly traces.
+### Step 0: List data sources
+Call `get-data-sources` first. The `name` field is the exact value you pass as
+`data_source` to create tools. Always confirm with the user before proceeding.
 
-### Step 2: Create the artefact
-Call `create_indicator`, `create_scorecard`, `create_gauge`, `create_report`,
-or `create_map_indicator` with the chosen data source.
+### Step 1: Read the dictionary
+Call `read-dictionary` with the chosen `data_source`. Use `summary: true` first
+to browse the structure, then drill down with `record_name` and/or `item_name`.
 
-**IMPORTANT: Do NOT explore other indicator/scorecard/etc files in the
-codebase before or after creating.** The template and the examples in these
-instructions are complete. Looking at other files wastes time and is not
-needed — every artefact follows the same pattern.
+Each record has a `breakoutTable` property — the lowercase table name to use in
+`BreakoutQueryBuilder->from()` calls (e.g. `"POP_REC"` → `"pop_rec"`). Value
+sets tell you what coded values mean (e.g. P11=1 means "Male").
 
-For indicators, pass a `chart_type` if the user specified one (bar, line, scatter,
-pie, histogram, area, box, sunburst). The tool auto-generates sensible Plotly
-traces and layout with correct `meta.columnNames`. If the user didn't specify a
-chart type, recommend one based on the data and ask them to confirm.
+### Step 2: Read example implementations
+Before creating an artefact, read example implementations for the matching type.
+Call `get-artefact-examples` with `type` (e.g. `"scorecard"`) to list available
+examples, then call it again with `type` and `name` (e.g.
+`"scorecard"` + `"TotalPopulation"`) to get the full PHP source.
 
-The auto-generated traces are a single-trace chart: a simple bar has
-`meta.columnNames: {x: ["x"], y: ["y"]}`. This is sufficient for simple
-charts — just name your `getData()` columns `x` and `y` and leave the
-traces alone.
+Examples show complete `getData()` implementations. Study the pattern that best
+matches the user's query and use it as your template in Step 4.
 
-If you need a **multi-trace stacked chart** (one trace per category, e.g.
-PopulationByReligion with one trace per religion), the auto-generated
-single trace won't suffice. In that case you MUST edit the indicator
-after creation (Step 4) with explicit traces — one per category — each
-pointing to a `{category}_pct` column. See the existing indicator examples
-for the exact pattern. Only pass explicit `data` or `layout` if you need
-customisation the auto-generated defaults don't cover.
+### Step 3: Create the artefact
+Call `create-indicator`, `create-scorecard`, `create-gauge`, `create-report`,
+or `create-map-indicator`.
 
-### Step 3: Implement getData()
-The `create_*` tools generate a stub file with an empty `getData()`. You MUST
-implement it by editing the file:
-  a. Read the generated file at `app/Livewire/{Name}.php`
-  b. Use `BreakoutQueryBuilder` to build your query against the breakout database
-     (see examples below)
-   c. The columns your query returns must match the `meta.columnNames` in your
-      Plotly traces. If a trace has `"meta": {"columnNames": {"y": ["total_males", "total_females"]}}"`,
-      your SELECT must include columns named `total_males` and `total_females`.
-      Using `chart_type` on `create-indicator` pre-configures these columnNames
-      for you — review them in the generated file and ensure your query matches.
-   d. For SQL CASE statements, there are two distinct patterns:
-      - **Bad pattern — code-to-label mapping:** `CASE WHEN h30 = 5 THEN 'Iron sheets' END`.
-        Do NOT do this. It is fragile and wastes tool calls debugging it.
-        Instead return raw codes and use Plotly's `tickvals`/`ticktext` layout
-        or PHP `->map()` post-processing. The dictionary's value sets (from
-        Step 1) contain the code-to-label mapping.
-      - **Good pattern — boolean per-category columns:**
-        `SUM(CASE WHEN h30 = 5 THEN 1 ELSE 0 END) AS iron_sheets`.
-        This is the correct approach for multi-trace stacked charts (one
-        trace per category). Every existing indicator in this codebase
-        follows this pattern. Use it when creating a stacked percentage
-        chart with separate traces per category.
-   e. If the artefact should compare data across areas (e.g. show chart by county),
-      add `->groupBy(['area_code'])->lastlyAreaLeftJoinData()` to the query
+**`name` parameter:** Provide only the artefact name (e.g. `"BirthRate"`). The
+data source title is auto-prepended as a directory (`"Households/BirthRate"`).
 
-**After implementing getData(), STOP IMMEDIATELY.** Do NOT run any commands —
-no tests, no Pint, no syntax checks, no Artisan commands. Do NOT explore or
-read any other files in the codebase. The template and examples above are
-complete. There is nothing else to verify. Your work on this artefact is done.
+**`chart_type` (indicators only):** bar, line, scatter, pie, histogram, area,
+box, sunburst. If the user didn't specify one, recommend based on the data:
 
-### Step 4: Edit artefacts
-Use the `edit_*` tools to update metadata, Plotly traces/layout (for indicators),
-or other properties after creation. Available edit tools:
-- `edit_indicator` — update title, description, help, data (traces), layout, published, scope
-- `edit_scorecard` — update title, description, published, scope
-- `edit_gauge` — update title, subtitle, description, published
-- `edit_map_indicator` — update title, description, published
-- `edit_report` — update title, description, published, enabled
-- `manage_page_assignment` — attach or detach an indicator, map_indicator, or report to/from a page
+- **Bar** — compare categories across groups
+- **Line** — show trends over time or along a sequence
+- **Scatter** — show relationship between two variables
+- **Pie** — show proportions of a whole
+- **Histogram** — show distribution of a continuous variable
+- **Area** — emphasize magnitude of change over time
+- **Box** — show spread, quartiles, and outliers
+- **Sunburst** — show hierarchical proportions
 
-## BreakoutQueryBuilder Examples
+### Step 4: Implement getData()
+The create tools generate a stub with an empty `getData()`. You MUST implement it:
 
-BreakoutQueryBuilder is a fluent SQL builder that handles area filtering, table joins,
-and database differences automatically. Always construct it with the data source
-name and filter path:
+1. Read the generated file at the path shown in the creation response
+2. Refer to the dictionary structure from Step 1 to map records→table names, items→column names
+3. Refer to the example you read in Step 2 for the query pattern
+4. Build your query with `BreakoutQueryBuilder`. The return shape depends on the artefact type:
 
-```php
-new BreakoutQueryBuilder($this->indicator->data_source, $filterPath)
-```
-
-### Example 1: Simple count of records
-
+**Indicators and Reports** — return a Collection of rows:
 ```php
 public function getData(string $filterPath): Collection
 {
     return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
         ->select([DB::raw('COUNT(*) AS total')])
-        ->from(['pop_rec'])
+        ->from(['pop_rec'])                // lowercase dict record name, always an array
+        ->groupBy(['area_code'])
+        ->lastlyAreaLeftJoinData()         // optional: adds area name column
         ->get();
 }
 ```
 
-### Example 2: Count by category (bar/pie chart)
-
+**Scorecards** — alias SELECT columns to `value` and `diff`, return `getSingleRow()` directly:
 ```php
 public function getData(string $filterPath): Collection
 {
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select(['P17', DB::raw('COUNT(*) AS total')])
+    return (new BreakoutQueryBuilder($this->scorecard->data_source, $filterPath))
+        ->select([DB::raw('COUNT(*) AS value'), DB::raw('NULL AS diff')])
         ->from(['pop_rec'])
-        ->groupBy(['P17'])
-        ->orderBy(['total DESC'])
-        ->get();
+        ->getSingleRow();
 }
 ```
-This returns rows like `[{P17: 1, total: 500}, {P17: 2, total: 300}]`.
-Map the P17 codes to labels (from dictionary value sets) in the Plotly trace x values.
+The base class reads `value` and `diff` from the first row (configurable via `$valueField`, `$diffField`).
+Set `diff` to `NULL` to hide the trend arrow.
 
-### Example 3: Conditional counts (male/female breakdown)
-
+If PHP post-processing is needed (e.g. `Number::format`, `safeDivide`), use `->map()`:
 ```php
-public function getData(string $filterPath): Collection
-{
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select([
-            DB::raw('COUNT(*) AS total'),
-            DB::raw('SUM(CASE WHEN P11 = 1 THEN 1 ELSE 0 END) AS males'),
-            DB::raw('SUM(CASE WHEN P11 = 2 THEN 1 ELSE 0 END) AS females'),
-        ])
-        ->from(['pop_rec'])
-        ->get();
-}
+return (new BreakoutQueryBuilder($this->scorecard->data_source, $filterPath))
+    ->select([DB::raw('COUNT(*) AS value')])
+    ->from(['pop_rec'])
+    ->getSingleRow()
+    ->map(fn ($row) => (object) [
+        'value' => Number::format($row->value),
+        'diff' => null,
+    ]);
 ```
 
-### Example 4: Age grouping (population pyramid style)
-
+**Gauges** — alias the SELECT column to `value`, return `getSingleRow()` directly:
 ```php
 public function getData(string $filterPath): Collection
 {
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select([
-            DB::raw("CONCAT(FLOOR(P12/5) * 5, '-', FLOOR(P12/5) * 5 + 4) AS age_range"),
-            DB::raw('FLOOR(P12/5) * 5 AS range_start'),
-            DB::raw('SUM(CASE WHEN P11 = 1 THEN 1 ELSE 0 END) AS males'),
-            DB::raw('SUM(CASE WHEN P11 = 2 THEN 1 ELSE 0 END) AS females'),
-        ])
+    return (new BreakoutQueryBuilder($this->gauge->data_source, $filterPath))
+        ->select([DB::raw('COUNT(*) AS value')])
         ->from(['pop_rec'])
-        ->groupBy(['range_start'])
-        ->orderBy(['range_start'])
-        ->get();
+        ->getSingleRow();
 }
 ```
+The base class reads `value` from the first row (configurable via `$valueField`).
 
-### Example 5: Household-level aggregation from housing record
-
+If PHP post-processing is needed, use `->map()`:
 ```php
+return (new BreakoutQueryBuilder($this->gauge->data_source, $filterPath))
+    ->select([DB::raw('COUNT(*) AS value')])
+    ->from(['pop_rec'])
+    ->getSingleRow()
+    ->map(fn ($row) => (object) ['value' => Number::format($row->value)]);
+```
+
+**Map Indicators** — return a Collection with `value` and `area_code` columns. Also declare `$bins` and `SELECTED_COLOR_CHART` in the class body:
+```php
+public array $bins = [0, 50, 75, 100];
+public const SELECTED_COLOR_CHART = 'nephritis';
+
 public function getData(string $filterPath): Collection
 {
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select(['H30', DB::raw('COUNT(*) AS total')])
-        ->from(['housing_rec'])
-        ->groupBy(['H30'])
-        ->orderBy(['total DESC'])
+    return (new BreakoutQueryBuilder($this->mapIndicator->data_source, $filterPath))
+        ->select(['COUNT(*) AS value'])
+        ->from(['pop_rec'])
+        ->groupBy(['area_code'])
         ->get();
 }
 ```
 
-### Example 6: With area breakdown
+**BreakoutQueryBuilder reference:**
 
-```php
-public function getData(string $filterPath): Collection
-{
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select(['P17', DB::raw('COUNT(*) AS total')])
-        ->from(['pop_rec'])
-        ->groupBy(['area_code', 'P17'])
-        ->lastlyAreaLeftJoinData()
-        ->get();
-}
-```
-`lastlyAreaLeftJoinData()` attaches area names to the result so the chart can
-display area labels. Requires `groupBy(['area_code', ...])`.
+| Method | Notes |
+|--------|-------|
+| `select([...])` | Use `DB::raw()` for expressions. Aliases must match Plotly `meta.columnNames`. |
+| `from([...])` | Lowercase dict record name, always an array. |
+| `groupBy([...])` | Required with aggregate functions. |
+| `orderBy([...])` | Append `ASC` or `DESC`. |
+| `lastlyAreaLeftJoinData()` | Appends area name column. Needs `groupBy(['area_code', ...])` first. |
+| `get()` | For indicators, map indicators, reports. Returns Collection. |
+| `getSingleRow()` | Returns Collection with 0 or 1 items. Use for scorecards/gauges, then wrap in the expected return format (see above). |
 
-### Example 7: Post-processing with percentages
+**Overridable properties (set in the class body):**
 
-```php
-public function getData(string $filterPath): Collection
-{
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select([
-            DB::raw('COUNT(*) AS total'),
-            DB::raw('SUM(CASE WHEN P11 = 1 THEN 1 ELSE 0 END) AS males'),
-            DB::raw('SUM(CASE WHEN P11 = 2 THEN 1 ELSE 0 END) AS females'),
-        ])
-        ->from(['pop_rec'])
-        ->get()
-        ->map(function ($item) {
-            $item->male_percentage = round(($item->males / $item->total) * 100, 1);
-            $item->female_percentage = round(($item->females / $item->total) * 100, 1);
-            return $item;
-        });
-}
-```
+| Property | Artefact | Default | Notes |
+|----------|----------|---------|-------|
+| `$unit` | Scorecard, Gauge | `'%'` | Suffix after the displayed value |
+| `$outOf` | Gauge | `100` | Maximum value for the gauge arc |
+| `$colorThresholds` | Gauge | `[70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500']` | Threshold → Tailwind color class |
+| `$bins` | MapIndicator | `[]` | **Required.** Value ranges for map coloring (e.g. `[0, 50, 75, 100]`) |
+| `SELECTED_COLOR_CHART` | MapIndicator | none | **Required.** Color palette: `alizarin`, `wisteria`, `peter-river`, `nephritis`, `sunflower`, `pumpkin`, `silver`, `rag` |
 
-## Complete Walkthrough: RoofMaterial Bar Chart
+5. **Column aliases MUST match `meta.columnNames`** in the Plotly traces.
+   If a trace has `"meta": {"columnNames": {"y": ["males"]}}`, your SELECT must
+   include `AS males`. You will configure the traces in Step 5 via `edit-chart`.
 
-This example shows every step for creating a bar chart indicator, from parsing
-the dictionary to implementing `getData()`. Follow this template for your own
-indicators — do NOT look at other files in the codebase; this is the full template.
+6. **Code-to-label mapping:** Use dictionary value sets or Plotly's
+   `tickvals`/`ticktext` layout. Avoid `CASE WHEN code=5 THEN 'Label'` in SQL.
+   For per-category boolean columns, use:
+   `SUM(CASE WHEN code = 5 THEN 1 ELSE 0 END) AS label`
 
-### Step-by-step
+7. **Proceed to Step 5 to design the chart.** Do NOT skip to validation.
 
-**1. Parse the dictionary (summary mode):**
-```
-parse-dictionary(dictionary_name: "Households", summary: true)
-```
-Response shows the record names. Find the record containing your field.
+### Step 5: Design the chart (indicators only)
 
-**2. Drill into the specific record and item:**
-```
-parse-dictionary(dictionary_name: "Households", record_name: "HOUSING_REC", item_name: "H30")
-```
-Response shows H30 is an Alpha(1) field inside HOUSING_REC. The record's
-`breakoutTable` is `"housing_rec"`. The value sets show the coded values
-(e.g. 1=Corrugated iron sheets, 2=Tiles, 3=Concrete, ...).
+After implementing getData(), you must configure the Plotly visualization before
+it can render. Call `edit-chart` with the indicator name and your hand-crafted
+Plotly trace definitions:
 
-**3. Create the indicator with chart_type:**
-```
-create-indicator(
-  name: "RoofMaterial",
-  title: "Households by Roof Material",
-  data_source: "households",
-  chart_type: "bar"
-)
-```
-The tool auto-generates this Plotly trace and layout:
-```json
-{
-  "data": [{"type": "bar", "x": [], "y": [], "name": "", "meta": {"columnNames": {"x": ["x"], "y": ["y"]}}}],
-  "layout": {"barmode": "relative", "colorway": [...], "font": {...}, "margin": {...}}
-}
-```
+- **`name`**: The indicator name (same as used in step 3)
+- **`data`**: Array of Plotly trace objects. Each trace requires:
+  - `type` — chart type (`"bar"`, `"scatter"`, `"pie"`, etc.)
+  - `meta.columnNames` — maps trace properties (`x`, `y`, `labels`, `values`)
+    to the SQL aliases from your `getData()` SELECT. These MUST match exactly.
+  - `name` — display label for the legend
+  - `hovertemplate`, `marker`, `text` — optional Plotly styling properties
+- **`layout`** (optional): Plotly layout overrides (title, axis titles, margins, etc.)
 
-**4. Read the generated file at `app/Livewire/RoofMaterial.php`:**
-```php
-<?php
+The tool validates that every column referenced in `meta.columnNames` exists in
+the `getData()` result. If validation fails, fix the mismatch and try again.
 
-namespace App\Livewire;
+Refer to the examples from Step 2 and use your Plotly knowledge to craft
+appropriate traces for the chart type requested by the user.
 
-use Illuminate\Support\Collection;
-use Uneca\Chimera\Livewire\Chart;
-use Uneca\Chimera\Services\BreakoutQueryBuilder;
+After the chart design is saved, proceed to Step 6 to validate.
 
-class RoofMaterial extends Chart
-{
-    public function getData(string $filterPath): Collection
-    {
-        try {
-            // TODO: Implement getData() method.
-        } catch (\Exception $exception) {
-            return collect();
-        }
-    }
-}
-```
+### Step 6: Validate
 
-**5. Implement getData() — the trace expects columns named "x" and "y":**
-```php
-public function getData(string $filterPath): Collection
-{
-    $labels = [
-        1 => 'Corrugated iron sheets',
-        2 => 'Tiles',
-        3 => 'Concrete',
-        4 => 'Thatch/grass',
-        5 => 'Tin',
-        6 => 'Asbestos sheets',
-        7 => 'Canvas/tent',
-        8 => 'Other',
-    ];
+After implementing getData(), call `validate-artefact` with the same `type` and `name` you used for creation. This will:
 
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select(['H30', DB::raw('COUNT(*) AS y')])
-        ->from(['housing_rec'])
-        ->groupBy(['H30'])
-        ->orderBy(['y DESC'])
-        ->get()
-        ->map(fn ($item) => (object) [
-            'x' => $labels[(int) $item->H30] ?? $item->H30,
-            'y' => $item->y,
-        ]);
-}
-```
+1. Confirm the data source is connectible
+2. Instantiate the artefact class from the generated file
+3. Execute `getData('')` (national-level scope)
+4. Return `{success, rows_returned, columns, sample_data}`
 
-The query column aliases match `meta.columnNames`:
-- `y` from `COUNT(*) AS y` matches `"y": ["y"]`
-- `x` from the map's output property matches `"x": ["x"]`
-- `from(['housing_rec'])` matches the record's `breakoutTable` from step 2
+If validation fails, fix the error (column name mismatch, missing import, etc.) and call `validate-artefact` again. The dictionary and your understanding of the data model are sufficient — do not read other generated files for reference.
 
-### Pattern summary
+**After validation passes, stop.** No tests, no Pint, no exploring.
 
-For bar/line/scatter/area charts:
-- SELECT the category column (or a derived value) and alias it to match the trace's `columnNames`
-- SELECT the value column (COUNT(*), SUM, etc.) and alias it
-- Use `->map()` for code-to-label mapping using dictionary value sets
-- Group by the category column if aggregating
-
-For pie charts, alias to `labels` and `values`. For histogram, alias to just `x`.
-The auto-generated `chart_type` defaults tell you the exact column names needed.
-
-## Plotly Reference
-
-For indicator traces and layout, use the Plotly JavaScript charting library format:
-https://plotly.com/javascript/
-
-### Chart type selection
-
-Use your knowledge of statistics and chart design to choose the right type for the data:
-- **Bar** — compare values across categories
-- **Line** — show trends over time
-- **Pie** — show proportions of a whole
-- **Histogram** — show distribution of a continuous variable
-- **Scatter** — show relationship between two variables
-- **Area** — emphasize magnitude of change over time
-- **Box** — show spread, quartiles, and outliers
-- **Sunburst** — show hierarchical proportions
-
-Prepare **all the data** the chart needs in `getData()`. The Plotly traces stored
-in the indicator's `data` column reference the output columns via `meta.columnNames`
-— the `Chart` base class's `getTraces()` method resolves these references at render
-time, mapping column names to trace properties (x, y, etc.).
-
-For value set labels (e.g. "Male"/"Female" instead of "1"/"2"), set the trace's
-`x` array directly with the labels rather than referencing column names via meta.
-Alternatively, use the `tickvals`/`ticktext` layout properties to map codes to labels
-on the axis.
-
-## CSPro Dictionary Files
-
-CSPro dictionary files (`.dcf`) represent the census or survey questionnaire structure. Two formats are supported:
-
-- **JSON format** (CSPro 8+): `{ "fileType": "dictionary", "name": "...", "levels": [...] }`
-- **INI format** (pre-CSPro 8.0): `[Dictionary]`, `[Level]`, `[Record]`, `[Item]`, `[ValueSet]` sections
-
-Use **your file-reading tool** to read the `.dcf` file content, then pass it to `parse_dictionary`. If the dictionary was pre-registered via `chimera:mcp-install`, you can pass the `dictionary_name` instead and the tool will read the file automatically.
-
-Structure parsed from either format:
-- `levels[]`: Questionnaire hierarchy levels (e.g., Household, Person)
-- `levels[].records[]`: Data entry records (e.g., POPULATION_RECORD)
-- `levels[].records[].items[]`: Fields with name, type, length, labels, valueSets
-- `levels[].records[].items[].valueSets[]`: Coded values with names, labels, and value/range pairs
+## Editing Artefacts
+Use these tools after creation, only if the user requests changes to artefacts:
+- `edit-indicator` — title, description, help, published, scope (use `edit-chart` for traces and layout)
+- `edit-scorecard` — title, description, published, scope
+- `edit-gauge` — title, subtitle, description, published
+- `edit-map-indicator` — title, description, published
+- `edit-report` — title, description, published, enabled
+- `manage-page-assignment` — attach/detach artefacts to/from pages
 
 ## Breakout Database
-All the responses from the questionnaires get transformed into a relational database (MySQL) and it is this database that is the main data source for the dashboard starter kit.
+Questionnaire responses live in a MySQL database. Records become tables
+(lowercased), items become columns. Value set codes (not labels) are stored.
+Access it via `BreakoutQueryBuilder` — use Laravel Boost's `database-query` tool
+for ad-hoc exploration.
 
-The structure of the breakout database is dictated by the dictionary. Records become tables and items become columns. For the data itself, the values of the valueSets are stored rather than the labels.
+## CSPro Dictionary Files
+JSON (CSPro 8+) or INI (pre-8.0) format. Use `read-dictionary` with `data_source`
+for pre-registered dictionaries (via `chimera:mcp-init`), or pass raw `content`.
 
-To access this database use Laravel Boost's database query tool
+Parsed structure: `levels[]` → `records[]` → `items[]` → `valueSets[]`.
 
-## Area Hierarchy and $filterPath
+## Area Hierarchy & $filterPath
+PostgreSQL **ltree** dotted paths: `"africa.ethiopia.addis_ababa"`. Each segment
+is an area code. `BreakoutQueryBuilder` consumes `$filterPath` automatically —
+no manual area WHERE clauses needed.
 
-Areas in the dashboard are stored in PostgreSQL using the **ltree** extension — a dotted-path hierarchy like `"africa.ethiopia.addis_ababa.gulele"`. Each segment is an area code.
-
-The `$filterPath` parameter passed to every artefact's `getData()` controls the geographic scope dynamically:
-- `""` (empty string) → national level, includes all areas
-- `"country_code"` → first admin level, scoped to that area
-- `"country_code.region_code"` → second admin level, scoped within that region
-- Each dot (`.`) descends one level deeper in the hierarchy
-
-`BreakoutQueryBuilder` consumes `$filterPath` automatically in its constructor — it generates the SQL WHERE clauses that restrict the query to the given area and its descendants. You never need to build area filters manually.
-
-### Typical getData() pattern
-
-```php
-public function getData(string $filterPath): Collection
-{
-    return (new BreakoutQueryBuilder($this->indicator->data_source, $filterPath))
-        ->select(["COUNT(*) AS household_count", "AVG(HH_AGE) AS avg_age"])
-        ->from(['POPULATION_RECORD'])
-        ->where(["HH_SEX = '1'"])
-        ->groupBy(['HH_DISTRICT'])
-        ->orderBy(['household_count DESC'])
-        ->get();
-}
-```
-
-### Chart type selection and data preparation
-
-The plotly-chart-editor in the dashboard supports these chart types: **bar, line, scatter, pie, histogram, area, box, sunburst**.
-
-Use your knowledge of statistics and chart design to choose the right type for the data:
-- **Bar** — compare values across categories
-- **Line** — show trends over time
-- **Pie** — show proportions of a whole
-- **Histogram** — show distribution of a continuous variable
-- **Scatter** — show relationship between two variables
-- **Area** — emphasize magnitude of change over time
-- **Box** — show spread, quartiles, and outliers
-- **Sunburst** — show hierarchical proportions
-
-Prepare **all the data** the chart needs in `getData()`. The Plotly traces stored in the indicator's `data` column reference the output columns via `meta.columnNames` — the `Chart` base class's `getTraces()` method resolves these references at render time, mapping column names to trace properties (x, y, etc.).
-
-### Level applicability
-
-Artefacts can declare they are not applicable at certain hierarchy levels via the `HasLevelDiscrimination` trait. The `supportsLevel($filterPath)` method checks this automatically — if it returns false, the artefact shows "Not applicable" instead of data.
+`$filterPath` scope:
+- `""` = national | `"country"` = first admin level
+- `"country.region"` = second admin level | each `.` = one level deeper
 
 MARKDOWN)]
 class DashboardStarterKit extends Server
 {
     protected array $tools = [
+        GetDataSources::class,
+        GetArtefactExamples::class,
+        ReadDictionary::class,
         CreateScorecard::class,
         CreateGauge::class,
         CreateIndicator::class,
         CreateMapIndicator::class,
         CreateReport::class,
+        ValidateArtefact::class,
+        EditChart::class,
         EditScorecard::class,
         EditGauge::class,
         EditIndicator::class,
@@ -473,7 +313,8 @@ class DashboardStarterKit extends Server
     ];
 
     protected array $resources = [
-        //
+        ArtefactExampleIndex::class,
+        ArtefactExampleFile::class,
     ];
 
     protected array $prompts = [

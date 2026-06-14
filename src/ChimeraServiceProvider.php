@@ -43,6 +43,7 @@ use Uneca\Chimera\Commands\MakeQueryFragment;
 use Uneca\Chimera\Commands\MakeReferenceValueSynthesizer;
 use Uneca\Chimera\Commands\MakeReport;
 use Uneca\Chimera\Commands\MakeScorecard;
+use Uneca\Chimera\Commands\McpInit;
 use Uneca\Chimera\Commands\Production;
 use Uneca\Chimera\Commands\TransferReferenceValues;
 use Uneca\Chimera\Commands\Update;
@@ -151,6 +152,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 MakeReport::class,
                 MakeScorecard::class,
                 MakeGauge::class,
+                McpInit::class,
                 Update::class,
                 Production::class,
                 CustomJetstreamInstallCommand::class,
