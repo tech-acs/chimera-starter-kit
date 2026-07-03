@@ -12,3 +12,5 @@ the target. Render as a bar chart showing the count of achieving EAs per day or 
 
 The `getData()` method should join area data via `lastlyAreaLeftJoinData()` so the
 area name is available for chart labels.
+
+**Requires a reference value.** This indicator compares against a per-EA daily target. You must discover available reference values and select the one defining the per-EA daily listing target. Pass the chosen reference value name as `referenceValueToInclude` when calling `lastlyAreaLeftJoinData()`. This injects the target value as a `ref_value` column alongside `area_name` and `area_path`.

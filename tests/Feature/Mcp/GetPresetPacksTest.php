@@ -26,7 +26,7 @@ describe('PresetPackService', function () {
         expect($censusPack)->toHaveKey('title');
         expect($censusPack)->toHaveKey('description');
         expect($censusPack['title'])->toBe('Census Enumeration');
-        expect($censusPack['description'])->toBe('Core population and household counts from the decennial census enumeration.');
+        expect($censusPack['description'])->toBe('Census enumeration operation monitoring — track daily enumeration progress, household completions, population counts, demographic breakdowns, time-to-complete projections, and case status distribution across enumeration areas.');
     });
 
     it('falls back to directory name as title when pack.md is missing', function () {
@@ -119,7 +119,7 @@ describe('GetPresetPacks tool', function () {
         $response->assertOk();
         $response->assertSee('census-enumeration');
         $response->assertSee('Census Enumeration');
-        $response->assertSee('decennial census enumeration');
+        $response->assertSee('enumeration operation monitoring');
         $response->assertSee('scorecards');
         $response->assertSee('indicators');
     });
