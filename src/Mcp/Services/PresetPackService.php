@@ -216,6 +216,10 @@ class PresetPackService
 
     private function packsDir(): string
     {
+        $hostDir = resource_path('preset-packs');
+        if (is_dir($hostDir) && ! empty(File::directories($hostDir))) {
+            return $hostDir;
+        }
         return __DIR__ . '/../../../resources/preset-packs';
     }
 
