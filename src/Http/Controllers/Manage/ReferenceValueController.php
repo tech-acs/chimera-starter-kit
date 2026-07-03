@@ -4,57 +4,59 @@ namespace Uneca\Chimera\Http\Controllers\Manage;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Str;
 use Uneca\Chimera\Models\ReferenceValue;
+use Uneca\Chimera\Models\ReferenceValueIndicator;
 use Uneca\Chimera\Services\AreaTree;
 use Uneca\Chimera\Services\SmartTableColumn;
 use Uneca\Chimera\Services\SmartTableData;
 
 class ReferenceValueController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, ReferenceValueIndicator $referenceValueIndicator)
     {
         view()->share('hierarchies', (new AreaTree)->hierarchies);
-        $stats = ReferenceValue::selectRaw('COUNT(DISTINCT indicator) AS no_of_indicators, COUNT(*) AS total_values')->first();
-        $summary = Str::replaceArray('?', [$stats->total_values, $stats->no_of_indicators], '? reference values across ? '.Str::plural('indicator', $stats->no_of_indicators));
+        $totalValues = ReferenceValue::where('indicator', $referenceValueIndicator->indicator)->count();
+        $summary = "$totalValues " . str('reference value')->plural($totalValues);
 
-        return (new SmartTableData(ReferenceValue::query(), $request))
+        return (new SmartTableData(
+            ReferenceValue::where('indicator', $referenceValueIndicator->indicator),
+            $request
+        ))
             ->columns([
-                SmartTableColumn::make('indicator')->sortable(),
                 SmartTableColumn::make('path')->sortable()->setLabel('Area Path'),
                 SmartTableColumn::make('level')->sortable()
                     ->setBladeTemplate('{{ ucfirst($hierarchies[$row->level] ?? $row->level) }}'),
                 SmartTableColumn::make('value'),
             ])
-            ->editable('developer.reference-value.edit')
-            ->searchable(['indicator'])
-            ->sortBy('indicator')
-            ->view('chimera::developer.reference-value.index', compact('summary'));
+            ->editable('developer.reference-value-indicator.reference-value.edit', ['reference_value_indicator' => $referenceValueIndicator])
+            ->searchable(['path'])
+            ->sortBy('path')
+            ->view('chimera::developer.reference-value.index', compact('summary', 'referenceValueIndicator'));
     }
 
-    public function create()
+    public function create(ReferenceValueIndicator $referenceValueIndicator)
     {
-        return view('chimera::developer.reference-value.create');
+        return view('chimera::developer.reference-value.create', compact('referenceValueIndicator'));
     }
 
-    public function edit(ReferenceValue $referenceValue)
+    public function edit(ReferenceValueIndicator $referenceValueIndicator, ReferenceValue $referenceValue)
     {
-        return view('chimera::developer.reference-value.edit', compact('referenceValue'));
+        return view('chimera::developer.reference-value.edit', compact('referenceValueIndicator', 'referenceValue'));
     }
 
-    public function update(ReferenceValue $referenceValue, Request $request)
+    public function update(ReferenceValueIndicator $referenceValueIndicator, ReferenceValue $referenceValue, Request $request)
     {
         $referenceValue->update($request->only(['value']));
 
-        return redirect()->route('developer.reference-value.index')
+        return redirect()->route('developer.reference-value-indicator.reference-value.index', $referenceValueIndicator)
             ->withMessage('The reference value has been updated');
     }
 
-    public function destroy()
+    public function destroy(ReferenceValueIndicator $referenceValueIndicator)
     {
-        ReferenceValue::truncate();
+        ReferenceValue::where('indicator', $referenceValueIndicator->indicator)->delete();
 
-        return redirect()->route('developer.reference-value.index')
-            ->withMessage('The reference values table has been truncated');
+        return redirect()->route('developer.reference-value-indicator.reference-value.index', $referenceValueIndicator)
+            ->withMessage('All reference values for "' . $referenceValueIndicator->indicator . '" have been deleted');
     }
 }

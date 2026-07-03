@@ -48,6 +48,10 @@ class BreakoutQueryBuilder
 
     private ?string $referenceValueToInclude = null;
 
+    private bool $shouldDump = false;
+
+    private bool $shouldDebugLog = false;
+
     public function __construct(
         ?string $dataSource = null,
         string $filterPath = '',
@@ -137,14 +141,14 @@ class BreakoutQueryBuilder
 
     public function dump(): self
     {
-        dump($this->toSql());
+        $this->shouldDump = true;
 
         return $this;
     }
 
     public function debugLog(): self
     {
-        logger($this->toSql());
+        $this->shouldDebugLog = true;
 
         return $this;
     }
@@ -352,6 +356,12 @@ class BreakoutQueryBuilder
 
         try {
             $query = $sql ?? $this->toSql();
+            if ($this->shouldDump) {
+                dump($query);
+            }
+            if ($this->shouldDebugLog) {
+                logger($query);
+            }
             $result = collect($this->dbConnection->select($query));
             if ($this->leftJoin === 'area-left-join-data') {
                 $finalResult = $this->areaLeftJoinData($result, $this->referenceValueToInclude);

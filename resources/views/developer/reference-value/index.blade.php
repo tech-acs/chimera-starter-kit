@@ -2,10 +2,10 @@
 
     <x-slot name="header">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ __('Reference Values') }}
+            {{ __('Reference Values') }}: {{ $referenceValueIndicator->indicator }}
         </h3>
         <p class="mt-2 max-w-7xl text-sm text-gray-500">
-            {{ __('Manage reference values for indicators.') }}
+            {{ $referenceValueIndicator->description }}
         </p>
     </x-slot>
 
@@ -30,10 +30,10 @@
                 </div>
                 @can('developer-mode')
                     <div class="ml-4" x-data="confirmedDeletion">
-                        <a href="{{route('developer.reference-value.create')}}"><x-button>{{ __('Import') }}</x-button></a>
+                        <a href="{{ route('developer.reference-value-indicator.reference-value.create', $referenceValueIndicator) }}"><x-button>{{ __('Import') }}</x-button></a>
 
                         <x-chimera::delete-confirmation />
-                        <a href="{{route('developer.reference-value.destroy')}}" x-on:click.prevent="confirmThenDelete($el)">
+                        <a href="{{ route('developer.reference-value-indicator.reference-value.destroy', $referenceValueIndicator) }}" x-on:click.prevent="confirmThenDelete($el)">
                             <x-danger-button class="ml-2">{{ __('Delete All') }}</x-danger-button>
                         </a>
                     </div>

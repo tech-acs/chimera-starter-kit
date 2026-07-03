@@ -21,6 +21,7 @@ use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\MapIndicatorMakerController;
 use Uneca\Chimera\Http\Controllers\Manage\PageController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueController;
+use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueIndicatorController;
 use Uneca\Chimera\Http\Controllers\Manage\ReferenceValueImportTemplateDownloadController;
 use Uneca\Chimera\Http\Controllers\Manage\ReportMakerController;
 use Uneca\Chimera\Http\Controllers\Manage\ReportManagementController;
@@ -66,15 +67,17 @@ Route::middleware(['web', 'auth:sanctum', 'verified', 'log_page_views', 'enforce
             Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['index']);
             Route::resource('area', AreaController::class)->only(['index', 'edit', 'update']);
             Route::get('download-area-import-template', AreaImportTemplateDownloadController::class)->name('download-area-import-template');
-            Route::resource('reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
+            Route::resource('reference-value-indicator', ReferenceValueIndicatorController::class)->only(['index', 'edit', 'update']);
+            Route::resource('reference-value-indicator.reference-value', ReferenceValueController::class)->only(['index', 'edit', 'update']);
             Route::get('download-reference-value-import-template', ReferenceValueImportTemplateDownloadController::class)->name('download-reference-value-import-template');
 
             Route::middleware(['can:developer-mode'])->group(function () {
                 Route::resource('area-hierarchy', AreaHierarchyController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
                 Route::resource('area', AreaController::class)->only(['create', 'store']);
                 Route::delete('area/truncate', [AreaController::class, 'destroy'])->name('area.destroy');
-                Route::resource('reference-value', ReferenceValueController::class)->only(['create']);
-                Route::delete('reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value.destroy');
+                Route::resource('reference-value-indicator.reference-value', ReferenceValueController::class)->only(['create']);
+                Route::delete('reference-value-indicator/{reference_value_indicator}/reference-value/truncate', [ReferenceValueController::class, 'destroy'])->name('reference-value-indicator.reference-value.destroy');
+                Route::resource('reference-value-indicator', ReferenceValueIndicatorController::class)->only(['create', 'store', 'destroy']);
 
                 Route::resource('indicator', IndicatorMakerController::class)->only(['create', 'store']);
                 Route::resource('scorecard', ScorecardMakerController::class)->only(['create', 'store']);

@@ -21,11 +21,14 @@ use Uneca\Chimera\Mcp\Tools\EditIndicator;
 use Uneca\Chimera\Mcp\Tools\EditMapIndicator;
 use Uneca\Chimera\Mcp\Tools\EditReport;
 use Uneca\Chimera\Mcp\Tools\EditScorecard;
+use Uneca\Chimera\Mcp\Tools\DeployPresetPack;
 use Uneca\Chimera\Mcp\Tools\GetArtefactExamples;
 use Uneca\Chimera\Mcp\Tools\GetDataSources;
+use Uneca\Chimera\Mcp\Tools\GetPresetPacks;
 use Uneca\Chimera\Mcp\Tools\GetReferenceValues;
 use Uneca\Chimera\Mcp\Tools\ManagePageAssignment;
 use Uneca\Chimera\Mcp\Tools\ReadDictionary;
+use Uneca\Chimera\Mcp\Tools\StagePresetPack;
 use Uneca\Chimera\Mcp\Tools\ValidateArtefact;
 
 #[Name('Dashboard Starter Kit')]
@@ -364,6 +367,9 @@ class DashboardStarterKit extends Server
         GetDataSources::class,
         GetReferenceValues::class,
         GetArtefactExamples::class,
+        GetPresetPacks::class,
+        StagePresetPack::class,
+        DeployPresetPack::class,
         ReadDictionary::class,
         CreateScorecard::class,
         CreateGauge::class,

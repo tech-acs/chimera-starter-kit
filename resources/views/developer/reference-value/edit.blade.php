@@ -12,7 +12,7 @@
     <div class="flex flex-col max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <x-chimera::error-display />
 
-        <form action="{{route('developer.reference-value.update', $referenceValue)}}" method="POST">
+        <form action="{{route('developer.reference-value-indicator.reference-value.update', [$referenceValueIndicator, $referenceValue])}}" method="POST">
             @csrf
             @method('PATCH')
             @include('chimera::developer.reference-value.form')

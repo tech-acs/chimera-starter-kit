@@ -126,12 +126,14 @@ class ChimeraServiceProvider extends PackageServiceProvider
                 'create_notifications_table',
                 'create_announcements_table',
                 'create_reference_values_table',
+                'create_reference_value_indicators_table',
                 'create_area_hierarchies_table',
                 'create_map_indicators_table',
                 'create_analytics_table',
                 'create_report_user_table',
                 'create_settings_table',
                 'add_is_suspended_and_last_login_at_columns_to_users_table',
+                'add_indicator_fk_to_reference_values_table',
                 'create_chart_templates_table',
                 'create_inapplicables_table',
                 'create_gauges_table',
@@ -266,6 +268,10 @@ class ChimeraServiceProvider extends PackageServiceProvider
             $this->publishes([
                 __DIR__.'/../resources/stubs' => resource_path('stubs'),
             ], 'chimera-stubs');
+
+            $this->publishes([
+                __DIR__ . '/../resources/preset-packs' => resource_path('preset-packs'),
+            ], 'chimera-preset-packs');
         }
 
         $this->app->singleton('settings', function () {

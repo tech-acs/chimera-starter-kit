@@ -2,7 +2,7 @@
     <div class="flex justify-between">
         <div>
             @if($smartTableData->searchableColumns->isNotEmpty())
-                <form method="get" action="{{ route($smartTableData->request->route()->getName()) }}">
+                <form method="get" action="{{ request()->url() }}">
                     <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
                     <input type="hidden" name="sort_direction" value="{{ request('sort_direction') }}">
                     <x-input type="search" name="search" placeholder="{{ $smartTableData->searchPlaceholder }}" value="{{ request('search') }}" />
@@ -106,7 +106,7 @@
                                                 <a href="{{ route($smartTableData->showRouteName, $row->id) }}" class="text-gray-600 hover:text-grey-900 px-2">{{ __('View') }}</a>
                                             @endisset
                                             @isset($smartTableData->editRouteName)
-                                                <a href="{{ route($smartTableData->editRouteName, $row->id) }}" class="text-indigo-600 hover:text-indigo-900 px-2">{{ __('Edit') }}</a>
+                                                <a href="{{ route($smartTableData->editRouteName, [...$smartTableData->editRouteParams, $row->id]) }}" class="text-indigo-600 hover:text-indigo-900 px-2">{{ __('Edit') }}</a>
                                             @endisset
                                             @isset($smartTableData->deleteRouteName)
                                                 <a href="{{ route($smartTableData->deleteRouteName, $row->id) }}" x-on:click.prevent="confirmThenDelete($el)" class="text-red-600 hover:text-red-800 px-2">{{ __('Delete') }}</a>

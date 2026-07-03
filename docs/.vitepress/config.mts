@@ -171,7 +171,6 @@ export default defineConfig({
             { text: 'Area restrictions', link: '/developer/advanced-topics/area-restrictions' },
           ]
         },
-        { text: 'Contributing', link: '/developer/contributing' },
         {
           text: 'Support',
           collapsed: true,
@@ -180,6 +179,7 @@ export default defineConfig({
             { text: 'Troubleshooting', link: '/developer/support/troubleshooting' },
           ]
         },
+        { text: 'Contributing', link: '/developer/contributing' },
       ],
     },
 

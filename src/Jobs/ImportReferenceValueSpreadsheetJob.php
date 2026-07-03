@@ -26,17 +26,17 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
 
     private function writeHigherLevelValues(array $indicatorMapping, int $level)
     {
-        $aggMethod = $indicatorMapping['isAdditive'] ? 'SUM(reference_values.value) AS value' : 'AVG(reference_values.value) AS value';
+        $aggMethod = $indicatorMapping['isAdditive'] ? 'SUM' : 'AVG';
         DB::insert("
             INSERT INTO reference_values(path, level, indicator, value)
             SELECT areas.path, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
             FROM (
-                SELECT $aggMethod, subpath(areas.path, 0, $level) AS path, reference_values.indicator
+                SELECT {$aggMethod}(reference_values.value) AS value, subpath(areas.path, 0, ?) AS path, reference_values.indicator
                 FROM reference_values INNER JOIN areas ON reference_values.path = areas.path
-                WHERE reference_values.indicator = '{$indicatorMapping['name']}' AND reference_values.level = $level
-                GROUP BY indicator, subpath(areas.path, 0, $level)
+                WHERE reference_values.indicator = ? AND reference_values.level = ?
+                GROUP BY indicator, subpath(areas.path, 0, ?)
             ) AS agg INNER JOIN areas ON agg.path = areas.path
-        ");
+        ", [$level, $indicatorMapping['indicator'], $level, $level]);
     }
 
     private function insertInitialValues($indicatorMapping)
@@ -44,10 +44,10 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
         SimpleExcelReader::create($this->filePath)->getRows()
             ->map(function ($row) use ($indicatorMapping) {
                 return [
-                    'path' => $row[$indicatorMapping['path']],
+                    'path' => $row[$indicatorMapping['path']] ?? null,
                     'level' => $indicatorMapping['level'],
-                    'indicator' => $indicatorMapping['name'],
-                    'value' => $row[$indicatorMapping['name']],
+                    'indicator' => $indicatorMapping['indicator'],
+                    'value' => $row[$indicatorMapping['value_column']] ?? null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];

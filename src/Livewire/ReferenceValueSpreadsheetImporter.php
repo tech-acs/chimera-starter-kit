@@ -11,6 +11,7 @@ use Livewire\WithFileUploads;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Uneca\Chimera\Jobs\ImportReferenceValueSpreadsheetJob;
 use Uneca\Chimera\Models\AreaHierarchy;
+use Uneca\Chimera\Models\ReferenceValueIndicator;
 use Uneca\Chimera\Services\AreaTree;
 
 class ReferenceValueSpreadsheetImporter extends Component
@@ -33,14 +34,16 @@ class ReferenceValueSpreadsheetImporter extends Component
 
     public array $levels;
 
+    public Collection $availableIndicators;
+
     protected function rules()
     {
         $columnMappingRules = collect(Arr::dot(
             Collection::times($this->indicatorsToImport, function ($number) {
                 return [
-                    'name' => 'required',
+                    'indicator' => 'required',
+                    'value_column' => 'required',
                     'path' => 'required',
-                    // 'code' => 'required',
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v]);
@@ -53,19 +56,20 @@ class ReferenceValueSpreadsheetImporter extends Component
         return collect(Arr::dot(
             Collection::times($this->indicatorsToImport, function ($number) {
                 return [
-                    'name' => 'required',
+                    'indicator' => 'required',
+                    'value_column' => 'required',
                     'path' => 'required',
-                    // 'code' => 'required',
                 ];
             })->all()
         ))->mapWithKeys(fn ($v, $k) => ["columnMapping.{$k}" => $v])->all();
     }
 
-    public function mount()
+    public function mount($indicator = '')
     {
         $this->levels = (new AreaTree)->hierarchies;
-        $this->columnMapping = Collection::times($this->indicatorsToImport, function () {
-            return ['name' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true]; // 'code' => '', 'zeroPadding' => 0,
+        $this->availableIndicators = ReferenceValueIndicator::pluck('description', 'indicator');
+        $this->columnMapping = Collection::times($this->indicatorsToImport, function () use ($indicator) {
+            return ['indicator' => $indicator, 'value_column' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true];
         })->all();
 
         // TEXTJOIN(".", 0, TEXT(C2,"00"), TEXT(E2, "0000"), TEXT(L2, "0"))
@@ -94,7 +98,7 @@ class ReferenceValueSpreadsheetImporter extends Component
     public function add()
     {
         $this->indicatorsToImport++;
-        $this->columnMapping[] = ['name' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true]; // 'code' => '', 'zeroPadding' => 0,
+        $this->columnMapping[] = ['indicator' => '', 'value_column' => '', 'path' => '', 'level' => array_key_last($this->levels), 'isAdditive' => true];
     }
 
     public function import()
