@@ -8,30 +8,32 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
-use Uneca\Chimera\Models\ReferenceValue;
+use Uneca\Chimera\Models\ReferenceValueIndicator;
 
-#[Description('List available reference value indicator names. Reference values are precomputed comparison values (e.g. population counts, household counts) used to show diffs in scorecards/gauges or a reference/contrast line in indicator charts.
+#[Description('List available reference value indicators with their descriptions. Reference values are precomputed comparison values (e.g. population counts, household counts) used to show diffs in scorecards/gauges or a reference/contrast line in indicator charts.
 
-Reference values are optional — only include them if the user explicitly asks for a comparison or reference line. The sole metadata available is the indicator name, so rely on your understanding of the artefact\'s subject to select the correct one.
+Reference values are optional — only include them if the user explicitly asks for a comparison or reference line. Each indicator has a `description` field you should examine to select the correct one for the artefact\'s subject.
 
 Usage: pass the name as referenceValueToInclude in any lastlyArea*() method on BreakoutQueryBuilder. The resulting column is called reference_value. Use it in your getData() — for scorecards/gauges compute diff = value - reference_value, for indicators add a separate Plotly trace.')]
 class GetReferenceValues extends Tool
 {
     public function handle(Request $request): Response|ResponseFactory
     {
-        $indicators = ReferenceValue::query()
-            ->selectRaw('indicator, COUNT(*) AS total_values, ARRAY_AGG(DISTINCT level ORDER BY level) AS levels')
-            ->groupBy('indicator')
-            ->orderBy('indicator')
+        $indicators = ReferenceValueIndicator::query()
+            ->selectRaw('reference_value_indicators.indicator, description, COUNT(rv.id) AS total_values, ARRAY_AGG(DISTINCT rv.level ORDER BY rv.level) AS levels')
+            ->leftJoin('reference_values AS rv', 'rv.indicator', '=', 'reference_value_indicators.indicator')
+            ->groupBy('reference_value_indicators.indicator', 'description')
+            ->orderBy('reference_value_indicators.indicator')
             ->get()
             ->map(fn ($row) => [
                 'name' => $row->indicator,
+                'description' => $row->description,
                 'total_values' => (int) $row->total_values,
                 'levels' => $row->levels,
             ]);
 
         if ($indicators->isEmpty()) {
-            return Response::text('No reference values found. The reference_values table is empty.');
+            return Response::text('No reference value indicator metadata found. Create indicator entries via the management UI before importing reference values.');
         }
 
         return Response::structured([

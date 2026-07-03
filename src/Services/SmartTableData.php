@@ -33,6 +33,8 @@ class SmartTableData
 
     public ?string $editRouteName;
 
+    public array $editRouteParams = [];
+
     public ?string $deleteRouteName;
 
     public bool $isDownloadable = false;
@@ -110,9 +112,10 @@ class SmartTableData
         return $this;
     }
 
-    public function editable(string $editRouteName): self
+    public function editable(string $editRouteName, array $extraParams = []): self
     {
         $this->editRouteName = $editRouteName;
+        $this->editRouteParams = $extraParams;
 
         return $this;
     }
