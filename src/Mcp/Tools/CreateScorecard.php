@@ -72,7 +72,7 @@ class CreateScorecard extends Tool
     {
         return [
             'name' => $schema->string()->description('Component name in CamelCase without the data source prefix (e.g., "EnumeratedHouseholds", "AverageInterviewTime"). The data source title is automatically prepended as a directory (e.g., "Households/EnumeratedHouseholds"). Do NOT include the data source folder yourself.'),
-            'title' => $schema->string()->description('Human-readable title'),
+            'title' => $schema->string()->description('Human-readable title (max ~20 chars before truncation in UI)'),
             'data_source' => $schema->string()->description('Name of the data source this scorecard queries (use the `name` field from get-data-sources, e.g. "households")'),
         ];
     }
