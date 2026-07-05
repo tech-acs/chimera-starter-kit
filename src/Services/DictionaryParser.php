@@ -306,9 +306,37 @@ class DictionaryParser
 
         if (isset($normalized['values'])) {
             $normalized['values'] = array_map(
-                fn (string $raw) => $this->parseIniValueEntry(trim($raw, "'")),
+                fn ($raw) => is_array($raw)
+                    ? $this->normalizeValueEntry($raw)
+                    : $this->parseIniValueEntry(trim((string) $raw, "'")),
                 $normalized['values']
             );
+        }
+
+        return $normalized;
+    }
+
+    private function normalizeValueEntry(array $entry): array
+    {
+        $normalized = [];
+
+        foreach ($entry as $key => $value) {
+            $normalizedKey = $this->keyMapping[$key] ?? lcfirst($key);
+
+            if ($normalizedKey === 'range' && is_array($value)) {
+                $normalized['from'] = $value[0] ?? '';
+                $normalized['to'] = $value[1] ?? '';
+
+                continue;
+            }
+
+            $value = $this->castValue($value);
+
+            if ($normalizedKey === 'value' && is_string($value) && ctype_digit($value)) {
+                $value = (int) $value;
+            }
+
+            $normalized[$normalizedKey] = $value;
         }
 
         return $normalized;
