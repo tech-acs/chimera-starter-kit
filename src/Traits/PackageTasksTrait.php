@@ -21,8 +21,8 @@ trait PackageTasksTrait
     public array $phpDependencies = [
         'ext-zip:*',
         'ext-pgsql:*',
-        'gasparesganga/php-shapefile:^3.4',
         'spatie/laravel-permission:^8.0',
+        'gasparesganga/php-shapefile:^3.4',
         'spatie/simple-excel:^3.5',
         'spatie/laravel-translatable:^6.1',
         'spatie/db-dumper:^4.1',
@@ -31,7 +31,9 @@ trait PackageTasksTrait
 
     public array $vendorPublish = [
         'Chimera config' => ['--tag=chimera-config', '--force'],
-        'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
+        //'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
+        'Spatie permission config' => ['--tag=permission-config', '--force'],
+        'Spatie permission migrations' => ['--tag=permission-migrations', '--force'],
         'Chimera migrations' => ['--tag=chimera-migrations', '--force'],
         'Chimera stubs' => ['--tag=chimera-stubs'],
         'Livewire config' => ['--tag=livewire:config'],

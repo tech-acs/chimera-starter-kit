@@ -75,7 +75,7 @@ class EditIndicator extends Tool
         return [
             'name' => $schema->string()->description('Name of the indicator to edit'),
             'title' => $schema->string()->description('New title (optional)')->nullable(),
-            'description' => $schema->string()->description('New description (optional)')->nullable(),
+            'description' => $schema->string()->description('New description (optional, max ~100 chars before truncation in chart-card)')->nullable(),
             'help' => $schema->string()->description('Explanatory text (markdown) for dashboard users about how the indicator sources its data — which dictionary records/items are queried (e.g. POP_REC.P11 for sex) and what calculations or aggregations are applied. Optional.')->nullable(),
             'data' => $schema->array()->nullable(),
             'layout' => $schema->object()->nullable(),

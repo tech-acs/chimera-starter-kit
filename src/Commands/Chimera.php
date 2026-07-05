@@ -19,12 +19,12 @@ class Chimera extends Command
     {
         $this->installJetstream();
         $this->installPhpDependencies();
-        $this->publishVendorFiles();
         $this->copyCustomizedJetstreamFiles();
         $this->configureJetstreamFeatures();
         $this->copyAssets();
         $this->copyColorPalettes();
         $this->customizeExceptionRendering();
+        $this->publishVendorFiles();
         $this->installEnvFiles();
         $this->installEmptyWebRoutesFile();
         $this->installJsDependencies();

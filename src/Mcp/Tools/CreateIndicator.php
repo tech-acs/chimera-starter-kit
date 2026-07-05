@@ -76,7 +76,7 @@ class CreateIndicator extends Tool
         return [
             'name' => $schema->string()->description('Component name in CamelCase without the data source prefix (e.g., "BirthRate", "PopulationPyramid"). The data source title is automatically prepended as a directory (e.g., "Households/BirthRate"). Do NOT include the data source folder yourself.'),
             'title' => $schema->string()->description('Human-readable title'),
-            'description' => $schema->string()->description('Human-readable description'),
+            'description' => $schema->string()->description('Human-readable description (max ~100 chars before truncation in chart-card)'),
             'data_source' => $schema->string()->description('Name of the data source this indicator queries (use the `name` field from get-data-sources, e.g. "households")'),
             'data' => $schema->array()->description('Optional array of Plotly trace objects. If omitted, an empty array is used — configure the traces afterwards via edit-chart.')->nullable(),
             'layout' => $schema->object()->description('Optional Plotly layout object. If omitted, a sensible default layout is used. You may override specific fields (e.g. title, xaxis, yaxis, margin).')->nullable(),

@@ -65,8 +65,8 @@ class CreateGauge extends Tool
     {
         return [
             'name' => $schema->string()->description('Component name in CamelCase without the data source prefix (e.g., "BirthRate", "CompletionStatus"). The data source title is automatically prepended as a directory (e.g., "Households/BirthRate"). Do NOT include the data source folder yourself.'),
-            'title' => $schema->string()->description('Human-readable title'),
-            'subtitle' => $schema->string()->description('Human-readable subtitle'),
+            'title' => $schema->string()->description('Human-readable title (max ~20 chars before truncation in UI)'),
+            'subtitle' => $schema->string()->description('Human-readable subtitle (max ~20 chars before truncation in UI)'),
             'data_source' => $schema->string()->description('Name of the data source this gauge queries (use the `name` field from get-data-sources, e.g. "households")'),
         ];
     }

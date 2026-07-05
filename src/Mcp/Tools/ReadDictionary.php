@@ -37,7 +37,7 @@ class ReadDictionary extends Tool
 
             try {
                 $json = (new DictionaryParser)->parseToJson($path);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 return Response::error($e->getMessage());
             }
         } else {
@@ -49,7 +49,7 @@ class ReadDictionary extends Tool
 
             try {
                 $json = (new DictionaryParser)->parseContentToJson($content);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 return Response::error($e->getMessage());
             }
         }

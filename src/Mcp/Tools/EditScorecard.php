@@ -52,7 +52,7 @@ class EditScorecard extends Tool
     {
         return [
             'name' => $schema->string()->description('Name of the scorecard to edit'),
-            'title' => $schema->string()->description('New title (optional)')->nullable(),
+            'title' => $schema->string()->description('New title (optional, max ~20 chars before truncation in UI)')->nullable(),
             'scope' => $schema->string()->description('Scope (optional)')->nullable(),
         ];
     }

@@ -81,7 +81,81 @@ $jsonDictionary = <<<'JSON'
 }
 JSON;
 
-describe('ReadDictionary MCP tool', function () use ($iniDictionary, $jsonDictionary) {
+$jsonDictionaryWithValuesets = <<<'JSON'
+{
+    "software": "CSPro",
+    "version": 8.0,
+    "fileType": "dictionary",
+    "name": "TestDict",
+    "levels": [
+        {
+            "name": "HH",
+            "labels": [{"text": "Household"}],
+            "ids": { "items": [] },
+            "records": [
+                {
+                    "name": "PERSON",
+                    "labels": [{"text": "Person Record"}],
+                    "recordType": "1",
+                    "items": [
+                        {
+                            "name": "P02_REL",
+                            "labels": [{"text": "Relationship"}],
+                            "contentType": "numeric",
+                            "length": 1,
+                            "valueSets": [
+                                {
+                                    "name": "P02_REL_VS1",
+                                    "labels": [{"text": "Relationship"}],
+                                    "values": [
+                                        { "labels": [{"text": "Head"}], "pairs": [{"value": "1"}] },
+                                        { "labels": [{"text": "Spouse"}], "pairs": [{"value": "2"}] },
+                                        { "labels": [{"text": "Child"}], "pairs": [{"value": "3"}] }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "P04_AGE",
+                            "labels": [{"text": "Age"}],
+                            "contentType": "numeric",
+                            "length": 2,
+                            "valueSets": [
+                                {
+                                    "name": "P04_AGE_VS1",
+                                    "labels": [{"text": "Age groups"}],
+                                    "values": [
+                                        { "labels": [{"text": "0 to 4 years"}], "pairs": [{"range": ["0", "4"]}] },
+                                        { "labels": [{"text": "5 to 9 years"}], "pairs": [{"range": ["5", "9"]}] }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "P03_SEX",
+                            "labels": [{"text": "Sex"}],
+                            "contentType": "numeric",
+                            "length": 1,
+                            "valueSets": [
+                                {
+                                    "name": "P03_SEX_VS1",
+                                    "labels": [{"text": "Sex"}],
+                                    "values": [
+                                        { "labels": [{"text": "Male"}], "pairs": [{"value": "1"}] },
+                                        { "labels": [{"text": "Female"}], "pairs": [{"value": "2"}] }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+JSON;
+
+describe('ReadDictionary MCP tool', function () use ($iniDictionary, $jsonDictionary, $jsonDictionaryWithValuesets) {
     it('parses INI dictionary format', function () use ($iniDictionary) {
         $response = (new PendingTestResponse($this->app, DashboardStarterKit::class))
             ->tool(ReadDictionary::class, ['content' => $iniDictionary]);
@@ -104,6 +178,25 @@ describe('ReadDictionary MCP tool', function () use ($iniDictionary, $jsonDictio
         $response->assertSee('HHID');
         $response->assertSee('HH_REC');
         $response->assertSee('AreaID');
+    });
+
+    it('parses value sets from JSON format', function () use ($jsonDictionaryWithValuesets) {
+        $response = (new PendingTestResponse($this->app, DashboardStarterKit::class))
+            ->tool(ReadDictionary::class, ['content' => $jsonDictionaryWithValuesets]);
+
+        $response->assertOk();
+        $response->assertSee('"records"');
+        $response->assertSee('P02_REL');
+        $response->assertSee('P04_AGE');
+        $response->assertSee('P03_SEX');
+        $response->assertSee('"label": "Head"');
+        $response->assertSee('"value": 1');
+        $response->assertSee('"label": "Spouse"');
+        $response->assertSee('"value": 2');
+        $response->assertSee('"label": "Male"');
+        $response->assertSee('"label": "Female"');
+        $response->assertSee('"from": "0"');
+        $response->assertSee('"to": "4"');
     });
 
     it('parses value sets from INI format', function () use ($iniDictionary) {

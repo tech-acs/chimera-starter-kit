@@ -52,8 +52,8 @@ class EditGauge extends Tool
     {
         return [
             'name' => $schema->string()->description('Name of the gauge to edit'),
-            'title' => $schema->string()->description('New title (optional)')->nullable(),
-            'subtitle' => $schema->string()->description('New subtitle (optional)')->nullable(),
+            'title' => $schema->string()->description('New title (optional, max ~20 chars before truncation in UI)')->nullable(),
+            'subtitle' => $schema->string()->description('New subtitle (optional, max ~20 chars before truncation in UI)')->nullable(),
         ];
     }
 }
