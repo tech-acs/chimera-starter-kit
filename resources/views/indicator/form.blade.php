@@ -32,7 +32,7 @@
                                 <option class="p-2 rounded-md" value="{{ $id }}" @selected(in_array($id, $indicator->pages->pluck('id')->all()))>{{ $pageTitle }}</option>
                             @endforeach
                         </select>
-                        <x-input-error for="page_id" class="mt-2" />
+                        <x-input-error for="pages" class="mt-2" />
                     </div>
                 </div>
                 <div class="col-span-1">

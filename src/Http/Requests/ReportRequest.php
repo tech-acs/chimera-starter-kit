@@ -23,6 +23,7 @@ class ReportRequest extends FormRequest
             'description' => 'required',
             'run_at' => 'required_if:enabled,true',
             'run_every' => 'required_if:enabled,true',
+            'pages' => ['required_if:published,true', 'array', 'min:1'],
         ];
     }
 
@@ -31,6 +32,8 @@ class ReportRequest extends FormRequest
         return [
             'run_at.required_if' => 'The run at field is required when scheduling is enabled.',
             'run_every.required_if' => 'The run every field is required when scheduling is enabled.',
+            'pages.required' => 'You must add the report to at least one page before publishing.',
+            'pages.min' => 'You must add the report to at least one page before publishing.',
         ];
     }
 }
