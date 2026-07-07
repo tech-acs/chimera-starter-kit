@@ -11,7 +11,7 @@ trait PackageTasksTrait
 {
     public array $requiredNodePackages = [
         'leaflet' => '^1.9',
-        'plotly.js-cartesian-dist' => '^3.5',
+        'plotly.js' => '^3.5',
         'plotly.js-locales' => '^3.5',
         'alpinejs' => '^3.14',
         '@tailwindcss/aspect-ratio' => '^0.4.2',
