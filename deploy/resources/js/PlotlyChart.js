@@ -1,6 +1,4 @@
-import Plotly from 'plotly.js-cartesian-dist';
-import fr from 'plotly.js-locales/fr';
-import ptPT from 'plotly.js-locales/pt-pt';
+import Plotly from './PlotlyCustomBundle.js';
 
 export default class PlotlyChart {
     id;
@@ -14,12 +12,6 @@ export default class PlotlyChart {
         this.id = rootElementId;
         const el = document.getElementById(this.id)
         this.config = JSON.parse(el.dataset['config'])
-        if (this.config.locale === 'fr') {
-            Plotly.register(fr);
-        } else if (this.config.locale === 'pt') {
-            Plotly.register(ptPT);
-        }
-        //console.log('1 - (alpine init), 2 - PlotlyChart constructor with id: ' + this.id);
         this.registerLivewireEventListeners();
     }
 

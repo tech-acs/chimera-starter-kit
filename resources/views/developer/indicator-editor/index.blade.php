@@ -93,7 +93,7 @@
             :data="$data"
             :layout="$layout"
             :config="$config"
-            :trace-types="['bar', 'scatter', 'pie', 'histogram', 'line', 'area', 'box']"
+            :trace-types="['bar', 'scatter', 'pie', 'histogram', 'line', 'area', 'box', 'sunburst']"
             sync-mode="manual"
             :preload-schema="true"
             :show-export="true"
