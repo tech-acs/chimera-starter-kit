@@ -19,6 +19,7 @@ class DataExport extends Command
         'data_sources',
         'area_hierarchies',
         'areas',
+        'reference_value_indicators',
         'reference_values',
         'indicators',
         'reports',
