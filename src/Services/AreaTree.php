@@ -58,6 +58,36 @@ class AreaTree
         return str($path)->explode('.')->count() - 1;
     }
 
+    public function areasAtLevel(
+        ?int $level = null,
+        ?string $parentPath = null,
+        string $orderBy = 'name',
+        bool $checksumSafe = false,
+        ?string $referenceValueToInclude = null,
+    ) {
+        $level ??= Area::max('level');
+
+        $columns = $checksumSafe
+            ? "CONCAT('*', areas.path) AS path, code, name"
+            : 'areas.path, code, name';
+
+        if (is_null($referenceValueToInclude)) {
+            return Area::selectRaw($columns)
+                ->when($parentPath, fn ($q, $path) => $q->whereRaw('path <@ ?', [$path]))
+                ->where('level', $level)
+                ->orderBy($orderBy)
+                ->get();
+        }
+
+        return Area::selectRaw("$columns, value AS ref_value")
+            ->leftJoin('reference_values', 'areas.path', 'reference_values.path')
+            ->when($parentPath, fn ($q, $path) => $q->whereRaw('areas.path <@ ?', [$path]))
+            ->where('areas.level', $level)
+            ->whereRaw('COALESCE(reference_values.indicator, ?) = ?', [$referenceValueToInclude, $referenceValueToInclude])
+            ->orderBy($orderBy)
+            ->get();
+    }
+
     public function areas(?string $parentPath = null, string $orderBy = 'name', bool $checksumSafe = false, ?string $referenceValueToInclude = null)
     {
         $lquery = empty($parentPath) ? '*{1}' : "$parentPath.*{1}";

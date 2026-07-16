@@ -28,15 +28,19 @@ class ImportReferenceValueSpreadsheetJob implements ShouldQueue
     {
         $aggMethod = $indicatorMapping['isAdditive'] ? 'SUM' : 'AVG';
         DB::insert("
-            INSERT INTO reference_values(path, level, indicator, value)
-            SELECT areas.path, nlevel(agg.path) - 1 AS level, agg.indicator, agg.value
-            FROM (
-                SELECT {$aggMethod}(reference_values.value) AS value, subpath(areas.path, 0, ?) AS path, reference_values.indicator
+            WITH rv_with_parent AS (
+                SELECT reference_values.value, subpath(areas.path, 0, ?) AS parent_path, reference_values.indicator
                 FROM reference_values INNER JOIN areas ON reference_values.path = areas.path
                 WHERE reference_values.indicator = ? AND reference_values.level = ?
-                GROUP BY indicator, subpath(areas.path, 0, ?)
-            ) AS agg INNER JOIN areas ON agg.path = areas.path
-        ", [$level, $indicatorMapping['indicator'], $level, $level]);
+            )
+            INSERT INTO reference_values(path, level, indicator, value)
+            SELECT areas.path, nlevel(agg.parent_path) - 1 AS level, agg.indicator, agg.value
+            FROM (
+                SELECT {$aggMethod}(value) AS value, parent_path, indicator
+                FROM rv_with_parent
+                GROUP BY indicator, parent_path
+            ) AS agg INNER JOIN areas ON agg.parent_path = areas.path
+        ", [$level, $indicatorMapping['indicator'], $level]);
     }
 
     private function insertInitialValues($indicatorMapping)
