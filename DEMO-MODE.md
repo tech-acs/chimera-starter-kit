@@ -17,10 +17,14 @@ Enable a dashboard-starter-kit site as a **public demo**: visitors explore the f
 
 ## Setup Steps
 
-### 1. Consumer app uses the `demo-mode` branch
+### 1. Switch the consumer app to the `demo-mode` branch
+
+If the host app already has the package installed from Packagist, you don't need to remove it first. Override the source in `composer.json` and run `composer update` — Composer will switch to the branch automatically.
+
+Edit `composer.json` and add a `repositories` entry pointing to the GitHub repo, then change the `require` constraint to `dev-demo-mode`:
 
 ```json
-// composer.json
+// composer.json — add this block at the top level (alongside "require", "autoload", etc.)
 "repositories": [
     {
         "type": "vcs",
@@ -28,13 +32,23 @@ Enable a dashboard-starter-kit site as a **public demo**: visitors explore the f
     }
 ],
 "require": {
+    // ... other dependencies ...
     "uneca/dashboard-starter-kit": "dev-demo-mode"
 }
 ```
 
+Then run (target the package specifically to avoid updating everything):
+
 ```bash
-composer update
+composer update uneca/dashboard-starter-kit
 ```
+
+Composer will clone the `demo-mode` branch from GitHub (instead of pulling from Packagist) and update the lock file.
+
+**To switch back to the stable release later:**
+- Remove the `repositories` entry
+- Change the constraint back (e.g. `"^7.2"`)
+- Run `composer update uneca/dashboard-starter-kit`
 
 ### 2. Create a read-only PostgreSQL role
 
