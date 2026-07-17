@@ -31,7 +31,7 @@ trait PackageTasksTrait
 
     public array $vendorPublish = [
         'Chimera config' => ['--tag=chimera-config', '--force'],
-        //'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
+        // 'Spatie permissions' => ['--provider=Spatie\Permission\PermissionServiceProvider', '--force'],
         'Spatie permission config' => ['--tag=permission-config', '--force'],
         'Spatie permission migrations' => ['--tag=permission-migrations', '--force'],
         'Chimera migrations' => ['--tag=chimera-migrations', '--force'],

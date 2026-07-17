@@ -31,7 +31,7 @@ class StagePresetPack extends Tool
         $artefacts = $service->getPackArtefacts($pack);
 
         if (empty($artefacts)) {
-            return Response::error("Pack '{$pack}' not found or contains no artefacts. Available packs: " . implode(', ', array_column($service->listPacks(), 'name')));
+            return Response::error("Pack '{$pack}' not found or contains no artefacts. Available packs: ".implode(', ', array_column($service->listPacks(), 'name')));
         }
 
         $lines = ["## Preset Pack: {$pack}\n"];
@@ -48,7 +48,7 @@ class StagePresetPack extends Tool
         }
 
         $lines[] = '---';
-        $lines[] = "Total: " . count($artefacts) . " artefact" . (count($artefacts) !== 1 ? 's' : '') . " in pack.";
+        $lines[] = 'Total: '.count($artefacts).' artefact'.(count($artefacts) !== 1 ? 's' : '').' in pack.';
 
         return Response::text(implode("\n", $lines));
     }

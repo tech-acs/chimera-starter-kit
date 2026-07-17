@@ -108,13 +108,14 @@ class DeployPresetPack extends Tool
                     'status' => 'failed',
                     'error' => "Unknown artefact type: {$type}",
                 ];
+
                 continue;
             }
 
             $config = self::TYPE_CONFIG[$type];
 
             try {
-                $prefixedName = $dsTitle . '/' . $name;
+                $prefixedName = $dsTitle.'/'.$name;
                 $dto = $this->buildDto($type, $prefixedName, $title, $dataSourceName, $artefact['description'] ?? null);
 
                 if ($dto === null) {
@@ -124,6 +125,7 @@ class DeployPresetPack extends Tool
                         'status' => 'failed',
                         'error' => "Unsupported type for DTO construction: {$type}",
                     ];
+
                     continue;
                 }
 
@@ -175,7 +177,7 @@ class DeployPresetPack extends Tool
         }
 
         $lines[] = '';
-        $lines[] = "---";
+        $lines[] = '---';
         $lines[] = "{$successCount} deployed, {$failCount} failed.";
 
         return Response::text(implode("\n", $lines));

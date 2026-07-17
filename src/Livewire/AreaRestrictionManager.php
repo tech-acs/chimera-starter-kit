@@ -38,6 +38,9 @@ class AreaRestrictionManager extends AreaFilter
 
     public function filter()
     {
+        if (config('chimera.demo_mode')) {
+            return;
+        }
         $areaRestrictions = collect($this->dropdowns)
             ->reject(fn ($dropdown) => empty($dropdown['selected']))
             ->mapWithKeys(fn ($dropdown, $key) => [$key => ['level' => AreaTree::levelFromPath($dropdown['selected']), 'path' => $this->removeChecksumSafety($dropdown['selected'])]]);

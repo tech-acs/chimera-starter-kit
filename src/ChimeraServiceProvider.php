@@ -270,7 +270,7 @@ class ChimeraServiceProvider extends PackageServiceProvider
             ], 'chimera-stubs');
 
             $this->publishes([
-                __DIR__ . '/../resources/preset-packs' => resource_path('preset-packs'),
+                __DIR__.'/../resources/preset-packs' => resource_path('preset-packs'),
             ], 'chimera-preset-packs');
         }
 

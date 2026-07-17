@@ -41,13 +41,13 @@ class GetPresetPacks extends Tool
             foreach ($pack['artefacts'] as $type => $count) {
                 if ($count > 0) {
                     $label = rtrim($type, 's');
-                    $lines[] = "    - {$count} {$label}" . ($count > 1 ? 's' : '');
+                    $lines[] = "    - {$count} {$label}".($count > 1 ? 's' : '');
                     $total += $count;
                 }
             }
 
             if ($total === 0) {
-                $lines[] = "    (empty)";
+                $lines[] = '    (empty)';
             }
         }
 

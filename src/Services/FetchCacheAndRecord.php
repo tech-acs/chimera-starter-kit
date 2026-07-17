@@ -24,7 +24,7 @@ class FetchCacheAndRecord
                 Cache::put($key, [Carbon::now(), $result], config('chimera.cache.ttl'));
             }
 
-            if ($elapsedSeconds > config('chimera.long_query_time')) {
+            if ($elapsedSeconds > config('chimera.long_query_time') && ! config('chimera.demo_mode')) {
                 $artefact->getDataModel()->analytics()->create([
                     'user_id' => auth()->id(),
                     'path' => $filterPath,

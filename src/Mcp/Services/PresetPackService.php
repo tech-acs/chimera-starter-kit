@@ -46,7 +46,7 @@ class PresetPackService
         $artefacts = [];
 
         foreach (self::TYPES as $type) {
-            $typeDir = $packDir . '/' . $type;
+            $typeDir = $packDir.'/'.$type;
 
             if (! is_dir($typeDir)) {
                 continue;
@@ -84,7 +84,7 @@ class PresetPackService
 
     public function getArtefactContent(string $pack, string $type, string $name): ?string
     {
-        $path = $this->packDir($pack) . '/' . $this->pluralType($type) . '/' . $name . '.md';
+        $path = $this->packDir($pack).'/'.$this->pluralType($type).'/'.$name.'.md';
 
         if (! file_exists($path)) {
             return null;
@@ -169,7 +169,7 @@ class PresetPackService
 
         foreach (self::TYPES as $type) {
             $counts[$type] = 0;
-            $typeDir = $packDir . '/' . $type;
+            $typeDir = $packDir.'/'.$type;
 
             if (! is_dir($typeDir)) {
                 continue;
@@ -188,7 +188,7 @@ class PresetPackService
     private function getPackMetadata(string $pack): array
     {
         $packDir = $this->packDir($pack);
-        $manifestPath = $packDir . '/pack.md';
+        $manifestPath = $packDir.'/pack.md';
 
         if (! file_exists($manifestPath)) {
             return [
@@ -220,12 +220,13 @@ class PresetPackService
         if (is_dir($hostDir) && ! empty(File::directories($hostDir))) {
             return $hostDir;
         }
-        return __DIR__ . '/../../../resources/preset-packs';
+
+        return __DIR__.'/../../../resources/preset-packs';
     }
 
     private function packDir(string $pack): string
     {
-        return $this->packsDir() . '/' . $pack;
+        return $this->packsDir().'/'.$pack;
     }
 
     private function isValidArtefactFile(\SplFileInfo $file): bool

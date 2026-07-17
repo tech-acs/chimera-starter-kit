@@ -16,7 +16,7 @@ class ReferenceValueController extends Controller
     {
         view()->share('hierarchies', (new AreaTree)->hierarchies);
         $totalValues = ReferenceValue::where('indicator', $referenceValueIndicator->indicator)->count();
-        $summary = "$totalValues " . str('reference value')->plural($totalValues);
+        $summary = "$totalValues ".str('reference value')->plural($totalValues);
 
         return (new SmartTableData(
             ReferenceValue::where('indicator', $referenceValueIndicator->indicator),
@@ -57,6 +57,6 @@ class ReferenceValueController extends Controller
         ReferenceValue::where('indicator', $referenceValueIndicator->indicator)->delete();
 
         return redirect()->route('developer.reference-value-indicator.reference-value.index', $referenceValueIndicator)
-            ->withMessage('All reference values for "' . $referenceValueIndicator->indicator . '" have been deleted');
+            ->withMessage('All reference values for "'.$referenceValueIndicator->indicator.'" have been deleted');
     }
 }

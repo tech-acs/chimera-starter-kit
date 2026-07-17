@@ -12,6 +12,7 @@ class ReferenceValueIndicatorController extends Controller
     public function index()
     {
         $referenceValueIndicators = ReferenceValueIndicator::withCount('referenceValues')->get();
+
         return view('chimera::developer.reference-value-indicator.index', compact('referenceValueIndicators'));
     }
 

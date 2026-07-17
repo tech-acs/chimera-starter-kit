@@ -8,13 +8,13 @@ use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
+use Uneca\Chimera\DTOs\GetDataResult;
 use Uneca\Chimera\Mcp\Tools\Concerns\RequiresInitializedMcp;
 use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\Report;
 use Uneca\Chimera\Models\Scorecard;
-use Uneca\Chimera\DTOs\GetDataResult;
 
 #[Description('Validate a generated artefact by executing getData() and confirming it returns data. Call this after implementing getData() in a created artefact. Runs three checks: (1) data source connectivity, (2) artefact instantiation, (3) getData() execution with an empty filter path (national scope). Returns success status, row count, column names, and the first row as a sample. If this tool fails, report the error and stop — do not fall back to workarounds.')]
 class ValidateArtefact extends Tool

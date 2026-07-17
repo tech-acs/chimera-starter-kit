@@ -15,6 +15,8 @@ return [
     ],
     'require_account_approval' => env('REQUIRE_ACCOUNT_APPROVAL', false),
     'color_theme' => env('COLOR_THEME', 'Chimera'),
+    'demo_mode' => env('CHIMERA_DEMO', false),
+    'demo_email' => env('DEMO_ACCOUNT', 'demo@example.com'),
     'area' => [
         'map' => [
             // 'center' => [env('MAP_CENTER_LAT', 9.005401), env('MAP_CENTER_LON', 38.763611)],

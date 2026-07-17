@@ -82,7 +82,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Uneca\\Chimera\\ChimeraServiceProvider"
+                "Uneca\\Chimera\\ChimeraServiceProvider",
+                "Uneca\\Chimera\\DemoServiceProvider"
             ]
         }
     },

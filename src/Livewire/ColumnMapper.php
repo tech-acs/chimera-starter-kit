@@ -23,6 +23,9 @@ class ColumnMapper extends Component
 
     public function save()
     {
+        if (config('chimera.demo_mode')) {
+            return;
+        }
         $this->validate();
 
         foreach ($this->areaHierarchies as $areaHierarchy) {

@@ -47,6 +47,9 @@ class InvitationManager extends Component
 
     public function resendEmail(Invitation $invitation)
     {
+        if (config('chimera.demo_mode')) {
+            return;
+        }
         try {
             $this->sendEmail($invitation);
             $this->resultTitle = 'Email sent';
@@ -67,6 +70,9 @@ class InvitationManager extends Component
 
     public function submit()
     {
+        if (config('chimera.demo_mode')) {
+            return;
+        }
         $this->validate();
         try {
             $expiresAt = now()->addHours(config('chimera.invitation.ttl_hours'));
@@ -91,6 +97,9 @@ class InvitationManager extends Component
 
     public function renew(Invitation $invitation)
     {
+        if (config('chimera.demo_mode')) {
+            return;
+        }
         $expiresAt = now()->addHours(24);
         $invitation->update([
             'link' => URL::temporarySignedRoute('register', $expiresAt, ['email' => $invitation->email]),
@@ -115,6 +124,9 @@ class InvitationManager extends Component
 
     public function delete(Invitation $invitation)
     {
+        if (config('chimera.demo_mode')) {
+            return;
+        }
         $invitation->forceDelete();
         $this->loadData();
     }

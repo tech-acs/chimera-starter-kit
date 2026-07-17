@@ -38,6 +38,13 @@ class CreateArtefactAction
                 return ArtefactCreationResult::success($artefact, $filePath);
             });
         } catch (Exception $e) {
+            if (config('chimera.demo_mode')) {
+                request()->session()->flash('flash', [
+                    'bannerStyle' => 'warning',
+                    'banner' => 'This is a demo site. Visitors cannot make changes.',
+                ]);
+            }
+
             return ArtefactCreationResult::failed($e->getMessage());
         }
     }

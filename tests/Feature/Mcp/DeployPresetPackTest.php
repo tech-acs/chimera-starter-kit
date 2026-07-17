@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Mcp\Server\Testing\PendingTestResponse;
@@ -8,16 +9,17 @@ use Uneca\Chimera\Mcp\Servers\DashboardStarterKit;
 use Uneca\Chimera\Mcp\Tools\DeployPresetPack;
 use Uneca\Chimera\Results\ArtefactCreationResult;
 
-function fakeArtefactModel(string $name): \Illuminate\Database\Eloquent\Model
+function fakeArtefactModel(string $name): Model
 {
-    $model = new class extends \Illuminate\Database\Eloquent\Model
+    $model = new class extends Model
     {
         protected $table = 'scorecards';
+
         public $timestamps = false;
     };
     $model->forceFill([
         'id' => 1,
-        'name' => 'Households/' . $name,
+        'name' => 'Households/'.$name,
     ]);
 
     return $model;
@@ -32,7 +34,7 @@ describe('DeployPresetPack tool', function () {
             $table->boolean('active')->default(true);
             $table->timestamps();
         });
-        \DB::table('data_sources')->insert([
+        DB::table('data_sources')->insert([
             'name' => 'households',
             'title' => json_encode(['en' => 'Households']),
             'active' => true,
@@ -146,6 +148,7 @@ describe('DeployPresetPack tool', function () {
             ->andReturnUsing(function () {
                 static $count = 0;
                 $count++;
+
                 return match ($count) {
                     1 => ArtefactCreationResult::success(
                         fakeArtefactModel('Artefact'),
