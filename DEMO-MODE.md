@@ -169,6 +169,33 @@ git push --force-with-lease origin demo-mode
 
 ---
 
+## Reverting to normal
+
+To disable demo mode and restore the host app to normal operation:
+
+### 1. Revert composer.json
+
+- Remove the `repositories` block (lines pointing to the GitHub repo)
+- Change the `require` constraint back to a stable version, e.g. `"^7.2"`
+
+### 2. Revert .env
+
+- Restore the super-admin `DB_USERNAME` and `DB_PASSWORD`
+- Remove `CHIMERA_DEMO=true`
+- Remove `DEMO_ACCOUNT=...`
+- Restore any session/cache/queue drivers you changed
+
+### 3. Run
+
+```bash
+composer update uneca/dashboard-starter-kit
+php artisan optimize:clear
+```
+
+The demo user (`demo@example.com`) remains in the database but is harmless. Delete it via the manage users section or SQL if you want it gone.
+
+---
+
 ## File inventory
 
 | File | Purpose |
