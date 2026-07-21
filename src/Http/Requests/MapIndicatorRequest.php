@@ -33,8 +33,9 @@ class MapIndicatorRequest extends FormRequest
     public function messages()
     {
         return [
-            'pages.required' => 'You must add the map indicator to at least one page before publishing.',
-            'pages.min' => 'You must add the map indicator to at least one page before publishing.',
+            'pages.required_if' => 'Add it to at least one page before publishing.',
+            'pages.required' => 'Add it to at least one page before publishing.',
+            'pages.min' => 'Add it to at least one page before publishing.',
         ];
     }
 }
