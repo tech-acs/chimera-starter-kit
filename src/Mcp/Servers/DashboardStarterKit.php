@@ -36,6 +36,14 @@ use Uneca\Chimera\Mcp\Tools\ValidateArtefact;
 #[Instructions(<<<'MARKDOWN'
 This MCP server helps AI coding agents create and edit dashboard artefacts.
 
+## Transport Warning
+
+This server uses STDIO transport, which reads one line per JSON-RPC message.
+When calling any tool, ensure all string values (especially markdown `help`
+text) are on a single line. Literal newlines inside string values cause
+truncation and a JSON parse error. Always use a JSON serializer (e.g.
+`JSON.stringify`) to encode the arguments — do not construct JSON manually.
+
 ## Failure protocol
 
 Every tool depends on a running MCP server, the database, and (for artefact

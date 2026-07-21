@@ -12,7 +12,7 @@ use Uneca\Chimera\Mcp\Tools\Concerns\ForceModelUpdate;
 use Uneca\Chimera\Mcp\Tools\Concerns\RequiresInitializedMcp;
 use Uneca\Chimera\Models\Indicator;
 
-#[Description('Update an indicator\'s metadata after creation. For Plotly traces and layout, use EditChart instead. Finds the indicator by name and updates only the provided fields. The help field should explain which dictionary records/items the indicator queries and what calculations it performs — populate it automatically after creation using data from read-dictionary. If this tool fails, report the error and stop — do not fall back to workarounds.')]
+#[Description('Update an indicator\'s metadata after creation. For Plotly traces and layout, use EditChart instead. Finds the indicator by name and updates only the provided fields. The help field should explain which dictionary records/items the indicator queries and what calculations it performs — populate it automatically after creation using data from read-dictionary. WARNING: The help text must be a single line — do not embed literal newlines (\n) in the value. The MCP STDIO transport reads one line at a time; multi-line values cause a JSON parse error. Use a JSON serializer for safe encoding. If this tool fails, report the error and stop — do not fall back to workarounds.')]
 class EditIndicator extends Tool
 {
     use ForceModelUpdate;
@@ -37,15 +37,15 @@ class EditIndicator extends Tool
         $update = [];
 
         if ($request->has('title')) {
-            $update['title'] = $request->get('title');
+            $update['title'] = (string) $request->get('title');
         }
 
         if ($request->has('description')) {
-            $update['description'] = $request->get('description');
+            $update['description'] = (string) $request->get('description');
         }
 
         if ($request->has('help')) {
-            $update['help'] = $request->get('help');
+            $update['help'] = (string) $request->get('help');
         }
 
         if ($request->has('data')) {
@@ -65,7 +65,16 @@ class EditIndicator extends Tool
             $update['scope'] = $scope;
         }
 
-        $this->forceUpdate($indicator, $update);
+        try {
+            $this->forceUpdate($indicator, $update);
+        } catch (\Throwable $e) {
+            logger()->error('EditIndicator::forceUpdate failed', [
+                'name' => $name,
+                'update_keys' => array_keys($update),
+                'error' => $e->getMessage(),
+            ]);
+            return Response::error('Failed to save: ' . $e->getMessage());
+        }
 
         return Response::text('Indicator updated successfully');
     }
