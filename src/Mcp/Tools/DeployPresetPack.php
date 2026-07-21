@@ -16,16 +16,18 @@ use Uneca\Chimera\DTOs\ScorecardAttributes;
 use Uneca\Chimera\Mcp\Services\PresetPackService;
 use Uneca\Chimera\Mcp\Tools\Concerns\RequiresInitializedMcp;
 use Uneca\Chimera\Models\DataSource;
+use Uneca\Chimera\Traits\PlotlyDefaults;
 use Uneca\Chimera\Models\Gauge;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\Models\MapIndicator;
 use Uneca\Chimera\Models\Report;
 use Uneca\Chimera\Models\Scorecard;
 
-#[Description('Deploy artefacts from a preset pack. Specify the pack name, which data source to use, and optionally which artefacts to include (omit to deploy all). The tool creates each artefact via the same action used by the individual create tools. After deployment call validate-artefact on each created artefact.')]
+#[Description('Deploy artefacts from a preset pack. Specify the pack name, which data source to use, and optionally which artefacts to include (omit to deploy all). The tool creates each artefact via the same action used by the individual create tools. After deployment, for each created indicator you MUST call edit-indicator to populate the help field with explanatory text (use read-dictionary to compose the text documenting which records/items the indicator queries and what calculations it performs). Then call validate-artefact on each created artefact.')]
 class DeployPresetPack extends Tool
 {
     use RequiresInitializedMcp;
+    use PlotlyDefaults;
 
     private const TYPE_CONFIG = [
         'scorecard' => [
@@ -214,7 +216,7 @@ class DeployPresetPack extends Tool
                 type: 'default',
                 description: $description,
                 data: [],
-                layout: [],
+                layout: self::DEFAULT_LAYOUT,
                 stub: resource_path(self::TYPE_CONFIG['indicator']['stub']),
             ),
             'gauge' => new GaugeAttributes(

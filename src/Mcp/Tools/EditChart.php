@@ -12,7 +12,7 @@ use Uneca\Chimera\Mcp\Tools\Concerns\RequiresInitializedMcp;
 use Uneca\Chimera\Models\Indicator;
 use Uneca\Chimera\DTOs\GetDataResult;
 
-#[Description('Save the Plotly chart design (traces and layout) for an existing indicator. Call this AFTER implementing getData() — the tool verifies getData() returns data and validates that trace meta.columnNames match actual query result columns, then delegates the save to EditIndicator. Use your Plotly knowledge to craft the trace objects with type, meta.columnNames (matching your SQL aliases), name, hovertemplate, etc. The layout is optional.')]
+#[Description('Save the Plotly chart design (traces and layout) for an existing indicator. Call this AFTER implementing getData() — the tool verifies getData() returns data and validates that trace meta.columnNames match actual query result columns, then delegates the save to EditIndicator. Use your Plotly knowledge to craft the trace objects with type, meta.columnNames (matching your SQL aliases), name, hovertemplate, etc. Always set axis labels — at minimum provide a y-axis label via layout.yaxis.title.text describing what the axis represents (e.g. "Population", "Percentage"). If the x-axis displays area names, uncomment the $useDynamicAreaXAxisTitles = true property in the indicator class body so the axis title adapts to the selected area level (it is present but commented out in the generated stub). Do NOT set marker.color or any explicit colors on traces unless the user explicitly requests a specific color — the global color palette (configurable in Settings) applies automatically via layout.colorway. The layout parameter is merged over the stored layout — send only the fields you want to override (e.g. {"yaxis": {"title": {"text": "Population"}}}). Previous edits are preserved.')]
 class EditChart extends Tool
 {
     use RequiresInitializedMcp;
@@ -75,7 +75,10 @@ class EditChart extends Tool
         ];
 
         if ($request->has('layout')) {
-            $editParams['layout'] = $request->get('layout');
+            $editParams['layout'] = array_replace_recursive(
+                $indicator->layout,
+                $request->get('layout')
+            );
         }
 
         $editRequest = new Request($editParams);
@@ -159,9 +162,9 @@ class EditChart extends Tool
                 .'Example: [{"type":"bar","meta":{"columnNames":{"x":"area_name","y":["total"]}},"name":"Total","hovertemplate":"%{y}"}]'
             ),
             'layout' => $schema->object()->nullable()->description(
-                'Optional Plotly layout object. Overrides the default layout. '
-                .'Common fields: title, xaxis, yaxis, showlegend, margin, etc. '
-                .'If omitted, a sensible default is used.'
+                'Optional Plotly layout object. Merged over the stored layout — send '
+                .'only the fields you want to override. Previous edits are preserved. '
+                .'If omitted, the existing layout is left unchanged.'
             ),
         ];
     }
