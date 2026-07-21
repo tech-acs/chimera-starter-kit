@@ -12,7 +12,7 @@ use Uneca\Chimera\Mcp\Tools\Concerns\ForceModelUpdate;
 use Uneca\Chimera\Mcp\Tools\Concerns\RequiresInitializedMcp;
 use Uneca\Chimera\Models\Indicator;
 
-#[Description('Update an indicator\'s metadata after creation. For Plotly traces and layout, use EditChart instead. Finds the indicator by name and updates only the provided fields. The help field should explain which dictionary records/items the indicator queries and what calculations it performs — populate it automatically after creation using data from read-dictionary. WARNING: The help text must be a single line — do not embed literal newlines (\n) in the value. The MCP STDIO transport reads one line at a time; multi-line values cause a JSON parse error. Use a JSON serializer for safe encoding. If this tool fails, report the error and stop — do not fall back to workarounds.')]
+#[Description('Update an indicator\'s metadata after creation. For Plotly traces and layout, use EditChart instead. Finds the indicator by name and updates only the provided fields. The help field should explain which dictionary records/items the indicator queries and what calculations it performs — populate it automatically after creation using data from read-dictionary. If this tool fails, report the error and stop — do not fall back to workarounds.')]
 class EditIndicator extends Tool
 {
     use ForceModelUpdate;
