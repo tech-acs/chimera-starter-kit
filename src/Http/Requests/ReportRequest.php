@@ -32,8 +32,9 @@ class ReportRequest extends FormRequest
         return [
             'run_at.required_if' => 'The run at field is required when scheduling is enabled.',
             'run_every.required_if' => 'The run every field is required when scheduling is enabled.',
-            'pages.required' => 'You must add the report to at least one page before publishing.',
-            'pages.min' => 'You must add the report to at least one page before publishing.',
+            'pages.required_if' => 'Add it to at least one page before publishing.',
+            'pages.required' => 'Add it to at least one page before publishing.',
+            'pages.min' => 'Add it to at least one page before publishing.',
         ];
     }
 }

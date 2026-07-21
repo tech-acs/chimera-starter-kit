@@ -19,7 +19,7 @@ class ReportManagementController extends Controller
 
     public function index()
     {
-        $records = Report::orderBy('rank')->get();
+        $records = Report::orderBy('rank')->orderBy('title')->get();
 
         return view('chimera::report.manage.index', compact('records'));
     }
