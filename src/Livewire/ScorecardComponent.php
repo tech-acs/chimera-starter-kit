@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Number;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
@@ -103,7 +104,8 @@ abstract class ScorecardComponent extends Component
         }
     }
 
-    public function getFormattedValueProperty(): string
+    #[Computed]
+    public function formattedValue(): string
     {
         if (is_null($this->valueFormat) || $this->value === '') {
             return (string) $this->value;
