@@ -74,7 +74,7 @@ If the server shows as disconnected or returns initialization errors, re-run `ph
 
 The tools and resources below are not called directly by human users — they are consumed by AI coding assistants. To use the MCP server, open your connected assistant and describe what you want in natural language (e.g. "create a scorecard for enumerated households"). The assistant will call the appropriate tools in sequence: discovering data sources, reading dictionaries, creating artefacts, configuring charts, and validating results. The 6-step workflow described further down is what the agent follows internally; you only need to provide the intent.
 
-The MCP server exposes 15 tools organized by function:
+The MCP server exposes multiple tools organized by function:
 
 ### Discovery Tools
 
@@ -84,6 +84,52 @@ The MCP server exposes 15 tools organized by function:
 | `read-dictionary` | Parses a registered CSPro dictionary and returns its structure — records, items (with types), and value sets |
 | `get-reference-values` | Lists available reference value indicators that can be used for comparisons or reference lines in charts |
 | `get-artefact-examples` | Lists or reads example implementations of artefact types (API documentation for implementation patterns) |
+| `get-preset-packs` | Lists available preset packs and their artefact counts |
+
+### Preset Pack Tools
+
+Preset packs let you deploy a **complete collection** of related artefacts — indicators, scorecards, and reports — from pre-built markdown specs stored in `resources/preset-packs/`. Two packs ship with the starter kit:
+
+| Pack | Indicators | Scorecards | Reports | What it covers |
+|---|---|---|---|---|
+| `census-enumeration` | 22 | 7 | 8 | Enumeration progress, household completions, population counts, demographics, time-to-complete, case status |
+| `census-listing` | 14 | 10 | 8 | Structure listing, household identification, occupancy status, daily listing rates |
+
+You don't call these tools yourself — just ask the assistant to deploy a pack:
+
+| Tool | What the assistant does |
+|---|---|
+| `get-preset-packs` | Lists available packs and their artefact counts |
+| `stage-preset-pack` | Reads every artefact spec in the pack — name, type, title, description, implementation hints — and constructs a feasibility matrix against your dictionary's records and items |
+| `deploy-preset-pack` | Creates all selected artefacts in a single batch call, using the same `CreateArtefactAction` as the individual create tools. Each artefact is prefixed with the data source title (e.g. `KenyaCensus/AverageHouseholdSize`). |
+
+> **Tip:** After deployment, ask the assistant to validate key artefacts with `validate-artefact` and configure their charts with `edit-chart`.
+
+**Example prompts:**
+
+> Deploy the census enumeration preset pack using the 2023 Kenya Census data source.
+
+> I want to deploy the census listing pack — stage it first so I can review the artefacts.
+
+> Deploy just the scorecards and indicators from the census-enumeration pack (skip the reports).
+
+> We're using the enumeration pack. After deploying, validate the PopulationCount scorecard and configure the PopulationPyramid indicator as a bar chart.
+
+#### Publishing and customizing packs
+
+The built-in packs live inside `vendor/uneca/dashboard-starter-kit/resources/preset-packs/`. To customize them or add your own, publish them to your app:
+
+```bash
+php artisan vendor:publish --tag=chimera-preset-packs
+```
+
+This copies the `census-enumeration` and `census-listing` directories into `resources/preset-packs/` in your consumer app. Once published, you can:
+
+- **Edit** existing artefact specs — change descriptions, add `data` hints, or adjust implementation notes
+- **Add new artefacts** to a pack — drop `.md` files into the right type subdirectory (`indicators/`, `scorecards/`, `reports/`)
+- **Create your own packs** — make a new directory under `resources/preset-packs/` with a `pack.md` manifest and artefact files in type subdirectories
+
+The `PresetPackService` checks `resources/preset-packs/` in the consumer app first, so your custom versions override the built-in ones. Remove the published directory to fall back to the package defaults.
 
 ### Creation Tools
 
@@ -125,6 +171,8 @@ In addition to tools, the MCP server exposes documentation resources that AI ass
 | `ArtefactExampleFile` | `examples://artefact/{type}/{name}` | Returns the full PHP source of a single example implementation |
 
 ## Tool Workflow (6 Steps)
+
+**Preset pack alternative:** Instead of the step-by-step workflow below, you can deploy a complete collection of artefacts in one go — just ask the assistant to deploy the pack you want.
 
 The MCP server is designed around a structured workflow:
 
