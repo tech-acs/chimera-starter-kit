@@ -70,17 +70,9 @@ Open your AI assistant's MCP connection status panel. In **opencode**, the MCP s
 
 If the server shows as disconnected or returns initialization errors, re-run `php artisan chimera:mcp-init` to register your dictionary paths, then restart the connection.
 
-## Initialization
-
-Before using the MCP server, you must initialize it by registering your CSPro data dictionaries:
-
-```bash
-php artisan chimera:mcp-init
-```
-
-This command walks you through registering the `.dcf` (data dictionary) files for your data sources. The MCP server needs these dictionaries to understand the structure of your data — which records and items are available, their types, and value sets.
-
 ## Available Tools
+
+The tools and resources below are not called directly by human users — they are consumed by AI coding assistants. To use the MCP server, open your connected assistant and describe what you want in natural language (e.g. "create a scorecard for enumerated households"). The assistant will call the appropriate tools in sequence: discovering data sources, reading dictionaries, creating artefacts, configuring charts, and validating results. The 6-step workflow described further down is what the agent follows internally; you only need to provide the intent.
 
 The MCP server exposes 15 tools organized by function:
 
