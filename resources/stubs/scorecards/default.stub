@@ -15,6 +15,7 @@ class {{ class }} extends ScorecardComponent
      * base class default.
      */
     // public string $unit = '%';
+    // public ?string $valueFormat = null; // null, 'number', 'number:1', 'number:2', 'percentage', 'percentage:1', 'abbreviated', 'human'
     // public string $bgColor;
     // public string $fgColor;
 

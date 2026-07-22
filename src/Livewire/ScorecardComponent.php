@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Number;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Uneca\Chimera\Enums\DataStatus;
@@ -33,6 +34,8 @@ abstract class ScorecardComponent extends Component
     public string $diffField = 'diff';
 
     public string $unit = '%';
+
+    public ?string $valueFormat = null;
 
     public string $bgColor;
 
@@ -98,6 +101,30 @@ abstract class ScorecardComponent extends Component
         } else {
             $this->dataStatus = DataStatus::EMPTY->value;
         }
+    }
+
+    public function getFormattedValueProperty(): string
+    {
+        if (is_null($this->valueFormat) || $this->value === '') {
+            return (string) $this->value;
+        }
+
+        $numeric = is_numeric($this->value) ? (float) $this->value : null;
+        if (is_null($numeric)) {
+            return (string) $this->value;
+        }
+
+        [$method, $precision] = str_contains($this->valueFormat, ':')
+            ? [explode(':', $this->valueFormat)[0], (int) explode(':', $this->valueFormat)[1]]
+            : [$this->valueFormat, null];
+
+        return match ($method) {
+            'number' => Number::format($numeric, $precision),
+            'percentage' => Number::percentage($numeric, $precision),
+            'abbreviated' => Number::abbreviate($numeric),
+            'human' => Number::forHumans($numeric),
+            default => (string) $this->value,
+        };
     }
 
     public function getDataModel(): Model

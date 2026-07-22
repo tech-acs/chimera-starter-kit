@@ -187,14 +187,25 @@ public function getData(string $filterPath): Collection
 The base class reads `value` and `diff` from the first row (configurable via `$valueField`, `$diffField`).
 Set `diff` to `NULL` to hide the trend arrow.
 
-If PHP post-processing is needed (e.g. `Number::format`, `safeDivide`), use `->map()`:
+For number formatting (thousands separators, decimals, abbreviation), set the
+`$valueFormat` property in the class body instead of post-processing in PHP:
+```php
+public ?string $valueFormat = 'number';     // 1,234,568
+public ?string $valueFormat = 'number:1';   // 1,234,567.9
+public ?string $valueFormat = 'number:2';   // 1,234,567.89
+public ?string $valueFormat = 'abbreviated'; // 1M
+```
+Valid values: `number`, `number:N`, `percentage`, `percentage:N`, `abbreviated`, `human`.
+`null` (default) renders the raw value.
+
+If PHP post-processing is needed (e.g. `safeDivide`), use `->map()`:
 ```php
 return (new BreakoutQueryBuilder($this->scorecard->data_source, $filterPath))
     ->select([DB::raw('COUNT(*) AS value')])
     ->from(['pop_rec'])
     ->getSingleRow()
     ->map(fn ($row) => (object) [
-        'value' => Number::format($row->value),
+        'value' => safeDivide($row->value, $row->total),
         'diff' => null,
     ]);
 ```
@@ -255,6 +266,7 @@ Read the `docs://breakout-query-builder` resource for the complete API reference
 | Property | Artefact | Default | Notes |
 |----------|----------|---------|-------|
 | `$unit` | Scorecard, Gauge | `'%'` | Suffix after the displayed value |
+| `$valueFormat` | Scorecard | `null` | Formats the displayed value. `null` = raw. Valid: `number`, `number:1`, `number:2`, `percentage`, `percentage:1`, `abbreviated`, `human` |
 | `$outOf` | Gauge | `100` | Maximum value for the gauge arc |
 | `$colorThresholds` | Gauge | `[70 => 'text-red-500', 90 => 'text-amber-500', 101 => 'text-green-500']` | Threshold → Tailwind color class |
 | `$bins` | MapIndicator | `[]` | **Required.** Value ranges for map coloring (e.g. `[0, 50, 75, 100]`) |
