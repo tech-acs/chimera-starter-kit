@@ -156,15 +156,24 @@ MULTICATEGORY (NESTED) X-AXIS
       (e.g. both "sex" and "education_level" are in the SELECT)
     - Every alias in the meta.columnNames.x array must match a SQL alias
       in getData() — edit-chart validates all of them
+    - The layout MUST override xaxis.type to "multicategory" (Plotly v3+
+      requirement). Without this, the default "category" from
+      DEFAULT_LAYOUT renders the x-axis as a flat array instead of nested
+      axis labels:
+        layout: { xaxis: { type: "multicategory", tickangle: -45 } }
     - Data rows must be ordered so that the inner category cycles within
-      the outer category (e.g. all of Male's rows, then all of Female's
-      rows) to produce correct pairwise pairing
+      the outer category (e.g. all Male rows grouped together, then all
+      Female rows) to produce correct pairwise pairing
 
   Data ordering tip:
-    Use ORDER BY on both columns:
-    ->orderBy(['P11 ASC', 'P47_COMP ASC'])
-    This groups all rows for the outer category together while keeping
-    the inner category in a consistent sequence.
+    Data rows must be ordered so that the inner category cycles within
+    the outer category (e.g. all Male rows grouped together, then all
+    Female rows). If you re-sort in PHP after the query (e.g. with
+    ->sortBy()), ensure the outer category is the primary sort key:
+      ->sortBy(fn($row) => array_search($row->sex, $sexOrder) * 10
+                         + array_search($row->education_level, $educationOrder))
+    The numeric weighting (* 10) ensures the outer category dominates
+    the sort.
 
   Limitations:
     - Multi-column "x" works with bar, scatter, and line charts

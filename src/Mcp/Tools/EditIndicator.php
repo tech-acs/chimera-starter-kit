@@ -37,15 +37,15 @@ class EditIndicator extends Tool
         $update = [];
 
         if ($request->has('title')) {
-            $update['title'] = $request->get('title');
+            $update['title'] = (string) $request->get('title');
         }
 
         if ($request->has('description')) {
-            $update['description'] = $request->get('description');
+            $update['description'] = (string) $request->get('description');
         }
 
         if ($request->has('help')) {
-            $update['help'] = $request->get('help');
+            $update['help'] = (string) $request->get('help');
         }
 
         if ($request->has('data')) {
@@ -65,7 +65,16 @@ class EditIndicator extends Tool
             $update['scope'] = $scope;
         }
 
-        $this->forceUpdate($indicator, $update);
+        try {
+            $this->forceUpdate($indicator, $update);
+        } catch (\Throwable $e) {
+            logger()->error('EditIndicator::forceUpdate failed', [
+                'name' => $name,
+                'update_keys' => array_keys($update),
+                'error' => $e->getMessage(),
+            ]);
+            return Response::error('Failed to save: ' . $e->getMessage());
+        }
 
         return Response::text('Indicator updated successfully');
     }

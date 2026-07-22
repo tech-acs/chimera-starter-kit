@@ -165,6 +165,13 @@ abstract class Chart extends Component
     public function getLayout(string $filterPath): array
     {
         $layout = $this->indicator->layout;
+
+        // Auto-detect multicategory x-axis from trace columnNames
+        $xColumns = data_get($this->indicator->data, '0.meta.columnNames.x');
+        if (is_array($xColumns) && count($xColumns) > 1) {
+            $layout['xaxis']['type'] = 'multicategory';
+        }
+
         if ($this->useDynamicAreaXAxisTitles) {
             $layout['xaxis']['title']['text'] = $this->getAreaBasedAxisTitle($filterPath, true);
         }
