@@ -20,7 +20,7 @@
                 {{ $title }}
             </dt>
             <dd class="order-1 text-3xl font-extrabold {{ $fgColor }} flex justify-center items-center print:text-gray-800">
-                <div class="mr-2">{{ $formattedValue }}</div>
+                <div class="mr-2">{{ $this->formattedValue }}</div>
                 @if (! is_null($diff))
                     <x-chimera::stock-ticker diff="{{ $diff }}" diff-title="" unit="{{ $unit }}" />
                 @endif
