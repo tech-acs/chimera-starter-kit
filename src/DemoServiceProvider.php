@@ -25,7 +25,7 @@ class DemoServiceProvider extends ServiceProvider
 
         Fortify::loginView(fn () => view('chimera::demo.login'));
 
-        $this->loadRoutesFrom(__DIR__.'/../../routes/demo.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/demo.php');
 
         $this->app->make(ExceptionHandler::class)
             ->renderable(function (\Throwable $e, Request $request) {
